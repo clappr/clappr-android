@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="MediaButtonStyle" parent="android:Widget.Holo.Button">
+        <item name="android:textAppearance">@style/MediaButtonTextStyle</item>
+    </style>
+
+    <style name="MediaButtonToggleStyle" parent="android:Widget.Holo.Button.Toggle">
+        <item name="android:textAppearance">@style/MediaButtonTextStyle</item>
+    </style>
+
+    <style name="MediaButtonTextStyle" parent="android:TextAppearance.Holo">
+        <!--<item name="android:fontFamily">Clappr</item>-->
+        <!--<item name="fontFamily">Clappr</item>-->
+    </style>
+</resources>
