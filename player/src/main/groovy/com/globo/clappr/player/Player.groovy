@@ -14,10 +14,12 @@ import android.widget.MediaController;
 import android.widget.ToggleButton;
 
 import com.globo.clappr.player.playback.Playback;
-import com.globo.clappr.player.util.TypefaceManager;
+import com.globo.clappr.player.util.TypefaceManager
+import groovy.transform.CompileStatic;
 
 import java.io.IOException;
 
+@CompileStatic
 public class Player extends Fragment implements MediaController.MediaPlayerControl {
 
     public class Dimensions {
@@ -127,7 +129,7 @@ public class Player extends Fragment implements MediaController.MediaPlayerContr
         mediaControl.animate().translationY(translation).setDuration(MEDIA_CONTROL_ANIM_DURATION).start();
 
         if (autoHide && showingMediaControl) {
-            new Handler().postDelayed(() -> showMediaControl(false), MEDIA_CONTROL_TIMEOUT);
+            new Handler().postDelayed({ showMediaControl(false) }, MEDIA_CONTROL_TIMEOUT);
         }
     }
 

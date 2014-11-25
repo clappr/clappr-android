@@ -14,10 +14,14 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 
-import com.globo.clappr.player.Player;
+import com.globo.clappr.player.Player
+import groovy.transform.CompileStatic;
 
-import java.io.IOException;
+import java.io.IOException
 
+import static com.globo.clappr.player.playback.Playback.State.PLAYING;
+
+@CompileStatic
 class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBufferingUpdateListener,
         android.media.MediaPlayer.OnCompletionListener, android.media.MediaPlayer.OnErrorListener,
         android.media.MediaPlayer.OnPreparedListener, android.media.MediaPlayer.OnVideoSizeChangedListener,
@@ -52,8 +56,8 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            int width = getDefaultSize(player.dimensions.videoWidth, widthMeasureSpec);
-            int height = getDefaultSize(player.dimensions.videoHeight, heightMeasureSpec);
+            double width = getDefaultSize(player.dimensions.videoWidth, widthMeasureSpec);
+            double height = getDefaultSize(player.dimensions.videoHeight, heightMeasureSpec);
             Log.d(Player.LOG_TAG, "onMeasure: width=" + width + ", height=" + height);
             if (player.dimensions.videoWidth > 0 && player.dimensions.videoHeight > 0) {
                 if (player.dimensions.videoWidth * height > width * player.dimensions.videoHeight) {
@@ -69,9 +73,9 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
                 }
             }
             Log.d(Player.LOG_TAG, "setting size to " + width + 'x' + height);
-            player.dimensions.stageWidth = width;
-            player.dimensions.stageHeight = height;
-            setMeasuredDimension(width, height);
+            player.dimensions.stageWidth = (int)width;
+            player.dimensions.stageHeight = (int)height;
+            setMeasuredDimension((int)width, (int)height);
         }
 
     }
@@ -91,7 +95,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
             Log.d(Player.LOG_TAG, "surfaceChanged: width=" + width + ", height=" + height);
             view.surfaceWidth = width;
             view.surfaceHeight = height;
-            boolean isValidState = (targetState == State.PLAYING);
+            boolean isValidState = (targetState == PLAYING);
             boolean hasValidSize = (player.dimensions.videoWidth == width && player.dimensions.videoHeight == height);
             if (isValidState && hasValidSize)
                 start();
@@ -176,7 +180,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
     @Override
     public boolean isPlaying() {
-        return (mediaPlayerImpl != null && mediaPlayerImpl.isPlaying()) || currentState == State.PLAYING;
+        return (mediaPlayerImpl != null && mediaPlayerImpl.isPlaying()) || currentState == PLAYING;
     }
 
     @Override
@@ -251,7 +255,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
         if (player.dimensions.videoWidth != 0 && player.dimensions.videoHeight != 0) {
             if (view.surfaceWidth == player.dimensions.videoWidth && view.surfaceHeight == player.dimensions.videoHeight) {
-                if (targetState == State.PLAYING) {
+                if (targetState == PLAYING) {
                     start();
                     player.showMediaControl(true);
                 } else if (!isPlaying() &&
@@ -259,12 +263,12 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
                     player.showMediaControl(true, true);
                 }
             } else {
-                if (targetState == State.PLAYING) {
+                if (targetState == PLAYING) {
                     start();
                 }
             }
         } else {
-            if (targetState == State.PLAYING) {
+            if (targetState == PLAYING) {
                 start();
             }
             player.showMediaControl(true);
@@ -341,7 +345,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
                 seekPositionWhenPrepared = 0;
                 // Using a delayed command instead of onSeekComplete because of: http://code.google.com/p/android/issues/detail?id=55136
                 seekHandler = new Handler();
-                seekHandler.postDelayed(() -> mediaPlayerImpl.setVolume(1, 1), 1000);
+                seekHandler.postDelayed({ mediaPlayerImpl.setVolume(1, 1) }, 1000);
             }
         } else {
             Log.d(Player.LOG_TAG, "DefaultPlayback.seekTo(): seekPositionWhenPrepared=" + pos);
@@ -383,10 +387,10 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 //        }
         if (isInPlaybackState()) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && currentState == State.PLAYBACK_COMPLETED) {
-                release(false);
+                releaseMediaPlayer(false);
                 openVideo();
             } else {
-                currentState = State.PLAYING;
+                currentState = PLAYING;
                 mediaPlayerImpl.start();
                 if (seekPositionWhenPrepared > 0) {
                     mediaPlayerImpl.setVolume(0, 0);
@@ -395,7 +399,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
                 }
             }
         }
-        targetState = State.PLAYING;
+        targetState = PLAYING;
     }
 
     @Override
@@ -431,7 +435,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
         // we shouldn't clear the target state, because somebody might have
         // called start() previously
-        release(false);
+        releaseMediaPlayer(false);
         try {
             player.info.duration = -1;
             player.info.bufferPercentage = 0;
@@ -454,7 +458,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
         player.getActivity().sendBroadcast(i);
     }
 
-    private void release(boolean clearTargetState) {
+    private void releaseMediaPlayer(boolean clearTargetState) {
         if (mediaPlayerImpl != null) {
             mediaPlayerImpl.reset();
             mediaPlayerImpl.release();
