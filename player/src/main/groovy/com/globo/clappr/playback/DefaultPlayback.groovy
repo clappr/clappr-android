@@ -1,31 +1,30 @@
-package com.globo.clappr.player.playback;
+package com.globo.clappr.playback;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.media.AudioManager;
-import android.net.Uri;
-import android.os.Build;
-import android.os.Handler;
-import android.util.Log;
-import android.view.MotionEvent;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
+import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.content.Context
+import android.content.Intent
+import android.media.AudioManager
+import android.media.MediaPlayer
+import android.net.Uri
+import android.os.Build
+import android.os.Handler
+import android.util.Log
+import android.view.MotionEvent
+import android.view.SurfaceHolder
+import android.view.SurfaceView
+import android.view.View
 
-import com.globo.clappr.player.Player
-import groovy.transform.CompileStatic;
+import com.globo.clappr.Player
+import groovy.transform.CompileStatic
 
-import java.io.IOException
-
-import static com.globo.clappr.player.playback.Playback.State.PLAYING;
+import static com.globo.clappr.playback.Playback.State.*
 
 @CompileStatic
-class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBufferingUpdateListener,
-        android.media.MediaPlayer.OnCompletionListener, android.media.MediaPlayer.OnErrorListener,
-        android.media.MediaPlayer.OnPreparedListener, android.media.MediaPlayer.OnVideoSizeChangedListener,
-        android.media.MediaPlayer.OnInfoListener {
+class DefaultPlayback extends Playback implements MediaPlayer.OnBufferingUpdateListener,
+        MediaPlayer.OnCompletionListener, MediaPlayer.OnErrorListener,
+        MediaPlayer.OnPreparedListener, MediaPlayer.OnVideoSizeChangedListener,
+        MediaPlayer.OnInfoListener {
 
     @SuppressLint("ViewConstructor")
     class PlayerView extends SurfaceView {
@@ -82,7 +81,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
     static final int UNSUPPORTED_MEDIA_ENCODING = Integer.MIN_VALUE;
 
-    private android.media.MediaPlayer mediaPlayerImpl;
+    private MediaPlayer mediaPlayerImpl;
 
     private int seekPositionWhenPrepared;
 
@@ -184,29 +183,29 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
     }
 
     @Override
-    public void onBufferingUpdate(android.media.MediaPlayer mp, int percent) {
+    public void onBufferingUpdate(MediaPlayer mp, int percent) {
         Log.d(Player.LOG_TAG, "DefaultPlayback.onBufferingUpdate()");
         player.info.bufferPercentage = percent;
     }
 
     @Override
-    public void onCompletion(android.media.MediaPlayer mp) {
+    public void onCompletion(MediaPlayer mp) {
         Log.d(Player.LOG_TAG, "DefaultPlayback.onCompletion()");
 //        player.handleCompletion();
     }
 
     @Override
-    public boolean onError(android.media.MediaPlayer mp, int what, int extra) {
+    public boolean onError(MediaPlayer mp, int what, int extra) {
         Log.d(Player.LOG_TAG, "DefaultPlayback.onError(" + mp + ", " + what + ", " + extra + ")");
 //        player.releaseMediaPlayer();
 
-        if (what == android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN) {
+        if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
             switch (extra) {
-                case android.media.MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
-                case android.media.MediaPlayer.MEDIA_ERROR_MALFORMED:
-                case android.media.MediaPlayer.MEDIA_ERROR_IO:
+                case MediaPlayer.MEDIA_ERROR_NOT_VALID_FOR_PROGRESSIVE_PLAYBACK:
+                case MediaPlayer.MEDIA_ERROR_MALFORMED:
+                case MediaPlayer.MEDIA_ERROR_IO:
                     break;
-                case android.media.MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
                 case UNSUPPORTED_MEDIA_ENCODING:
 //                    player.handleRecoverablePlaybackError(Error.UNSUPPORTED_MEDIA);
                     return true;
@@ -214,18 +213,18 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 //                    player.handleRecoverablePlaybackError(Error.PLAYBACK_FAILED);
                     return true;
             }
-        } else if (what == android.media.MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
+        } else if (what == MediaPlayer.MEDIA_ERROR_SERVER_DIED) {
 //            player.handleRecoverablePlaybackError(Error.PLAYBACK_FAILED);
             return true;
         }
 
-        currentState = State.ERROR;
-        targetState = State.ERROR;
+        currentState = ERROR;
+        targetState = ERROR;
 
 //        Error error = Error.PLAYBACK_FAILED;
-        if (what == android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN) {
+        if (what == MediaPlayer.MEDIA_ERROR_UNKNOWN) {
             switch (extra) {
-                case android.media.MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
+                case MediaPlayer.MEDIA_ERROR_UNSUPPORTED:
                 case UNSUPPORTED_MEDIA_ENCODING:
 //                    error = Error.UNSUPPORTED_MEDIA;
                     break;
@@ -240,9 +239,9 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
     }
 
     @Override
-    public void onPrepared(android.media.MediaPlayer mp) {
+    public void onPrepared(MediaPlayer mp) {
         Log.d(Player.LOG_TAG, "DefaultPlayback.onPrepared()");
-        currentState = State.PREPARED;
+        currentState = PREPARED;
 
         // No metadata is available to know the player capabilities
         player.settings.canPause = player.settings.canSeekBackward = player.settings.canSeekForward = true;
@@ -276,8 +275,8 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
     }
 
     @Override
-    public boolean onInfo(android.media.MediaPlayer mp, int what, int extra) {
-        if (what == android.media.MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
+    public boolean onInfo(MediaPlayer mp, int what, int extra) {
+        if (what == MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START) {
             Log.d(Player.LOG_TAG, "DefaultPlayback.onInfo(): MEDIA_INFO_VIDEO_RENDERING_START");
             if (seekPositionWhenPrepared > 0) {
                 seekTo(seekPositionWhenPrepared);
@@ -287,7 +286,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
     }
 
     @Override
-    public void onVideoSizeChanged(android.media.MediaPlayer mp, int width, int height) {
+    public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
         Log.d(Player.LOG_TAG, "DefaultPlayback.onVideoSizeChanged()");
         player.dimensions.videoWidth = width;
         player.dimensions.videoHeight = height;
@@ -301,9 +300,9 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
     public void pause() {
         if (isInPlaybackState()) {
             mediaPlayerImpl.pause();
-            currentState = State.PAUSED;
+            currentState = PAUSED;
         }
-        targetState = State.PAUSED;
+        targetState = PAUSED;
 //        player.handlePause();
     }
 
@@ -322,7 +321,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
         if (mediaPlayerImpl != null) {
             mediaPlayerImpl.release();
             mediaPlayerImpl = null;
-            currentState = State.IDLE;
+            currentState = IDLE;
         }
     }
 
@@ -332,7 +331,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
         if (mediaPlayerImpl != null) {
             mediaPlayerImpl.reset();
             mediaPlayerImpl = null;
-            currentState = State.IDLE;
+            currentState = IDLE;
         }
     }
 
@@ -386,7 +385,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 //            player.handleLoading();
 //        }
         if (isInPlaybackState()) {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && currentState == State.PLAYBACK_COMPLETED) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB && currentState == PLAYBACK_COMPLETED) {
                 releaseMediaPlayer(false);
                 openVideo();
             } else {
@@ -407,15 +406,15 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
         mediaPlayerImpl.seekTo(0);
         mediaPlayerImpl.pause();
 //        player.handleStopped();
-        currentState = State.IDLE;
+        currentState = IDLE;
     }
 
     @SuppressWarnings("deprecation")
     private void init() {
         view = new PlayerView(player.context);
         player.dimensions.videoWidth = player.dimensions.videoHeight = 0;
-        currentState = State.IDLE;
-        targetState = State.IDLE;
+        currentState = IDLE;
+        targetState = IDLE;
         view.getHolder().setSizeFromLayout();
         view.getHolder().addCallback(surfaceHolderCallback);
         view.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -442,13 +441,13 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
             setupMediaPlayer();
             // we don't set the target state here either, but preserve the
             // target state that was there before.
-            currentState = State.PREPARING;
+            currentState = PREPARING;
             mediaPlayerImpl.prepareAsync();
         } catch (Exception ex) {
             Log.w(Player.LOG_TAG, "Unable to open content on " + uri, ex);
-            currentState = State.ERROR;
-            targetState = State.ERROR;
-            onError(null, android.media.MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
+            currentState = ERROR;
+            targetState = ERROR;
+            onError(null, MediaPlayer.MEDIA_ERROR_UNKNOWN, 0);
         }
     }
 
@@ -463,9 +462,9 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
             mediaPlayerImpl.reset();
             mediaPlayerImpl.release();
             mediaPlayerImpl = null;
-            currentState = State.IDLE;
+            currentState = IDLE;
             if (clearTargetState) {
-                targetState = State.IDLE;
+                targetState = IDLE;
             }
             player.showMediaControl(false);
         }
@@ -473,7 +472,7 @@ class DefaultPlayback extends Playback implements android.media.MediaPlayer.OnBu
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setupMediaPlayer() throws IllegalArgumentException, SecurityException, IllegalStateException, IOException {
-        mediaPlayerImpl = new android.media.MediaPlayer();
+        mediaPlayerImpl = new MediaPlayer();
         mediaPlayerImpl.setOnInfoListener(this);
         mediaPlayerImpl.setOnPreparedListener(this);
         mediaPlayerImpl.setOnVideoSizeChangedListener(this);

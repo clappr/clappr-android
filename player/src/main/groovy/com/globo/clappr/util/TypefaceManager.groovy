@@ -1,30 +1,23 @@
-package com.globo.clappr.player.util;
+package com.globo.clappr.util
 
-import android.content.Context;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.content.res.XmlResourceParser;
-import android.graphics.Typeface;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.InflateException;
-import android.widget.TextView;
+import android.R
+import android.content.Context
+import android.content.res.Resources
+import android.content.res.TypedArray
+import android.content.res.XmlResourceParser
+import android.graphics.Typeface
+import android.util.AttributeSet
+import android.util.Log
+import android.view.InflateException
+import android.widget.TextView
+import groovy.transform.CompileStatic
+import org.xmlpull.v1.XmlPullParser
+import org.xmlpull.v1.XmlPullParserException
 
-import com.globo.clappr.player.R;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+@CompileStatic
 public class TypefaceManager {
 
-    private static final String TAG = TypefaceManager.class.getSimpleName();
+    private static final String TAG = TypefaceManager.class.getSimpleName()
     private static TypefaceManager INSTANCE;
 
     // Different tags used in XML file.
@@ -44,7 +37,12 @@ public class TypefaceManager {
     /**
      * The style map, used to map a missing style to another style.
      */
-    private static final Map<Byte, List<Byte>> styleMap;
+    private static final Map<Byte, List<Byte>> styleMap = [
+        (REGULAR)    : [BOLD, ITALIC, BOLD_ITALIC],
+        (BOLD)       : [REGULAR, BOLD_ITALIC, ITALIC],
+        (ITALIC)     : [REGULAR, BOLD_ITALIC, BOLD],
+        (BOLD_ITALIC): [BOLD, ITALIC, REGULAR]
+    ]
     /**
      * The Typeface cache, keyed by their asset file name.
      */
@@ -59,17 +57,6 @@ public class TypefaceManager {
      * The mapping of font names to Font objects as defined in the xml file.
      */
     private final Map<String, Font> mFonts;
-
-    static {
-        // Initialize the style map
-        // The style map is used to determine which font style must be used if
-        // the requested style is not available.
-        styleMap = new HashMap<Byte, List<Byte>>();
-        styleMap.put(REGULAR, Arrays.asList(BOLD, ITALIC, BOLD_ITALIC));
-        styleMap.put(BOLD, Arrays.asList(REGULAR, BOLD_ITALIC, ITALIC));
-        styleMap.put(ITALIC, Arrays.asList(REGULAR, BOLD_ITALIC, BOLD));
-        styleMap.put(BOLD_ITALIC, Arrays.asList(BOLD, ITALIC, REGULAR));
-    }
 
     private static class Font {
         public List<String> names = new ArrayList<String>();
@@ -224,15 +211,15 @@ public class TypefaceManager {
             boolean isFile = false;
             int eventType = parser.getEventType();
 
-            do {
+            while (eventType != XmlPullParser.END_DOCUMENT) {
                 tag = parser.getName();
                 switch (eventType) {
                     case XmlPullParser.START_TAG:
                         // One of the font-families.
                         if (tag.equals(TAG_FAMILY))
                             font = new Font();
-                        else if (tag.equals(TAG_NAMESET))
-                            ; // nothing to do for namesets
+                        // else if (tag.equals(TAG_NAMESET))
+                            // nothing to do for namesets
                         else if (tag.equals(TAG_FILESET))
                             style = NONE;
                             // A name that maps to this font-family.
@@ -288,8 +275,7 @@ public class TypefaceManager {
                         }
                 }
                 eventType = parser.next();
-
-            } while (eventType != XmlPullParser.END_DOCUMENT);
+            }
 
         } catch (XmlPullParserException e) {
             throw new InflateException("Error inflating font XML", e);
@@ -421,7 +407,7 @@ public class TypefaceManager {
         Resources.Theme theme = target.getContext().getTheme();
         // Get the text appearance that's currently in use
         TypedArray a = theme.obtainStyledAttributes(attrs,
-                new int[]{android.R.attr.textAppearance}, defStyle, 0);
+                [R.attr.textAppearance] as int[], defStyle, 0);
         int textAppearanceStyle = a.getResourceId(0, -1);
         a.recycle();
         // Get the font and style defined in the text appearance

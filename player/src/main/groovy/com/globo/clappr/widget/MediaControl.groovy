@@ -1,9 +1,11 @@
-package com.globo.clappr.player.widget;
+package com.globo.clappr.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
-import android.widget.FrameLayout;
+import android.widget.FrameLayout
+import groovy.transform.CompileStatic;
 
+@CompileStatic
 public class MediaControl extends FrameLayout {
 
     private boolean enabled;

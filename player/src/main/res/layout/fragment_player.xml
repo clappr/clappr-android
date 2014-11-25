@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000"
-    tools:context="com.globo.clappr.player.Player">
+    tools:context="com.globo.clappr.Player">
 
-    <com.globo.clappr.player.widget.MediaControl
+    <com.globo.clappr.widget.MediaControl
         android:id="@+id/media_control"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -97,6 +97,6 @@
 
         </RelativeLayout>
 
-    </com.globo.clappr.player.widget.MediaControl>
+    </com.globo.clappr.widget.MediaControl>
 
 </RelativeLayout>

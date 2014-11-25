@@ -1,23 +1,20 @@
-package com.globo.clappr.player;
+package com.globo.clappr
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.content.Context;
-import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.MediaController;
-import android.widget.ToggleButton;
-
-import com.globo.clappr.player.playback.Playback;
-import com.globo.clappr.player.util.TypefaceManager
-import groovy.transform.CompileStatic;
-
-import java.io.IOException;
+import android.app.Activity
+import android.app.Fragment
+import android.content.Context
+import android.os.Bundle
+import android.os.Handler
+import android.util.Log
+import android.util.TypedValue
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.MediaController
+import android.widget.ToggleButton
+import com.globo.clappr.playback.Playback
+import com.globo.clappr.util.TypefaceManager
+import groovy.transform.CompileStatic
 
 @CompileStatic
 public class Player extends Fragment implements MediaController.MediaPlayerControl {

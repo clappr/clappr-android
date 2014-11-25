@@ -6,7 +6,7 @@ import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.globo.clappr.player.Player;
+import com.globo.clappr.Player;
 
 public class PlayerActivity extends Activity {
 

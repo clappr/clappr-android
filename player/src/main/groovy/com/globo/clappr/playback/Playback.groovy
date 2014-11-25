@@ -1,16 +1,13 @@
-package com.globo.clappr.player.playback;
+package com.globo.clappr.playback
 
-import android.content.Context;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.MediaController;
 
-import com.globo.clappr.player.Player;
+import com.globo.clappr.Player
+import groovy.transform.CompileStatic
 
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
+@CompileStatic
 public abstract class Playback implements MediaController.MediaPlayerControl {
 
     protected static enum State {
