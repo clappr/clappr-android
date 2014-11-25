@@ -17,7 +17,7 @@ public class Fluent<Result, Progress> extends AsyncTask<Void, Progress, Result> 
     private final ResultConsumer<Result> then;
     private final Closure progress;
 
-    private Fluent(Closure<Result> request, ResultConsumer<Result> then, Closure progress) {
+    protected Fluent(Closure<Result> request, ResultConsumer<Result> then, Closure progress) {
         this.request = request;
         this.then = then;
         this.progress = progress;

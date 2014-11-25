@@ -1,6 +1,5 @@
 package com.globo.clappr.util
 
-import android.R
 import android.content.Context
 import android.content.res.Resources
 import android.content.res.TypedArray
@@ -10,6 +9,7 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.InflateException
 import android.widget.TextView
+import com.globo.clappr.R
 import groovy.transform.CompileStatic
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserException
@@ -341,15 +341,15 @@ public class TypefaceManager {
      * @param font
      */
     private static void addMissingStyles(Font font) {
-        byte availableStyles = 0;
+        int availableStyles = 0;
         Map<Byte, String> styles = font.styles;
         for (byte style : styles.keySet())
             availableStyles |= style;
 
         for (byte style : styleMap.keySet())
-            if (isMissing(style, availableStyles))
+            if (isMissing(style, (byte)availableStyles))
                 for (byte replacement : styleMap.get(style))
-                    if (!isMissing(replacement, availableStyles)) {
+                    if (!isMissing(replacement, (byte)availableStyles)) {
                         styles.put(style, styles.get(replacement));
                         break;
                     }
@@ -407,7 +407,7 @@ public class TypefaceManager {
         Resources.Theme theme = target.getContext().getTheme();
         // Get the text appearance that's currently in use
         TypedArray a = theme.obtainStyledAttributes(attrs,
-                [R.attr.textAppearance] as int[], defStyle, 0);
+                [android.R.attr.textAppearance] as int[], defStyle, 0);
         int textAppearanceStyle = a.getResourceId(0, -1);
         a.recycle();
         // Get the font and style defined in the text appearance
