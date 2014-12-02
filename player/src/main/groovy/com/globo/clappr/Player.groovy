@@ -19,6 +19,12 @@ import groovy.transform.CompileStatic
 @CompileStatic
 public class Player extends Fragment implements MediaController.MediaPlayerControl {
 
+    private static Context staticContext;
+
+    public static Context getContext() {
+        return staticContext;
+    }
+
     public class Dimensions {
         public int stageWidth;
 
@@ -92,7 +98,7 @@ public class Player extends Fragment implements MediaController.MediaPlayerContr
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        this.context = activity;
+        staticContext = context = activity;
         TypefaceManager.initialize(activity.getApplicationContext(), R.xml.fonts);
     }
 
