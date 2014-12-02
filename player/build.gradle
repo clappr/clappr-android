@@ -4,11 +4,11 @@ apply plugin: 'me.champeau.gradle.groovy-android'
 
 android {
     compileSdkVersion 21
-    buildToolsVersion '20.0.0'
+    buildToolsVersion '21.1.1'
     defaultConfig {
-        applicationId 'com.globo.clappr.player'
+        applicationId 'com.globo.clappr'
         minSdkVersion 14
-        targetSdkVersion 19
+        targetSdkVersion 21
         versionCode 1
         versionName '1.0'
     }
@@ -30,6 +30,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:19.+'
     compile 'org.codehaus.groovy:groovy:2.4.0-beta-3:grooid'
     // the following dependency is necessary if you want JSON support
     compile('org.codehaus.groovy:groovy-json:2.4.0-beta-3') {
