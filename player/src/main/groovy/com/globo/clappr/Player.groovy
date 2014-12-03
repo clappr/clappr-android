@@ -3,6 +3,7 @@ package com.globo.clappr
 import android.app.Activity
 import android.app.Fragment
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
@@ -23,6 +24,10 @@ public class Player extends Fragment implements MediaController.MediaPlayerContr
 
     public static Context getContext() {
         return staticContext;
+    }
+
+    public static void setContext(Context context) {
+        staticContext = context;
     }
 
     public class Dimensions {
