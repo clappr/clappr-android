@@ -30,7 +30,7 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:19.+'
+    compile 'com.android.support:appcompat-v7:21.+'
     compile 'org.codehaus.groovy:groovy:2.4.0-beta-3:grooid'
     // the following dependency is necessary if you want JSON support
     compile('org.codehaus.groovy:groovy-json:2.4.0-beta-3') {
