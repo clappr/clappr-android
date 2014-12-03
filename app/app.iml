@@ -80,8 +80,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 21 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="support-annotations-21.0.2" level="project" />
     <orderEntry type="library" exported="" name="groovy-2.4.0-beta-3-grooid" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-19.1.0" level="project" />
     <orderEntry type="library" exported="" name="groovy-json-2.4.0-beta-3" level="project" />
     <orderEntry type="module" module-name="player" exported="" />
   </component>
