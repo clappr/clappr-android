@@ -1,6 +1,7 @@
 package com.globo.clappr
 
 import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
@@ -11,30 +12,36 @@ public class BaseObject {
 
     final String id = uniqueId("o")
 
-    public void on(String eventName, Closure<Intent> callback, BaseObject obj = this) {
+    private final Map<Object, Object> receivers = [:]
+
+    public void on(String eventName, EventHandler handler, BaseObject obj = this) {
         def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
-        def receiver = { broadcastContext, Intent intent ->
-            def objContext = intent.getStringExtra("clappr:baseobject:context")
-            if (objContext == obj.id) {
-                callback(intent)
+        def receiver = new BroadcastReceiver () {
+            public void onReceive (Context context, Intent intent) {
+                def objContext = intent.getStringExtra("clappr:baseobject:context")
+                if (objContext == obj.id) {
+                    handler.handleEvent(intent)
+                }
             }
         }
         bm.registerReceiver(receiver, new IntentFilter("clappr:" + eventName))
-        def key = [name: eventName, callback: callback, obj: obj]
+        def key = [name: eventName, handler: handler, obj: obj]
         receivers[key] = receiver
     }
 
-    public void once(String eventName, Closure<Intent> callback, BaseObject obj = this) {
-        def onceCallback = null
-        onceCallback = { Intent intent ->
-            off(eventName, onceCallback, obj)
-            callback(intent)
+    public void once(String eventName, EventHandler handler, BaseObject obj = this) {
+        EventHandler onceCallback = null
+        onceCallback = new EventHandler() {
+            public void handleEvent(Intent intent) {
+                off(eventName, onceCallback, obj)
+                handler.handleEvent(intent)
+            }
         }
         on(eventName, onceCallback, obj)
     }
 
-    public void off(String eventName, Closure<Intent> callback, BaseObject obj = this) {
-        def key = [name: eventName, callback: callback, obj: obj]
+    public void off(String eventName, EventHandler handler, BaseObject obj = this) {
+        def key = [name: eventName, handler: handler, obj: obj]
         if (receivers[key] != null) {
             def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
             bm.unregisterReceiver(receivers[key] as BroadcastReceiver)
@@ -42,19 +49,17 @@ public class BaseObject {
         }
     }
 
-    public void listenTo(String eventName, Closure<Intent> callback) {
-        on(eventName, callback)
+    public void listenTo(BaseObject obj, String eventName, EventHandler handler) {
+        on(eventName, handler, obj)
     }
 
-    public void stopListening(String eventName, Closure<Intent> callback) {
-        off(eventName, callback)
+    public void stopListening(BaseObject obj, String eventName, EventHandler handler) {
+        off(eventName, handler, obj)
     }
 
     public void stopListening() {
         def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
-        receivers.each {
-            it.getValue().each { BroadcastReceiver receiver -> bm.unregisterReceiver(receiver) }
-        }
+        receivers.each { bm.unregisterReceiver(it.getValue() as BroadcastReceiver) }
         receivers.clear()
     }
 
@@ -70,7 +75,10 @@ public class BaseObject {
         }
     }
 
-    private static final receivers = [:]
+    @CompileStatic
+    public static abstract class EventHandler {
+        public abstract void handleEvent(Intent intent)
+    }
 
     private static final long count = 0
 
