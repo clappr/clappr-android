@@ -61,6 +61,7 @@ public class BaseObject {
     public void trigger(String eventName, boolean sync = false) {
         def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
         def intent = new Intent()
+        intent.setAction("clappr:" + eventName)
         intent.putExtra("clappr:baseobject:context", this.id)
         if (sync) {
             bm.sendBroadcastSync(intent)
