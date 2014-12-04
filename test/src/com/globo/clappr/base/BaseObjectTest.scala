@@ -1,18 +1,13 @@
-package com.globo.clappr
+package com.globo.clappr.base
 
-import com.globo.clappr.BaseObject.EventHandler
-import android.content.Intent
-import org.junit.{Before, Test}
+import com.globo.clappr.BaseTest
+import com.globo.clappr.base.BaseObject.EventHandler
+import org.junit.Test
 
 class BaseObjectTest extends BaseTest {
 
   def functionToEventHandler(func : (Intent) => Unit): EventHandler = new EventHandler() {
     override def handleEvent(intent: Intent): Unit = func(intent)
-  }
-
-  @Before
-  def beforeEach = {
-    Player.setContext(context)
   }
 
   @Test

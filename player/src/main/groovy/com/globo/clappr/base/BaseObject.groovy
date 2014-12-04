@@ -1,10 +1,12 @@
-package com.globo.clappr
+package com.globo.clappr.base
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
+import com.globo.clappr.Player
+import com.globo.clappr.components.PlayerInfo
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -15,7 +17,7 @@ public class BaseObject {
     private final Map<Object, Object> receivers = [:]
 
     public void on(String eventName, EventHandler handler, BaseObject obj = this) {
-        def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
+        def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
         def receiver = new BroadcastReceiver () {
             public void onReceive (Context context, Intent intent) {
                 def objContext = intent.getStringExtra("clappr:baseobject:context")
@@ -43,7 +45,7 @@ public class BaseObject {
     public void off(String eventName, EventHandler handler, BaseObject obj = this) {
         def key = [name: eventName, handler: handler, obj: obj]
         if (receivers[key] != null) {
-            def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
+            def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
             bm.unregisterReceiver(receivers[key] as BroadcastReceiver)
             receivers.remove(key)
         }
@@ -58,13 +60,13 @@ public class BaseObject {
     }
 
     public void stopListening() {
-        def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
+        def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
         receivers.each { bm.unregisterReceiver(it.getValue() as BroadcastReceiver) }
         receivers.clear()
     }
 
     public void trigger(String eventName, boolean sync = false) {
-        def bm = LocalBroadcastManager.getInstance(Player.getContext()?.getApplicationContext())
+        def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
         def intent = new Intent()
         intent.setAction("clappr:" + eventName)
         intent.putExtra("clappr:baseobject:context", this.id)
