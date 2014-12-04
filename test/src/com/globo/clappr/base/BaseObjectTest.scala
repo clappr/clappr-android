@@ -42,12 +42,11 @@ class BaseObjectTest extends BaseTest {
   @Test
   def onCallbackShouldNotBeCalledWhenHandlerIsRemoved = {
     val testObj = new BaseObject()
-    val triggerObj = new BaseObject()
     var callbackCalled = false
     val eventHandler = functionToEventHandler(intent => { callbackCalled = true })
     testObj.on("baseobject:testevent", eventHandler)
     testObj.off("baseobject:testevent", eventHandler)
-    triggerObj.trigger("baseobject:testevent", true)
+    testObj.trigger("baseobject:testevent", true)
     callbackCalled shouldBe false
   }
 
