@@ -8,5 +8,5 @@ import org.scalatest.Matchers
 
 @RunWith(classOf[RobolectricTestRunner])
 abstract class BaseTest extends Matchers {
-  PlayerInfo.context = Robolectric.application
+  PlayerInfo.setContext(Robolectric.application)
 }
