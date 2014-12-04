@@ -31,6 +31,7 @@
     <orderEntry type="library" exported="" name="jackson-core-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.3.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.3.1" level="project" />
+    <orderEntry type="library" exported="" name="android" level="project" />
     <orderEntry type="module" module-name="player" exported="" />
     <orderEntry type="library" exported="" scope="TEST" name="scala-compiler-2.10.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="scala-library-2.10.3" level="project" />
