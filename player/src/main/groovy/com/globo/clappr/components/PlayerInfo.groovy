@@ -1,7 +1,9 @@
 package com.globo.clappr.components
 
 import android.content.Context
+import groovy.transform.CompileStatic
 
-public class PlayerInfo {
-    public static Context context = null
+@CompileStatic
+class PlayerInfo {
+    static Context context = null
 }
