@@ -15,7 +15,12 @@ class BaseObject {
 
     private final Map receivers = [:]
 
-    public void on(String eventName, EventHandler handler, BaseObject obj = this) {
+    private Map options
+
+    BaseObject(Map options = [:]) {
+        this.options = options
+    }
+
     void on(String eventName, EventHandler handler, BaseObject obj = this) {
         def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
         def receiver = new BroadcastReceiver () {
