@@ -1,0 +1,41 @@
+apply plugin: 'groovy'
+
+repositories {
+  mavenLocal()
+  jcenter()
+  maven { url "$System.env.ANDROID_HOME/extras/android/m2repository" }
+}
+
+dependencies {
+  compile project(':player')
+  compile fileTree(dir: 'libs', include: '*.jar')
+  compile files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar")
+  compile 'com.android.support:support-v4:20.0.0'
+  compile 'org.codehaus.groovy:groovy:2.4.1'
+  compile('org.codehaus.groovy:groovy-json:2.4.1') {
+      transitive = false
+  }
+
+  testCompile 'org.robolectric:robolectric:2.4+'
+  testCompile 'junit:junit:4.12'
+  testCompile 'org.mockito:mockito-all:1.9.5+'
+}
+
+test {
+  def testClasspath = files("${project(':player').buildDir}/intermediates/classes/release") +
+                      files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar") +
+                      fileTree(dir: "${project(':player').buildDir}/intermediates/exploded-aar", include: "**/classes.jar")
+  sourceSets.test.compileClasspath += testClasspath
+  sourceSets.test.runtimeClasspath += testClasspath
+  workingDir project(':player').projectDir
+  include "**/*Test.class"
+}
+
+sourceSets {
+  test {
+    groovy {
+      srcDirs = ['src/groovy']
+    }
+    resources.srcDirs = ['src']
+  }
+}
