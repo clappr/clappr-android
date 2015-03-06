@@ -1,12 +1,11 @@
 apply plugin: 'com.android.library'
 
-apply plugin: 'me.champeau.gradle.groovy-android'
+apply plugin: 'groovyx.grooid.groovy-android'
 
 android {
     compileSdkVersion 21
     buildToolsVersion '21.1.1'
     defaultConfig {
-        applicationId 'com.globo.clappr'
         minSdkVersion 14
         targetSdkVersion 21
         versionCode 1
@@ -20,7 +19,7 @@ android {
     }
     buildTypes {
         release {
-            runProguard false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -31,9 +30,9 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:21.+'
-    compile 'org.codehaus.groovy:groovy:2.4.0-beta-3:grooid'
+    compile 'org.codehaus.groovy:groovy:2.4.1:grooid'
     // the following dependency is necessary if you want JSON support
-    compile('org.codehaus.groovy:groovy-json:2.4.0-beta-3') {
+    compile('org.codehaus.groovy:groovy-json:2.4.1') {
         transitive = false
     }
 }
