@@ -8,7 +8,7 @@ class UIObject extends BaseObject {
 
     View view
 
-    public UIObject(Map options = null) {
+    public UIObject(Map options = [:]) {
         super(options)
         ensureView()
     }
