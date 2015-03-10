@@ -1,1 +1,1 @@
-include ':app', ':player', ':test_groovy'
+include ':app', ':player', ':test'

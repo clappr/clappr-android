@@ -1,64 +1,43 @@
-apply plugin: 'scala'
-
-ext {
-  scalaVersion = '2.10.3+'
-}
+apply plugin: 'groovy'
 
 repositories {
-  mavenCentral()
   mavenLocal()
+  jcenter()
   maven { url "$System.env.ANDROID_HOME/extras/android/m2repository" }
 }
 
-tasks.withType(ScalaCompile) {
-  scalaCompileOptions.useAnt = false
-}
-
 dependencies {
+  compile project(':player')
   compile fileTree(dir: 'libs', include: '*.jar')
   compile files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar")
-  compile 'commons-codec:commons-codec:1.9'
-  compile 'com.fasterxml.jackson.core:jackson-core:2.3.1+'
-  compile 'com.fasterxml.jackson.core:jackson-annotations:2.3.1+'
-  compile 'com.fasterxml.jackson.core:jackson-databind:2.3.1+'
+  compile 'com.android.support:support-v4:19.1.0'
+  compile 'org.codehaus.groovy:groovy:2.4.1'
+  compile('org.codehaus.groovy:groovy-json:2.4.1') {
+      transitive = false
+  }
 
-  testCompile project(':player')
-  testCompile "org.scala-lang:scala-compiler:$scalaVersion"
-  testCompile "org.scala-lang:scala-library:$scalaVersion"
-  testCompile 'org.scalatest:scalatest_2.10:2.0+'
-  testCompile 'org.robolectric:robolectric:2.2+'
-  testCompile 'junit:junit:4.11+'
-  testCompile 'org.scala-lang:scala-library:2.10.1+'
+  testCompile 'org.robolectric:robolectric:2.4+'
+  testCompile 'org.hamcrest:hamcrest-core:1.3'
+  testCompile 'org.hamcrest:hamcrest-library:1.3'
+  testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-all:1.9.5+'
-
-  configurations.testCompile.exclude group: 'com.google.android.maps'
 }
-
-compileTestScala {
-  scalaCompileOptions.useCompileDaemon = true
-  scalaCompileOptions.daemonServer = "localhost:4243"
-
-  classpath += files("${project(':player').buildDir}/intermediates/classes/debug") + files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar")
-}
-
-compileTestScala.dependsOn project(':player').assembleDebug
 
 test {
-  println("${project(':player').buildDir}")
-  sourceSets.test.runtimeClasspath += files("${project(':player').buildDir}/intermediates/classes/debug") + files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar")
+  def testClasspath = files("${project(':player').buildDir}/intermediates/classes/release") +
+                      files("${System.env.ANDROID_HOME}/platforms/android-21/android.jar") +
+                      fileTree(dir: "${project(':player').buildDir}/intermediates/exploded-aar", include: "**/classes.jar")
+  sourceSets.test.compileClasspath += testClasspath
+  sourceSets.test.runtimeClasspath += testClasspath
   workingDir project(':player').projectDir
-}
-
-tasks.withType(Test) {
-    include "**/*Test.class"
+  include "**/*Test.class"
 }
 
 sourceSets {
   test {
-    scala {
-      srcDirs = ['src']
+    groovy {
+      srcDirs = ['src/groovy']
     }
-
     resources.srcDirs = ['src']
   }
 }
