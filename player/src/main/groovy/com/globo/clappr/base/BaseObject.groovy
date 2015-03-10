@@ -23,12 +23,10 @@ class BaseObject {
 
     void on(String eventName, EventHandler handler, BaseObject obj = this) {
         def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
-        def receiver = new BroadcastReceiver () {
-            public void onReceive (Context context, Intent intent) {
-                def objContext = intent.getStringExtra("clappr:baseobject:context")
-                if (objContext == obj.id) {
-                    handler.handleEvent(intent)
-                }
+        BroadcastReceiver receiver = { Context context, Intent intent ->
+            def objContext = intent.getStringExtra("clappr:baseobject:context")
+            if (objContext == obj.id) {
+                handler.handleEvent(intent)
             }
         }
         bm.registerReceiver(receiver, new IntentFilter("clappr:" + eventName))
@@ -38,20 +36,19 @@ class BaseObject {
 
     void once(String eventName, EventHandler handler, BaseObject obj = this) {
         EventHandler onceCallback = null
-        onceCallback = new EventHandler() {
-            public void handleEvent(Intent intent) {
-                off(eventName, onceCallback, obj)
-                handler.handleEvent(intent)
-            }
+        onceCallback = { Intent intent ->
+            off(eventName, onceCallback, obj)
+            handler.handleEvent(intent)
         }
         on(eventName, onceCallback, obj)
     }
 
     void off(String eventName, EventHandler handler, BaseObject obj = this) {
         def key = [name: eventName, handler: handler, obj: obj]
-        if (receivers[key] != null) {
+        def receiver = receivers[key] as BroadcastReceiver
+        if (receiver != null) {
             def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
-            bm.unregisterReceiver(receivers[key] as BroadcastReceiver)
+            bm.unregisterReceiver(receiver)
             receivers.remove(key)
         }
     }
