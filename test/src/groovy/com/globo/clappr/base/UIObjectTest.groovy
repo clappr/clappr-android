@@ -2,6 +2,7 @@ package com.globo.clappr.base
 
 import android.content.Context
 import android.view.View
+import android.widget.FrameLayout
 import com.globo.clappr.BaseTest
 import com.globo.clappr.components.PlayerInfo
 import groovy.transform.CompileStatic
@@ -58,5 +59,22 @@ class UIObjectTest extends BaseTest {
             }
         }
         assertThat testObj.view, is(instanceOf(CustomView))
+    }
+
+    @Test
+    void removeShouldBeNoopWhenThereIsNoParent() {
+        def testObj = new UIObject()
+        assertThat testObj.view.parent, is(nullValue())
+        testObj.remove()
+        assertThat testObj.view.parent, is(nullValue())
+    }
+
+    @Test
+    void removeShouldRemoveViewFromHierarchy() {
+        def testObj = new UIObject()
+        def viewHolder = new FrameLayout(PlayerInfo.context)
+        viewHolder.addView(testObj.view)
+        testObj.remove()
+        assertThat testObj.view.parent, is(nullValue())
     }
 }

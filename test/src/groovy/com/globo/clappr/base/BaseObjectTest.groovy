@@ -7,7 +7,7 @@ import org.junit.Before
 import org.junit.Test
 import org.robolectric.annotation.Config
 
-import static org.hamcrest.CoreMatchers.is
+import static org.hamcrest.CoreMatchers.*
 import static org.junit.Assert.assertThat
 
 @CompileStatic
@@ -25,6 +25,12 @@ class BaseObjectTest extends BaseTest {
     void tearDown() {
         super.tearDown()
         testObj.stopListening()
+    }
+
+    @Test
+    void differentObjectsMustHaveDifferentIds() {
+        def secondObject = new BaseObject()
+        assertThat testObj.id, not(is(secondObject.id))
     }
 
     @Test
@@ -58,6 +64,15 @@ class BaseObjectTest extends BaseTest {
         BaseObject.EventHandler eventHandler = { intent -> callbackCalled = true }
         testObj.on("baseobject:testevent", eventHandler)
         testObj.off("baseobject:testevent", eventHandler)
+        testObj.trigger("baseobject:testevent", true)
+        assertThat callbackCalled, is(false)
+    }
+
+    @Test
+    void offShouldBeANoopWhenThereIsNoHandlerRegistered() {
+        def callbackCalled = false
+        testObj.trigger("baseobject:testevent", true)
+        testObj.off("baseobject:testevent", { intent -> callbackCalled = true })
         testObj.trigger("baseobject:testevent", true)
         assertThat callbackCalled, is(false)
     }
@@ -127,5 +142,18 @@ class BaseObjectTest extends BaseTest {
         testObj.stopListening(contextObj, "baseobject:testevent", handler)
         contextObj.trigger("baseobject:testevent", true)
         assertThat callbackCalled, is(false)
+    }
+
+    @Test
+    void uniqueIdMustUsePrefixParameter() {
+        def prefix = "test"
+        def id = BaseObject.uniqueId(prefix)
+        assertThat id, startsWith(prefix)
+    }
+
+    @Test
+    void uniqueIdMustUseNoPrefixByDefault() {
+        def id = BaseObject.uniqueId()
+        assertThat id.toInteger(), isA(Integer)
     }
 }

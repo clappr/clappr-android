@@ -86,7 +86,7 @@ class BaseObject {
 
     private static long count = 0
 
-    static final String uniqueId(String prefix) {
+    static final String uniqueId(String prefix = null) {
         return (prefix?:"") + ++count;
     }
 }
