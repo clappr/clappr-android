@@ -1,5 +1,7 @@
 apply plugin: 'groovy'
 
+apply plugin: 'net.saliman.cobertura'
+
 repositories {
   mavenLocal()
   jcenter()
@@ -30,6 +32,11 @@ test {
   sourceSets.test.runtimeClasspath += testClasspath
   workingDir project(':player').projectDir
   include "**/*Test.class"
+}
+
+cobertura {
+    coverageSourceDirs = [file("${project(':player').projectDir}/src/main/groovy")]
+    coverageDirs << file("${project(':player').buildDir}/intermediates/classes/release")
 }
 
 sourceSets {
