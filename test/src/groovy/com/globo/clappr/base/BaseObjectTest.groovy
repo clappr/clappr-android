@@ -30,7 +30,7 @@ class BaseObjectTest extends BaseTest {
     @Test
     void differentObjectsMustHaveDifferentIds() {
         def secondObject = new BaseObject()
-        assertThat testObj.id, not(is(secondObject.id))
+        assertThat testObj.id, is(not(secondObject.id))
     }
 
     @Test

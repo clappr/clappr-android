@@ -46,7 +46,7 @@ class UIObjectTest extends BaseTest {
     @Test
     void objectShouldCreateDefaultViewIfRenderDoesNotCreateIt() {
         def testObj = new UIObject()
-        assertThat testObj.view, not(nullValue())
+        assertThat testObj.view, is(not(nullValue()))
         assertThat testObj.view, isA(View)
     }
 
