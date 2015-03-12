@@ -32,7 +32,7 @@
     <orderEntry type="library" exported="" name="groovy-2.4.1" level="project" />
     <orderEntry type="library" exported="" name="groovy-2.4.1-grooid" level="project" />
     <orderEntry type="library" exported="" name="groovy-json-2.4.1" level="project" />
-    <orderEntry type="library" exported="" name="_Applications_Android_Studio_app_sdk_platforms_android_21_android_jar" level="project" />
+    <orderEntry type="library" exported="" name="android" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-2.4" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-core-1.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="hamcrest-library-1.3" level="project" />
