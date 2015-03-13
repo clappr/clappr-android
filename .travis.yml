@@ -9,5 +9,7 @@ android:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
 script: gradle test
+after_success:
+    - gradle cobertura coveralls
 notifications:
   slack: globo:F1iVlyrzR4iX8OS7h8fwMcqx
