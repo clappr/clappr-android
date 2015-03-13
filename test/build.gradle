@@ -1,6 +1,7 @@
 apply plugin: 'groovy'
 
 apply plugin: 'net.saliman.cobertura'
+apply plugin: 'com.github.kt3k.coveralls'
 
 repositories {
   mavenLocal()
@@ -37,6 +38,7 @@ cobertura {
     coverageSourceDirs = [file("${project(':player').projectDir}/src/main/groovy")]
     coverageDirs << file("${project(':player').buildDir}/intermediates/classes/release")
     coverageExcludes = [".*\\.package-info.*", ".*\\.R", ".*\\.R\\\$.*", ".*BuildConfig.*"]
+    coverageFormats = ['html', 'xml']
     coverageIgnoreTrivial = true
 }
 
