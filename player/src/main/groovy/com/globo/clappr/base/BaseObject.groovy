@@ -67,7 +67,7 @@ class BaseObject {
         receivers.clear()
     }
 
-    void trigger(String eventName, boolean sync = false) {
+    void trigger(String eventName) {
         def bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.getApplicationContext())
         def intent = new Intent()
         intent.setAction("clappr:" + eventName)
