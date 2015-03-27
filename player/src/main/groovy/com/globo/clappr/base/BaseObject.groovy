@@ -72,11 +72,7 @@ class BaseObject {
         def intent = new Intent()
         intent.setAction("clappr:" + eventName)
         intent.putExtra("clappr:baseobject:context", this.id)
-        if (sync) {
-            bm.sendBroadcastSync(intent)
-        } else {
-            bm.sendBroadcast(intent)
-        }
+        bm.sendBroadcastSync(intent)
     }
 
     @CompileStatic
