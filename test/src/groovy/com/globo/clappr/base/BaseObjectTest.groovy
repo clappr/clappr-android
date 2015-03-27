@@ -37,7 +37,7 @@ class BaseObjectTest extends BaseTest {
     void onCallbackShouldBeCalledOnTrigger() {
         def callbackCalled = false
         testObj.on("baseobject:testevent", { intent -> callbackCalled = true })
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(true)
     }
 
@@ -45,7 +45,7 @@ class BaseObjectTest extends BaseTest {
     void onCallbackShouldNotBeCalledForAnotherEventName() {
         def callbackCalled = false
         testObj.on("baseobject:testevent", { intent -> callbackCalled = true })
-        testObj.trigger("baseobject:testevent2", true)
+        testObj.trigger("baseobject:testevent2")
         assertThat callbackCalled, is(false)
     }
 
@@ -54,7 +54,7 @@ class BaseObjectTest extends BaseTest {
         def triggerObj = new BaseObject()
         def callbackCalled = false
         testObj.on("baseobject:testevent", { intent -> callbackCalled = true })
-        triggerObj.trigger("baseobject:testevent", true)
+        triggerObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
     }
 
@@ -64,7 +64,7 @@ class BaseObjectTest extends BaseTest {
         BaseObject.EventHandler eventHandler = { intent -> callbackCalled = true }
         testObj.on("baseobject:testevent", eventHandler)
         testObj.off("baseobject:testevent", eventHandler)
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
     }
 
@@ -73,7 +73,7 @@ class BaseObjectTest extends BaseTest {
         def callbackCalled = false
         testObj.trigger("baseobject:testevent", true)
         testObj.off("baseobject:testevent", { intent -> callbackCalled = true })
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
     }
 
@@ -81,7 +81,7 @@ class BaseObjectTest extends BaseTest {
     void onceCallbackShouldBeCalledOnEvent() {
         def callbackCalled = false
         testObj.once("baseobject:testevent", { intent -> callbackCalled = true })
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(true)
     }
 
@@ -89,9 +89,9 @@ class BaseObjectTest extends BaseTest {
     void onceCallbackShouldNotBeCalledTwice() {
         def callbackCalled = false
         testObj.once("baseobject:testevent", { intent -> callbackCalled = true })
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         callbackCalled = false
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
     }
 
@@ -102,8 +102,8 @@ class BaseObjectTest extends BaseTest {
         testObj.on("baseobject:testevent", { intent -> callbackCalled = true })
         testObj.on("baseobject:testevent2", { intent -> callbackCalled2 = true })
         testObj.stopListening()
-        testObj.trigger("baseobject:testevent", true)
-        testObj.trigger("baseobject:testevent2", true)
+        testObj.trigger("baseobject:testevent")
+        testObj.trigger("baseobject:testevent2")
         assertThat callbackCalled, is(false)
         assertThat callbackCalled2, is(false)
     }
@@ -116,8 +116,8 @@ class BaseObjectTest extends BaseTest {
         testObj.on("baseobject:testevent", { intent -> callbackCalled = true })
         testObj2.on("baseobject:testevent2", { intent -> callbackCalled2 = true })
         testObj.stopListening()
-        testObj.trigger("baseobject:testevent", true)
-        testObj2.trigger("baseobject:testevent2", true)
+        testObj.trigger("baseobject:testevent")
+        testObj2.trigger("baseobject:testevent2")
         assertThat callbackCalled, is(false)
         assertThat callbackCalled2, is(true)
     }
@@ -127,7 +127,7 @@ class BaseObjectTest extends BaseTest {
         def contextObj = new BaseObject()
         def callbackCalled = false
         testObj.listenTo(contextObj, "baseobject:testevent", { intent -> callbackCalled = true })
-        contextObj.trigger("baseobject:testevent", true)
+        contextObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(true)
     }
 
@@ -140,7 +140,7 @@ class BaseObjectTest extends BaseTest {
         BaseObject.EventHandler handler = { intent -> callbackCalled = true }
         testObj.listenTo(contextObj, "baseobject:testevent", handler)
         testObj.stopListening(contextObj, "baseobject:testevent", handler)
-        contextObj.trigger("baseobject:testevent", true)
+        contextObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
     }
 
