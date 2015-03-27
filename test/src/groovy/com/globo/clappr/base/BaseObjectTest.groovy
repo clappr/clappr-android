@@ -71,7 +71,7 @@ class BaseObjectTest extends BaseTest {
     @Test
     void offShouldBeANoopWhenThereIsNoHandlerRegistered() {
         def callbackCalled = false
-        testObj.trigger("baseobject:testevent", true)
+        testObj.trigger("baseobject:testevent")
         testObj.off("baseobject:testevent", { intent -> callbackCalled = true })
         testObj.trigger("baseobject:testevent")
         assertThat callbackCalled, is(false)
