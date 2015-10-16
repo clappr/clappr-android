@@ -1,27 +1,28 @@
-apply plugin: 'groovy'
+apply plugin: 'kotlin'
 
 apply plugin: 'net.saliman.cobertura'
 apply plugin: 'com.github.kt3k.coveralls'
 
+def kotlinVersion = '0.14.451'
+
 repositories {
   mavenLocal()
   jcenter()
-  maven { url "$System.env.ANDROID_HOME/extras/android/m2repository" }
+  maven { url "${System.env.ANDROID_HOME}/extras/android/m2repository" }
+    mavenCentral()
 }
 
 dependencies {
   compile project(':player')
   compile fileTree(dir: 'libs', include: '*.jar')
   compile files("${System.env.ANDROID_HOME}/platforms/android-19/android.jar")
-  compile 'org.codehaus.groovy:groovy:2.4.1'
-  compile('org.codehaus.groovy:groovy-json:2.4.1') {
-      transitive = false
-  }
+  testCompile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
   testCompile 'org.robolectric:robolectric:2.4'
   testCompile 'org.hamcrest:hamcrest-core:1.3'
   testCompile 'org.hamcrest:hamcrest-library:1.3'
   testCompile 'junit:junit:4.12'
   testCompile 'org.mockito:mockito-all:1.9.5'
+
 }
 
 test {
@@ -35,7 +36,7 @@ test {
 }
 
 cobertura {
-    coverageSourceDirs = [file("${project(':player').projectDir}/src/main/groovy")]
+    coverageSourceDirs = [file("${project(':player').projectDir}/src/main/java")]
     coverageDirs << file("${project(':player').buildDir}/intermediates/classes/release")
     coverageExcludes = [".*\\.package-info.*", ".*\\.R", ".*\\.R\\\$.*", ".*BuildConfig.*",
                         ".*\\.util\\.Fluent.*", ".*\\.util.TypefaceManager.*"]
@@ -44,10 +45,10 @@ cobertura {
 }
 
 sourceSets {
-  test {
-    groovy {
-      srcDirs = ['src/groovy']
+    test {
+        kotlin {
+            srcDirs = ['src/java']
+        }
     }
-    resources.srcDirs = ['src']
-  }
 }
+

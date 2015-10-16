@@ -1,8 +1,10 @@
 apply plugin: 'com.android.library'
 
-apply plugin: 'groovyx.grooid.groovy-android'
+// apply plugin: 'groovyx.grooid.groovy-android'
 
 apply plugin: 'kotlin-android'
+
+def kotlinVersion = '0.14.451'
 
 android {
     compileSdkVersion 19
@@ -17,7 +19,7 @@ android {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
-        exclude 'META-INF/groovy-release-info.properties'
+        // exclude 'META-INF/groovy-release-info.properties'
     }
     buildTypes {
         release {
@@ -27,26 +29,15 @@ android {
     }
     productFlavors {
     }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:19.1.0'
     compile 'com.android.support:support-v4:19.1.0'
-    compile 'org.codehaus.groovy:groovy:2.4.1:grooid'
-    // the following dependency is necessary if you want JSON support
-    compile('org.codehaus.groovy:groovy-json:2.4.1') {
-        transitive = false
-    }
-}
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
 
-project.androidGroovy {
-    options {
-        configure(groovyOptions) {
-            encoding = 'UTF-8'
-            forkOptions.jvmArgs = ['-noverify'] // maybe necessary if you use Google Play Services
-        }
-        sourceCompatibility = '1.7'
-        targetCompatibility = '1.7'
-    }
 }
