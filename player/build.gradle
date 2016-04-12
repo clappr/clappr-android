@@ -1,6 +1,19 @@
-apply plugin: 'com.android.library'
+buildscript {
+    ext.kotlin_version = '1.0.1'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
 
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+
+repositories {
+    mavenCentral()
+}
 
 android {
     compileSdkVersion 23
@@ -27,6 +40,12 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    testOptions {
+        unitTests.all {
+            jvmArgs '-XX:MaxPermSize=256m'
+        }
+    }
 }
 
 dependencies {
@@ -37,16 +56,4 @@ dependencies {
 
     testCompile "junit:junit:4.12"
     testCompile "org.robolectric:robolectric:3.0"
-}
-buildscript {
-    ext.kotlin_version = '1.0.1'
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-repositories {
-    mavenCentral()
 }
