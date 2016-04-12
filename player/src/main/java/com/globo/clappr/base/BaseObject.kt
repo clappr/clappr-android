@@ -14,7 +14,7 @@ public open class BaseObject(options: Map<String, Object>?) {
     }
     val id =  Utils.uniqueId("o")
 
-    private var receivers: MutableMap<Object, BroadcastReceiver> = hashMapOf()
+    private var receivers: MutableMap<Any, BroadcastReceiver> = hashMapOf()
 
     fun on(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) {
         val bm = LocalBroadcastManager.getInstance(context.applicationContext)
@@ -29,7 +29,7 @@ public open class BaseObject(options: Map<String, Object>?) {
                 "name" to eventName,
                 "handler" to handler,
                 "obj" to obj)
-        receivers.put(key as Object, receiver)
+        receivers.put(key, receiver)
     }
 
     fun once(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) {
@@ -64,7 +64,7 @@ public open class BaseObject(options: Map<String, Object>?) {
 
     fun stopListening() {
         val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
-        receivers.forEach { it -> bm.unregisterReceiver(it.getValue() as BroadcastReceiver) }
+        receivers.forEach { it -> bm.unregisterReceiver(it.value as BroadcastReceiver) }
         receivers.clear()
     }
 

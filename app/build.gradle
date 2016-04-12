@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion '21.1.2'
+    compileSdkVersion 23
+    buildToolsVersion '23.0.3'
     defaultConfig {
         applicationId 'com.globo.clappr.app'
         minSdkVersion 14
-        targetSdkVersion 21
+        targetSdkVersion 23
         versionCode 1
         versionName '1.0'
     }
@@ -19,7 +19,6 @@ android {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE'
-        exclude 'META-INF/groovy-release-info.properties'
     }
     buildTypes {
         release {
@@ -40,7 +39,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 buildscript {
-    ext.kotlin_version = '0.14.451'
+    ext.kotlin_version = '1.0.1'
     repositories {
         mavenCentral()
     }
