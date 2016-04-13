@@ -17,7 +17,12 @@ public open class BaseObjectTest {
 
     @Test(expected=kotlin.TypeCastException::class)
     fun baseObjectWithoutContext() {
-        var bo = BaseObject(mapOf("opt" to (1 as Object)))
+        var bo = BaseObject(mapOf("opt" to (ShadowApplication.getInstance().applicationContext as Object)))
+    }
+
+    @Test(expected=java.lang.ClassCastException::class)
+    fun baseObjectWithInvalidContext() {
+        var bo = BaseObject(mapOf("context" to (1 as Object)))
     }
 
     @Test
