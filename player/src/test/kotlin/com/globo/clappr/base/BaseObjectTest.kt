@@ -107,4 +107,80 @@ public open class BaseObjectTest {
 
         assertFalse("event triggered", callBackWasCalled)
     }
+
+    @Test
+    fun linstenToShouldFireAnEvent() {
+        val contextObject = BaseObject()
+
+        baseObject?.listenTo(contextObject, eventName, callBack)
+        contextObject.trigger(eventName)
+
+        assertTrue("event not triggered", callBackWasCalled)
+    }
+
+    @Test
+    fun offCallbackNotCalledIfRemoved() {
+        val listenId = baseObject?.on(eventName, callBack)
+        baseObject?.off(listenId!!)
+        baseObject?.trigger(eventName)
+
+        assertFalse("event triggered", callBackWasCalled)
+    }
+
+    @Test
+    fun offOtherShouldBeCalledAfterRemoval() {
+        var anotherCallbackWasCalled = false
+        val anotherCallback = { bundle: Bundle? -> anotherCallbackWasCalled = true}
+
+        val listenId = baseObject?.on(eventName, callBack)
+        baseObject?.on(eventName, anotherCallback)
+
+        baseObject?.off(listenId!!)
+        baseObject?.trigger(eventName)
+
+        assertFalse("event triggered", callBackWasCalled)
+        assertTrue("event not triggered", anotherCallbackWasCalled)
+    }
+
+    @Test
+    fun stopListeningShouldCancelAllHandlers() {
+        baseObject?.on(eventName, callBack)
+        baseObject?.on("another-event", callBack)
+
+        baseObject?.stopListening()
+
+        baseObject?.trigger(eventName)
+        baseObject?.trigger("another-event")
+
+        assertFalse("event triggered", callBackWasCalled)
+    }
+
+    @Test
+    fun stopListeningShouldCancelOnlyOnObject() {
+        val anotherObject = BaseObject()
+        var anotherCallbackWasCalled = false
+        anotherObject.on(eventName, { bundle: Bundle? -> anotherCallbackWasCalled = true})
+
+        baseObject?.on(eventName, callBack)
+
+        baseObject?.stopListening()
+
+        baseObject?.trigger(eventName)
+        anotherObject.trigger(eventName)
+
+        assertFalse("event triggered", callBackWasCalled)
+        assertTrue("event not triggered", anotherCallbackWasCalled)
+    }
+
+    @Test
+    fun stopListeningShouldCancelOnBaseObject() {
+        val contextObject = BaseObject()
+
+        val listenId = baseObject?.listenTo(contextObject, eventName, callBack)
+        baseObject?.stopListening(listenId!!)
+
+        contextObject.trigger(eventName)
+
+        assertFalse("event triggered", callBackWasCalled)
+    }
 }
