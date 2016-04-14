@@ -31,12 +31,6 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
-
-    testOptions {
-        unitTests.all {
-            jvmArgs '-XX:MaxPermSize=256m'
-        }
-    }
 }
 
 dependencies {
