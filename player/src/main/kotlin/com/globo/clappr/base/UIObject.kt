@@ -8,7 +8,7 @@ import com.globo.clappr.components.PlayerInfo
 public open class UIObject: BaseObject {
     var view : View? = null
 
-    constructor(options: Map<String, Object>?) : super(options) {
+    constructor() : super() {
         ensureView()
     }
 

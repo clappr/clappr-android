@@ -7,10 +7,14 @@ import android.content.IntentFilter
 import android.support.v4.content.LocalBroadcastManager
 import com.globo.clappr.components.PlayerInfo
 
-public open class BaseObject(options: Map<String, Object>?) {
+public open class BaseObject() {
+    companion object {
+        var context: Context? = null
+    }
+
     val context: Context
     init {
-        context = options?.get("context") as Context
+        context = Companion.context!!
     }
     val id =  Utils.uniqueId("o")
 
