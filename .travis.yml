@@ -8,7 +8,7 @@ android:
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-script: gradle test
+script: ./gradlew test
 after_success:
     - gradle cobertura coveralls
 notifications:
