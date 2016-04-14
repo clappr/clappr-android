@@ -1,7 +1,6 @@
 package com.globo.clappr.base
 
-import android.content.Context
-import android.content.Intent
+import android.os.Bundle
 import com.globo.clappr.BuildConfig
 import org.junit.*
 import org.junit.Assert.*
@@ -17,7 +16,7 @@ public open class BaseObjectTest {
     var callBackWasCalled = false
 
     val eventName = "some-event"
-    val callBack = { intent: Intent? ->
+    val callBack = { bundle: Bundle? ->
         callBackWasCalled = true
     }
 
@@ -36,8 +35,16 @@ public open class BaseObjectTest {
         assertTrue("event not triggered", callBackWasCalled)
     }
 
-    @Ignore("need to confirm the need for userInfo") @Test
+    @Test
     fun onCallbackShouldReceiveUserInfo() {
+        var value = "Not Expected"
+        baseObject?.on(eventName, {bundle: Bundle? -> value = bundle?.getString("value")!!})
+
+        val userData = Bundle()
+        userData.putString("value", "Expected")
+        baseObject?.trigger(eventName, userData)
+
+        assertTrue("userInfo not received", value == "Expected")
     }
 
     @Test
@@ -45,7 +52,7 @@ public open class BaseObjectTest {
         baseObject?.on(eventName, callBack)
 
         var secondCallBackCalled = false
-        baseObject?.on(eventName, {intent: Intent? -> secondCallBackCalled = true})
+        baseObject?.on(eventName, {bundle: Bundle? -> secondCallBackCalled = true})
 
         baseObject?.trigger(eventName)
 
