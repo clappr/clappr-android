@@ -94,8 +94,8 @@ public open class BaseObjectTest {
 
     @Test
     fun onceCallbackShouldNotBeCalledIfRemoved() {
-        baseObject?.once(eventName, callBack)
-        baseObject?.off(eventName, callBack)
+        val listenId = baseObject?.once(eventName, callBack)
+        baseObject?.off(listenId!!)
         baseObject?.trigger(eventName)
 
         assertFalse("event triggered", callBackWasCalled)

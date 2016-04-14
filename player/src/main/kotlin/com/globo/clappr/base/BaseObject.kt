@@ -18,9 +18,11 @@ public open class BaseObject() {
     }
     val id =  Utils.uniqueId("o")
 
-    private var receivers: MutableMap<Any, BroadcastReceiver> = hashMapOf()
+    private var receivers: MutableMap<String, BroadcastReceiver> = hashMapOf()
 
-    fun on(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) {
+    fun on(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) : String{
+        val listenId = createListenId(eventName, obj)
+
         val bm = LocalBroadcastManager.getInstance(context.applicationContext)
         val receiver = Utils.broadcastReceiver { context: Context?, intent: Intent? ->
             val objContext = intent?.getStringExtra("clappr:baseobject:context")
@@ -29,41 +31,37 @@ public open class BaseObject() {
             }
         }
         bm.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
-        val key = hashMapOf(
-                "name" to eventName,
-                "handler" to handler,
-                "obj" to obj)
-        receivers.put(key, receiver)
+
+        receivers.put(listenId, receiver)
+        return listenId
     }
 
-    fun once(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) {
+    fun once(eventName: String, handler: ((Intent?) -> Unit)?, obj: BaseObject = this) : String {
+        var listenId: String? = null
         var onceCallback : ((Intent?) -> Unit)? = null
-        onceCallback = { intent: Intent? ->
-            off(eventName, onceCallback, obj)
-            handler?.invoke(intent)
-        }
-        on(eventName, onceCallback, obj)
+            onceCallback = { intent: Intent? ->
+                off(listenId!!)
+                handler?.invoke(intent)
+            }
+        listenId = on(eventName, onceCallback, obj)
+        return listenId
     }
 
-    fun off(eventName: String, handler: ((Intent) -> Unit)?, obj: BaseObject = this) {
-        val key = hashMapOf(
-                "name" to eventName,
-                "handler" to handler,
-                "obj" to obj)
-        val receiver = receivers.get(key) as? BroadcastReceiver
+    fun off(listenId: String) {
+        val receiver = receivers.get(listenId) as? BroadcastReceiver
         if (receiver != null) {
             val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
             bm.unregisterReceiver(receiver)
-            receivers.remove(key)
+            receivers.remove(listenId)
         }
     }
 
-    fun listenTo(obj: BaseObject, eventName: String, handler:  ((Intent?) -> Unit)?) {
-        on(eventName, handler, obj)
+    fun listenTo(obj: BaseObject, eventName: String, handler:  ((Intent?) -> Unit)?) : String {
+        return on(eventName, handler, obj)
     }
 
-    fun stopListening(obj: BaseObject, eventName: String, handler: ((Intent?) -> Unit)?) {
-        off(eventName, handler, obj)
+    fun stopListening(listenId: String) {
+        off(listenId)
     }
 
     fun stopListening() {
@@ -78,5 +76,9 @@ public open class BaseObject() {
         intent.setAction("clappr:" + eventName)
         intent.putExtra("clappr:baseobject:context", this.id)
         bm.sendBroadcastSync(intent)
+    }
+
+    private fun createListenId(eventName: String, baseObject: BaseObject) : String {
+        return eventName + baseObject.hashCode() + System.currentTimeMillis()
     }
 }
