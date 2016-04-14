@@ -1,10 +1,10 @@
 language: android
 android:
   components:
-    - build-tools-21.1.2
-    - android-19
+    - build-tools-23.0.3
+    - android-23
     - extra-android-m2repository
-    - sys-img-x86-android-19
+    - sys-img-x86-android-23
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
