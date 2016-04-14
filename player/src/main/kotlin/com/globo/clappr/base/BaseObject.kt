@@ -46,7 +46,7 @@ public open class BaseObject(options: Map<String, Object>?) {
                 "name" to eventName,
                 "handler" to handler,
                 "obj" to obj)
-        val receiver = receivers.get(key) as BroadcastReceiver
+        val receiver = receivers.get(key) as? BroadcastReceiver
         if (receiver != null) {
             val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
             bm.unregisterReceiver(receiver)
@@ -64,7 +64,7 @@ public open class BaseObject(options: Map<String, Object>?) {
 
     fun stopListening() {
         val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
-        receivers.forEach { it -> bm.unregisterReceiver(it.value as BroadcastReceiver) }
+        receivers.forEach { it -> bm.unregisterReceiver(it.value) }
         receivers.clear()
     }
 

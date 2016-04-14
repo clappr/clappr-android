@@ -19,7 +19,7 @@ public open class UIObject: BaseObject {
     }
 
     fun remove() : UIObject {
-        (view?.getParent() as ViewManager)?.removeView(view)
+        (view?.getParent() as? ViewManager)?.removeView(view)
         return this
     }
 
