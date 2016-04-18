@@ -22,12 +22,7 @@ public class BaseObjectJavaTest {
 
     @Before
     public void setup() {
-        context = BaseObject.Companion.getContext();
-    }
-
-    @After
-    public void tearDown() {
-        BaseObject.Companion.setContext(context);
+        BaseObject.Companion.setContext(null);
     }
 
     @Test(expected=kotlin.KotlinNullPointerException.class)
