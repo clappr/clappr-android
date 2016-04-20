@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
-import com.globo.clappr.components.PlayerInfo
 
 public open class BaseObject() {
     companion object {
@@ -53,7 +52,7 @@ public open class BaseObject() {
     fun off(listenId: String) {
         val receiver = receivers[listenId] as? BroadcastReceiver
         if (receiver != null) {
-            val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
+            val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
             bm.unregisterReceiver(receiver)
             receivers.remove(listenId)
         }
@@ -68,13 +67,13 @@ public open class BaseObject() {
     }
 
     fun stopListening() {
-        val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
+        val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
         receivers.forEach { it -> bm.unregisterReceiver(it.value) }
         receivers.clear()
     }
 
     fun trigger(eventName: String, userData: Bundle? = null) {
-        val bm = LocalBroadcastManager.getInstance(PlayerInfo.context?.applicationContext)
+        val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
         val intent = Intent()
         intent.action = "clappr:" + eventName
         intent.putExtra(CONTEXT_KEY, this.id)
