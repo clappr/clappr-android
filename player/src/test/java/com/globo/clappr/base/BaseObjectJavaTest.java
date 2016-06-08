@@ -1,7 +1,11 @@
 package com.globo.clappr.base;
 
+import android.content.Context;
+
 import com.globo.clappr.BuildConfig;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricGradleTestRunner;
@@ -14,30 +18,22 @@ import java.util.Map;
 @RunWith(RobolectricGradleTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 21)
 public class BaseObjectJavaTest {
-    @Test(expected=kotlin.TypeCastException.class)
-    public void baseObjectWithoutNullOptions() {
-        BaseObject bo = new BaseObject(null);
+    Context context;
+
+    @Before
+    public void setup() {
+        BaseObject.Companion.setContext(null);
     }
 
-    @Test(expected = kotlin.TypeCastException.class)
+    @Test(expected=kotlin.KotlinNullPointerException.class)
     public void baseObjectWithoutContext() {
-        Map opt = new HashMap<String, Object>();
-        opt.put("opt", ShadowApplication.getInstance().getApplicationContext());
-        BaseObject bo = new BaseObject(opt);
-    }
-
-    @Test(expected=java.lang.ClassCastException.class)
-    public void baseObjectWithInvalidContext() {
-        Map opt = new HashMap<String, Object>();
-        opt.put("context", 1);
-        BaseObject bo = new BaseObject(opt);
+        BaseObject bo = new BaseObject();
     }
 
     @Test
     public void baseObjectCreation() {
-        Map opt = new HashMap<String, Object>();
-        opt.put("context", ShadowApplication.getInstance().getApplicationContext());
-        BaseObject bo = new BaseObject(opt);
+        BaseObject.Companion.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject bo = new BaseObject();
     }
 
 }

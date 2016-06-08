@@ -1,15 +1,16 @@
 language: android
+env:
+  - GRADLE_OPTS="-Xmx512m -XX:MaxPermSize=512m"
 android:
   components:
-    - build-tools-21.1.2
-    - android-19
+    - tools
+    - build-tools-23.0.3
+    - android-23
     - extra-android-m2repository
-    - sys-img-x86-android-19
+    - sys-img-x86-android-23
   licenses:
     - 'android-sdk-license-.+'
     - 'google-gdk-license-.+'
-script: gradle test
-after_success:
-    - gradle cobertura coveralls
+script: ./gradlew test
 notifications:
   slack: globo:F1iVlyrzR4iX8OS7h8fwMcqx
