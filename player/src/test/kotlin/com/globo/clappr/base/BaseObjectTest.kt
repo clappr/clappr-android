@@ -5,12 +5,12 @@ import com.globo.clappr.BuildConfig
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricGradleTestRunner
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
-@RunWith(RobolectricGradleTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(21))
+@RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 public open class BaseObjectTest {
     var baseObject: BaseObject? = null
     var callBackWasCalled = false
