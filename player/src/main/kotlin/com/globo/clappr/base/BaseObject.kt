@@ -7,7 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
 
-public open class BaseObject() : EventInterface {
+open class BaseObject() : EventInterface {
     companion object {
         const val CONTEXT_KEY  = "clappr:baseobject:context"
         const val USERDATA_KEY = "clappr:baseobject:userdata"

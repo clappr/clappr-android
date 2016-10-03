@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 
-public object Utils {
+object Utils {
     var count = 0
     fun uniqueId(prefix: String? = null) : String {
         return (prefix?:"") + ++count;

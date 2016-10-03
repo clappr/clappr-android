@@ -1,6 +1,5 @@
 package com.globo.clappr.widget
 
-import android.app.Notification
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.FrameLayout
