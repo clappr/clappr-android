@@ -7,7 +7,7 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
 
-public open class BaseObject() {
+public open class BaseObject() : EventInterface {
     companion object {
         const val CONTEXT_KEY  = "clappr:baseobject:context"
         const val USERDATA_KEY = "clappr:baseobject:userdata"
@@ -19,11 +19,15 @@ public open class BaseObject() {
     init {
         context = Companion.context!!
     }
-    val id =  Utils.uniqueId("o")
+    override val id =  Utils.uniqueId("o")
 
     private var receivers: MutableMap<String, BroadcastReceiver> = hashMapOf()
 
-    fun on(eventName: String, handler: ((Bundle?) -> Unit)?, obj: BaseObject = this) : String{
+    override fun on(eventName: String, handler: Callback?) : String {
+        return on(eventName, handler, this)
+    }
+
+    override fun on(eventName: String, handler: Callback?, obj: BaseObject) : String{
         val listenId = createListenId(eventName, obj)
 
         val bm = LocalBroadcastManager.getInstance(context.applicationContext)
@@ -39,17 +43,21 @@ public open class BaseObject() {
         return listenId
     }
 
-    fun once(eventName: String, handler: ((Bundle?) -> Unit)?, obj: BaseObject = this) : String {
+    override fun once(eventName: String, handler: Callback?) : String {
+        return once(eventName, handler, this)
+    }
+
+    override fun once(eventName: String, handler: Callback?, obj: BaseObject) : String {
         var listenId: String? = null
-        var onceCallback : ((Bundle?) -> Unit)? = { bundle ->
+        var onceCallback = Callback ({ bundle : Bundle? ->
                 off(listenId!!)
                 handler?.invoke(bundle)
-            }
+            } )
         listenId = on(eventName, onceCallback, obj)
         return listenId
     }
 
-    fun off(listenId: String) {
+    override fun off(listenId: String) {
         val receiver = receivers[listenId] as? BroadcastReceiver
         if (receiver != null) {
             val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
@@ -58,21 +66,21 @@ public open class BaseObject() {
         }
     }
 
-    fun listenTo(obj: BaseObject, eventName: String, handler:  ((Bundle?) -> Unit)?) : String {
+    override fun listenTo(obj: BaseObject, eventName: String, handler: Callback?) : String {
         return on(eventName, handler, obj)
     }
 
-    fun stopListening(listenId: String) {
+    override fun stopListening(listenId: String) {
         off(listenId)
     }
 
-    fun stopListening() {
+    override fun stopListening() {
         val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
         receivers.forEach { it -> bm.unregisterReceiver(it.value) }
         receivers.clear()
     }
 
-    fun trigger(eventName: String, userData: Bundle? = null) {
+    override fun trigger(eventName: String, userData: Bundle?) {
         val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
         val intent = Intent()
         intent.action = "clappr:" + eventName

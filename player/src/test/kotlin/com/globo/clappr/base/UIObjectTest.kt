@@ -11,14 +11,14 @@ import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
-public open class UIObjectTest {
+open class UIObjectTest {
     @Test
     fun shouldHandleEvents() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
         val uiObject = UIObject()
         var callbackWasCalled = false
 
-        uiObject.on("some-event", {bundle: Bundle? -> callbackWasCalled = true})
+        uiObject.on("some-event", Callback({bundle: Bundle? -> callbackWasCalled = true}))
         uiObject.trigger("some-event")
 
         assertTrue("event not triggered", callbackWasCalled)

@@ -2,18 +2,19 @@ package com.globo.clappr.base
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import android.view.ViewManager
 
-public open class UIObject: BaseObject {
+open class UIObject(private val base: BaseObject = BaseObject()): EventInterface by base {
     var view : View? = null
 
-    constructor() : super() {
+    init {
         ensureView()
     }
 
     fun viewClass() : Class<*> = View::class.java
 
-    fun render() : UIObject {
+    open fun render() : UIObject {
         return this
     }
 
@@ -25,7 +26,7 @@ public open class UIObject: BaseObject {
     fun ensureView() {
         render()
         if (view == null) {
-            view = viewClass().getConstructor(Context::class.java).newInstance(context) as View?
+            view = viewClass().getConstructor(Context::class.java).newInstance(base.context) as View?
         }
     }
 }
