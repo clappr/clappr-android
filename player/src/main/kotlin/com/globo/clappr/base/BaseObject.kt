@@ -60,7 +60,7 @@ open class BaseObject() : EventInterface {
     override fun off(listenId: String) {
         val receiver = receivers[listenId] as? BroadcastReceiver
         if (receiver != null) {
-            val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
+            val bm = LocalBroadcastManager.getInstance(context.applicationContext)
             bm.unregisterReceiver(receiver)
             receivers.remove(listenId)
         }
@@ -75,13 +75,13 @@ open class BaseObject() : EventInterface {
     }
 
     override fun stopListening() {
-        val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
+        val bm = LocalBroadcastManager.getInstance(context.applicationContext)
         receivers.forEach { it -> bm.unregisterReceiver(it.value) }
         receivers.clear()
     }
 
     override fun trigger(eventName: String, userData: Bundle?) {
-        val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
+        val bm = LocalBroadcastManager.getInstance(context.applicationContext)
         val intent = Intent()
         intent.action = "clappr:" + eventName
         intent.putExtra(CONTEXT_KEY, this.id)
