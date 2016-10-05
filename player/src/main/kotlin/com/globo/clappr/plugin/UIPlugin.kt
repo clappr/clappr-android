@@ -1,8 +1,9 @@
 package com.globo.clappr.plugin
 
+import com.globo.clappr.base.EventInterface
 import com.globo.clappr.base.UIObject
 
-class UIPlugin (private val plugin: Plugin = Plugin()) : UIObject(), PluginInterface by plugin {
+open class UIPlugin (private val uiObject: UIObject = UIObject()) : Plugin(), EventInterface by uiObject {
     override val name = "uiplugin"
-    var visibility = PluginVisibility.VISIBLE
+    var visibility = PluginVisibility.HIDDEN
 }
