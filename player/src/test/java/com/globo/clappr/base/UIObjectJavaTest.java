@@ -11,9 +11,11 @@ import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
 
+import static org.junit.Assert.assertTrue;
+
 @RunWith(RobolectricTestRunner.class)
 @Config(constants = BuildConfig.class, sdk = 23)
-public class BaseObjectJavaTest {
+public class UIObjectJavaTest {
     Context context;
 
     @Before
@@ -22,14 +24,14 @@ public class BaseObjectJavaTest {
     }
 
     @Test(expected=kotlin.KotlinNullPointerException.class)
-    public void baseObjectWithoutContext() {
-        BaseObject bo = new BaseObject();
+    public void uiObjectWithoutContext() {
+        UIObject uo = new UIObject();
     }
 
     @Test
-    public void baseObjectCreation() {
+    public void uiObjectCreation() {
         BaseObject.Companion.setContext(ShadowApplication.getInstance().getApplicationContext());
-        BaseObject bo = new BaseObject();
+        UIObject uo = new UIObject();
+        assertTrue("invalid view", uo.getView() != null);
     }
-
 }

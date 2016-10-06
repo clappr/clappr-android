@@ -5,20 +5,20 @@ import com.globo.clappr.BuildConfig
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
-import org.robolectric.RobolectricGradleTestRunner
+import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
-@RunWith(RobolectricGradleTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(21))
-public open class BaseObjectTest {
+@RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+open class BaseObjectTest {
     var baseObject: BaseObject? = null
     var callBackWasCalled = false
 
     val eventName = "some-event"
-    val callBack = { bundle: Bundle? ->
+    val callBack = Callback ({ bundle: Bundle? ->
         callBackWasCalled = true
-    }
+    } )
 
     @Before
     fun setup() {
@@ -38,7 +38,7 @@ public open class BaseObjectTest {
     @Test
     fun onCallbackShouldReceiveUserInfo() {
         var value = "Not Expected"
-        baseObject?.on(eventName, {bundle: Bundle? -> value = bundle?.getString("value")!!})
+        baseObject?.on(eventName, Callback({bundle: Bundle? -> value = bundle?.getString("value")!!}))
 
         val userData = Bundle()
         userData.putString("value", "Expected")
@@ -52,7 +52,7 @@ public open class BaseObjectTest {
         baseObject?.on(eventName, callBack)
 
         var secondCallBackCalled = false
-        baseObject?.on(eventName, {bundle: Bundle? -> secondCallBackCalled = true})
+        baseObject?.on(eventName, Callback({bundle: Bundle? -> secondCallBackCalled = true}))
 
         baseObject?.trigger(eventName)
 
@@ -130,7 +130,7 @@ public open class BaseObjectTest {
     @Test
     fun offOtherShouldBeCalledAfterRemoval() {
         var anotherCallbackWasCalled = false
-        val anotherCallback = { bundle: Bundle? -> anotherCallbackWasCalled = true}
+        val anotherCallback = Callback ({ bundle: Bundle? -> anotherCallbackWasCalled = true})
 
         val listenId = baseObject?.on(eventName, callBack)
         baseObject?.on(eventName, anotherCallback)
@@ -159,7 +159,7 @@ public open class BaseObjectTest {
     fun stopListeningShouldCancelOnlyOnObject() {
         val anotherObject = BaseObject()
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName, { bundle: Bundle? -> anotherCallbackWasCalled = true})
+        anotherObject.on(eventName, Callback({ bundle: Bundle? -> anotherCallbackWasCalled = true}))
 
         baseObject?.on(eventName, callBack)
 

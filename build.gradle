@@ -1,8 +1,8 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    def buildToolsVersion = '2.0.0'
-    def kotlinVersion = '1.0.1'
+    def buildToolsVersion = '23.0.3'
+    def kotlinVersion = '1.0.4'
 
     repositories {
         mavenCentral()
@@ -10,8 +10,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "com.android.tools.build:gradle:$buildToolsVersion"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+        classpath 'com.android.tools.build:gradle:2.2.0'
         classpath 'net.saliman:gradle-cobertura-plugin:2.2.5'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.3.1'
     }

@@ -8,10 +8,11 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
+import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
-public open class BaseObjectCreationTest {
+public open class UIObjectCreationTest {
     var context: Context? = null
 
     @Before
@@ -20,13 +21,14 @@ public open class BaseObjectCreationTest {
     }
 
     @Test(expected = kotlin.KotlinNullPointerException::class)
-    fun baseObjectWithoutContext() {
-        var bo = BaseObject()
+    fun uiObjectWithoutContext() {
+        var uo = UIObject()
     }
 
     @Test
-    fun baseObjectCreation() {
+    fun uiObjectCreation() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
-        val bo = BaseObject()
+        val uo = UIObject()
+        assertNotNull(uo.view, "invalid view")
     }
 }
