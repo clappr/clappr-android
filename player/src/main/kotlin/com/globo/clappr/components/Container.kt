@@ -6,12 +6,12 @@ import com.globo.clappr.base.UIObject
 import com.globo.clappr.plugin.Plugin
 
 open class Container(val loader: Loader, val options: Options) : UIObject() {
-    val plugins: MutableList<Plugin> = mutableListOf<Plugin>()
+    val plugins: List<Plugin>
 
     var playback: Playback? = null
 
     init {
-        plugins.addAll(loader.setupContainerPlugins(this))
+        plugins = loader.setupContainerPlugins(this)
 
         playback = Playback(loader, options)
     }

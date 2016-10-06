@@ -6,13 +6,13 @@ import com.globo.clappr.base.UIObject
 import com.globo.clappr.plugin.Plugin
 
 open class Core(val loader: Loader, val options: Options) : UIObject() {
-    val plugins: MutableList<Plugin> = mutableListOf<Plugin>()
+    val plugins: List<Plugin>
 
     var activeContainer: Container? = null
     val containers: MutableList<Container> = mutableListOf<Container>()
 
     init {
-        plugins.addAll(loader.setupCorePlugins(this))
+        plugins = loader.setupCorePlugins(this)
 
         var container = Container(loader, options)
         containers.add(container)

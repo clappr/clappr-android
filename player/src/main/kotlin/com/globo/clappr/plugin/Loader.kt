@@ -1,6 +1,7 @@
 package com.globo.clappr.plugin
 
 import android.util.Log
+import com.globo.clappr.base.BaseObject
 import com.globo.clappr.components.Container
 import com.globo.clappr.components.Core
 import com.globo.clappr.components.Playback
@@ -35,42 +36,35 @@ class Loader(extraPlugins: List<KClass<Plugin>> = listOf<KClass<Plugin>>()) {
         }
     }
 
-    fun setupCorePlugins(core: Core) : List<Plugin> {
-        val corePlugins = mutableListOf<Plugin>()
-        for ((name, plugin) in loadedPlugins) {
-            if ( (plugin is CorePlugin) || (plugin is UICorePlugin) ) {
-                (plugin as? CorePlugin)?.core = core
-                (plugin as? UICorePlugin)?.core = core
-                corePlugins.add(plugin)
-            }
-        }
-        return corePlugins.toList()
+    fun setupCorePlugins(core: Core): List<Plugin> {
+        return setupPlugins(core, getCorePlugins())
     }
 
     fun setupContainerPlugins(container: Container) : List<Plugin> {
-        val containerPlugins = mutableListOf<Plugin>()
-        for ((name, plugin) in loadedPlugins) {
-            if ( (plugin is ContainerPlugin) || (plugin is UIContainerPlugin) ) {
-                (plugin as? ContainerPlugin)?.container = container
-                (plugin as? UIContainerPlugin)?.container = container
-                containerPlugins.add(plugin)
-            }
-        }
-        return containerPlugins.toList()
+        return setupPlugins(container, getContainerPlugins())
     }
-
 
     fun setupPlaybackPlugins(playback: Playback) : List<Plugin> {
-        val playbackPlugins = mutableListOf<Plugin>()
-        for ((name, plugin) in loadedPlugins) {
-            val playbackPlugin = plugin as? PlaybackPlugin
-            playbackPlugin?.let {
-                playbackPlugin.playback = playback
-                playbackPlugins.add(plugin)
-            }
-        }
-        return playbackPlugins.toList()
+        return setupPlugins(playback, getPlaybackPlugins())
     }
+
+    private fun setupPlugins(context: BaseObject, plugins: List<Plugin>) : List<Plugin> {
+        plugins.forEach { it.setup(context) }
+        return plugins
+    }
+
+    fun getCorePlugins() : List<Plugin> {
+        return loadedPlugins.values.filter { (it is CorePlugin) || (it is UICorePlugin) }
+    }
+
+    fun getContainerPlugins() : List<Plugin> {
+        return loadedPlugins.values.filter { (it is ContainerPlugin) || (it is UIContainerPlugin) }
+    }
+
+    fun getPlaybackPlugins() : List<Plugin> {
+        return loadedPlugins.values.filter { it is PlaybackPlugin }
+    }
+
 
     private fun loadPlugin(pluginClass: KClass<out Plugin>) {
         var plugin: Plugin? = null
