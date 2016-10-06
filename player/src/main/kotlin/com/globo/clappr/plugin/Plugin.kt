@@ -2,7 +2,10 @@ package com.globo.clappr.plugin
 
 import com.globo.clappr.base.BaseObject
 
-open class Plugin : BaseObject(), PluginInterface {
-    override val name = "plugin"
+enum class PluginState { ENABLED, DISABLED }
+
+abstract class Plugin : BaseObject() {
+    abstract val name: String
+    abstract fun setup(context: BaseObject)
     var state = PluginState.DISABLED
 }
