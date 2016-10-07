@@ -8,7 +8,7 @@ open class UICorePlugin() : UIPlugin() {
     override val name = "uicoreplugin"
 
     var core : Core? = null
-    override fun setup(context: BaseObject) {
-        core = context as? Core
+    override fun setup(component: BaseObject) {
+        core = component as? Core
     }
 }

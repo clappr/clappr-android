@@ -8,7 +8,7 @@ open class PlaybackPlugin() : UIPlugin() {
     override val name = "playbackplugin"
 
     var playback : Playback? = null
-    override fun setup(context: BaseObject) {
-        playback = context as? Playback
+    override fun setup(component: BaseObject) {
+        playback = component as? Playback
     }
 }

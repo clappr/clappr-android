@@ -8,7 +8,7 @@ open class ContainerPlugin() : Plugin() {
     override val name = "containerplugin"
 
     var container : Container? = null
-    override fun setup(context: BaseObject) {
-        container = context as? Container
+    override fun setup(component: BaseObject) {
+        container = component as? Container
     }
 }

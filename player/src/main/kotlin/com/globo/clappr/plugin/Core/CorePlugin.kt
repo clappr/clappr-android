@@ -8,7 +8,7 @@ open class CorePlugin (): Plugin() {
     override val name = "coreplugin"
 
     var core : Core? = null
-    override fun setup(context: BaseObject) {
-        core = context as? Core
+    override fun setup(component: BaseObject) {
+        core = component as? Core
     }
 }

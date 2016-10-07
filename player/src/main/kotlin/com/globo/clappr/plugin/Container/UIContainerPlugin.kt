@@ -8,8 +8,8 @@ open class UIContainerPlugin() : UIPlugin() {
     override val name = "uicontainerplugin"
 
     var container : Container? = null
-    override fun setup(context: BaseObject) {
-        container = context as? Container
+    override fun setup(component: BaseObject) {
+        container = component as? Container
     }
 
 }
