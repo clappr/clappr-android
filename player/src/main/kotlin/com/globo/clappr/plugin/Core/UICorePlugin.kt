@@ -9,6 +9,6 @@ open class UICorePlugin() : UIPlugin() {
 
     var core : Core? = null
     override fun setup(component: BaseObject) {
-        core = component as? Core
+        core = component as Core
     }
 }

@@ -9,7 +9,7 @@ open class UIContainerPlugin() : UIPlugin() {
 
     var container : Container? = null
     override fun setup(component: BaseObject) {
-        container = component as? Container
+        container = component as Container
     }
 
 }

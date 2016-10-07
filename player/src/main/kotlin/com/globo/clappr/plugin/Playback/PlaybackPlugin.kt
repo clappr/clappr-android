@@ -9,6 +9,6 @@ open class PlaybackPlugin() : UIPlugin() {
 
     var playback : Playback? = null
     override fun setup(component: BaseObject) {
-        playback = component as? Playback
+        playback = component as Playback
     }
 }
