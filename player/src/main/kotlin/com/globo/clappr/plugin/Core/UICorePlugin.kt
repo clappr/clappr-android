@@ -4,11 +4,8 @@ import com.globo.clappr.base.BaseObject
 import com.globo.clappr.components.Core
 import com.globo.clappr.plugin.UIPlugin
 
-open class UICorePlugin() : UIPlugin() {
-    override val name = "uicoreplugin"
-
-    var core : Core? = null
-    override fun setup(component: BaseObject) {
-        core = component as Core
+open class UICorePlugin(val core: Core) : UIPlugin(core) {
+    companion object {
+        const val name = "uicoreplugin"
     }
 }

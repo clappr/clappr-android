@@ -9,6 +9,6 @@ open class Playback(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>
 
     init {
-        plugins = loader.setupPlaybackPlugins(this)
+        plugins = loader.loadPlugins(this)
     }
 }

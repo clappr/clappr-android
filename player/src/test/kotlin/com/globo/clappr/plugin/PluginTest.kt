@@ -20,9 +20,7 @@ class PluginTest {
 
     @Test
     fun shouldStartDisabled() {
-        class TestPlugin: Plugin() {
-            override val name = "testplugin"
-            override fun setup(context: BaseObject) {}
+        class TestPlugin: Plugin(BaseObject()) {
         }
 
         val plugin = TestPlugin()

@@ -10,10 +10,10 @@ import com.globo.clappr.plugin.Container.UIContainerPlugin
 import com.globo.clappr.plugin.Core.CorePlugin
 import com.globo.clappr.plugin.Core.UICorePlugin
 import com.globo.clappr.plugin.Playback.PlaybackPlugin
-import kotlin.reflect.KClass
-import kotlin.reflect.primaryConstructor
+import kotlin.reflect.*
+import kotlin.reflect.jvm.javaField
 
-class Loader(extraPlugins: List<KClass<Plugin>> = listOf<KClass<Plugin>>()) {
+class Loader(extraPlugins: List<KClass<out Plugin>> = listOf<KClass<out Plugin>>()) {
     val defaultPlugins = arrayOf(
             CorePlugin::class,
             UICorePlugin::class,
@@ -21,65 +21,60 @@ class Loader(extraPlugins: List<KClass<Plugin>> = listOf<KClass<Plugin>>()) {
             UIContainerPlugin::class,
             PlaybackPlugin::class)
 
-    val externalPlugins = mutableListOf<KClass<Plugin>>()
+    val externalPlugins = mutableListOf<KClass<out Plugin>>()
 
-    val loadedPlugins = mutableMapOf<String, Plugin>()
+    val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
 
     init {
         for (pluginClass in defaultPlugins) {
-            loadPlugin(pluginClass)
+            addPlugin(pluginClass)
         }
 
         externalPlugins.addAll(extraPlugins)
         for (pluginClass in externalPlugins) {
-            loadPlugin(pluginClass)
+            addPlugin(pluginClass)
         }
     }
 
-    fun setupCorePlugins(core: Core): List<Plugin> {
-        return setupPlugins(core, getCorePlugins())
+    fun loadPlugins(context: BaseObject) : List<Plugin> {
+        val loadedPlugins : MutableList<Plugin> = mutableListOf<Plugin>()
+        availablePlugins.values.forEach {
+            val plugin = loadPlugin(context, it)
+            if (plugin != null) {
+                loadedPlugins.add(plugin)
+            }
+        }
+        return loadedPlugins.toList()
     }
 
-    fun setupContainerPlugins(container: Container) : List<Plugin> {
-        return setupPlugins(container, getContainerPlugins())
+    private fun addPlugin(pluginClass: KClass<out Plugin>) {
+        var name : String? = null
+        val companion = pluginClass.companionObject
+        companion?.let {
+            for (property in companion.memberProperties) {
+                if (property.name == "name") {
+                    val field = property.javaField
+                    field?.let {
+                        name = field.get(null) as? String
+                    }
+                }
+            }
+        }
+        if (!name.isNullOrEmpty()) {
+            availablePlugins.put(name!!, pluginClass)
+        }
     }
 
-    fun setupPlaybackPlugins(playback: Playback) : List<Plugin> {
-        return setupPlugins(playback, getPlaybackPlugins())
-    }
-
-    private fun setupPlugins(context: BaseObject, plugins: List<Plugin>) : List<Plugin> {
-        plugins.forEach { it.setup(context) }
-        return plugins
-    }
-
-    fun getCorePlugins() : List<Plugin> {
-        return loadedPlugins.values.filter { (it is CorePlugin) || (it is UICorePlugin) }
-    }
-
-    fun getContainerPlugins() : List<Plugin> {
-        return loadedPlugins.values.filter { (it is ContainerPlugin) || (it is UIContainerPlugin) }
-    }
-
-    fun getPlaybackPlugins() : List<Plugin> {
-        return loadedPlugins.values.filter { it is PlaybackPlugin }
-    }
-
-
-    private fun loadPlugin(pluginClass: KClass<out Plugin>) {
+    private fun loadPlugin(component: BaseObject, pluginClass: KClass<out Plugin>) : Plugin? {
         var plugin: Plugin? = null
 
         var constructor = pluginClass.primaryConstructor
         try {
-            plugin = constructor?.call() as? Plugin
+            plugin = constructor?.call(component) as? Plugin
         } catch (e: Exception) {
         }
 
-        if (plugin != null) {
-            loadedPlugins.put(plugin.name, plugin)
-        } else {
-            Log.e("Clappr.Loader", "Invalid Plugin: " + pluginClass.simpleName)
-        }
+        return plugin
     }
 }
 

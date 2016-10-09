@@ -12,7 +12,7 @@ open class Core(val loader: Loader, val options: Options) : UIObject() {
     val containers: MutableList<Container> = mutableListOf<Container>()
 
     init {
-        plugins = loader.setupCorePlugins(this)
+        plugins = loader.loadPlugins(this)
 
         var container = Container(loader, options)
         containers.add(container)

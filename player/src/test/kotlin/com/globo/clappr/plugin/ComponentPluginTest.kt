@@ -29,36 +29,10 @@ class ComponentPluginTest {
 
     @Test
     fun shouldHaveAName() {
-        val testPlugin = arrayOf(CorePlugin(), UICorePlugin(),
-                                 ContainerPlugin(), UIContainerPlugin(),
-                                 PlaybackPlugin())
-
-        testPlugin.forEach { assertTrue("no name", it.name.isNotEmpty()) }
-    }
-
-    @Test
-    fun corePluginSetup() {
-        val corePlugin = arrayOf(CorePlugin(), UICorePlugin())
-        corePlugin.forEach {  it.setup(Core(Loader(), Options())) }
-    }
-
-    @Test
-    fun containerPluginSetup() {
-        val containerPlugin = arrayOf(ContainerPlugin(), UIContainerPlugin())
-        containerPlugin.forEach {  it.setup(Container(Loader(), Options())) }
-    }
-
-    @Test
-    fun playbackPluginSetup() {
-        val plabackPlugin = PlaybackPlugin()
-        plabackPlugin.setup(Playback(Loader(), Options()))
-    }
-
-    @Test(expected = java.lang.ClassCastException::class)
-    fun corePluginSetupWithouComponet() {
-        val testPlugin = arrayOf(CorePlugin(), UICorePlugin(),
-                                 ContainerPlugin(), UIContainerPlugin(),
-                                 PlaybackPlugin())
-        testPlugin.forEach {  it.setup(BaseObject()) }
+        assertTrue("no name", CorePlugin.name.isNotEmpty())
+        assertTrue("no name", UICorePlugin.name.isNotEmpty())
+        assertTrue("no name", ContainerPlugin.name.isNotEmpty())
+        assertTrue("no name", UIContainerPlugin.name.isNotEmpty())
+        assertTrue("no name", PlaybackPlugin.name.isNotEmpty())
     }
 }

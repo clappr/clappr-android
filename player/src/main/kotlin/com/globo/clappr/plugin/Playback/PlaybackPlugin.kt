@@ -4,11 +4,8 @@ import com.globo.clappr.base.BaseObject
 import com.globo.clappr.components.Playback
 import com.globo.clappr.plugin.UIPlugin
 
-open class PlaybackPlugin() : UIPlugin() {
-    override val name = "playbackplugin"
-
-    var playback : Playback? = null
-    override fun setup(component: BaseObject) {
-        playback = component as Playback
+open class PlaybackPlugin(val playback: Playback) : UIPlugin(playback) {
+    companion object {
+        const val name = "playbackplugin"
     }
 }
