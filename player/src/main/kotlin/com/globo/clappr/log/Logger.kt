@@ -9,33 +9,26 @@ class Logger {
         logLevel = level
     }
 
-    fun log(level: LogLevel, message: String) {
-        if (level <= logLevel) {
-            Log.v("Clappr", String.format("\n%s %s", level.description(), message))
-        }
-    }
-
     fun log(level: LogLevel, scope: String?, message: String) {
-        if (scope != null) {
-            log(level, String.format("[%s] %s", scope, message))
-        } else {
-            log(level, message)
+        if (level <= logLevel) {
+            val tag = scope ?: "clappr"
+            Log.v(tag , String.format("\n%s %s", level.description(), message))
         }
     }
 
-    fun error(message: String, scope: String?) {
+    fun error(message: String, scope: String? = null) {
         log(LogLevel.ERROR, scope, message)
     }
 
-    fun warning(message: String, scope: String?) {
+    fun warning(message: String, scope: String? = null) {
         log(LogLevel.WARNING, scope, message)
     }
 
-    fun info(message: String, scope: String?) {
+    fun info(message: String, scope: String? = null) {
         log(LogLevel.INFO, scope, message)
     }
 
-    fun debug(message: String, scope: String?) {
+    fun debug(message: String, scope: String? = null) {
         log(LogLevel.DEBUG, scope, message)
     }
 }
