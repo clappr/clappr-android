@@ -5,28 +5,29 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.ViewGroup
 
-//import com.globo.clappr.Player
+import com.globo.clappr.Player
+import com.globo.clappr.base.BaseObject
 
 class PlayerActivity : Activity() {
 
-//    private var player: Player? = null
+    private var player: Player? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
         if (savedInstanceState == null) {
-//            player = Player.newInstance()
-//            fragmentManager.beginTransaction().add(R.id.container, player).commit()
+            BaseObject.context = applicationContext
+            player = Player()
         }
-
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
-//                player!!.load("http://bem.tv/superMisto.mp4")
-            }
-        }, 100)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val viewGroup = findViewById(R.id.container) as ViewGroup
+        player?.attachTo(viewGroup)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
