@@ -6,6 +6,6 @@ import com.globo.clappr.plugin.UIPlugin
 
 open class ExoPlayerPlugin(val playback: Playback) : UIPlugin(playback) {
     companion object {
-        const val name = "playbackplugin"
+        const val name = "exoplayerplugin"
     }
 }
