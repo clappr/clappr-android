@@ -2,28 +2,16 @@ package com.globo.clappr.app
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-<<<<<<< 8408df23844c1459df7f39119caf27b12c2242e6
 import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
-
 import com.globo.clappr.Player
 import com.globo.clappr.base.BaseObject
 import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
-import com.globo.clappr.plugin.Loader
 import com.globo.clappr.playback.ExoPlayerPlayback
-import com.globo.clappr.plugin.Plugin
-import kotlin.reflect.KClass
-=======
-import android.view.ViewGroup
-
-import com.globo.clappr.Player
-import com.globo.clappr.base.BaseObject
->>>>>>> refactor(app): create player on main activity
+import com.globo.clappr.plugin.Loader
+import com.globo.clappr.plugin.Playback.ExoPlayerPlugin
 
 class PlayerActivity : Activity() {
 
@@ -44,6 +32,7 @@ class PlayerActivity : Activity() {
     override fun onResume() {
         super.onResume()
         val viewGroup = findViewById(R.id.container) as ViewGroup
+        ExoPlayerPlugin.containerView = viewGroup
         player?.attachTo(viewGroup)
     }
 
@@ -64,19 +53,19 @@ class PlayerActivity : Activity() {
         return super.onOptionsItemSelected(item)
     }
 
-    fun play(view : View){
+    fun play(view: View) {
         player?.core?.activeContainer?.playback?.play()
     }
 
-    fun stop(view : View){
+    fun stop(view: View) {
         player?.core?.activeContainer?.playback?.stop()
     }
 
-    fun seek(view : View){
+    fun seek(view: View) {
         player?.core?.activeContainer?.playback?.seek(30)
     }
 
-    fun pause(view : View){
+    fun pause(view: View) {
         player?.core?.activeContainer?.playback?.pause()
     }
 
