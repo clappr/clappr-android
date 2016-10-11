@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+<<<<<<< 8408df23844c1459df7f39119caf27b12c2242e6
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -17,6 +18,12 @@ import com.globo.clappr.plugin.Loader
 import com.globo.clappr.playback.ExoPlayerPlayback
 import com.globo.clappr.plugin.Plugin
 import kotlin.reflect.KClass
+=======
+import android.view.ViewGroup
+
+import com.globo.clappr.Player
+import com.globo.clappr.base.BaseObject
+>>>>>>> refactor(app): create player on main activity
 
 class PlayerActivity : Activity() {
 
@@ -36,10 +43,7 @@ class PlayerActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val viewGroup = findViewById(R.id.player) as FrameLayout
-        ExoPlayerPlayback.containerView = viewGroup
-        val duration = player?.core?.activeContainer?.playback?.duration
-
+        val viewGroup = findViewById(R.id.container) as ViewGroup
         player?.attachTo(viewGroup)
     }
 
