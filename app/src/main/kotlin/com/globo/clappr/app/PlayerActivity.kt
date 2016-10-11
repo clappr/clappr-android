@@ -9,6 +9,7 @@ import android.view.ViewGroup
 
 import com.globo.clappr.Player
 import com.globo.clappr.base.BaseObject
+import com.globo.clappr.plugin.Playback.ExoPlayerPlugin
 
 class PlayerActivity : Activity() {
 
@@ -26,6 +27,7 @@ class PlayerActivity : Activity() {
     override fun onResume() {
         super.onResume()
         val viewGroup = findViewById(R.id.container) as ViewGroup
+        ExoPlayerPlugin.containerView = viewGroup
         player?.attachTo(viewGroup)
     }
 
