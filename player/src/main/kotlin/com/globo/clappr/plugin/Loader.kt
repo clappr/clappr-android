@@ -1,67 +1,59 @@
 package com.globo.clappr.plugin
 
-import android.util.Log
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.components.Container
-import com.globo.clappr.components.Core
+import com.globo.clappr.base.NamedType
 import com.globo.clappr.components.Playback
-import com.globo.clappr.plugin.Container.ContainerPlugin
-import com.globo.clappr.plugin.Container.UIContainerPlugin
-import com.globo.clappr.plugin.Core.CorePlugin
-import com.globo.clappr.plugin.Core.UICorePlugin
-import com.globo.clappr.plugin.Playback.PlaybackPlugin
 import kotlin.reflect.*
-import kotlin.reflect.jvm.javaField
 
-class Loader(extraPlugins: List<KClass<out Plugin>> = listOf<KClass<out Plugin>>()) {
-    val defaultPlugins = arrayOf(
-            CorePlugin::class,
-            UICorePlugin::class,
-            ContainerPlugin::class,
-            UIContainerPlugin::class,
-            PlaybackPlugin::class)
+class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList()) {
+    companion object {
+        @JvmStatic val registeredPlugins = mutableMapOf<String, KClass<out Plugin>>()
+        @JvmStatic val registeredPlaybacks= mutableListOf<KClass<out Playback>>()
+
+        @JvmStatic
+        fun registerPlugin(pluginClass: KClass<out Plugin>): Boolean {
+            var pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
+            pluginName?.let {
+                if (pluginName.isNotEmpty()) {
+                    registeredPlugins.put(pluginName, pluginClass)
+                    return true
+                }
+            }
+            return false
+        }
+
+    }
 
     val externalPlugins = mutableListOf<KClass<out Plugin>>()
 
     val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
 
     init {
-        for (pluginClass in defaultPlugins) {
+        for (pluginClass in registeredPlugins.values) {
             addPlugin(pluginClass)
         }
 
-        externalPlugins.addAll(extraPlugins)
+        externalPlugins.addAll(extraPlugins.filter { !(it.companionObjectInstance as? NamedType)?.name.isNullOrEmpty() })
         for (pluginClass in externalPlugins) {
             addPlugin(pluginClass)
         }
     }
 
     fun loadPlugins(context: BaseObject) : List<Plugin> {
-        val loadedPlugins : MutableList<Plugin> = mutableListOf<Plugin>()
+        val loadedPlugins = mutableListOf<Plugin>()
         availablePlugins.values.forEach {
             val plugin = loadPlugin(context, it)
-            if (plugin != null) {
-                loadedPlugins.add(plugin)
-            }
+            plugin?.let { loadedPlugins.add(plugin) }
         }
         return loadedPlugins.toList()
     }
 
     private fun addPlugin(pluginClass: KClass<out Plugin>) {
-        var name : String? = null
-        val companion = pluginClass.companionObject
-        companion?.let {
-            for (property in companion.memberProperties) {
-                if (property.name == "name") {
-                    val field = property.javaField
-                    field?.let {
-                        name = field.get(null) as? String
-                    }
-                }
+        var name : String? = (pluginClass.companionObjectInstance as? NamedType)?.name
+        name?.let {
+            if (name.isNotEmpty()) {
+                availablePlugins.put(name, pluginClass)
             }
-        }
-        if (!name.isNullOrEmpty()) {
-            availablePlugins.put(name!!, pluginClass)
         }
     }
 
