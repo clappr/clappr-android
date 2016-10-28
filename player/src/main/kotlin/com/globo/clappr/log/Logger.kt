@@ -9,11 +9,22 @@ class Logger {
         logLevel = level
     }
 
-    fun log(level: LogLevel, scope: String?, message: String) {
+    fun log(level: LogLevel, scope: String? = null, message: String) {
         if (level <= logLevel) {
-            val tag = scope ?: "clappr"
-            Log.v(tag , String.format("\n%s %s", level.description(), message))
+            val tag = "clappr"
+            val formatted = formattedMessage(message, scope)
+
+            when (level) {
+                LogLevel.DEBUG -> Log.d(tag, formatted)
+                LogLevel.INFO -> Log.i(tag, formatted)
+                LogLevel.WARNING -> Log.w(tag, formatted)
+                LogLevel.ERROR -> Log.e(tag, formatted)
+            }
         }
+    }
+
+    fun formattedMessage(scope: String? = null, message: String): String {
+        return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 
     fun error(message: String, scope: String? = null) {
