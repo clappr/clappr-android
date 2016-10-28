@@ -9,7 +9,7 @@ class Logger {
         logLevel = level
     }
 
-    fun log(level: LogLevel, scope: String? = null, message: String) {
+    fun log(level: LogLevel, message: String, scope: String? = null) {
         if (level <= logLevel) {
             val tag = "clappr"
             val formatted = formattedMessage(message, scope)
@@ -23,23 +23,23 @@ class Logger {
         }
     }
 
-    fun formattedMessage(scope: String? = null, message: String): String {
+    fun formattedMessage(message: String, scope: String? = null): String {
         return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 
     fun error(message: String, scope: String? = null) {
-        log(LogLevel.ERROR, scope, message)
+        log(LogLevel.ERROR, message, scope)
     }
 
     fun warning(message: String, scope: String? = null) {
-        log(LogLevel.WARNING, scope, message)
+        log(LogLevel.WARNING, message, scope)
     }
 
     fun info(message: String, scope: String? = null) {
-        log(LogLevel.INFO, scope, message)
+        log(LogLevel.INFO, message, scope)
     }
 
     fun debug(message: String, scope: String? = null) {
-        log(LogLevel.DEBUG, scope, message)
+        log(LogLevel.DEBUG, message, scope)
     }
 }
