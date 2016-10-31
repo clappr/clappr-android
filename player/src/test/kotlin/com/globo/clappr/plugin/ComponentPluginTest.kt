@@ -2,15 +2,10 @@ package com.globo.clappr.plugin
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Container
-import com.globo.clappr.components.Core
-import com.globo.clappr.components.Playback
 import com.globo.clappr.plugin.Container.ContainerPlugin
 import com.globo.clappr.plugin.Container.UIContainerPlugin
 import com.globo.clappr.plugin.Core.CorePlugin
 import com.globo.clappr.plugin.Core.UICorePlugin
-import com.globo.clappr.plugin.Playback.PlaybackPlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -33,6 +28,5 @@ class ComponentPluginTest {
         assertTrue("no name", UICorePlugin.name.isNotEmpty())
         assertTrue("no name", ContainerPlugin.name.isNotEmpty())
         assertTrue("no name", UIContainerPlugin.name.isNotEmpty())
-        assertTrue("no name", PlaybackPlugin.name.isNotEmpty())
     }
 }

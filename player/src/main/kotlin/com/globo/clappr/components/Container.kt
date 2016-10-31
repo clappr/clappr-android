@@ -12,8 +12,6 @@ open class Container(val loader: Loader, val options: Options) : UIObject() {
 
     init {
         plugins = loader.loadPlugins(this)
-
-        playback = Playback(loader, options)
     }
 
 }

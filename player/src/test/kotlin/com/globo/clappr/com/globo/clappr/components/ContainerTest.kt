@@ -2,6 +2,7 @@ package com.globo.clappr.base
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Container
+import com.globo.clappr.plugin.Container.ContainerPlugin
 import com.globo.clappr.plugin.Loader
 import org.junit.*
 import org.junit.Assert.*
@@ -20,9 +21,9 @@ open class ContainerTest {
 
     @Test
     fun shouldLoadPlugins() {
+        Loader.registerPlugin(ContainerPlugin::class)
         val container = Container(Loader(), Options())
 
         assertTrue("no plugins", container.plugins.isNotEmpty())
-        assertNotNull("no playback", container.playback)
     }
 }
