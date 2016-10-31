@@ -1,6 +1,5 @@
 package com.globo.clappr.plugin.Playback
 
-import android.graphics.Color
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
@@ -8,20 +7,34 @@ import android.view.ViewGroup
 import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
+import com.globo.clappr.components.PlaybackSupportInterface
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
+import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.source.dash.DashMediaSource
+import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
+import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.util.Util
 import java.io.IOException
 
 open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.EventListener {
-    companion object {
+    companion object : PlaybackSupportInterface {
+        override fun supportsSource(source: String, mimeType: String?): Boolean {
+            val uri = Uri.parse(source)
+            val type = Util.inferContentType(uri.lastPathSegment)
+            return type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
+        }
+
         const val name = "exoplayerplugin"
 
         var containerView: ViewGroup? = null
@@ -31,7 +44,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     val bandwidthMeter = DefaultBandwidthMeter()
     var playerView = SimpleExoPlayerView(context)
     val mediaSourceLogger = MediaSourceLogger()
-    val urlString = "http://qthttp.apple.com.edgesuite.net/1010qwoeiuryfg/sl.m3u8"
+    val urlString = "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
     var player: SimpleExoPlayer? = null
     var currentState = Playback.State.NONE
 
@@ -93,8 +106,16 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     }
 
     fun mediaSource(uri: Uri): MediaSource {
+        val type = Util.inferContentType(uri.lastPathSegment)
         val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
-        return HlsMediaSource(uri, dataSourceFactory, mainHandler, mediaSourceLogger)
+
+        when (type) {
+            C.TYPE_DASH -> return DashMediaSource(uri, dataSourceFactory, DefaultDashChunkSource.Factory(dataSourceFactory), mainHandler, mediaSourceLogger)
+            C.TYPE_SS -> return SsMediaSource(uri, dataSourceFactory, DefaultSsChunkSource.Factory(dataSourceFactory), mainHandler, mediaSourceLogger)
+            C.TYPE_HLS -> return HlsMediaSource(uri, dataSourceFactory, mainHandler, mediaSourceLogger)
+            C.TYPE_OTHER -> return ExtractorMediaSource(uri, dataSourceFactory, DefaultExtractorsFactory(), mainHandler, mediaSourceLogger)
+            else -> throw IllegalStateException("Unsupported type: " + type)
+        }
     }
 
     fun updateState(playWhenReady: Boolean, playbackState: Int) {
@@ -122,11 +143,20 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
         //log error, dispatch event
     }
 
-    override fun onLoadingChanged(isLoading: Boolean) {}
-    override fun onPositionDiscontinuity() {}
-    override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {}
+    override fun onLoadingChanged(isLoading: Boolean) {
+    }
 
-    class MediaSourceLogger() : AdaptiveMediaSourceEventListener {
+    override fun onPositionDiscontinuity() {
+    }
+
+    override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+    }
+
+    class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
+        override fun onLoadError(error: IOException?) {
+            Log.i("EXOPlayer", "onLoadError")
+        }
+
         override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
             Log.i("EXOPlayer", "onLoadStarted")
         }
