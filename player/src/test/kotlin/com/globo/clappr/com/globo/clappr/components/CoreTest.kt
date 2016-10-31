@@ -2,6 +2,7 @@ package com.globo.clappr.base
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Core
+import com.globo.clappr.plugin.Core.CorePlugin
 import com.globo.clappr.plugin.Loader
 import org.junit.*
 import org.junit.Assert.*
@@ -20,6 +21,7 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlugins() {
+        Loader.registerPlugin(CorePlugin::class)
         val core = Core(Loader(), Options())
 
         assertTrue("no plugins", core.plugins.isNotEmpty())
