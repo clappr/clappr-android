@@ -4,4 +4,50 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.globo.clappr.app.PlayerActivity"
-    tools:ignore="MergeRootFrame" />
+    tools:ignore="MergeRootFrame">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="play"
+                android:text="Play" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="pause"
+                android:text="Pause" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="seek"
+                android:text="Seek" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:onClick="stop"
+                android:text="Stop" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/holo_red_dark"/>
+    </LinearLayout>
+
+</FrameLayout>

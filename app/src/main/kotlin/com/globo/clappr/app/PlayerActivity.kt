@@ -5,7 +5,9 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 
 import com.globo.clappr.Player
 import com.globo.clappr.base.BaseObject
@@ -26,8 +28,10 @@ class PlayerActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val viewGroup = findViewById(R.id.container) as ViewGroup
+        val viewGroup = findViewById(R.id.player) as FrameLayout
         ExoPlayerPlugin.containerView = viewGroup
+        val duration = player?.core?.activeContainer?.playback?.duration
+
         player?.attachTo(viewGroup)
     }
 
@@ -47,4 +51,21 @@ class PlayerActivity : Activity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    fun play(view : View){
+        player?.core?.activeContainer?.playback?.play()
+    }
+
+    fun stop(view : View){
+        player?.core?.activeContainer?.playback?.stop()
+    }
+
+    fun seek(view : View){
+        player?.core?.activeContainer?.playback?.seek(30)
+    }
+
+    fun pause(view : View){
+        player?.core?.activeContainer?.playback?.pause()
+    }
+
 }
