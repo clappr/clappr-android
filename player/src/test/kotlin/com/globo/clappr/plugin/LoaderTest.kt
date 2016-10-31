@@ -3,7 +3,10 @@ package com.globo.clappr.plugin
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
 import com.globo.clappr.base.NamedType
+import com.globo.clappr.base.Options
 import com.globo.clappr.components.Core
+import com.globo.clappr.components.Playback
+import com.globo.clappr.components.PlaybackSupportInterface
 import com.globo.clappr.plugin.Core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
@@ -32,9 +35,31 @@ class LoaderTest {
         }
     }
 
+    class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
+        companion object: PlaybackSupportInterface  {
+            override val name = "testplayback"
+            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+        }
+    }
+
+    class TestPlaybackDash(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
+        companion object: PlaybackSupportInterface  {
+            override val name = "testplaybackdash"
+            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+        }
+    }
+
+    class TestDuplicatePlayback(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
+        companion object: PlaybackSupportInterface  {
+            override val name = "testplayback"
+            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+        }
+    }
+
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
+        Loader.registeredPlaybacks.clear()
         Loader.registeredPlugins.clear()
     }
 
@@ -78,4 +103,31 @@ class LoaderTest {
         assertTrue("invalid external plugin", TestCorePlugin::class == loaderExternal.availablePlugins["coreplugin"])
     }
 
+    @Test
+    fun shouldHaveAnEmptyInitialPlaybackList() {
+        var loader = Loader()
+        assertTrue("default playbacks should be empty", loader.availablePlaybacks.isEmpty())
+    }
+
+    @Test
+    fun shouldAllowRegisteringPlaybacks() {
+        Loader.registerPlayback(TestPlaybackMp4::class)
+        var loader = Loader()
+        assertTrue("default playbacks should not be empty", loader.availablePlaybacks.isNotEmpty())
+    }
+
+    @Test
+    fun shouldOverwritePlaybacksWithDuplicateNames() {
+        Loader.registerPlayback(TestPlaybackMp4::class)
+        Loader.registerPlayback(TestDuplicatePlayback::class)
+        var loader = Loader()
+        assertTrue("should not have duplicate playbacks", loader.availablePlaybacks.size == 1)
+    }
+
+    @Test
+    fun shouldInstantiatePlaybackWhichCanPlaySource() {
+        Loader.registerPlayback(TestPlaybackMp4::class)
+        var loader = Loader()
+        assertTrue("should not have duplicate playbacks", loader.availablePlaybacks.size == 1)
+    }
 }
