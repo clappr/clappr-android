@@ -47,6 +47,8 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     val urlString = "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
     var player: SimpleExoPlayer? = null
     var currentState = Playback.State.NONE
+    val timeElapsedHandler = Handler()
+    val timeElapsedRunnable = TimeElapsedRunnable(timeElapsedHandler, { dispatchTimeElapsedEvents() })
 
     override val duration: Double
         get() = player?.duration?.toDouble() ?: 0.0
@@ -76,6 +78,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
 
     override fun stop() {
         player?.stop()
+        timeElapsedHandler.removeCallbacks(timeElapsedRunnable)
     }
 
     override fun seek(seconds: Int) {
@@ -84,6 +87,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
 
     override fun load(source: String, mimeType: String?) {
         player?.prepare(mediaSource(Uri.parse(source)))
+        timeElapsedHandler.post(timeElapsedRunnable)
     }
 
     init {
@@ -118,6 +122,11 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
         }
     }
 
+    fun dispatchTimeElapsedEvents() {
+        //dispatch buffer and time elapsed events
+        Log.i("Exoplayer", "Time elapsed event")
+    }
+
     fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
@@ -125,6 +134,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
             }
             ExoPlayer.STATE_ENDED -> {
                 currentState = State.IDLE
+                stop()
             }
             ExoPlayer.STATE_BUFFERING -> {
                 currentState = State.STALLED
@@ -150,6 +160,13 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     }
 
     override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+    }
+
+    class TimeElapsedRunnable(val handler: Handler, val function: () -> Unit): Runnable {
+        override fun run() {
+            function()
+            handler.postDelayed(this, 200)
+        }
     }
 
     class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
