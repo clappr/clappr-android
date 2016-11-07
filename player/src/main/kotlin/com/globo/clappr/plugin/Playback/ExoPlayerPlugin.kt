@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
-import com.globo.clappr.base.ClapprEvent
+import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
@@ -36,6 +36,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
         }
 
         const val name = "exoplayerplugin"
+        const val TAG = "Exoplayer"
 
         var containerView: ViewGroup? = null
     }
@@ -47,6 +48,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     val urlString = "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
     var player: SimpleExoPlayer? = null
     var currentState = Playback.State.NONE
+
     val timeElapsedHandler = Handler()
     val timeElapsedRunnable = TimeElapsedRunnable(timeElapsedHandler, { dispatchTimeElapsedEvents() })
 
@@ -68,20 +70,27 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
         get() = duration != 0.0
 
     override fun play() {
-        trigger(ClapprEvent.WILL_PLAY.value)
+        triggerEventWithLog(Event.WILL_PLAY)
         player?.playWhenReady = true
     }
 
     override fun pause() {
+        triggerEventWithLog(Event.WILL_PAUSE)
+        //Trigger WILL_PAUSE
         player?.playWhenReady = false
     }
 
     override fun stop() {
+
+        triggerEventWithLog(Event.WILL_STOP)
         player?.stop()
         timeElapsedHandler.removeCallbacks(timeElapsedRunnable)
     }
 
     override fun seek(seconds: Int) {
+
+        triggerEventWithLog(Event.WILL_SEEK)
+
         player?.seekTo((seconds * 1000).toLong())
     }
 
@@ -124,29 +133,49 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
 
     fun dispatchTimeElapsedEvents() {
         //dispatch buffer and time elapsed events
-        Log.i("Exoplayer", "Time elapsed event")
+        val percentPlayed = player?.currentPosition!! / player?.duration!!
+        Log.i(TAG, "Time elapsed event: buffer ${player?.bufferedPercentage}%")
+        Log.i(TAG, "Time elapsed event:  video duration ${player?.duration}")
+        Log.i(TAG, "Time elapsed event:  video current position ${player?.currentPosition}")
+        Log.i(TAG, "Time elapsed event:  video percent played ${player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100}")
+
     }
 
     fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
                 currentState = State.IDLE
+                triggerEventWithLog(Event.DID_STOP)
             }
             ExoPlayer.STATE_ENDED -> {
                 currentState = State.IDLE
+                triggerEventWithLog(Event.ENDED)
                 stop()
             }
             ExoPlayer.STATE_BUFFERING -> {
                 currentState = State.STALLED
+                triggerEventWithLog(Event.STALLED)
             }
             ExoPlayer.STATE_READY -> {
-                currentState = if (playWhenReady) State.PLAYING else State.PAUSED
+                if (playWhenReady) {
+                    currentState = State.PLAYING
+                    triggerEventWithLog(Event.PLAYING)
+                } else {
+                    currentState = State.PAUSED
+                    triggerEventWithLog(Event.DID_PAUSE)
+                }
             }
         }
     }
 
+
+    private fun triggerEventWithLog(event: Event) {
+        trigger(event.value)
+        Log.i(TAG, event.value)
+    }
+
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-        updateState(playWhenReady, playbackState)
+            updateState(playWhenReady, playbackState)
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
@@ -162,7 +191,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
     }
 
-    class TimeElapsedRunnable(val handler: Handler, val function: () -> Unit): Runnable {
+    class TimeElapsedRunnable(val handler: Handler, val function: () -> Unit) : Runnable {
         override fun run() {
             function()
             handler.postDelayed(this, 200)

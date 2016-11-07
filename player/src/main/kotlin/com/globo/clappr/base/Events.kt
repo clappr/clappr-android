@@ -3,6 +3,11 @@ package com.globo.clappr.base
 enum class Event(val value: String) {
     READY("ready"),
     ERROR("error"),
+    IDLE("idle"),
+    PLAY("play"),
+    STOP("stop"),
+    SEEK("seek"),
+    PAUSE("pause"),
     WILL_PLAY("willPlay"),
     PLAYING("playing"),
     WILL_PAUSE("willPause"),
@@ -11,5 +16,6 @@ enum class Event(val value: String) {
     WILL_STOP("willStop"),
     DID_STOP("didStop"),
     DID_COMPLETE("didComplete"),
-    STALLED("stalled")
+    STALLED("stalled"),
+    ENDED("ended"),
 }
