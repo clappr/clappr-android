@@ -16,6 +16,6 @@ enum class Event(val value: String) {
     WILL_STOP("willStop"),
     DID_STOP("didStop"),
     DID_COMPLETE("didComplete"),
-    STALLED("stalled"),
     ENDED("ended"),
+    STALLED("stalled"),
 }
