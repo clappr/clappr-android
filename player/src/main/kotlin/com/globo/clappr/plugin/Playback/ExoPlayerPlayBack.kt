@@ -26,8 +26,9 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import java.io.IOException
+import java.util.*
 
-open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.EventListener {
+open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.EventListener {
     companion object : PlaybackSupportInterface {
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
@@ -36,7 +37,7 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
         }
 
         const val name = "exoplayerplugin"
-        const val TAG = "Exoplayer"
+        const val TAG = "ExoplayerEvent"
 
         var containerView: ViewGroup? = null
     }
@@ -48,9 +49,8 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     val urlString = "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
     var player: SimpleExoPlayer? = null
     var currentState = Playback.State.NONE
-
-    val timeElapsedHandler = Handler()
-    val timeElapsedRunnable = TimeElapsedRunnable(timeElapsedHandler, { dispatchTimeElapsedEvents() })
+    private var trackSelector: DefaultTrackSelector? = null
+    var timeElapsedEventsDispatcher: TimeElapsedManager? = null
 
     override val duration: Double
         get() = player?.duration?.toDouble() ?: 0.0
@@ -71,20 +71,20 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
 
     override fun play() {
         triggerEventWithLog(ClapprEvent.WILL_PLAY)
+        if (currentState == State.IDLE) {
+            load(urlString, null)
+        }
         player?.playWhenReady = true
     }
 
     override fun pause() {
         triggerEventWithLog(ClapprEvent.WILL_PAUSE)
-        //Trigger WILL_PAUSE
         player?.playWhenReady = false
     }
 
     override fun stop() {
-
         triggerEventWithLog(ClapprEvent.WILL_STOP)
         player?.stop()
-        timeElapsedHandler.removeCallbacks(timeElapsedRunnable)
     }
 
     override fun seek(seconds: Int) {
@@ -96,21 +96,25 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
 
     override fun load(source: String, mimeType: String?) {
         player?.prepare(mediaSource(Uri.parse(source)))
-        timeElapsedHandler.post(timeElapsedRunnable)
     }
 
     init {
         setupPlayer()
+        setUpTimeElapsedCallBacks()
         load(urlString, null)
     }
 
     fun setupPlayer() {
         val videoTrackSelectionFactory = AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
-        val trackSelector = DefaultTrackSelector(mainHandler, videoTrackSelectionFactory)
+        trackSelector = DefaultTrackSelector(mainHandler, videoTrackSelectionFactory)
         player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, DefaultLoadControl())
         player?.playWhenReady = true
         player?.addListener(this)
         setupPlayerView()
+    }
+
+    private fun setUpTimeElapsedCallBacks() {
+        timeElapsedEventsDispatcher = TimeElapsedManager({ dispatchTimeElapsedEvents() })
     }
 
     fun setupPlayerView() {
@@ -132,20 +136,19 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     }
 
     fun dispatchTimeElapsedEvents() {
-        //dispatch buffer and time elapsed events
-        val percentPlayed = player?.currentPosition!! / player?.duration!!
         Log.i(TAG, "Time elapsed event: buffer ${player?.bufferedPercentage}%")
-        Log.i(TAG, "Time elapsed event:  video duration ${player?.duration}")
-        Log.i(TAG, "Time elapsed event:  video current position ${player?.currentPosition}")
-        Log.i(TAG, "Time elapsed event:  video percent played ${player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100}")
+        Log.i(TAG, "Time elapsed event: video percent played ${getPercentPlayed().toInt()}%")
 
     }
+
+    private fun getPercentPlayed() = player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100
 
     fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
                 currentState = State.IDLE
                 triggerEventWithLog(ClapprEvent.DID_STOP)
+                stopTimeElapsedCallBacks()
             }
             ExoPlayer.STATE_ENDED -> {
                 currentState = State.IDLE
@@ -160,12 +163,22 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
                 if (playWhenReady) {
                     currentState = State.PLAYING
                     triggerEventWithLog(ClapprEvent.PLAYING)
+                    startTimeElapsedCallBacks()
                 } else {
                     currentState = State.PAUSED
                     triggerEventWithLog(ClapprEvent.DID_PAUSE)
                 }
             }
         }
+    }
+
+    private fun startTimeElapsedCallBacks() {
+        timeElapsedEventsDispatcher?.start()
+    }
+
+    private fun stopTimeElapsedCallBacks() {
+        timeElapsedEventsDispatcher?.stop()
+
     }
 
 
@@ -175,11 +188,11 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     }
 
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            updateState(playWhenReady, playbackState)
+        updateState(playWhenReady, playbackState)
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
-        //log error, dispatch event
+        triggerEventWithLog(ClapprEvent.ERROR)
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
@@ -191,11 +204,24 @@ open class ExoPlayerPlugin(options: Options) : Playback(options), ExoPlayer.Even
     override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
     }
 
-    class TimeElapsedRunnable(val handler: Handler, val function: () -> Unit) : Runnable {
-        override fun run() {
-            function()
-            handler.postDelayed(this, 200)
+    class TimeElapsedManager(val callBack: () -> Unit) {
+
+        var timer: Timer? = null
+
+        fun start() {
+            stop()
+            timer = Timer()
+            timer?.scheduleAtFixedRate(object : TimerTask() {
+                override fun run() {
+                    callBack()
+                }
+            }, 0, 200)
         }
+
+        fun stop() {
+            timer?.cancel()
+        }
+
     }
 
     class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
