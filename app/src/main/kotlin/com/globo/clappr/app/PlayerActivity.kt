@@ -11,7 +11,7 @@ import android.widget.FrameLayout
 
 import com.globo.clappr.Player
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.plugin.Playback.ExoPlayerPlugin
+import com.globo.clappr.plugin.Playback.ExoPlayerPlayBack
 
 class PlayerActivity : Activity() {
 
@@ -29,7 +29,7 @@ class PlayerActivity : Activity() {
     override fun onResume() {
         super.onResume()
         val viewGroup = findViewById(R.id.player) as FrameLayout
-        ExoPlayerPlugin.containerView = viewGroup
+        ExoPlayerPlayBack.containerView = viewGroup
         val duration = player?.core?.activeContainer?.playback?.duration
 
         player?.attachTo(viewGroup)
