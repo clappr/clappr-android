@@ -67,7 +67,7 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
         get() = currentState == State.PLAYING
 
     override val canSeek: Boolean
-        get() = duration != 0.0
+        get() = duration != 0.0 && currentState != State.IDLE
 
     override fun play() {
         triggerEventWithLog(ClapprEvent.WILL_PLAY)
@@ -181,7 +181,6 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
 
     }
 
-
     private fun triggerEventWithLog(event: ClapprEvent) {
         trigger(event.value)
         Log.i(TAG, event.value)
@@ -196,6 +195,7 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
+
     }
 
     override fun onPositionDiscontinuity() {
@@ -221,7 +221,6 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
         fun stop() {
             timer?.cancel()
         }
-
     }
 
     class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
