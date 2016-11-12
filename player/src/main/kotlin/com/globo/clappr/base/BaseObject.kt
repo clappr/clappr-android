@@ -12,13 +12,14 @@ open class BaseObject() : EventInterface {
         const val CONTEXT_KEY  = "clappr:baseobject:context"
         const val USERDATA_KEY = "clappr:baseobject:userdata"
 
+        @JvmStatic
         var context: Context? = null
     }
 
-    val context: Context
     init {
-        context = Companion.context!!
+        context ?: throw IllegalStateException("Context should be provided prior to creating an instance of BaseObject")
     }
+
     override val id =  Utils.uniqueId("o")
 
     private var receivers: MutableMap<String, BroadcastReceiver> = hashMapOf()

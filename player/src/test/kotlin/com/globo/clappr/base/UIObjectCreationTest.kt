@@ -12,7 +12,7 @@ import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
-public open class UIObjectCreationTest {
+open class UIObjectCreationTest {
     var context: Context? = null
 
     @Before
@@ -20,7 +20,7 @@ public open class UIObjectCreationTest {
         BaseObject.context = null
     }
 
-    @Test(expected = kotlin.KotlinNullPointerException::class)
+    @Test(expected = IllegalStateException::class)
     fun uiObjectWithoutContext() {
         var uo = UIObject()
     }

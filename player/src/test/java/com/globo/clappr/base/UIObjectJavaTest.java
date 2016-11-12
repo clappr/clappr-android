@@ -23,7 +23,7 @@ public class UIObjectJavaTest {
         BaseObject.Companion.setContext(null);
     }
 
-    @Test(expected=kotlin.KotlinNullPointerException.class)
+    @Test(expected=IllegalStateException.class)
     public void uiObjectWithoutContext() {
         UIObject uo = new UIObject();
     }

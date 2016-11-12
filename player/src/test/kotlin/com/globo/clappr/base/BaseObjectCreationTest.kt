@@ -19,7 +19,7 @@ public open class BaseObjectCreationTest {
         BaseObject.context = null
     }
 
-    @Test(expected = kotlin.KotlinNullPointerException::class)
+    @Test(expected = IllegalStateException::class)
     fun baseObjectWithoutContext() {
         var bo = BaseObject()
     }
