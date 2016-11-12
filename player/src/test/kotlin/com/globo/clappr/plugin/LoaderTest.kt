@@ -7,7 +7,7 @@ import com.globo.clappr.base.Options
 import com.globo.clappr.components.Core
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
-import com.globo.clappr.plugin.Core.CorePlugin
+import com.globo.clappr.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -35,17 +35,24 @@ class LoaderTest {
         }
     }
 
-    class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
+    class TestPlaybackAny(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
         companion object: PlaybackSupportInterface  {
             override val name = "testplayback"
             override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
         }
     }
 
+    class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
+        companion object: PlaybackSupportInterface  {
+            override val name = "testplayback"
+            override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mp4") }
+        }
+    }
+
     class TestPlaybackDash(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
         companion object: PlaybackSupportInterface  {
             override val name = "testplaybackdash"
-            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+            override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mpd") }
         }
     }
 
@@ -59,8 +66,8 @@ class LoaderTest {
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
-        Loader.registeredPlaybacks.clear()
-        Loader.registeredPlugins.clear()
+        Loader.clearPlaybacks()
+        Loader.clearPlugins()
     }
 
     @Test
@@ -105,14 +112,14 @@ class LoaderTest {
 
     @Test
     fun shouldHaveAnEmptyInitialPlaybackList() {
-        var loader = Loader()
+        val loader = Loader()
         assertTrue("default playbacks should be empty", loader.availablePlaybacks.isEmpty())
     }
 
     @Test
     fun shouldAllowRegisteringPlaybacks() {
         Loader.registerPlayback(TestPlaybackMp4::class)
-        var loader = Loader()
+        val loader = Loader()
         assertTrue("default playbacks should not be empty", loader.availablePlaybacks.isNotEmpty())
     }
 
@@ -120,14 +127,29 @@ class LoaderTest {
     fun shouldOverwritePlaybacksWithDuplicateNames() {
         Loader.registerPlayback(TestPlaybackMp4::class)
         Loader.registerPlayback(TestDuplicatePlayback::class)
-        var loader = Loader()
+        val loader = Loader()
         assertTrue("should not have duplicate playbacks", loader.availablePlaybacks.size == 1)
+    }
+
+    @Test
+    fun shouldInstantiatePlayback() {
+        Loader.registerPlayback(TestPlaybackAny::class)
+        val loader = Loader()
+        val playback = loader.loadPlayback("some-source.mp4", null, Options())
+        assertNotNull("should have loaded playback", playback)
     }
 
     @Test
     fun shouldInstantiatePlaybackWhichCanPlaySource() {
         Loader.registerPlayback(TestPlaybackMp4::class)
-        var loader = Loader()
-        assertTrue("should not have duplicate playbacks", loader.availablePlaybacks.size == 1)
+        Loader.registerPlayback(TestPlaybackDash::class)
+        val loader = Loader()
+        var playback = loader.loadPlayback("some-source.mp4", null, Options())
+        assertNotNull("should have loaded playback", playback)
+        assertTrue("should load mp4 playback", playback is TestPlaybackMp4)
+
+        playback = loader.loadPlayback("some-source.mpd", null, Options())
+        assertNotNull("should have loaded playback", playback)
+        assertTrue("should load dash playback", playback is TestPlaybackDash)
     }
 }
