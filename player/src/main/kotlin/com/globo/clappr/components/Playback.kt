@@ -3,12 +3,13 @@ package com.globo.clappr.components
 import com.globo.clappr.base.BaseObject
 import com.globo.clappr.base.NamedType
 import com.globo.clappr.base.Options
+import kotlin.reflect.companionObjectInstance
 
 interface PlaybackSupportInterface: NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean
 }
 
-abstract class Playback(var source: String, var mimeType: String? = null, val options: Options) : BaseObject(), NamedType {
+abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : BaseObject(), NamedType {
 
     enum class State {
         NONE, IDLE, PLAYING, PAUSED, STALLED
@@ -17,8 +18,15 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     companion object: PlaybackSupportInterface {
         override val name = ""
 
+        @JvmStatic
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             return false
+        }
+    }
+
+    init {
+        if (!supportsSource(source, mimeType)) {
+            throw IllegalArgumentException("Attempt to initialize a playback with an unsupported source")
         }
     }
 
@@ -44,6 +52,11 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     fun pause() {}
     fun stop() {}
     fun seek(seconds: Int) {}
+
+    internal fun supportsSource(source: String, mimeType: String?): Boolean {
+        val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
+        return companion?.supportsSource(source, mimeType) ?: false
+    }
 
     fun load(source: String, mimeType: String? = null): Boolean {
         val supported = supportsSource(source, mimeType)
