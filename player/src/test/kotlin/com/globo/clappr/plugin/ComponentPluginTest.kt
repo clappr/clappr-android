@@ -2,10 +2,10 @@ package com.globo.clappr.plugin
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.plugin.Container.ContainerPlugin
-import com.globo.clappr.plugin.Container.UIContainerPlugin
-import com.globo.clappr.plugin.Core.CorePlugin
-import com.globo.clappr.plugin.Core.UICorePlugin
+import com.globo.clappr.plugin.container.ContainerPlugin
+import com.globo.clappr.plugin.container.UIContainerPlugin
+import com.globo.clappr.plugin.core.CorePlugin
+import com.globo.clappr.plugin.core.UICorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

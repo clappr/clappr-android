@@ -1,4 +1,4 @@
-package com.globo.clappr.plugin.Container
+package com.globo.clappr.plugin.container
 
 import com.globo.clappr.base.NamedType
 import com.globo.clappr.components.Container

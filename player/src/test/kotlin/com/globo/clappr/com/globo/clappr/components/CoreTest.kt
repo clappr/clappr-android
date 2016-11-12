@@ -2,7 +2,7 @@ package com.globo.clappr.base
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Core
-import com.globo.clappr.plugin.Core.CorePlugin
+import com.globo.clappr.plugin.core.CorePlugin
 import com.globo.clappr.plugin.Loader
 import org.junit.*
 import org.junit.Assert.*
