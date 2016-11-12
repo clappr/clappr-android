@@ -60,6 +60,16 @@ open class BaseObjectTest {
         assertTrue("second event not triggered", secondCallbackCalled)
     }
 
+    @Test
+    fun onCallbackShouldOnlyBeRegisteredOnce() {
+        var numberOfCalls = 0
+        val localCallback = Callback.wrap { bundle: Bundle? -> numberOfCalls += 1 }
+        baseObject?.on(eventName, localCallback)
+        baseObject?.on(eventName, localCallback)
+
+        baseObject?.trigger(eventName)
+
+        assertEquals("event handler should only be called once", numberOfCalls, 1)
     }
 
     @Test
