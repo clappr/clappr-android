@@ -2,7 +2,14 @@ package com.globo.clappr.base
 
 import android.os.Bundle
 
-class Callback(val callback: (Bundle?) -> Unit) { fun invoke(bundle: Bundle?) = callback(bundle)}
+interface Callback {
+    companion object {
+        inline fun wrap(crossinline callback: (Bundle?) -> Unit) = object: Callback {
+            override fun invoke(bundle: Bundle?) = callback(bundle)
+        }
+    }
+    fun invoke(bundle: Bundle?)
+}
 
 interface EventInterface {
     val id : String
