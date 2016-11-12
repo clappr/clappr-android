@@ -44,8 +44,14 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     fun pause() {}
     fun stop() {}
     fun seek(seconds: Int) {}
-    fun seekPercentage(percent: Double) {}
 
-    fun load(source: String, mimeType: String? = null): Boolean { return supportsSource(source, mimeType) }
+    fun load(source: String, mimeType: String? = null): Boolean {
+        val supported = supportsSource(source, mimeType)
+        if (supported) {
+            this.source = source
+            this.mimeType = mimeType
+        }
+        return supported
+    }
 }
 
