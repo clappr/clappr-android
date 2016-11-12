@@ -23,10 +23,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     }
 
     val duration: Double
-        get() = 0.0
+        get() = Double.NaN
 
     val position: Double
-        get() = 0.0
+        get() = Double.NaN
 
     val state: State
         get() = State.NONE
