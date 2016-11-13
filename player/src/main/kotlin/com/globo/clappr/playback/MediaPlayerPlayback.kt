@@ -60,12 +60,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             updateState(State.IDLE)
         }
 
-        try {
-            mediaPlayer.setDataSource(source)
-        } catch (e: Exception) {
-            Log.e(TAG, "MediaPlayer error", e)
-            throw e
-        }
+        mediaPlayer.setDataSource(source)
 
         // TODO
         mediaPlayer.setDisplay(null)
