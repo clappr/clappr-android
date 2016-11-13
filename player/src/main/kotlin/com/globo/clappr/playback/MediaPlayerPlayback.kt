@@ -116,8 +116,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 mediaPlayer.prepareAsync()
             }
             if (state != State.PLAYING) {
-                // TODO
-                // willPlay
+                trigger(ClapprEvent.WILL_PLAY.value)
             }
             return true
         } else {
@@ -140,8 +139,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                     }
                 }
                 State.PLAYING -> {
-                    // TODO
-                    // playing
+                    trigger(ClapprEvent.PLAYING.value)
                 }
             }
         }
