@@ -2,36 +2,35 @@ package com.globo.clappr.playback
 
 import android.media.AudioManager
 import android.media.MediaPlayer
-import android.media.TimedMetaData
-import android.media.TimedText
 import android.util.Log
+import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
+import com.globo.clappr.components.PlaybackSupportInterface
 
-enum class PLAYBACK_STATE {
-    NONE,
-    IDLE,
-    PLAYING,
-    PAUSED,
-    STALLED
-}
 
-enum class MEDIA_TYPE {
-    UNKNOWN,
-    VOD,
-    LIVE
-}
+class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options) {
 
-class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var options: Options?): Playback(options) {
+    enum class MediaType {
+        UNKNOWN,
+        VOD,
+        LIVE
+    }
 
-    companion object {
+    companion object: PlaybackSupportInterface {
         val TAG: String = "MediaPlayerPlayback"
-        fun supportsSource(source: String, mediaType: String? = null) : Boolean {
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean {
             return true
         }
+
+        override val name: String?
+            get() = "media_player"
     }
 
     private var mediaPlayer: MediaPlayer
+    private var internalState: State = State.NONE
+    private var type: MediaType = MediaType.UNKNOWN
 
     init {
         mediaPlayer = MediaPlayer()
@@ -50,7 +49,7 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
 
         mediaPlayer.setOnPreparedListener {
             mediaPlayer.start()
-            updateState(PLAYBACK_STATE.PLAYING)
+            updateState(State.PLAYING)
         }
 
         mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
@@ -58,10 +57,15 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
         }
 
         mediaPlayer.setOnCompletionListener {
-            updateState(PLAYBACK_STATE.IDLE)
+            updateState(State.IDLE)
         }
 
-        mediaPlayer.setDataSource(source)
+        try {
+            mediaPlayer.setDataSource(source)
+        } catch (e: Exception) {
+            Log.e(TAG, "MediaPlayer error", e)
+            throw e
+        }
 
         // TODO
         mediaPlayer.setDisplay(null)
@@ -69,12 +73,15 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setScreenOnWhilePlaying(true)
 
-        updateState(PLAYBACK_STATE.IDLE)
+        updateState(State.IDLE)
     }
 
-    val duration: Double
+    override val state: State
+        get() = internalState
+
+    override val duration: Double
         get() {
-            if (state != PLAYBACK_STATE.NONE) {
+            if (state != State.NONE) {
                 val mediaDuration = mediaPlayer.duration
                 if (mediaDuration > -1) {
                     return mediaDuration / 1000.0
@@ -84,9 +91,9 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
             return Double.NaN
         }
 
-    val position: Double
+    override val position: Double
         get() {
-            if (state != PLAYBACK_STATE.NONE) {
+            if (state != State.NONE) {
                 val currentPosition = mediaPlayer.currentPosition
                 if (currentPosition > -1) {
                     return currentPosition / 1000.0
@@ -96,33 +103,24 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
             return Double.NaN
         }
 
-    var state: PLAYBACK_STATE = PLAYBACK_STATE.NONE
-    var type: MEDIA_TYPE = MEDIA_TYPE.UNKNOWN
+    override val canPlay: Boolean
+        get() = (state != State.NONE) && (type != MediaType.UNKNOWN)
+    override val canPause: Boolean
+        get() = (state != State.NONE) && (type == MediaType.VOD)
+    override val canSeek: Boolean
+        get() = (state != State.NONE) && (type == MediaType.VOD)
 
-    val canPlay: Boolean
-        get() = (state != PLAYBACK_STATE.NONE) && (type != MEDIA_TYPE.UNKNOWN)
-    val canPause: Boolean
-        get() = (state != PLAYBACK_STATE.NONE) && (type == MEDIA_TYPE.VOD)
-    val canSeek: Boolean
-        get() = (state != PLAYBACK_STATE.NONE) && (type == MEDIA_TYPE.VOD)
-
+    // TODO
     fun configure(options: Options) {
-        this.options = options
+        // this.options = options
     }
 
-    fun load(source: String, mimeType: String?): Boolean {
-        this.source = source
-        this.mimeType = mimeType
-
-        return true
-    }
-
-    fun play(): Boolean {
+    override fun play(): Boolean {
         if (canPlay) {
-            if (state == PLAYBACK_STATE.IDLE) {
+            if (state == State.IDLE) {
                 mediaPlayer.prepareAsync()
             }
-            if (state != PLAYBACK_STATE.PLAYING) {
+            if (state != State.PLAYING) {
                 // TODO
                 // willPlay
             }
@@ -132,33 +130,21 @@ class MediaPlayerPlayback(var source: String, var mimeType: String? = null, var 
         }
     }
 
-    fun pause(): Boolean {
-        return canPause
-    }
-
-    fun stop(): Boolean {
-        return true
-    }
-
-    fun seek(position: Double): Boolean {
-        return canSeek
-    }
-
-    private fun updateState(newState: PLAYBACK_STATE) {
+    private fun updateState(newState: State) {
         if (newState != state) {
             var previousState = state
-            state = newState
+            internalState = newState
             when (state) {
-                PLAYBACK_STATE.IDLE -> {
-                    if (previousState == PLAYBACK_STATE.NONE) {
-                        // TODO
-                        // ready
-                    } else if (previousState == PLAYBACK_STATE.PLAYING) {
+                State.IDLE -> {
+                    if (previousState == State.NONE) {
+                        type = MediaType.VOD
+                        trigger(ClapprEvent.READY.value)
+                    } else if (previousState == State.PLAYING) {
                         // TODO
                         // ended
                     }
                 }
-                PLAYBACK_STATE.PLAYING -> {
+                State.PLAYING -> {
                     // TODO
                     // playing
                 }
