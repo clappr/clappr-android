@@ -30,35 +30,35 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         }
     }
 
-    val duration: Double
+    open val duration: Double
         get() = Double.NaN
 
-    val position: Double
+    open val position: Double
         get() = Double.NaN
 
-    val state: State
+    open val state: State
         get() = State.NONE
 
-    val canPlay: Boolean
+    open val canPlay: Boolean
         get() = false
 
-    val canPause: Boolean
+    open val canPause: Boolean
         get() = false
 
-    val canSeek: Boolean
+    open val canSeek: Boolean
         get() = false
 
-    fun play() {}
-    fun pause() {}
-    fun stop() {}
-    fun seek(seconds: Int) {}
+    open fun play(): Boolean { return false }
+    open fun pause(): Boolean { return false }
+    open fun stop(): Boolean { return false }
+    open fun seek(seconds: Int): Boolean { return false }
 
     internal fun supportsSource(source: String, mimeType: String?): Boolean {
         val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
         return companion?.supportsSource(source, mimeType) ?: false
     }
 
-    fun load(source: String, mimeType: String? = null): Boolean {
+    open fun load(source: String, mimeType: String? = null): Boolean {
         val supported = supportsSource(source, mimeType)
         if (supported) {
             this.source = source
