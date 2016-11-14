@@ -24,11 +24,8 @@ open class Container(val loader: Loader, val options: Options) : UIObject() {
         var supported = playback?.load(source, mimeType) ?: false
         if (!supported) {
             playback = loader.loadPlayback(source, mimeType, options)
-            supported = playback?.name == NoOpPlayback.name ?: false
+            supported = playback?.name == NoOpPlayback.name
         }
         return supported
     }
 }
-
-// Base - Core, Lifecycle, Playback, etc - 11
-// MediaControl - Plugins, Render, etc - 16

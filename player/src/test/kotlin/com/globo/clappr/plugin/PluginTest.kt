@@ -20,8 +20,7 @@ class PluginTest {
 
     @Test
     fun shouldStartDisabled() {
-        class TestPlugin: Plugin(BaseObject()) {
-        }
+        class TestPlugin: Plugin(BaseObject())
 
         val plugin = TestPlugin()
         assertTrue("plugin enabled", plugin.state == PluginState.DISABLED)
