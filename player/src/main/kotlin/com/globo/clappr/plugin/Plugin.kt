@@ -1,8 +1,11 @@
 package com.globo.clappr.plugin
 
 import com.globo.clappr.base.BaseObject
+import com.globo.clappr.base.NamedType
 
-class Plugin : BaseObject(), PluginInterface {
-    override val name = "plugin"
-    var state = PluginState.ENABLED
+abstract class Plugin(val component: BaseObject) : BaseObject(), NamedType {
+
+    enum class State { ENABLED, DISABLED }
+
+    var state = State.DISABLED
 }

@@ -11,7 +11,7 @@ import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
-public open class BaseObjectCreationTest {
+open class BaseObjectCreationTest {
     var context: Context? = null
 
     @Before
@@ -19,7 +19,7 @@ public open class BaseObjectCreationTest {
         BaseObject.context = null
     }
 
-    @Test(expected = kotlin.KotlinNullPointerException::class)
+    @Test(expected = IllegalStateException::class)
     fun baseObjectWithoutContext() {
         var bo = BaseObject()
     }

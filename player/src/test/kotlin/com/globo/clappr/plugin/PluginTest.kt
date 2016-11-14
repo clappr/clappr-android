@@ -1,8 +1,9 @@
-package com.globo.clappr.base
+package com.globo.clappr.plugin
 
-import android.os.Bundle
 import com.globo.clappr.BuildConfig
+import com.globo.clappr.base.BaseObject
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -11,16 +12,17 @@ import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
-open class UIObjectTest {
-    @Test
-    fun shouldHandleEvents() {
+class PluginTest {
+    @Before
+    fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
-        val uiObject = UIObject()
-        var callbackWasCalled = false
+    }
 
-        uiObject.on("some-event", Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
-        uiObject.trigger("some-event")
+    @Test
+    fun shouldStartDisabled() {
+        class TestPlugin: Plugin(BaseObject())
 
-        assertTrue("event not triggered", callbackWasCalled)
+        val plugin = TestPlugin()
+        assertTrue("plugin enabled", plugin.state == Plugin.State.DISABLED)
     }
 }

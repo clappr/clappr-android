@@ -2,10 +2,9 @@ package com.globo.clappr.base
 
 import android.content.Context
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewManager
 
-open class UIObject(private val base: BaseObject = BaseObject()): EventInterface by base {
+open class UIObject(): BaseObject() {
     var view : View? = null
 
     init {
@@ -26,7 +25,7 @@ open class UIObject(private val base: BaseObject = BaseObject()): EventInterface
     fun ensureView() {
         render()
         if (view == null) {
-            view = viewClass().getConstructor(Context::class.java).newInstance(base.context) as View?
+            view = viewClass().getConstructor(Context::class.java).newInstance(context) as View?
         }
     }
 }
