@@ -23,6 +23,6 @@ class PluginTest {
         class TestPlugin: Plugin(BaseObject())
 
         val plugin = TestPlugin()
-        assertTrue("plugin enabled", plugin.state == PluginState.DISABLED)
+        assertTrue("plugin enabled", plugin.state == Plugin.State.DISABLED)
     }
 }

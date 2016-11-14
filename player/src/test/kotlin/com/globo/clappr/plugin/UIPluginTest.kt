@@ -20,10 +20,9 @@ class UIPluginTest {
 
     @Test
     fun shouldStartHidden() {
-        class TestPlugin: UIPlugin(BaseObject()) {
-        }
+        class TestPlugin: UIPlugin(BaseObject())
 
         val plugin = TestPlugin()
-        assertTrue("plugin enabled", plugin.visibility == PluginVisibility.HIDDEN)
+        assertTrue("plugin visible", plugin.visibility == UIPlugin.Visibility.HIDDEN)
     }
 }
