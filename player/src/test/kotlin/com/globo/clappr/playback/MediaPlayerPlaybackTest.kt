@@ -20,11 +20,6 @@ import java.io.IOException
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class MediaPlayerPlaybackTest {
-    var numberOfCalls = 0
-    val callback = Callback.wrap { bundle: Bundle? ->
-        numberOfCalls += 1
-    }
-
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
@@ -32,8 +27,6 @@ open class MediaPlayerPlaybackTest {
         ShadowMediaPlayer.addMediaInfo(DataSource.toDataSource("valid"), ShadowMediaPlayer.MediaInfo(10000, -1))
         ShadowMediaPlayer.addException(DataSource.toDataSource("io_invalid"), IOException())
         ShadowMediaPlayer.addException(DataSource.toDataSource("runtime_invalid"), RuntimeException())
-
-        numberOfCalls = 0
     }
 
     @Test
@@ -71,15 +64,19 @@ open class MediaPlayerPlaybackTest {
         ShadowMediaPlayer.setCreateListener { mediaPlayer, shadowMediaPlayer -> smp = shadowMediaPlayer }
 
         val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
-        mpp.on(ClapprEvent.WILL_PLAY.value, callback)
-        mpp.on(ClapprEvent.PLAYING.value, callback)
+
+        var willPlayCount = 0
+        var playingCount = 0
+        mpp.on(ClapprEvent.WILL_PLAY.value, Callback.wrap { bundle: Bundle? -> willPlayCount += 1 })
+        mpp.on(ClapprEvent.PLAYING.value, Callback.wrap { bundle: Bundle? -> playingCount += 1 })
         mpp.play()
 
-        assertEquals("will play triggered", 1, numberOfCalls)
+        assertEquals("will play triggered", 1, willPlayCount)
 
         smp?.invokePreparedListener()
 
-        assertEquals("will play triggered", 2, numberOfCalls)
+        assertEquals("will play triggered", 1, willPlayCount)
+        assertEquals("will play triggered", 1, playingCount)
     }
 
 }
