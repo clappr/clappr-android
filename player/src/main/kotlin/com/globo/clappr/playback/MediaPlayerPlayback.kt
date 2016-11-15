@@ -1,10 +1,14 @@
 package com.globo.clappr.playback
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.util.Log
+import android.view.*
+import android.widget.RelativeLayout
 import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
+import com.globo.clappr.base.UIObject
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
 
@@ -31,13 +35,14 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     private var mediaPlayer: MediaPlayer
     private var internalState: State = State.NONE
     private var type: MediaType = MediaType.UNKNOWN
+    private var playbackView : PlaybackView? = null
 
     init {
         mediaPlayer = MediaPlayer()
 
         // TODO
-        mediaPlayer.setOnErrorListener { mp, what, extra -> throw UnsupportedOperationException("not implemented") }
-        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->  throw UnsupportedOperationException("not implemented") }
+//        mediaPlayer.setOnErrorListener { mp, what, extra -> throw UnsupportedOperationException("not implemented") }
+//        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->  throw UnsupportedOperationException("not implemented") }
 
         mediaPlayer.setOnSeekCompleteListener {
             Log.i(TAG, "seek completed")
@@ -45,9 +50,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
             Log.i(TAG, "video size: " + width + " / " + height)
+            playbackView?.videoWidth = width
+            playbackView?.videoHeight = height
+            playbackView?.requestLayout()
         }
 
         mediaPlayer.setOnPreparedListener {
+            type = if (mediaPlayer.duration > -1) MediaType.VOD else MediaType.LIVE
             mediaPlayer.start()
             updateState(State.PLAYING)
         }
@@ -62,13 +71,74 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setDataSource(source)
 
-        // TODO
         mediaPlayer.setDisplay(null)
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setScreenOnWhilePlaying(true)
+    }
 
-        updateState(State.IDLE)
+    class PlaybackView(context: Context?) : SurfaceView(context) {
+        var videoHeight = 0
+        var videoWidth = 0
+
+        override fun onTouchEvent(event: MotionEvent?): Boolean {
+            return super.onTouchEvent(event)
+        }
+
+        override fun onTrackballEvent(event: MotionEvent?): Boolean {
+            return super.onTrackballEvent(event)
+        }
+
+        override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+            var width = View.getDefaultSize(videoWidth, widthMeasureSpec)
+            var height = View.getDefaultSize(videoHeight, heightMeasureSpec)
+            Log.i(TAG, "onMeasure: " + width + "/" + height)
+
+            if ( (videoWidth > 0) && (videoHeight > 0) ) {
+                if (videoWidth * height > width * videoHeight) {
+                    Log.i(TAG, "image too tall")
+                    height = width * videoHeight / videoWidth
+                } else if (videoWidth * height <  width * videoHeight) {
+                    Log.i(TAG, "image too wide")
+                    width = height * videoWidth / videoHeight
+                } else {
+                    Log.i(TAG, "aspect ratio is correct: " + width + "/" + height + " = " + videoWidth + "/" + videoHeight)
+                }
+            }
+
+            Log.i(TAG, "setting size to: " + width + "/" + height)
+            setMeasuredDimension(width, height)
+        }
+    }
+
+    override fun render() : UIObject {
+        if (view is ViewGroup) {
+            val playbackContainer = RelativeLayout(context)
+            playbackView = PlaybackView(context)
+            val holder = playbackView!!.holder
+            holder.addCallback(object: SurfaceHolder.Callback {
+                override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
+                    Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
+                }
+
+                override fun surfaceDestroyed(sh: SurfaceHolder) {
+                    Log.i(TAG, "surface destroyed")
+                    mediaPlayer.stop()
+                    mediaPlayer.setDisplay(null)
+                    updateState(State.IDLE)
+                }
+
+                override fun surfaceCreated(sh: SurfaceHolder) {
+                    Log.i(TAG, "surface created")
+                    mediaPlayer.setDisplay(holder)
+                    updateState(State.IDLE)
+                }
+            })
+            playbackContainer.gravity = Gravity.CENTER
+            playbackContainer.addView(playbackView)
+            (view as ViewGroup).addView(playbackContainer)
+        }
+        return this
     }
 
     override val state: State
@@ -105,10 +175,6 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override val canSeek: Boolean
         get() = (state != State.NONE) && (type == MediaType.VOD)
 
-    // TODO
-    fun configure(options: Options) {
-        // this.options = options
-    }
 
     override fun play(): Boolean {
         if (canPlay) {
@@ -131,11 +197,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             when (state) {
                 State.IDLE -> {
                     if (previousState == State.NONE) {
-                        type = MediaType.VOD
                         trigger(ClapprEvent.READY.value)
                     } else if (previousState == State.PLAYING) {
-                        // TODO
-                        // ended
+                        trigger(ClapprEvent.ENDED.value)
                     }
                 }
                 State.PLAYING -> {
