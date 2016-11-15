@@ -178,11 +178,31 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override fun play(): Boolean {
         if (canPlay) {
-            if (state == State.IDLE) {
-                mediaPlayer.prepareAsync()
-            }
             if (state != State.PLAYING) {
                 trigger(ClapprEvent.WILL_PLAY.value)
+            }
+            if (state == State.IDLE) {
+                mediaPlayer.prepareAsync()
+            } else {
+                mediaPlayer.start()
+            }
+            if (state == State.PAUSED) {
+                updateState(State.PLAYING)
+            }
+            return true
+        } else {
+            return false
+        }
+    }
+
+    override fun pause(): Boolean {
+        if (canPause) {
+            if ( (state == State.PLAYING) || (state == State.STALLED) ) {
+                trigger(ClapprEvent.WILL_PAUSE.value)
+                mediaPlayer.pause()
+            }
+            if (state == State.PLAYING) {
+                updateState(State.PAUSED)
             }
             return true
         } else {
@@ -204,6 +224,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 }
                 State.PLAYING -> {
                     trigger(ClapprEvent.PLAYING.value)
+                }
+                State.PAUSED -> {
+                    trigger(ClapprEvent.DID_PAUSE.value)
                 }
             }
         }
