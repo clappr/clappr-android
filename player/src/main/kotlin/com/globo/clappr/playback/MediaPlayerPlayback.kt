@@ -169,7 +169,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
     override val canPlay: Boolean
-        get() = (state != State.NONE) && (type != MediaType.UNKNOWN)
+        get() = (state != State.NONE)
     override val canPause: Boolean
         get() = (state != State.NONE) && (type == MediaType.VOD)
     override val canSeek: Boolean
