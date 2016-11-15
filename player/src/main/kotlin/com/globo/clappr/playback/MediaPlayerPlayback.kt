@@ -21,6 +21,18 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         LIVE
     }
 
+    enum class InternalState {
+        NONE,
+        IDLE,
+        ERROR,
+        ATTACHED,
+        PREPARED,
+        STARTED,
+        PAUSED,
+        STOPPED,
+        BUFFERING
+    }
+
     companion object: PlaybackSupportInterface {
         val TAG: String = "MediaPlayerPlayback"
 
@@ -33,16 +45,22 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     private var mediaPlayer: MediaPlayer
-    private var internalState: State = State.NONE
     private var type: MediaType = MediaType.UNKNOWN
     private var playbackView : PlaybackView? = null
+
+    private var internalState: InternalState = InternalState.NONE
 
     init {
         mediaPlayer = MediaPlayer()
 
         // TODO
-//        mediaPlayer.setOnErrorListener { mp, what, extra -> throw UnsupportedOperationException("not implemented") }
 //        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->  throw UnsupportedOperationException("not implemented") }
+
+        mediaPlayer.setOnErrorListener { mp, what, extra ->
+            Log.i(TAG, "error: " + what + "(" + extra + ")" )
+            updateState(InternalState.ERROR)
+            false
+        }
 
         mediaPlayer.setOnSeekCompleteListener {
             Log.i(TAG, "seek completed")
@@ -57,8 +75,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnPreparedListener {
             type = if (mediaPlayer.duration > -1) MediaType.VOD else MediaType.LIVE
+            updateState(InternalState.PREPARED)
             mediaPlayer.start()
-            updateState(State.PLAYING)
+            updateState(InternalState.STARTED)
         }
 
         mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
@@ -66,7 +85,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
         mediaPlayer.setOnCompletionListener {
-            updateState(State.IDLE)
+            updateState(InternalState.ATTACHED)
         }
 
         mediaPlayer.setDataSource(source)
@@ -75,6 +94,8 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setScreenOnWhilePlaying(true)
+
+        updateState(InternalState.IDLE)
     }
 
     class PlaybackView(context: Context?) : SurfaceView(context) {
@@ -125,13 +146,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                     Log.i(TAG, "surface destroyed")
                     mediaPlayer.stop()
                     mediaPlayer.setDisplay(null)
-                    updateState(State.IDLE)
+                    updateState(InternalState.IDLE)
                 }
 
                 override fun surfaceCreated(sh: SurfaceHolder) {
                     Log.i(TAG, "surface created")
                     mediaPlayer.setDisplay(holder)
-                    updateState(State.IDLE)
+                    updateState(InternalState.ATTACHED)
                 }
             })
             playbackContainer.gravity = Gravity.CENTER
@@ -142,7 +163,18 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override val state: State
-        get() = internalState
+        get() = getState(internalState)
+
+    private fun getState (internal: InternalState) : State {
+        when (internal) {
+            InternalState.NONE, InternalState.ERROR, InternalState.IDLE -> { return State.NONE }
+            InternalState.ATTACHED, InternalState.PREPARED, InternalState.STOPPED -> { return State.IDLE }
+            InternalState.STARTED -> { return State.PLAYING }
+            InternalState.PAUSED -> { return State.PAUSED }
+            InternalState.BUFFERING -> { return State.STALLED }
+            else -> return State.NONE
+        }
+    }
 
     override val duration: Double
         get() {
@@ -169,7 +201,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
     override val canPlay: Boolean
-        get() = (state != State.NONE)
+        get() = ( (internalState != InternalState.NONE) && (internalState != InternalState.ERROR) )
     override val canPause: Boolean
         get() = (state != State.NONE) && (type == MediaType.VOD)
     override val canSeek: Boolean
@@ -181,13 +213,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             if (state != State.PLAYING) {
                 trigger(ClapprEvent.WILL_PLAY.value)
             }
-            if (state == State.IDLE) {
+            if (internalState == InternalState.ATTACHED) {
                 mediaPlayer.prepareAsync()
             } else {
                 mediaPlayer.start()
             }
             if (state == State.PAUSED) {
-                updateState(State.PLAYING)
+                updateState(InternalState.STARTED)
             }
             return true
         } else {
@@ -202,7 +234,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 mediaPlayer.pause()
             }
             if (state == State.PLAYING) {
-                updateState(State.PAUSED)
+                updateState(InternalState.PAUSED)
             }
             return true
         } else {
@@ -210,10 +242,26 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
     }
 
-    private fun updateState(newState: State) {
-        if (newState != state) {
-            var previousState = state
-            internalState = newState
+    override fun stop(): Boolean {
+        try {
+            mediaPlayer?.stop()
+        } catch (iee: IllegalStateException) {
+            Log.i(TAG, "stop", iee)
+        }
+        return true
+    }
+
+    override fun seek(seconds: Int): Boolean {
+        // TODO
+        return super.seek(seconds)
+    }
+
+    private fun updateState(value: InternalState) {
+        val previousState = state
+        if ( (internalState != InternalState.ERROR) || (value == InternalState.IDLE)) {
+            internalState = value
+        }
+        if (state != previousState) {
             when (state) {
                 State.IDLE -> {
                     if (previousState == State.NONE) {
@@ -228,8 +276,10 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 State.PAUSED -> {
                     trigger(ClapprEvent.DID_PAUSE.value)
                 }
+                State.NONE -> {
+                    trigger(ClapprEvent.ERROR.value)
+                }
             }
         }
-
     }
 }
