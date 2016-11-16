@@ -1,4 +1,4 @@
-package com.globo.clappr.plugin.Playback
+package com.globo.clappr.playback
 
 import android.net.Uri
 import android.os.Handler
@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.util.Util
 import java.io.IOException
 import java.util.*
 
-open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.EventListener {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options), ExoPlayer.EventListener {
     companion object : PlaybackSupportInterface {
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
@@ -36,7 +36,7 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
             return type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
         }
 
-        const val name = "exoplayerplugin"
+        override val name: String = "exoplayerplayback"
         const val TAG = "ExoplayerEvent"
 
         var containerView: ViewGroup? = null
@@ -46,9 +46,8 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
     val bandwidthMeter = DefaultBandwidthMeter()
     var playerView = SimpleExoPlayerView(context)
     val mediaSourceLogger = MediaSourceLogger()
-    val urlString = "http://playready.directtaps.net/smoothstreaming/SSWSS720H264/SuperSpeedway_720.ism"
     var player: SimpleExoPlayer? = null
-    var currentState = Playback.State.NONE
+    var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
     var timeElapsedEventsDispatcher: TimeElapsedManager? = null
 
@@ -72,36 +71,39 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
     override fun play() {
         triggerEventWithLog(Event.WILL_PLAY)
         if (currentState == State.IDLE) {
-            load(urlString, null)
+            load(source, mimeType)
         }
         player?.playWhenReady = true
+        return true
     }
 
     override fun pause() {
         triggerEventWithLog(Event.WILL_PAUSE)
         player?.playWhenReady = false
+        return true
     }
 
     override fun stop() {
         triggerEventWithLog(Event.WILL_STOP)
         player?.stop()
+        return true
     }
 
     override fun seek(seconds: Int) {
-
         triggerEventWithLog(Event.WILL_SEEK)
-
         player?.seekTo((seconds * 1000).toLong())
+        return true
     }
 
-    override fun load(source: String, mimeType: String?) {
+    override fun load(source: String, mimeType: String?): Boolean {
         player?.prepare(mediaSource(Uri.parse(source)))
+        return true
     }
 
     init {
         setupPlayer()
         setUpTimeElapsedCallBacks()
-        load(urlString, null)
+        load(source, mimeType)
     }
 
     fun setupPlayer() {
@@ -195,7 +197,6 @@ open class ExoPlayerPlayBack(options: Options) : Playback(options), ExoPlayer.Ev
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
-
     }
 
     override fun onPositionDiscontinuity() {

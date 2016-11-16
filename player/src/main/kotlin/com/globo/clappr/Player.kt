@@ -5,6 +5,7 @@ import com.globo.clappr.base.BaseObject
 import com.globo.clappr.plugin.Loader
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Core
+import com.globo.clappr.playback.ExoPlayerPlayback
 
 /**
  *  Main Clappr class.

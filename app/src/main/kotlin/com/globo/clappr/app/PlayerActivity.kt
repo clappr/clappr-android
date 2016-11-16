@@ -11,7 +11,12 @@ import android.widget.FrameLayout
 
 import com.globo.clappr.Player
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.plugin.Playback.ExoPlayerPlayBack
+import com.globo.clappr.base.Options
+import com.globo.clappr.components.Playback
+import com.globo.clappr.plugin.Loader
+import com.globo.clappr.playback.ExoPlayerPlayback
+import com.globo.clappr.plugin.Plugin
+import kotlin.reflect.KClass
 
 class PlayerActivity : Activity() {
 
@@ -22,14 +27,17 @@ class PlayerActivity : Activity() {
         setContentView(R.layout.activity_player)
         if (savedInstanceState == null) {
             BaseObject.context = applicationContext
-            player = Player()
+            Loader.registerPlayback(ExoPlayerPlayback::class)
+            val urlString = "http://www.html5videoplayer.net/videos/toystory.mp4"
+            val options = Options(urlString, "", true)
+            player = Player(options)
         }
     }
 
     override fun onResume() {
         super.onResume()
         val viewGroup = findViewById(R.id.player) as FrameLayout
-        ExoPlayerPlayBack.containerView = viewGroup
+        ExoPlayerPlayback.containerView = viewGroup
         val duration = player?.core?.activeContainer?.playback?.duration
 
         player?.attachTo(viewGroup)
