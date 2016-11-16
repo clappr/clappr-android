@@ -4,7 +4,7 @@ import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
-import com.globo.clappr.base.Event
+import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
@@ -68,8 +68,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.IDLE
 
-    override fun play() {
-        triggerEventWithLog(Event.WILL_PLAY)
+    override fun play(): Boolean {
+        triggerEventWithLog(ClapprEvent.WILL_PLAY)
         if (currentState == State.IDLE) {
             load(source, mimeType)
         }
@@ -77,20 +77,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return true
     }
 
-    override fun pause() {
-        triggerEventWithLog(Event.WILL_PAUSE)
+    override fun pause(): Boolean {
+        triggerEventWithLog(ClapprEvent.WILL_PAUSE)
         player?.playWhenReady = false
         return true
     }
 
-    override fun stop() {
-        triggerEventWithLog(Event.WILL_STOP)
+    override fun stop(): Boolean {
+        triggerEventWithLog(ClapprEvent.WILL_STOP)
         player?.stop()
         return true
     }
 
-    override fun seek(seconds: Int) {
-        triggerEventWithLog(Event.WILL_SEEK)
+    override fun seek(seconds: Int): Boolean {
+        triggerEventWithLog(ClapprEvent.WILL_SEEK)
         player?.seekTo((seconds * 1000).toLong())
         return true
     }
@@ -149,26 +149,26 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
                 currentState = State.IDLE
-                triggerEventWithLog(Event.DID_STOP)
+                triggerEventWithLog(ClapprEvent.DID_STOP)
                 stopTimeElapsedCallBacks()
             }
             ExoPlayer.STATE_ENDED -> {
                 currentState = State.IDLE
-                triggerEventWithLog(Event.ENDED)
+                triggerEventWithLog(ClapprEvent.ENDED)
                 stop()
             }
             ExoPlayer.STATE_BUFFERING -> {
                 currentState = State.STALLED
-                triggerEventWithLog(Event.STALLED)
+                triggerEventWithLog(ClapprEvent.STALLED)
             }
             ExoPlayer.STATE_READY -> {
                 if (playWhenReady) {
                     currentState = State.PLAYING
-                    triggerEventWithLog(Event.PLAYING)
+                    triggerEventWithLog(ClapprEvent.PLAYING)
                     startTimeElapsedCallBacks()
                 } else {
                     currentState = State.PAUSED
-                    triggerEventWithLog(Event.DID_PAUSE)
+                    triggerEventWithLog(ClapprEvent.DID_PAUSE)
                 }
             }
         }
@@ -183,7 +183,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     }
 
-    private fun triggerEventWithLog(event: Event) {
+    private fun triggerEventWithLog(event: ClapprEvent) {
         trigger(event.value)
         Log.i(TAG, event.value)
     }
@@ -193,7 +193,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
-        triggerEventWithLog(Event.ERROR)
+        triggerEventWithLog(ClapprEvent.ERROR)
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
