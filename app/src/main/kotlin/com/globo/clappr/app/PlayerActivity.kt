@@ -32,7 +32,6 @@ class PlayerActivity : Activity() {
         super.onResume()
         val viewGroup = findViewById(R.id.player) as FrameLayout
         ExoPlayerPlayback.containerView = viewGroup
-        val duration = player?.core?.activeContainer?.playback?.duration
 
         player?.attachTo(viewGroup)
     }

@@ -102,7 +102,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     init {
         setupPlayer()
-        setUpTimeElapsedCallBacks()
+        setupTimeElapsedCallBacks()
         load(source, mimeType)
     }
 
@@ -115,7 +115,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         setupPlayerView()
     }
 
-    private fun setUpTimeElapsedCallBacks() {
+    private fun setupTimeElapsedCallBacks() {
         timeElapsedEventsDispatcher = TimeElapsedManager({ dispatchTimeElapsedEvents() })
     }
 
@@ -140,7 +140,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     fun dispatchTimeElapsedEvents() {
         Log.i(TAG, "Time elapsed event: buffer ${player?.bufferedPercentage}%")
         Log.i(TAG, "Time elapsed event: video percent played ${getPercentPlayed().toInt()}%")
-
     }
 
     private fun getPercentPlayed() = player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100
@@ -180,7 +179,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun stopTimeElapsedCallBacks() {
         timeElapsedEventsDispatcher?.stop()
-
     }
 
     private fun triggerEventWithLog(event: ClapprEvent) {
@@ -206,7 +204,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     class TimeElapsedManager(val callBack: () -> Unit) {
-
         var timer: Timer? = null
 
         fun start() {
