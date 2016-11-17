@@ -1,12 +1,15 @@
 package com.globo.clappr.com.globo.clappr.components
 
 import com.globo.clappr.BuildConfig
+import com.globo.clappr.base.BaseObject
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
 import com.globo.clappr.playback.NoOpPlayback
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.shadows.ShadowApplication
 import org.robolectric.annotation.Config
 
 import org.junit.Assert.assertFalse
@@ -27,6 +30,11 @@ open class PlaybackTest {
                 return source == validSource
             }
         }
+    }
+
+    @Before
+    fun setup() {
+      BaseObject.context = ShadowApplication.getInstance().applicationContext
     }
 
     @Test(expected = IllegalArgumentException::class)
