@@ -44,9 +44,11 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             get() = "media_player"
     }
 
+    override val viewClass: Class<*>
+        get() = PlaybackView::class.java
+
     private var mediaPlayer: MediaPlayer
     private var type: MediaType = MediaType.UNKNOWN
-    private var playbackView : PlaybackView? = null
 
     private var internalState: InternalState = InternalState.NONE
 
@@ -68,9 +70,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
             Log.i(TAG, "video size: " + width + " / " + height)
-            playbackView?.videoWidth = width
-            playbackView?.videoHeight = height
-            playbackView?.requestLayout()
+            (view as? PlaybackView)?.videoWidth = width
+            (view as? PlaybackView)?.videoHeight = height
+            view?.requestLayout()
         }
 
         mediaPlayer.setOnPreparedListener {
@@ -90,12 +92,32 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setDataSource(source)
 
-        mediaPlayer.setDisplay(null)
-
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setScreenOnWhilePlaying(true)
 
+        mediaPlayer.setDisplay(null)
+
         updateState(InternalState.IDLE)
+
+        val holder = (view as? PlaybackView)?.holder
+        holder?.addCallback(object: SurfaceHolder.Callback {
+            override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
+                Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
+            }
+
+            override fun surfaceDestroyed(sh: SurfaceHolder) {
+                Log.i(TAG, "surface destroyed")
+                mediaPlayer.stop()
+                mediaPlayer.setDisplay(null)
+                updateState(InternalState.IDLE)
+            }
+
+            override fun surfaceCreated(sh: SurfaceHolder) {
+                Log.i(TAG, "surface created")
+                mediaPlayer.setDisplay(holder)
+                updateState(InternalState.ATTACHED)
+            }
+        })
     }
 
     class PlaybackView(context: Context?) : SurfaceView(context) {
@@ -133,32 +155,6 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override fun render() : UIObject {
-        if (view is ViewGroup) {
-            val playbackContainer = RelativeLayout(context)
-            playbackView = PlaybackView(context)
-            val holder = playbackView!!.holder
-            holder.addCallback(object: SurfaceHolder.Callback {
-                override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
-                    Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
-                }
-
-                override fun surfaceDestroyed(sh: SurfaceHolder) {
-                    Log.i(TAG, "surface destroyed")
-                    mediaPlayer.stop()
-                    mediaPlayer.setDisplay(null)
-                    updateState(InternalState.IDLE)
-                }
-
-                override fun surfaceCreated(sh: SurfaceHolder) {
-                    Log.i(TAG, "surface created")
-                    mediaPlayer.setDisplay(holder)
-                    updateState(InternalState.ATTACHED)
-                }
-            })
-            playbackContainer.gravity = Gravity.CENTER
-            playbackContainer.addView(playbackView)
-            (view as ViewGroup).addView(playbackContainer)
-        }
         return this
     }
 
