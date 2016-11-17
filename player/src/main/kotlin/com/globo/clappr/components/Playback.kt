@@ -1,6 +1,6 @@
 package com.globo.clappr.components
 
-import com.globo.clappr.base.BaseObject
+import com.globo.clappr.base.UIObject
 import com.globo.clappr.base.NamedType
 import com.globo.clappr.base.Options
 import kotlin.reflect.companionObjectInstance
@@ -9,7 +9,7 @@ interface PlaybackSupportInterface: NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean
 }
 
-abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : BaseObject(), NamedType {
+abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : UIObject(), NamedType {
 
     enum class State {
         NONE, IDLE, PLAYING, PAUSED, STALLED
@@ -67,4 +67,3 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         return supported
     }
 }
-
