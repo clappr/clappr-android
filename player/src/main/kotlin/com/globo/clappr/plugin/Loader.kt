@@ -96,14 +96,11 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
-        for (playbackClass in registeredPlaybacks) {
-            if (supportsSource(playbackClass, source, mimeType)) {
-                val constructor = playbackClass.primaryConstructor
-                try {
-                    playback = constructor?.call(source, mimeType, options) as? Playback
-                } catch (e: Exception) {
-                }
-            }
+        val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
+        val constructor = playbackClass.primaryConstructor
+        try {
+            playback = constructor?.call(source, mimeType, options) as? Playback
+        } catch (e: Exception) {
         }
         return playback
     }
@@ -138,4 +135,3 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         return plugin
     }
 }
-

@@ -2,11 +2,13 @@ package com.globo.clappr.plugin
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
+import com.globo.clappr.base.ContainerTest
 import com.globo.clappr.base.NamedType
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Core
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
+import com.globo.clappr.playback.NoOpPlayback
 import com.globo.clappr.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
@@ -151,5 +153,20 @@ class LoaderTest {
         playback = loader.loadPlayback("some-source.mpd", null, Options())
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load dash playback", playback is TestPlaybackDash)
+    }
+
+    @Test
+    fun shouldInstantiateFirstPlaybackInRegisteredListWhenThereAreMoreThanOneThatCanPlaySource() {
+        Loader.registerPlayback(NoOpPlayback::class)
+        var loader = Loader()
+        var playback = loader.loadPlayback("some-source.mp4", null, Options())
+        assertNotNull("should have loaded playback", playback)
+        assertTrue("should load no-op playback", playback is NoOpPlayback)
+
+        Loader.registerPlayback(TestPlaybackMp4::class)
+        loader = loader
+        playback = loader.loadPlayback("some-source.mp4", null, Options())
+        assertNotNull("should have loaded playback", playback)
+        assertTrue("should load mp4 playback", playback is TestPlaybackMp4)
     }
 }
