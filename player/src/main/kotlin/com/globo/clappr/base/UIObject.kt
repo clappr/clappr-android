@@ -7,11 +7,11 @@ import android.view.ViewManager
 open class UIObject(): BaseObject() {
     var view : View? = null
 
+    open val viewClass: Class<*> = View::class.java
+
     init {
         ensureView()
     }
-
-    fun viewClass() : Class<*> = View::class.java
 
     open fun render() : UIObject {
         return this
@@ -23,9 +23,9 @@ open class UIObject(): BaseObject() {
     }
 
     fun ensureView() {
-        render()
         if (view == null) {
-            view = viewClass().getConstructor(Context::class.java).newInstance(context) as View?
+            val constructor = viewClass.getConstructor(Context::class.java) ?: throw IllegalStateException("No constructor was found for parameters (Context)")
+            view = constructor.newInstance(context) as? View
         }
     }
 }

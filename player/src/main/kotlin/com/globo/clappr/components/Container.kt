@@ -1,15 +1,22 @@
 package com.globo.clappr.components
 
+import android.widget.FrameLayout
 import com.globo.clappr.plugin.Loader
 import com.globo.clappr.base.Options
 import com.globo.clappr.base.UIObject
 import com.globo.clappr.playback.NoOpPlayback
 import com.globo.clappr.plugin.Plugin
 
-open class Container(val loader: Loader, val options: Options) : UIObject() {
+class Container(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>
 
     var playback: Playback? = null
+
+    val frameLayout: FrameLayout
+        get() = view as FrameLayout
+
+    override val viewClass: Class<*>
+        get() = FrameLayout::class.java
 
     init {
         plugins = loader.loadPlugins(this)
@@ -27,5 +34,14 @@ open class Container(val loader: Loader, val options: Options) : UIObject() {
             supported = playback?.name == NoOpPlayback.name
         }
         return supported
+    }
+
+    override fun render(): Container {
+        val playback = this.playback
+        playback?.let {
+            frameLayout.addView(playback.view)
+            playback.render()
+        }
+        return this
     }
 }
