@@ -191,9 +191,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun onPlayerError(error: ExoPlaybackException?) {
-        val bundle = Bundle()
-        bundle.putString(ClapprEvent.ERROR.name, error?.message)
-        trigger(ClapprEvent.ERROR.name, bundle)
+        triggerErrorEvent(error)
     }
 
     override fun onLoadingChanged(isLoading: Boolean) {
@@ -225,9 +223,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     inner class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
         override fun onLoadError(error: IOException?) {
-            val bundle = Bundle()
-            bundle.putString(ClapprEvent.ERROR.name, error?.message)
-            trigger(ClapprEvent.ERROR.name, bundle)
+            triggerErrorEvent(error)
         }
 
         override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
@@ -251,10 +247,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onLoadError(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long, error: IOException?, wasCanceled: Boolean) {
-            val bundle = Bundle()
-            bundle.putString(ClapprEvent.ERROR.name, error?.message)
-            trigger(ClapprEvent.ERROR.name, bundle)
-            Log.i("EXOPlayer", "onLoadError")
+            triggerErrorEvent(error)
         }
+    }
+
+    private fun triggerErrorEvent(error: Exception?) {
+        val bundle = Bundle()
+        bundle.putString(ClapprEvent.ERROR.name, error?.message)
+        trigger(ClapprEvent.ERROR.name, bundle)
     }
 }
