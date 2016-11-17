@@ -246,31 +246,42 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override fun stop(): Boolean {
-        try {
-            mediaPlayer?.stop()
-        } catch (iee: IllegalStateException) {
-            Log.i(TAG, "stop", iee)
+        if (canStop) {
+            trigger(ClapprEvent.WILL_STOP.value)
+            try {
+                mediaPlayer.stop()
+                updateState(InternalState.STOPPED)
+            } catch (iee: IllegalStateException) {
+                Log.i(TAG, "stop", iee)
+            }
+            return true
+        } else {
+            return false
         }
-        return true
     }
 
     override fun seek(seconds: Int): Boolean {
-        // TODO
-        return super.seek(seconds)
+        if (canSeek) {
+            trigger(ClapprEvent.WILL_SEEK.value)
+            mediaPlayer.seekTo(seconds * 1000)
+            return true
+        } else {
+            return false
+        }
     }
 
     private fun updateState(value: InternalState) {
         val previousState = state
-        if ( (internalState != InternalState.ERROR) || (value == InternalState.IDLE)) {
-            internalState = value
-        }
+        internalState = value
         if (state != previousState) {
             when (state) {
                 State.IDLE -> {
                     if (previousState == State.NONE) {
                         trigger(ClapprEvent.READY.value)
+                    } else if (internalState == InternalState.STOPPED) {
+                        trigger(ClapprEvent.DID_STOP.value)
                     } else if (previousState == State.PLAYING) {
-                        trigger(ClapprEvent.ENDED.value)
+                            trigger(ClapprEvent.DID_COMPLETE.value)
                     }
                 }
                 State.PLAYING -> {
