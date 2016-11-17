@@ -167,11 +167,12 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     private fun getState (internal: InternalState) : State {
         when (internal) {
-            InternalState.NONE, InternalState.ERROR, InternalState.IDLE -> { return State.NONE }
+            InternalState.NONE, InternalState.IDLE -> { return State.NONE }
             InternalState.ATTACHED, InternalState.PREPARED, InternalState.STOPPED -> { return State.IDLE }
             InternalState.STARTED -> { return State.PLAYING }
             InternalState.PAUSED -> { return State.PAUSED }
             InternalState.BUFFERING -> { return State.STALLED }
+            InternalState.ERROR -> { return State.ERROR}
             else -> return State.NONE
         }
     }
@@ -201,11 +202,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
     override val canPlay: Boolean
-        get() = ( (internalState != InternalState.NONE) && (internalState != InternalState.ERROR) )
+        get() = ( (state != State.NONE) && (state != State.ERROR) )
     override val canPause: Boolean
-        get() = (state != State.NONE) && (type == MediaType.VOD)
+        get() = ( (state != State.NONE) && (state != State.ERROR) && (type == MediaType.VOD) )
     override val canSeek: Boolean
-        get() = (state != State.NONE) && (type == MediaType.VOD)
+        get() = ( (state != State.NONE) && (state != State.ERROR) && (type == MediaType.VOD) )
+    val canStop: Boolean
+        get() = ( (state != State.NONE) && (state != State.ERROR) )
 
 
     override fun play(): Boolean {
@@ -276,7 +279,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 State.PAUSED -> {
                     trigger(ClapprEvent.DID_PAUSE.value)
                 }
-                State.NONE -> {
+                State.ERROR -> {
                     trigger(ClapprEvent.ERROR.value)
                 }
             }
