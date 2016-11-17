@@ -4,8 +4,10 @@ import android.net.Uri
 import android.os.Handler
 import android.util.Log
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
+import com.globo.clappr.base.UIObject
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
 import com.google.android.exoplayer2.*
@@ -38,8 +40,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override val name: String = "exoplayerplayback"
         const val TAG = "ExoplayerEvent"
-
-        var containerView: ViewGroup? = null
     }
 
     val mainHandler = Handler()
@@ -50,6 +50,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
     var timeElapsedEventsDispatcher: TimeElapsedManager? = null
+
+    val frameLayout: FrameLayout
+        get() = view as FrameLayout
+
+    override val viewClass: Class<*>
+        get() = FrameLayout::class.java
 
     override val duration: Double
         get() = player?.duration?.toDouble() ?: 0.0
@@ -69,11 +75,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.IDLE
 
     override fun play(): Boolean {
-        triggerEventWithLog(ClapprEvent.WILL_PLAY)
-        if (currentState == State.IDLE) {
+        if (player == null) {
+            setupPlayer()
             load(source, mimeType)
+            play()
+        } else {
+            triggerEventWithLog(ClapprEvent.WILL_PLAY)
+            player?.playWhenReady = true
         }
-        player?.playWhenReady = true
         return true
     }
 
@@ -100,19 +109,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return true
     }
 
-    init {
-        setupPlayer()
-        setupTimeElapsedCallBacks()
-        load(source, mimeType)
-    }
-
     fun setupPlayer() {
         val videoTrackSelectionFactory = AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
         trackSelector = DefaultTrackSelector(mainHandler, videoTrackSelectionFactory)
         player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, DefaultLoadControl())
-        player?.playWhenReady = true
+        player?.playWhenReady = false
         player?.addListener(this)
         setupPlayerView()
+        setupTimeElapsedCallBacks()
+        load(source, mimeType)
     }
 
     private fun setupTimeElapsedCallBacks() {
@@ -120,7 +125,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     fun setupPlayerView() {
-        containerView?.addView(playerView)
+        frameLayout.addView(playerView)
         playerView.player = player
     }
 
@@ -147,8 +152,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
             ExoPlayer.STATE_IDLE -> {
+                if (currentState == State.NONE) {
+                    triggerEventWithLog(ClapprEvent.READY)
+                } else {
+                    triggerEventWithLog(ClapprEvent.DID_STOP)
+                }
                 currentState = State.IDLE
-                triggerEventWithLog(ClapprEvent.DID_STOP)
                 stopTimeElapsedCallBacks()
             }
             ExoPlayer.STATE_ENDED -> {

@@ -31,8 +31,6 @@ class PlayerActivity : Activity() {
     override fun onResume() {
         super.onResume()
         val viewGroup = findViewById(R.id.player) as FrameLayout
-        ExoPlayerPlayback.containerView = viewGroup
-
         player?.attachTo(viewGroup)
     }
 
