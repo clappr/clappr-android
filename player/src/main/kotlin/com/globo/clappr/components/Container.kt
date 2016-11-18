@@ -1,6 +1,7 @@
 package com.globo.clappr.components
 
 import android.widget.FrameLayout
+import com.globo.clappr.base.InternalEvent
 import com.globo.clappr.plugin.Loader
 import com.globo.clappr.base.Options
 import com.globo.clappr.base.UIObject
@@ -11,6 +12,10 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>
 
     var playback: Playback? = null
+        set(value) {
+            field = value
+            trigger(InternalEvent.PLAYBACK_CHANGED.value)
+        }
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
