@@ -12,7 +12,7 @@ interface PlaybackSupportInterface: NamedType {
 abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : UIObject(), NamedType {
 
     enum class State {
-        NONE, IDLE, PLAYING, PAUSED, STALLED
+        NONE, IDLE, PLAYING, PAUSED, STALLED, ERROR
     }
 
     companion object: PlaybackSupportInterface {
