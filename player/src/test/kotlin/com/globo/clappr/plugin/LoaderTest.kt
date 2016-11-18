@@ -169,4 +169,11 @@ class LoaderTest {
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load mp4 playback", playback is TestPlaybackMp4)
     }
+
+    @Test
+    fun shouldReturnNullForNoPlayback() {
+        var loader = Loader()
+        var playback = loader.loadPlayback("some-source.mp4", null, Options())
+        assertNull("should not have loaded playback", playback)
+    }
 }
