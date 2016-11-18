@@ -2,9 +2,9 @@ package com.globo.clappr.playback
 
 import android.net.Uri
 import android.os.Handler
-import android.util.Log
 import android.widget.FrameLayout
 import com.globo.clappr.base.ClapprEvent
+import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
@@ -28,7 +28,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import java.io.IOException
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options), ExoPlayer.EventListener {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
@@ -43,11 +43,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     val mainHandler = Handler()
     val bandwidthMeter = DefaultBandwidthMeter()
     var playerView = SimpleExoPlayerView(context)
-    val mediaSourceLogger = MediaSourceLogger()
+    val eventsListener = ExoplayerEventsListener()
     var player: SimpleExoPlayer? = null
     var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    var timeElapsedEventsDispatcher: TimerManager? = null
+    var timer: TimerManager? = null
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
@@ -78,26 +78,26 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             load(source, mimeType)
             play()
         } else {
-            triggerEventWithLog(ClapprEvent.WILL_PLAY)
+            trigger(Event.WILL_PLAY)
             player?.playWhenReady = true
         }
         return true
     }
 
     override fun pause(): Boolean {
-        triggerEventWithLog(ClapprEvent.WILL_PAUSE)
+        trigger(Event.WILL_PAUSE)
         player?.playWhenReady = false
         return true
     }
 
     override fun stop(): Boolean {
-        triggerEventWithLog(ClapprEvent.WILL_STOP)
+        trigger(Event.WILL_STOP)
         player?.stop()
         return true
     }
 
     override fun seek(seconds: Int): Boolean {
-        triggerEventWithLog(ClapprEvent.WILL_SEEK)
+        trigger(Event.WILL_SEEK)
         player?.seekTo((seconds * 1000).toLong())
         return true
     }
@@ -107,142 +107,152 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return true
     }
 
-    fun setupPlayer() {
+    private fun mediaSource(uri: Uri): MediaSource {
+        val type = Util.inferContentType(uri.lastPathSegment)
+        val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+
+        when (type) {
+            C.TYPE_DASH -> return DashMediaSource(uri, dataSourceFactory, DefaultDashChunkSource.Factory(dataSourceFactory), mainHandler, eventsListener)
+            C.TYPE_SS -> return SsMediaSource(uri, dataSourceFactory, DefaultSsChunkSource.Factory(dataSourceFactory), mainHandler, eventsListener)
+            C.TYPE_HLS -> return HlsMediaSource(uri, dataSourceFactory, mainHandler, eventsListener)
+            C.TYPE_OTHER -> return ExtractorMediaSource(uri, dataSourceFactory, DefaultExtractorsFactory(), mainHandler, eventsListener)
+            else -> throw IllegalStateException("Unsupported type: " + type)
+        }
+    }
+
+    private fun setupPlayer() {
         val videoTrackSelectionFactory = AdaptiveVideoTrackSelection.Factory(bandwidthMeter)
         trackSelector = DefaultTrackSelector(mainHandler, videoTrackSelectionFactory)
         player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, DefaultLoadControl())
         player?.playWhenReady = false
-        player?.addListener(this)
+        player?.addListener(eventsListener)
         setupPlayerView()
         setupTimeElapsedCallBacks()
         load(source, mimeType)
     }
 
-    private fun setupTimeElapsedCallBacks() {
-        timeElapsedEventsDispatcher = TimerManager(200, { dispatchTimeElapsedEvents() })
-    }
-
-    fun setupPlayerView() {
+    private fun setupPlayerView() {
         frameLayout.addView(playerView)
         playerView.player = player
     }
 
-    fun mediaSource(uri: Uri): MediaSource {
-        val type = Util.inferContentType(uri.lastPathSegment)
-        val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
-
-        when (type) {
-            C.TYPE_DASH -> return DashMediaSource(uri, dataSourceFactory, DefaultDashChunkSource.Factory(dataSourceFactory), mainHandler, mediaSourceLogger)
-            C.TYPE_SS -> return SsMediaSource(uri, dataSourceFactory, DefaultSsChunkSource.Factory(dataSourceFactory), mainHandler, mediaSourceLogger)
-            C.TYPE_HLS -> return HlsMediaSource(uri, dataSourceFactory, mainHandler, mediaSourceLogger)
-            C.TYPE_OTHER -> return ExtractorMediaSource(uri, dataSourceFactory, DefaultExtractorsFactory(), mainHandler, mediaSourceLogger)
-            else -> throw IllegalStateException("Unsupported type: " + type)
-        }
+    private fun setupTimeElapsedCallBacks() {
+        timer = TimerManager(200, { dispatchTimeElapsedEvents() })
     }
 
-    fun dispatchTimeElapsedEvents() {
-        Log.i(TAG, "Time elapsed event: buffer ${player?.bufferedPercentage}%")
-        Log.i(TAG, "Time elapsed event: video percent played ${getPercentPlayed().toInt()}%")
+    private fun dispatchTimeElapsedEvents() {
+        dispatchBufferPercentageEvent()
+        dispatchPercentPlayedEvent()
+    }
+
+    private fun dispatchBufferPercentageEvent() {
+        val bundle = Bundle()
+        val bufferPercentage = player?.bufferedPercentage.toString()
+
+        bundle.putString(Event.BUFFER_PERCENTAGE.name, bufferPercentage)
+        trigger(Event.BUFFER_PERCENTAGE.name, bundle)
+    }
+
+    private fun dispatchPercentPlayedEvent() {
+        val bundle = Bundle()
+        val percentPlayed = getPercentPlayed().toInt().toString()
+
+        bundle.putString(Event.PERCENT_PLAYED.name, percentPlayed)
+        trigger(Event.PERCENT_PLAYED.name, bundle)
     }
 
     private fun getPercentPlayed() = player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100
 
-    fun updateState(playWhenReady: Boolean, playbackState: Int) {
+    private fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
-            ExoPlayer.STATE_IDLE -> {
-                if (currentState == State.NONE) {
-                    triggerEventWithLog(ClapprEvent.READY)
-                } else {
-                    triggerEventWithLog(ClapprEvent.DID_STOP)
-                }
-                currentState = State.IDLE
-                stopTimeElapsedCallBacks()
-            }
-            ExoPlayer.STATE_ENDED -> {
-                currentState = State.IDLE
-                triggerEventWithLog(ClapprEvent.ENDED)
-                stop()
-            }
-            ExoPlayer.STATE_BUFFERING -> {
-                currentState = State.STALLED
-                triggerEventWithLog(ClapprEvent.STALLED)
-            }
-            ExoPlayer.STATE_READY -> {
-                if (playWhenReady) {
-                    currentState = State.PLAYING
-                    triggerEventWithLog(ClapprEvent.PLAYING)
-                    startTimeElapsedCallBacks()
-                } else {
-                    currentState = State.PAUSED
-                    triggerEventWithLog(ClapprEvent.DID_PAUSE)
-                }
-            }
+            ExoPlayer.STATE_IDLE -> handleExoplayerIdleState()
+            ExoPlayer.STATE_ENDED -> handleExoplayerEndedState()
+            ExoPlayer.STATE_BUFFERING -> handleExoplayerBufferingState()
+            ExoPlayer.STATE_READY -> handleExoplayerReadyState(playWhenReady)
         }
     }
 
-    private fun startTimeElapsedCallBacks() {
-        timeElapsedEventsDispatcher?.start()
+    private fun handleExoplayerReadyState(playWhenReady: Boolean) {
+        if (playWhenReady) {
+            currentState = State.PLAYING
+            trigger(Event.PLAYING)
+            timer?.start()
+        } else {
+            currentState = State.PAUSED
+            trigger(Event.DID_PAUSE)
+        }
     }
 
-    private fun stopTimeElapsedCallBacks() {
-        timeElapsedEventsDispatcher?.stop()
+    private fun handleExoplayerBufferingState() {
+        currentState = State.STALLED
+        trigger(Event.STALLED)
     }
 
-    private fun triggerEventWithLog(event: ClapprEvent) {
+    private fun handleExoplayerEndedState() {
+        currentState = State.IDLE
+        trigger(Event.ENDED)
+        stop()
+    }
+
+    private fun handleExoplayerIdleState() {
+        if (currentState == State.NONE) {
+            trigger(Event.READY)
+        } else {
+            trigger(Event.DID_STOP)
+        }
+        currentState = State.IDLE
+        timer?.stop()
+    }
+
+    private fun trigger(event: Event) {
         trigger(event.value)
-        Log.i(TAG, event.value)
     }
 
-    override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-        updateState(playWhenReady, playbackState)
+    private fun triggerErrorEvent(error: Exception?) {
+        val bundle = Bundle()
+        bundle.putString(Event.ERROR.name, error?.message)
+        trigger(Event.ERROR.name, bundle)
     }
 
-    override fun onPlayerError(error: ExoPlaybackException?) {
-        triggerErrorEvent(error)
-    }
-
-    override fun onLoadingChanged(isLoading: Boolean) {
-    }
-
-    override fun onPositionDiscontinuity() {
-    }
-
-    override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
-    }
-
-    inner class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
+    inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
         override fun onLoadError(error: IOException?) {
             triggerErrorEvent(error)
-        }
-
-        override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
-            Log.i("EXOPlayer", "onLoadStarted")
-        }
-
-        override fun onDownstreamFormatChanged(trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaTimeMs: Long) {
-            Log.i("EXOPlayer", "onDownstreamFormatChanged")
-        }
-
-        override fun onUpstreamDiscarded(trackType: Int, mediaStartTimeMs: Long, mediaEndTimeMs: Long) {
-            Log.i("EXOPlayer", "onUpstreamDiscarded")
-        }
-
-        override fun onLoadCanceled(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
-            Log.i("EXOPlayer", "onLoadCanceled")
-        }
-
-        override fun onLoadCompleted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
-            Log.i("EXOPlayer", "onLoadCompleted")
         }
 
         override fun onLoadError(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long, error: IOException?, wasCanceled: Boolean) {
             triggerErrorEvent(error)
         }
-    }
 
-    private fun triggerErrorEvent(error: Exception?) {
-        val bundle = Bundle()
-        bundle.putString(ClapprEvent.ERROR.name, error?.message)
-        trigger(ClapprEvent.ERROR.name, bundle)
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            updateState(playWhenReady, playbackState)
+        }
+
+        override fun onPlayerError(error: ExoPlaybackException?) {
+            triggerErrorEvent(error)
+        }
+
+        override fun onLoadingChanged(isLoading: Boolean) {
+        }
+
+        override fun onPositionDiscontinuity() {
+        }
+
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+        }
+
+        override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
+        }
+
+        override fun onDownstreamFormatChanged(trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaTimeMs: Long) {
+        }
+
+        override fun onUpstreamDiscarded(trackType: Int, mediaStartTimeMs: Long, mediaEndTimeMs: Long) {
+        }
+
+        override fun onLoadCanceled(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
+        }
+
+        override fun onLoadCompleted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
+        }
     }
 }
