@@ -3,13 +3,12 @@ package com.globo.clappr.playback
 import android.net.Uri
 import android.os.Handler
 import android.util.Log
-import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Options
-import com.globo.clappr.base.UIObject
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
+import com.globo.clappr.timer.TimerManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
@@ -28,7 +27,6 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import java.io.IOException
-import java.util.*
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options), ExoPlayer.EventListener {
     companion object : PlaybackSupportInterface {
@@ -49,7 +47,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     var player: SimpleExoPlayer? = null
     var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    var timeElapsedEventsDispatcher: TimeElapsedManager? = null
+    var timeElapsedEventsDispatcher: TimerManager? = null
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
@@ -121,7 +119,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupTimeElapsedCallBacks() {
-        timeElapsedEventsDispatcher = TimeElapsedManager({ dispatchTimeElapsedEvents() })
+        timeElapsedEventsDispatcher = TimerManager(200, { dispatchTimeElapsedEvents() })
     }
 
     fun setupPlayerView() {
@@ -210,24 +208,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
-    }
-
-    class TimeElapsedManager(val callBack: () -> Unit) {
-        var timer: Timer? = null
-
-        fun start() {
-            stop()
-            timer = Timer()
-            timer?.scheduleAtFixedRate(object : TimerTask() {
-                override fun run() {
-                    callBack()
-                }
-            }, 0, 200)
-        }
-
-        fun stop() {
-            timer?.cancel()
-        }
     }
 
     inner class MediaSourceLogger() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener {
