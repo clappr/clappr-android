@@ -190,7 +190,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun handleExoplayerEndedState() {
         currentState = State.IDLE
-        trigger(Event.ENDED)
+        trigger(Event.DID_COMPLETE)
         stop()
     }
 

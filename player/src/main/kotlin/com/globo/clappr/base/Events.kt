@@ -16,6 +16,7 @@ enum class Event(val value: String) {
     WILL_STOP("willStop"),
     DID_STOP("didStop"),
     DID_COMPLETE("didComplete"),
-    ENDED("ended"),
     STALLED("stalled"),
+    BUFFER_PERCENTAGE("bufferPercentage"),
+    PERCENT_PLAYED("percentPlayed")
 }
