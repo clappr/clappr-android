@@ -15,12 +15,14 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
     val containers: MutableList<Container> = mutableListOf()
     var activeContainer: Container? = null
         set(value) {
-            activeContainer?.stopListening()
+            var previousValue = activeContainer
             field = value
-            activeContainer?.on(InternalEvent.PLAYBACK_CHANGED.value,
-                    Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.ACTIVE_PLAYBACK_CHANGED.value, bundle) }
-            )
-            trigger(InternalEvent.ACTIVE_CONTAINER_CHANGED.value)
+            if (previousValue != value) {
+                previousValue?.stopListening()
+                activeContainer?.on(InternalEvent.PLAYBACK_CHANGED.value,
+                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.ACTIVE_PLAYBACK_CHANGED.value, bundle) } )
+                trigger(InternalEvent.ACTIVE_CONTAINER_CHANGED.value)
+            }
         }
 
     val activePlayback: Playback?
