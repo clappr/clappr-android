@@ -14,9 +14,12 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
     var playback: Playback? = null
         set(value) {
             var previousValue = playback
-            field = value
             if (previousValue != value) {
-                trigger(InternalEvent.PLAYBACK_CHANGED.value)
+                trigger(InternalEvent.WILL_CHANGE_PLAYBACK.value)
+
+                field = value
+
+                trigger(InternalEvent.DID_CHANGE_PLAYBACK.value)
             }
         }
 

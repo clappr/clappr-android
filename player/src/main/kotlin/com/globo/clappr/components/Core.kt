@@ -16,12 +16,17 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
     var activeContainer: Container? = null
         set(value) {
             var previousValue = activeContainer
-            field = value
             if (previousValue != value) {
-                previousValue?.stopListening()
-                activeContainer?.on(InternalEvent.PLAYBACK_CHANGED.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.ACTIVE_PLAYBACK_CHANGED.value, bundle) } )
-                trigger(InternalEvent.ACTIVE_CONTAINER_CHANGED.value)
+                activeContainer?.stopListening()
+                trigger(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value)
+
+                field = value
+
+                activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
+                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle) } )
+                activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
+                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle) } )
+                trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
 
