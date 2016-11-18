@@ -1,5 +1,6 @@
 package com.globo.clappr.base
 
+import android.os.Bundle
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Container
 import com.globo.clappr.components.Playback
@@ -61,5 +62,24 @@ open class ContainerTest {
 
         assertNotNull("should have created playback", container.playback)
         assertEquals("should have created no-op playback", container.playback?.name, NoOpPlayback.name)
+    }
+
+    @Test
+    fun shoulTriggerPlaybackChanged() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+
+        var callbackWasCalled = false
+        container?.on(InternalEvent.PLAYBACK_CHANGED.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+
+        container.load(source = "some_unknown_source.mp0")
+        assertFalse("PLAYBACK_CHANGED triggered " + container.playback, callbackWasCalled)
+
+        container.load(source = "some_source.mp4")
+        assertTrue("PLAYBACK_CHANGED not triggered", callbackWasCalled)
+
+        callbackWasCalled = false
+        container.load(source = "some_unknown_source.mp4")
+        assertFalse("PLAYBACK_CHANGED triggered", callbackWasCalled)
     }
 }
