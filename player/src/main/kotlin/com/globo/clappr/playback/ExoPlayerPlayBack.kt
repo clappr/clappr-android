@@ -133,6 +133,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun setupPlayerView() {
         frameLayout.addView(playerView)
         playerView.player = player
+        playerView.setUseController(false)
     }
 
     private fun setupTimeElapsedCallBacks() {
