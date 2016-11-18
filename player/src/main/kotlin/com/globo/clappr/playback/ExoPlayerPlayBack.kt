@@ -37,19 +37,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override val name: String = "exoplayerplayback"
-        const val TAG = "ExoplayerEvent"
     }
 
-    val mainHandler = Handler()
-    val bandwidthMeter = DefaultBandwidthMeter()
-    var playerView = SimpleExoPlayerView(context)
-    val eventsListener = ExoplayerEventsListener()
-    var player: SimpleExoPlayer? = null
-    var currentState = State.NONE
+    private val mainHandler = Handler()
+    private val bandwidthMeter = DefaultBandwidthMeter()
+    private var playerView = SimpleExoPlayerView(context)
+    private val eventsListener = ExoplayerEventsListener()
+    private var player: SimpleExoPlayer? = null
+    private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    var timer: TimerManager? = null
+    private var timer: TimerManager? = null
 
-    val frameLayout: FrameLayout
+    private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
     override val viewClass: Class<*>
