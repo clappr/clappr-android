@@ -51,6 +51,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     private var type: MediaType = MediaType.UNKNOWN
 
     private var internalState: InternalState = InternalState.NONE
+        set(value) {
+            val oldState = state
+
+            field = value
+
+            sendUpdateStateEvents(oldState)
+        }
 
     init {
         mediaPlayer = MediaPlayer()
@@ -60,12 +67,15 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnErrorListener { mp, what, extra ->
             Log.i(TAG, "error: " + what + "(" + extra + ")" )
-            updateState(InternalState.ERROR)
+            internalState = InternalState.ERROR
             false
         }
 
         mediaPlayer.setOnSeekCompleteListener {
             Log.i(TAG, "seek completed")
+            if (mediaPlayer?.isPlaying) {
+                trigger(ClapprEvent.PLAYING.value)
+            }
         }
 
         mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
@@ -77,9 +87,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnPreparedListener {
             type = if (mediaPlayer.duration > -1) MediaType.VOD else MediaType.LIVE
-            updateState(InternalState.PREPARED)
+            internalState = InternalState.PREPARED
             mediaPlayer.start()
-            updateState(InternalState.STARTED)
+            internalState = InternalState.STARTED
         }
 
         mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
@@ -87,7 +97,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
         mediaPlayer.setOnCompletionListener {
-            updateState(InternalState.ATTACHED)
+            internalState = InternalState.ATTACHED
         }
 
         mediaPlayer.setDataSource(source)
@@ -97,7 +107,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setDisplay(null)
 
-        updateState(InternalState.IDLE)
+        internalState = InternalState.IDLE
 
         val holder = (view as? PlaybackView)?.holder
         holder?.addCallback(object: SurfaceHolder.Callback {
@@ -109,13 +119,13 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 Log.i(TAG, "surface destroyed")
                 mediaPlayer.stop()
                 mediaPlayer.setDisplay(null)
-                updateState(InternalState.IDLE)
+                internalState = InternalState.IDLE
             }
 
             override fun surfaceCreated(sh: SurfaceHolder) {
                 Log.i(TAG, "surface created")
                 mediaPlayer.setDisplay(holder)
-                updateState(InternalState.ATTACHED)
+                internalState = InternalState.ATTACHED
             }
         })
     }
@@ -218,7 +228,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 mediaPlayer.start()
             }
             if (state == State.PAUSED) {
-                updateState(InternalState.STARTED)
+                internalState = InternalState.STARTED
             }
             return true
         } else {
@@ -233,7 +243,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 mediaPlayer.pause()
             }
             if (state == State.PLAYING) {
-                updateState(InternalState.PAUSED)
+                internalState = InternalState.PAUSED
             }
             return true
         } else {
@@ -246,7 +256,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             trigger(ClapprEvent.WILL_STOP.value)
             try {
                 mediaPlayer.stop()
-                updateState(InternalState.STOPPED)
+                internalState = InternalState.STOPPED
             } catch (iee: IllegalStateException) {
                 Log.i(TAG, "stop", iee)
             }
@@ -266,9 +276,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
     }
 
-    private fun updateState(value: InternalState) {
-        val previousState = state
-        internalState = value
+    private fun sendUpdateStateEvents(previousState: State) {
         if (state != previousState) {
             when (state) {
                 State.IDLE -> {
