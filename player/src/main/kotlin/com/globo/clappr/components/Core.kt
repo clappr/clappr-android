@@ -15,8 +15,7 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
     val containers: MutableList<Container> = mutableListOf()
     var activeContainer: Container? = null
         set(value) {
-            var previousValue = activeContainer
-            if (previousValue != value) {
+            if (activeContainer != value) {
                 activeContainer?.stopListening()
                 trigger(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value)
 
