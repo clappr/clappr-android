@@ -1,5 +1,6 @@
 package com.globo.clappr.base
 
+import android.os.Bundle
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Container
 import com.globo.clappr.components.Playback
@@ -61,5 +62,48 @@ open class ContainerTest {
 
         assertNotNull("should have created playback", container.playback)
         assertEquals("should have created no-op playback", container.playback?.name, NoOpPlayback.name)
+    }
+
+    @Test
+    fun shouldNotTriggerPlaybackChangedWhenSameNullPlayback() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+
+        var callbackWasCalled = false
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true})
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+
+        container.load(source = "some_unknown_source.mp0")
+        assertFalse("CHANGE_PLAYBACK triggered " + container.playback, callbackWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerPlaybackChangedWhenDifferentPlayback() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+
+        val previousPlayback: Playback? = container.playback
+        var callbackWasCalled = false
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? ->
+            assertFalse("DID_CHANGE_PLAYBACK triggered before WILL_CHANGE_PLAYBACK", callbackWasCalled)
+            assertEquals("playback already changed", previousPlayback, container.playback)
+        })
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+
+        container.load(source = "some_source.mp4")
+        assertTrue("DID_CHANGE_PLAYBACK not triggered", callbackWasCalled)
+    }
+
+    @Test
+    fun shouldNotTriggerPlaybackChangedWhenSamePlayback() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_unknown_source.mp4"))
+
+        var callbackWasCalled = false
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true})
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+
+        container.load(source = "some_unknown_source.mp4")
+        assertFalse("CHANGE_PLAYBACK triggered", callbackWasCalled)
     }
 }

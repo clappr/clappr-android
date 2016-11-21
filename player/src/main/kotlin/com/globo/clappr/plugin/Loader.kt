@@ -96,9 +96,9 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
-        val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
-        val constructor = playbackClass.primaryConstructor
         try {
+            val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
+            val constructor = playbackClass.primaryConstructor
             playback = constructor?.call(source, mimeType, options) as? Playback
         } catch (e: Exception) {
         }
