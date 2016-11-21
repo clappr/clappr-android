@@ -150,7 +150,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val bufferPercentage = player?.bufferedPercentage?.toDouble() ?: 0.0
 
         bundle.putDouble("percentage", bufferPercentage)
-        trigger(Event.BUFFER_UPDATE.name, bundle)
+        trigger(Event.BUFFER_UPDATE.value, bundle)
     }
 
     private fun dispatchPercentPlayedEvent() {
@@ -160,7 +160,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition / 1000)
-        trigger(Event.POSITION_UPDATE.name, bundle)
+        trigger(Event.POSITION_UPDATE.value, bundle)
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
@@ -210,8 +210,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun triggerErrorEvent(error: Exception?) {
         val bundle = Bundle()
-        bundle.putString(Event.ERROR.name, error?.message)
-        trigger(Event.ERROR.name, bundle)
+        bundle.putString(Event.ERROR.value, error?.message)
+        trigger(Event.ERROR.value, bundle)
     }
 
     inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
