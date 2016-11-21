@@ -1,9 +1,9 @@
 package com.globo.clappr.playback
 
 import android.net.Uri
+import android.os.Bundle
 import android.os.Handler
 import android.widget.FrameLayout
-import com.globo.clappr.base.ClapprEvent
 import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
