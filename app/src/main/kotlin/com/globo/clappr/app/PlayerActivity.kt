@@ -50,21 +50,4 @@ class PlayerActivity : Activity() {
         }
         return super.onOptionsItemSelected(item)
     }
-
-    fun play(view: View) {
-        player?.core?.activeContainer?.playback?.play()
-    }
-
-    fun stop(view: View) {
-        player?.core?.activeContainer?.playback?.stop()
-    }
-
-    fun seek(view: View) {
-        player?.core?.activeContainer?.playback?.seek(30)
-    }
-
-    fun pause(view: View) {
-        player?.core?.activeContainer?.playback?.pause()
-    }
-
 }
