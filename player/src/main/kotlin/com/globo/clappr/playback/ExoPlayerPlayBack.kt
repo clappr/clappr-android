@@ -156,12 +156,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun dispatchPercentPlayedEvent() {
         val bundle = Bundle()
         val currentPosition = player?.currentPosition?.toDouble() ?: 0.0
-        bundle.putDouble("percentage", getPercentPlayed())
+        val percentage = if (duration != 0.0) (currentPosition / duration) * 100 else 0.0
+
+        bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition / 1000)
         trigger(Event.POSITION_UPDATE.name, bundle)
     }
-
-    private fun getPercentPlayed() = player?.currentPosition!!.toDouble() / player?.duration!!.toDouble() * 100
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
