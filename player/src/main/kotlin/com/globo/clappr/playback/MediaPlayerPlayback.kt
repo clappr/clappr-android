@@ -100,34 +100,37 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             internalState = InternalState.ATTACHED
         }
 
-        mediaPlayer.setDataSource(source)
-
         mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
         mediaPlayer.setScreenOnWhilePlaying(true)
 
-        mediaPlayer.setDisplay(null)
+        try {
+            mediaPlayer.setDataSource(source)
 
-        internalState = InternalState.IDLE
+            internalState = InternalState.IDLE
 
-        val holder = (view as? PlaybackView)?.holder
-        holder?.addCallback(object: SurfaceHolder.Callback {
-            override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
-                Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
-            }
+            mediaPlayer.setDisplay(null)
+            val holder = (view as? PlaybackView)?.holder
+            holder?.addCallback(object: SurfaceHolder.Callback {
+                override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
+                    Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
+                }
 
-            override fun surfaceDestroyed(sh: SurfaceHolder) {
-                Log.i(TAG, "surface destroyed")
-                mediaPlayer.stop()
-                mediaPlayer.setDisplay(null)
-                internalState = InternalState.IDLE
-            }
+                override fun surfaceDestroyed(sh: SurfaceHolder) {
+                    Log.i(TAG, "surface destroyed")
+                    mediaPlayer.stop()
+                    mediaPlayer.setDisplay(null)
+                    internalState = InternalState.IDLE
+                }
 
-            override fun surfaceCreated(sh: SurfaceHolder) {
-                Log.i(TAG, "surface created")
-                mediaPlayer.setDisplay(holder)
-                internalState = InternalState.ATTACHED
-            }
-        })
+                override fun surfaceCreated(sh: SurfaceHolder) {
+                    Log.i(TAG, "surface created")
+                    mediaPlayer.setDisplay(holder)
+                    internalState = InternalState.ATTACHED
+                }
+            })
+        } catch (e: Exception) {
+            internalState = InternalState.ERROR
+        }
     }
 
     class PlaybackView(context: Context?) : SurfaceView(context) {
