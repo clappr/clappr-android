@@ -1,90 +1,96 @@
 package com.globo.clappr.playback
 
+import android.app.Activity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.widget.FrameLayout
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.ClapprEvent
+import com.globo.clappr.base.Event
+import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.*
 import org.junit.Ignore
+import org.objectweb.asm.tree.analysis.Frame
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowMediaPlayer
+import org.robolectric.shadows.ShadowSurfaceView
 import org.robolectric.shadows.util.DataSource
+import org.robolectric.util.ActivityController
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class MediaPlayerPlaybackTest {
+    lateinit var mediaPlayerPlayback : MediaPlayerPlayback
+
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
 
-        ShadowMediaPlayer.addMediaInfo(DataSource.toDataSource("valid"), ShadowMediaPlayer.MediaInfo(10000, -1))
-        ShadowMediaPlayer.addException(DataSource.toDataSource("io_invalid"), IOException())
-        ShadowMediaPlayer.addException(DataSource.toDataSource("runtime_invalid"), RuntimeException())
+        ShadowMediaPlayer.addMediaInfo(DataSource.toDataSource("valid"), ShadowMediaPlayer.MediaInfo())
+        mediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
+        createSurface(mediaPlayerPlayback)
+        mediaPlayerPlayback.render()
     }
 
-    @Ignore("need to mock Surface lifecycle") @Test
+    private fun createSurface(mpp: MediaPlayerPlayback) {
+        val ssv = Shadows.shadowOf(mpp.view) as ShadowSurfaceView
+        val fsh = ssv.fakeSurfaceHolder
+        for (callback in fsh.callbacks) callback.surfaceCreated(fsh)
+    }
+
+    @Test
     fun shouldTransitionToIdleWithValidMedia() {
         val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
-        mpp.view = FrameLayout(BaseObject.context)
-        mpp.render()
+        assertEquals("should not transition from NONE", Playback.State.NONE, mpp.state)
+        createSurface(mpp)
         assertEquals("should transition to IDLE", Playback.State.IDLE, mpp.state)
     }
 
-    @Test(expected = IOException::class)
+    @Test
     fun shouldTrhrowWithInvalidMedia() {
+        ShadowMediaPlayer.addException(DataSource.toDataSource("io_invalid"), IOException())
         val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "io_invalid")
+        assertEquals("should transition to ERROR", mpp.state, Playback.State.ERROR)
     }
 
-    @Test(expected = RuntimeException::class)
+    @Test
     fun shouldTrhrowWithUnsupportedMedia() {
+        ShadowMediaPlayer.addException(DataSource.toDataSource("runtime_invalid"), RuntimeException())
         val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "runtime_invalid")
+        assertEquals("should transition to ERROR", mpp.state, Playback.State.ERROR)
     }
 
     @Test
     fun shouldTransitionToPlayingWhenPlay() {
-        var smp : ShadowMediaPlayer? = null
-        ShadowMediaPlayer.setCreateListener { mediaPlayer, shadowMediaPlayer -> smp = shadowMediaPlayer }
+        mediaPlayerPlayback.play()
 
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
-        mpp.view = FrameLayout(BaseObject.context)
-        mpp.render()
-        mpp.play()
-
-        smp?.invokePreparedListener()
-
-        assertEquals("should transition to PLAYING", Playback.State.PLAYING, mpp.state)
+        assertEquals("should transition to PLAYING", Playback.State.PLAYING, mediaPlayerPlayback.state)
     }
 
-    @Ignore("need to mock Surface lifecycle") @Test()
+    @Test()
     fun shouldTriggerPlayEventsWhenPlay() {
-        var smp : ShadowMediaPlayer? = null
-        ShadowMediaPlayer.setCreateListener { mediaPlayer, shadowMediaPlayer -> smp = shadowMediaPlayer }
-
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
-
         var willPlayCount = 0
         var playingCount = 0
-        mpp.on(ClapprEvent.WILL_PLAY.value, Callback.wrap { bundle: Bundle? -> willPlayCount += 1 })
-        mpp.on(ClapprEvent.PLAYING.value, Callback.wrap { bundle: Bundle? -> playingCount += 1 })
-        mpp.view = FrameLayout(BaseObject.context)
-        mpp.render()
-        mpp.play()
+        mediaPlayerPlayback.on(Event.WILL_PLAY.value, Callback.wrap { bundle: Bundle? ->
+            willPlayCount += 1
+            assertEquals("playing trigerred", 0, playingCount)
+        })
+        mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { bundle: Bundle? -> playingCount += 1 })
+
+        mediaPlayerPlayback.play()
 
         assertEquals("will play triggered", 1, willPlayCount)
-
-        smp?.invokePreparedListener()
-
-        assertEquals("will play triggered", 1, willPlayCount)
-        assertEquals("will play triggered", 1, playingCount)
+        assertEquals("playing not triggered", 1, playingCount)
     }
-
 }
