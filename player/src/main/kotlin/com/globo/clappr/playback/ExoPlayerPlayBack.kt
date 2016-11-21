@@ -149,13 +149,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val bundle = Bundle()
         val bufferPercentage = player?.bufferedPercentage?.toDouble() ?: 0.0
 
-        bundle.putDouble(Event.BUFFER_PERCENTAGE.name, bufferPercentage)
+        bundle.putDouble("percentage", bufferPercentage)
         trigger(Event.BUFFER_PERCENTAGE.name, bundle)
     }
 
     private fun dispatchPercentPlayedEvent() {
         val bundle = Bundle()
-        bundle.putDouble(Event.PERCENT_PLAYED.name, getPercentPlayed())
+        val currentPosition = player?.currentPosition?.toDouble() ?: 0.0
+        bundle.putDouble("percentage", getPercentPlayed())
+        bundle.putDouble("time", currentPosition / 1000)
         trigger(Event.PERCENT_PLAYED.name, bundle)
     }
 
