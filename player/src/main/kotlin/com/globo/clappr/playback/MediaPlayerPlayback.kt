@@ -325,6 +325,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 State.ERROR -> {
                     trigger(ClapprEvent.ERROR.value)
                 }
+                State.STALLED -> {
+                    trigger(Event.STALLED.value)
+                }
             }
         }
     }
