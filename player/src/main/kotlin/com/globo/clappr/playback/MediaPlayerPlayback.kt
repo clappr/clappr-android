@@ -62,8 +62,14 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     init {
         mediaPlayer = MediaPlayer()
 
-        // TODO
-//        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->  throw UnsupportedOperationException("not implemented") }
+        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->
+            Log.i(TAG, infoLog(what, extra))
+            when(what) {
+                MediaPlayer.MEDIA_INFO_BUFFERING_START -> internalState = InternalState.BUFFERING
+                MediaPlayer.MEDIA_INFO_BUFFERING_END -> internalState = InternalState.STARTED
+            }
+            false
+        }
 
         mediaPlayer.setOnErrorListener { mp, what, extra ->
             Log.i(TAG, "error: " + what + "(" + extra + ")" )
@@ -131,6 +137,25 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         } catch (e: Exception) {
             internalState = InternalState.ERROR
         }
+    }
+
+    private fun infoLog(what: Int, extra: Int): String? {
+        var log : String
+        when(what) {
+            MediaPlayer.MEDIA_INFO_BUFFERING_START -> log = "MEDIA_INFO_BUFFERING_START"
+            MediaPlayer.MEDIA_INFO_BUFFERING_END -> log = "MEDIA_INFO_BUFFERING_END"
+            MediaPlayer.MEDIA_INFO_UNKNOWN -> log = "MEDIA_INFO_UNKNOWN"
+            MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> log = "MEDIA_INFO_VIDEO_TRACK_LAGGING"
+            MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> log = "MEDIA_INFO_VIDEO_RENDERING_START"
+            MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING -> log = "MEDIA_INFO_BAD_INTERLEAVING"
+            MediaPlayer.MEDIA_INFO_NOT_SEEKABLE -> log = "MEDIA_INFO_NOT_SEEKABLE"
+            MediaPlayer.MEDIA_INFO_METADATA_UPDATE -> log = "MEDIA_INFO_METADATA_UPDATE"
+            MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE -> log = "MEDIA_INFO_UNSUPPORTED_SUBTITLE"
+            MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT -> log = "MEDIA_INFO_SUBTITLE_TIMED_OUT"
+            else -> log = "UNKNOWN"
+        }
+
+        return log + " (" + what + " / " + extra + ")"
     }
 
     class PlaybackView(context: Context?) : SurfaceView(context) {
