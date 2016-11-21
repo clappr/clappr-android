@@ -22,7 +22,7 @@ class PlayerActivity : Activity() {
         if (savedInstanceState == null) {
             BaseObject.context = applicationContext
             Loader.registerPlayback(ExoPlayerPlayback::class)
-            val urlString = "http://www.html5videoplayer.net/videos/toystory.mp4"
+            val urlString = "http://clappr.io/highline.mp4"
             val options = Options(urlString, "", true)
             player = Player(options)
         }
