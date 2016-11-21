@@ -17,6 +17,6 @@ enum class Event(val value: String) {
     DID_STOP("didStop"),
     DID_COMPLETE("didComplete"),
     STALLED("stalled"),
-    BUFFER_PERCENTAGE("bufferPercentage"),
-    PERCENT_PLAYED("percentPlayed")
+    BUFFER_UPDATE("bufferUpdate"),
+    POSITION_UPDATE("positionUpdate")
 }
