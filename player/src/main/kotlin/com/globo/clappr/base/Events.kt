@@ -8,6 +8,7 @@ enum class Event(val value: String) {
     WILL_PAUSE("willPause"),
     DID_PAUSE("didPause"),
     WILL_SEEK("willSeek"),
+    DID_SEEK("didSeek"),
     WILL_STOP("willStop"),
     DID_STOP("didStop"),
     DID_COMPLETE("didComplete"),

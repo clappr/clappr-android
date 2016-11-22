@@ -98,6 +98,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override fun seek(seconds: Int): Boolean {
         trigger(Event.WILL_SEEK)
         player?.seekTo((seconds * 1000).toLong())
+        trigger(Event.DID_SEEK)
         return true
     }
 
