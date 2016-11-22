@@ -72,6 +72,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.IDLE && currentState != State.ERROR
 
     override fun play(): Boolean {
+        if (!canPlay) return false
+
         if (player == null) {
             setupPlayer()
             load(source, mimeType)
@@ -84,6 +86,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun pause(): Boolean {
+        if (!canPause) return false
+
         trigger(Event.WILL_PAUSE)
         player?.playWhenReady = false
         return true
@@ -96,6 +100,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun seek(seconds: Int): Boolean {
+        if (!canSeek) return false
+
         trigger(Event.WILL_SEEK)
         player?.seekTo((seconds * 1000).toLong())
         trigger(Event.DID_SEEK)
