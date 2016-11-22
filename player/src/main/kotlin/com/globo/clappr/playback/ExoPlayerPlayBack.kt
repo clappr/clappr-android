@@ -56,7 +56,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = FrameLayout::class.java
 
     override val duration: Double
-        get() =(player?.duration ?: 0L).toDouble() * ONE_SECOND_IN_MILLIS
+        get() =(player?.duration ?: 0L).toDouble() / ONE_SECOND_IN_MILLIS
 
     override val state: State
         get() = currentState
