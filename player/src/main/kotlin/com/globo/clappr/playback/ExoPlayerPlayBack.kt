@@ -1,5 +1,6 @@
 package com.globo.clappr.playback
 
+import android.R.string.cancel
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -46,10 +47,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var player: SimpleExoPlayer? = null
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    private var timer: TimerManager? = null
+    //    private var timer: TimerManager? = null
+    private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { triggerTimeElapsedEvents() })
 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
+
 
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
@@ -137,7 +140,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupTimeElapsedCallBacks() {
-        timer = TimerManager(200, { triggerTimeElapsedEvents() })
+//        timer = TimerManager(200, { triggerTimeElapsedEvents() })
     }
 
     private fun triggerTimeElapsedEvents() {
@@ -176,7 +179,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (playWhenReady) {
             currentState = State.PLAYING
             trigger(Event.PLAYING)
-            timer?.start()
+            timeElapsedHandler.start()
+//            timer?.start()
         } else {
             currentState = State.PAUSED
             trigger(Event.DID_PAUSE)
@@ -201,7 +205,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             trigger(Event.DID_STOP)
         }
         currentState = State.IDLE
-        timer?.stop()
+
+        timeElapsedHandler.cancel()
+//        timer?.stop()
     }
 
     private fun trigger(event: Event) {
@@ -217,6 +223,41 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val bundle = Bundle()
         bundle.putString(Event.ERROR.value, error?.message)
         trigger(Event.ERROR.value, bundle)
+    }
+
+
+    class PeriodicTimeElapsedHandler(val interval: Long, val function: () -> Unit) : Handler() {
+
+        private var timeElapsedRunnable: TimeElapsedRunnable? = null
+
+        fun start() {
+            timeElapsedRunnable?.cancel()
+            timeElapsedRunnable = TimeElapsedRunnable(this)
+            postDelayed(timeElapsedRunnable, interval)
+        }
+
+        fun cancel() {
+            timeElapsedRunnable?.cancel()
+            removeCallbacks(timeElapsedRunnable)
+            timeElapsedRunnable = null
+        }
+
+        inner class TimeElapsedRunnable(val handler: Handler) : Runnable {
+
+            private var canceled: Boolean = false
+
+            override fun run() {
+
+                if (!canceled) {
+                    function.invoke()
+                    handler.postDelayed(this, interval)
+                }
+            }
+
+            fun cancel() {
+                canceled = true
+            }
+        }
     }
 
     inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
