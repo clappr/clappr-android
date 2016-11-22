@@ -39,6 +39,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         override val name: String = "exoplayerplayback"
     }
 
+    private val ONE_SECOND_IN_MILLIS: Int = 1000
+
     private val mainHandler = Handler()
     private val bandwidthMeter = DefaultBandwidthMeter()
     private var playerView = SimpleExoPlayerView(context)
@@ -47,7 +49,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
     private var timer: TimerManager? = null
-    private val ONE_SECOND_IN_MILLIS: Int = 1000
 
     private val frameLayout: FrameLayout
         get() = view as FrameLayout
@@ -157,11 +158,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun dispatchPercentPlayedEvent() {
         val bundle = Bundle()
-        val currentPosition = player?.currentPosition?.toDouble() ?: 0.0
+        val currentPosition = (player?.currentPosition?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
         val percentage = if (duration != 0.0) (currentPosition / duration) * 100 else 0.0
 
         bundle.putDouble("percentage", percentage)
-        bundle.putDouble("time", currentPosition / 1000)
+        bundle.putDouble("time", currentPosition)
         trigger(Event.POSITION_UPDATE.value, bundle)
     }
 
