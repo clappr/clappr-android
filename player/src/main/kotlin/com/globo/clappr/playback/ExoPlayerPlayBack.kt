@@ -3,7 +3,6 @@ package com.globo.clappr.playback
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.widget.FrameLayout
 import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
@@ -43,21 +42,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val mainHandler = Handler()
     private val bandwidthMeter = DefaultBandwidthMeter()
-    private var playerView = SimpleExoPlayerView(context)
     private val eventsListener = ExoplayerEventsListener()
     private var player: SimpleExoPlayer? = null
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
     private var timer: TimerManager? = null
 
-    private val frameLayout: FrameLayout
-        get() = view as FrameLayout
+    private val playerView: SimpleExoPlayerView
+        get() = view as SimpleExoPlayerView
 
     override val viewClass: Class<*>
-        get() = FrameLayout::class.java
+        get() = SimpleExoPlayerView::class.java
 
     override val duration: Double
-        get() =(player?.duration ?: 0L).toDouble() / ONE_SECOND_IN_MILLIS
+        get() = (player?.duration ?: 0L).toDouble() / ONE_SECOND_IN_MILLIS
 
     override val state: State
         get() = currentState
@@ -134,7 +132,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupPlayerView() {
-        frameLayout.addView(playerView)
         playerView.player = player
         playerView.setUseController(false)
     }
@@ -211,7 +208,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(event.value)
     }
 
-    private fun handleError(error: Exception?){
+    private fun handleError(error: Exception?) {
         currentState = State.ERROR
         triggerErrorEvent(error)
     }
