@@ -67,7 +67,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 (currentState == State.STALLED && player?.playWhenReady == false)
 
     override val canPause: Boolean
-        get() = currentState == State.PLAYING
+        get() = currentState == State.PLAYING || currentState == State.STALLED
 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.IDLE
