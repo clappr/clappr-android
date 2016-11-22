@@ -47,6 +47,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
     private var timer: TimerManager? = null
+    private val ONE_SECOND_IN_MILLIS: Int = 1000
 
     private val frameLayout: FrameLayout
         get() = view as FrameLayout
@@ -55,7 +56,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = FrameLayout::class.java
 
     override val duration: Double
-        get() = player?.duration?.toDouble() ?: 0.0
+        get() =(player?.duration ?: 0L).toDouble() * ONE_SECOND_IN_MILLIS
 
     override val state: State
         get() = currentState
