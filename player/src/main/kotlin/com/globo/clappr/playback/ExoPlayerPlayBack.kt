@@ -140,15 +140,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupTimeElapsedCallBacks() {
-        timer = TimerManager(200, { dispatchTimeElapsedEvents() })
+        timer = TimerManager(200, { triggerTimeElapsedEvents() })
     }
 
-    private fun dispatchTimeElapsedEvents() {
-        dispatchBufferPercentageEvent()
-        dispatchPercentPlayedEvent()
+    private fun triggerTimeElapsedEvents() {
+        triggerBufferUpdateEvent()
+        triggerPositionUpdateEvent()
     }
 
-    private fun dispatchBufferPercentageEvent() {
+    private fun triggerBufferUpdateEvent() {
         val bundle = Bundle()
         val bufferPercentage = player?.bufferedPercentage?.toDouble() ?: 0.0
 
@@ -156,7 +156,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.BUFFER_UPDATE.value, bundle)
     }
 
-    private fun dispatchPercentPlayedEvent() {
+    private fun triggerPositionUpdateEvent() {
         val bundle = Bundle()
         val currentPosition = (player?.currentPosition?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
         val percentage = if (duration != 0.0) (currentPosition / duration) * 100 else 0.0
