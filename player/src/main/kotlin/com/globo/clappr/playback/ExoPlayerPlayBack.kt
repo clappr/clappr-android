@@ -211,6 +211,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(event.value)
     }
 
+    private fun handleError(error: Exception?){
+        currentState = State.ERROR
+        triggerErrorEvent(error)
+    }
+
     private fun triggerErrorEvent(error: Exception?) {
         val bundle = Bundle()
         bundle.putString(Event.ERROR.value, error?.message)
@@ -219,11 +224,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
         override fun onLoadError(error: IOException?) {
-            triggerErrorEvent(error)
+            handleError(error)
         }
 
         override fun onLoadError(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long, error: IOException?, wasCanceled: Boolean) {
-            triggerErrorEvent(error)
+            handleError(error)
         }
 
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
@@ -231,7 +236,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onPlayerError(error: ExoPlaybackException?) {
-            triggerErrorEvent(error)
+            handleError(error)
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
