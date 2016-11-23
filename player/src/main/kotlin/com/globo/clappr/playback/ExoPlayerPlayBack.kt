@@ -127,7 +127,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         setupPlayerView()
-        load(source, mimeType)
     }
 
     private fun setupPlayerView() {
