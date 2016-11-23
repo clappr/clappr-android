@@ -74,7 +74,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         mediaPlayer.setOnErrorListener { mp, what, extra ->
             Log.i(TAG, "error: " + what + "(" + extra + ")" )
             internalState = InternalState.ERROR
-            false
+            true
         }
 
         mediaPlayer.setOnSeekCompleteListener {
