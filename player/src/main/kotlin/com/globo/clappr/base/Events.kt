@@ -11,6 +11,8 @@ enum class Event(val value: String) {
     DID_SEEK("didSeek"),
     WILL_STOP("willStop"),
     DID_STOP("didStop"),
+    WILL_CHANGE_SOURCE("willChangeSource"),
+    DID_CHANGE_SOURCE("didChangeSource"),
     DID_COMPLETE("didComplete"),
     STALLED("stalled"),
     BUFFER_UPDATE("bufferUpdate"),

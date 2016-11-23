@@ -116,12 +116,16 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.seekTo((seconds * 1000).toLong())
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
-
         return true
     }
 
     override fun load(source: String, mimeType: String?): Boolean {
-        player?.prepare(mediaSource(Uri.parse(source)))
+        trigger(Event.WILL_CHANGE_SOURCE)
+        this.source = source
+        this.mimeType = mimeType
+        stop()
+        trigger(Event.DID_CHANGE_SOURCE)
+        play()
         return true
     }
 
@@ -145,7 +149,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         playerView.player = player
-        load(source, mimeType)
+        player?.prepare(mediaSource(Uri.parse(source)))
     }
 
     private fun checkPeriodicUpdates() {
