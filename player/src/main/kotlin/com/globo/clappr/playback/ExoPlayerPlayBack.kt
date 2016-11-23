@@ -1,6 +1,5 @@
 package com.globo.clappr.playback
 
-import android.R.string.cancel
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -8,7 +7,6 @@ import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
-import com.globo.clappr.timer.TimerManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
@@ -47,7 +45,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var player: SimpleExoPlayer? = null
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    //    private var timer: TimerManager? = null
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { triggerTimeElapsedEvents() })
 
     private val playerView: SimpleExoPlayerView
@@ -130,17 +127,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         setupPlayerView()
-        setupTimeElapsedCallBacks()
         load(source, mimeType)
     }
 
     private fun setupPlayerView() {
         playerView.player = player
         playerView.setUseController(false)
-    }
-
-    private fun setupTimeElapsedCallBacks() {
-//        timer = TimerManager(200, { triggerTimeElapsedEvents() })
     }
 
     private fun triggerTimeElapsedEvents() {
@@ -180,7 +172,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             currentState = State.PLAYING
             trigger(Event.PLAYING)
             timeElapsedHandler.start()
-//            timer?.start()
         } else {
             currentState = State.PAUSED
             trigger(Event.DID_PAUSE)
@@ -207,7 +198,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         currentState = State.IDLE
 
         timeElapsedHandler.cancel()
-//        timer?.stop()
     }
 
     private fun trigger(event: Event) {
