@@ -45,7 +45,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var player: SimpleExoPlayer? = null
     private var currentState = State.NONE
     private var trackSelector: DefaultTrackSelector? = null
-    private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { triggerTimeElapsedEvents() })
+    private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
+    private var lastBufferPercentageSent = 0.0
+
+    private val bufferPercentage: Double
+        get() = player?.bufferedPercentage?.toDouble() ?: 0.0
 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
@@ -140,17 +144,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         playerView.setUseController(false)
     }
 
-    private fun triggerTimeElapsedEvents() {
-        triggerBufferUpdateEvent()
+    private fun checkPeriodicUpdates() {
+        if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         triggerPositionUpdateEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
         val bundle = Bundle()
-        val bufferPercentage = player?.bufferedPercentage?.toDouble() ?: 0.0
+        val currentBufferPercentage = bufferPercentage
 
-        bundle.putDouble("percentage", bufferPercentage)
+        bundle.putDouble("percentage", currentBufferPercentage)
         trigger(Event.BUFFER_UPDATE.value, bundle)
+        lastBufferPercentageSent = currentBufferPercentage
     }
 
     private fun triggerPositionUpdateEvent() {
