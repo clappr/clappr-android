@@ -55,7 +55,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
 
-
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
 
@@ -78,6 +77,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.IDLE && currentState != State.ERROR
+
+    init {
+        playerView.setUseController(false)
+    }
 
     override fun play(): Boolean {
         if (!canPlay && player != null) return false
@@ -137,13 +140,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player = ExoPlayerFactory.newSimpleInstance(context, trackSelector, DefaultLoadControl())
         player?.playWhenReady = false
         player?.addListener(eventsListener)
-        setupPlayerView()
-        load(source, mimeType)
-    }
-
-    private fun setupPlayerView() {
         playerView.player = player
-        playerView.setUseController(false)
+        load(source, mimeType)
     }
 
     private fun checkPeriodicUpdates() {
