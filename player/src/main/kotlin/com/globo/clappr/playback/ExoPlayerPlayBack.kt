@@ -47,6 +47,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var trackSelector: DefaultTrackSelector? = null
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
+    private var lastPositionSent = 0.0
 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
@@ -59,7 +60,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = SimpleExoPlayerView::class.java
 
     override val duration: Double
-        get() = (player?.duration ?: 0L).toDouble() / ONE_SECOND_IN_MILLIS
+        get() = (player?.duration?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
+
+    override val position: Double
+        get() = (player?.currentPosition?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
 
     override val state: State
         get() = currentState
@@ -76,16 +80,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.IDLE && currentState != State.ERROR
 
     override fun play(): Boolean {
-        if (!canPlay) return false
+        if (!canPlay && player != null) return false
+        if (player == null) setupPlayer()
 
-        if (player == null) {
-            setupPlayer()
-            load(source, mimeType)
-            play()
-        } else {
-            trigger(Event.WILL_PLAY)
-            player?.playWhenReady = true
-        }
+        trigger(Event.WILL_PLAY)
+        player?.playWhenReady = true
         return true
     }
 
@@ -109,6 +108,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.WILL_SEEK)
         player?.seekTo((seconds * 1000).toLong())
         trigger(Event.DID_SEEK)
+        triggerPositionUpdateEvent()
+
         return true
     }
 
@@ -137,6 +138,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         setupPlayerView()
+        load(source, mimeType)
     }
 
     private fun setupPlayerView() {
@@ -146,7 +148,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
-        triggerPositionUpdateEvent()
+        if (position != lastPositionSent) triggerPositionUpdateEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -160,12 +162,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun triggerPositionUpdateEvent() {
         val bundle = Bundle()
-        val currentPosition = (player?.currentPosition?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
+        val currentPosition = position
         val percentage = if (duration != 0.0) (currentPosition / duration) * 100 else 0.0
 
         bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition)
         trigger(Event.POSITION_UPDATE.value, bundle)
+        lastPositionSent = currentPosition
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
