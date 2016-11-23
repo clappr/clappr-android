@@ -101,7 +101,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override fun stop(): Boolean {
         trigger(Event.WILL_STOP)
+        timeElapsedHandler.cancel()
         player?.stop()
+        player?.release()
+        player = null
+        trigger(Event.DID_STOP)
         return true
     }
 
@@ -203,11 +207,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun handleExoplayerIdleState() {
         if (currentState == State.NONE) {
             trigger(Event.READY)
-        } else {
-            trigger(Event.DID_STOP)
         }
-        currentState = State.IDLE
 
+        currentState = State.IDLE
         timeElapsedHandler.cancel()
     }
 
