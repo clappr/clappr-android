@@ -4,4 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.globo.clappr.app.PlayerActivity"
-    tools:ignore="MergeRootFrame" />
+    tools:ignore="MergeRootFrame" >
+
+    <fragment android:name="com.globo.clappr.Player"
+        android:id="@+id/player"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout="@layout/player_fragment" />
+
+</FrameLayout>

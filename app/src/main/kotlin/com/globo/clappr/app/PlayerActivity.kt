@@ -3,8 +3,12 @@ package com.globo.clappr.app
 import android.app.Activity
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import com.globo.clappr.Player
+import com.globo.clappr.base.Callback
+import com.globo.clappr.base.Event
 
 //import com.globo.clappr.Player
 
@@ -15,6 +19,11 @@ class PlayerActivity : Activity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        var player = fragmentManager.findFragmentById(R.id.player) as Player
+        player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
+        player.play()
+
         if (savedInstanceState == null) {
 //            player = Player.newInstance()
 //            fragmentManager.beginTransaction().add(R.id.container, player).commit()
