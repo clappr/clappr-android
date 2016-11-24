@@ -59,10 +59,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = SimpleExoPlayerView::class.java
 
     override val duration: Double
-        get() = (player?.duration?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
+        get() = player?.duration?.let {it.toDouble() / ONE_SECOND_IN_MILLIS} ?: Double.NaN
 
     override val position: Double
-        get() = (player?.currentPosition?.toDouble() ?: 0.0) / ONE_SECOND_IN_MILLIS
+        get() = player?.currentPosition?.let {it.toDouble() / ONE_SECOND_IN_MILLIS} ?: Double.NaN
 
     override val state: State
         get() = currentState
