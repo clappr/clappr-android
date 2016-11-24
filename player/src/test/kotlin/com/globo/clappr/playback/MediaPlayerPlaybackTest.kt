@@ -203,4 +203,36 @@ open class MediaPlayerPlaybackTest {
         scheduler.advanceBy(100)
         assertTrue("playing callback not called", playingCallbackCalled)
     }
+
+    @Test
+    fun shouldRetunrConsistentDurationAndPostion() {
+        val mpp = MediaPlayerPlayback(source = "")
+        assertEquals("valid duration", Double.NaN, mpp.duration, 0.0)
+        assertEquals("valid position", Double.NaN, mpp.position, 0.0)
+
+
+        scheduler.advanceBy(100)
+        assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
+
+        mediaPlayerPlayback.play()
+        assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", 0.0, mediaPlayerPlayback.position, 0.0)
+
+        scheduler.advanceBy(500)
+        assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", 0.5, mediaPlayerPlayback.position, 0.0)
+
+        scheduler.advanceBy(499)
+        assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", 0.999, mediaPlayerPlayback.position, 0.0)
+
+        scheduler.advanceBy(1)
+        assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
+
+        scheduler.advanceBy(1)
+        assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
+        assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
+    }
 }
