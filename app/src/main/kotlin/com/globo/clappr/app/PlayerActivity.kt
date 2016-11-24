@@ -9,8 +9,7 @@ import android.view.MenuItem
 import com.globo.clappr.Player
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Event
-
-//import com.globo.clappr.Player
+import com.globo.clappr.base.Options
 
 class PlayerActivity : Activity() {
 
@@ -20,8 +19,15 @@ class PlayerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        var player = fragmentManager.findFragmentById(R.id.player) as Player
+
+        val player = Player()
+        player.configure(Options(source = "http://clappr.io/highline.mp4"))
         player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
+
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.add(R.id.container, player);
+        fragmentTransaction.commit();
+
         player.play()
 
         if (savedInstanceState == null) {

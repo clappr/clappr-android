@@ -98,19 +98,20 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        core = Core(loader, Options())
-        return inflater.inflate(R.layout.player_fragment, container, false)
+        val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
+        core?.let { playerViewGroup?.addView(core!!.view) }
+        return playerViewGroup
     }
 
     /**
-     * Update Player configuration
+     * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
      *
      * @param options
      *          a map of key-value options. Available values:
      *
      */
     fun configure(options: Options) {
-        if (core == null) core = Core(loader, options)
+        core = Core(loader, options)
     }
 
     /**
