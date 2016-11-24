@@ -123,7 +123,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      *          (Optional) media mime type.
      */
     fun load(source: String, mimeType: String? = null) : Boolean {
-        throw UnsupportedOperationException("not implemented")
+        return core?.activeContainer?.load(source, mimeType) ?: false
     }
 
     /**
@@ -142,7 +142,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      * @return If the operation was accepted
      */
     fun pause() : Boolean {
-        throw UnsupportedOperationException("not implemented")
+        return core?.activePlayback?.pause() ?: false
     }
 
     /**
@@ -151,7 +151,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      * @return If the operation was accepted
      */
     fun stop() : Boolean {
-        throw UnsupportedOperationException("not implemented")
+        return core?.activePlayback?.stop() ?: false
     }
 
     /**
@@ -162,8 +162,8 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      *
      * @return If the operation was accepted
      */
-    fun seek(position: Double) : Boolean {
-        throw UnsupportedOperationException("not implemented")
+    fun seek(position: Int) : Boolean {
+        return core?.activePlayback?.seek(position) ?: false
     }
 
     private fun bindPlaybackEvents() {
