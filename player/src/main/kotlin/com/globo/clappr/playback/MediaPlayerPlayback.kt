@@ -213,7 +213,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override val duration: Double
         get() {
-            if (state != State.NONE) {
+            if (state != State.NONE && state != State.ERROR && internalState != InternalState.ATTACHED) {
                 val mediaDuration = mediaPlayer.duration
                 if (mediaDuration > -1) {
                     return mediaDuration / 1000.0
@@ -225,7 +225,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override val position: Double
         get() {
-            if (state != State.NONE) {
+            if (state != State.NONE && state != State.ERROR && internalState != InternalState.ATTACHED) {
                 val currentPosition = mediaPlayer.currentPosition
                 if (currentPosition > -1) {
                     return currentPosition / 1000.0
