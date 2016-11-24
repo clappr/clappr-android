@@ -99,7 +99,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
-        core?.let { playerViewGroup?.addView(core!!.view) }
+        core?.let { playerViewGroup.addView(core!!.render().view) }
         return playerViewGroup
     }
 
