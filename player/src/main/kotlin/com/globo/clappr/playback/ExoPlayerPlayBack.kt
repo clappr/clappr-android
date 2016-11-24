@@ -213,8 +213,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             trigger(Event.READY)
         }
 
-        currentState = State.IDLE
         timeElapsedHandler.cancel()
+        currentState = State.IDLE
     }
 
     private fun trigger(event: Event) {
@@ -222,6 +222,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleError(error: Exception?) {
+        timeElapsedHandler.cancel()
         currentState = State.ERROR
         triggerErrorEvent(error)
     }
