@@ -20,6 +20,7 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
     init {
         spinner = ProgressBar(context)
         bindEventListeners()
+        container.frameLayout.addView(spinner)
     }
 
     fun bindEventListeners() {
