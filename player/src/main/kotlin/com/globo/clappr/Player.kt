@@ -15,7 +15,7 @@ import com.globo.clappr.playback.NoOpPlayback
 /**
  *  Main Player class.
  *
- * Once instantiated it should be attached to ViewGroup before playback can begin.
+ * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
 class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
@@ -57,7 +57,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
         ERROR
     }
 
-    var core : Core? = null
+    internal var core : Core? = null
         set(value) {
             core?.stopListening()
             field = value
@@ -67,7 +67,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
                 if (it.activePlayback != null) { bindPlaybackEvents() }
             }
         }
-    val loader = Loader()
+    internal val loader = Loader()
 
     /**
      * Media current position in seconds.
@@ -109,7 +109,7 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
      *
      * @param options
-     *          a map of key-value options. Available values:
+     *          a map of key-value options.
      *
      */
     fun configure(options: Options) {
