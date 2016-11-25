@@ -2,17 +2,22 @@ package com.globo.clappr.plugin
 
 import android.content.Context
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.view.View
 import android.widget.ProgressBar
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Event
 =======
 >>>>>>> feature(loading_plugin): create LoadingPlugin class
+=======
+import android.widget.ProgressBar
+>>>>>>> feature(loading_plugin): add ProgressBar var
 import com.globo.clappr.base.NamedType
 import com.globo.clappr.components.Container
 import com.globo.clappr.plugin.container.UIContainerPlugin
 
 open class LoadingPlugin(container: Container, context: Context) : UIContainerPlugin(container) {
+<<<<<<< HEAD
 <<<<<<< HEAD
 
     private var spinner: ProgressBar?
@@ -45,4 +50,16 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
         override val name = "spinner"
     }
 >>>>>>> feature(loading_plugin): create LoadingPlugin class
+=======
+
+    private var spinner: ProgressBar?
+
+    companion object: NamedType {
+        override val name = "spinner"
+    }
+
+    init {
+        spinner = ProgressBar(context)
+    }
+>>>>>>> feature(loading_plugin): add ProgressBar var
 }
