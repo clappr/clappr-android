@@ -2,31 +2,37 @@ package com.globo.clappr.app
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
 import android.view.Menu
 import android.view.MenuItem
-
-//import com.globo.clappr.Player
+import android.view.View
+import android.widget.FrameLayout
+import com.globo.clappr.Player
+import com.globo.clappr.base.BaseObject
+import com.globo.clappr.base.Options
+import com.globo.clappr.playback.ExoPlayerPlayback
+import com.globo.clappr.plugin.Loader
 
 class PlayerActivity : Activity() {
 
-//    private var player: Player? = null
+    private var player: Player? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
         if (savedInstanceState == null) {
-//            player = Player.newInstance()
-//            fragmentManager.beginTransaction().add(R.id.container, player).commit()
+            BaseObject.context = applicationContext
+            Loader.registerPlayback(ExoPlayerPlayback::class)
+            val urlString = "http://clappr.io/highline.mp4"
+            val options = Options(urlString, "", true)
+            player = Player(options)
         }
-
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
-//                player!!.load("http://bem.tv/superMisto.mp4")
-            }
-        }, 100)
     }
 
+    override fun onResume() {
+        super.onResume()
+        val viewGroup = findViewById(R.id.player) as FrameLayout
+        player?.attachTo(viewGroup)
+    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.

@@ -2,9 +2,9 @@ package com.globo.clappr
 
 import android.view.ViewGroup
 import com.globo.clappr.base.BaseObject
-import com.globo.clappr.plugin.Loader
 import com.globo.clappr.base.Options
 import com.globo.clappr.components.Core
+import com.globo.clappr.plugin.Loader
 
 /**
  *  Main Clappr class.
@@ -12,7 +12,7 @@ import com.globo.clappr.components.Core
  * Once instantiated it should be attached to ViewGroup before playback can begin.
  */
 class Player(val options: Options = Options()) : BaseObject() {
-    var core : Core? = null
+    var core: Core? = null
     val loader = Loader()
 
     /**
@@ -26,5 +26,10 @@ class Player(val options: Options = Options()) : BaseObject() {
      */
     fun attachTo(viewGroup: ViewGroup) {
         core = Core(loader, options)
+
+        core?.let {
+            viewGroup.addView(it.view)
+            it.render()
+        }
     }
 }
