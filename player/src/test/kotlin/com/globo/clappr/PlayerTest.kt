@@ -52,8 +52,8 @@ open class PlayerTest {
     @Before
     fun setup() {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
-        player = Player()
         Loader.clearPlaybacks()
+        player = Player()
         Loader.registerPlayback(PlayerTestPlayback::class)
     }
 

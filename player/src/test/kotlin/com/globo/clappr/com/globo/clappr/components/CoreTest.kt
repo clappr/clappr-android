@@ -5,7 +5,7 @@ import com.globo.clappr.BuildConfig
 import com.globo.clappr.components.Container
 import com.globo.clappr.components.Core
 import com.globo.clappr.components.Playback
-import com.globo.clappr.playback.NoOpPlayback
+import com.globo.clappr.components.PlaybackSupportInterface
 import com.globo.clappr.plugin.core.CorePlugin
 import com.globo.clappr.plugin.Loader
 import org.junit.*
@@ -18,6 +18,16 @@ import org.robolectric.shadows.ShadowApplication
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class CoreTest {
+    class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
+        companion object : PlaybackSupportInterface {
+            override val name: String = "container_test"
+
+            override fun supportsSource(source: String, mimeType: String?): Boolean {
+                return source.isNotEmpty()
+            }
+        }
+    }
+
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
@@ -35,7 +45,7 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlayback() {
-        Loader.registerPlayback(NoOpPlayback::class)
+        Loader.registerPlayback(CoreTestPlayback::class)
         val core = Core(Loader(), options = Options(source = "some_source"))
 
         assertNotNull("no active playback", core.activePlayback)
@@ -75,7 +85,7 @@ open class CoreTest {
 
     @Test
     fun shouldNotTriggerActivePlaybackChangedForSamePlayback() {
-        Loader.registerPlayback(NoOpPlayback::class)
+        Loader.registerPlayback(CoreTestPlayback::class)
         val core = Core(Loader(), Options())
 
         var callbackWasCalled = false
@@ -95,7 +105,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActivePlaybackChanged() {
-        Loader.registerPlayback(NoOpPlayback::class)
+        Loader.registerPlayback(CoreTestPlayback::class)
         val core = Core(Loader(), Options())
 
         var callbackWasCalled = false
