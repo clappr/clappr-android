@@ -71,17 +71,17 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
     }
 
     fun bindEventListeners() {
-        listenTo(this, Event.READY.value, startAnimating)
-        listenTo(this, Event.PLAYING.value, stopAnimating)
-        listenTo(this, Event.DID_COMPLETE.value, stopAnimating)
+        listenTo(container.playback!!, Event.READY.value, startAnimating)
+        listenTo(container.playback!!, Event.PLAYING.value, stopAnimating)
+        listenTo(container.playback!!, Event.DID_COMPLETE.value, stopAnimating)
     }
 
     private val startAnimating = Callback.wrap {
-        spinner!!.visibility = View.VISIBLE
+        spinner?.visibility = View.VISIBLE
     }
 
     private val stopAnimating = Callback.wrap {
-        spinner!!.visibility = View.INVISIBLE
+        spinner?.visibility = View.INVISIBLE
     }
 >>>>>>> feature(loading_plugin): add ProgressBar var
 }
