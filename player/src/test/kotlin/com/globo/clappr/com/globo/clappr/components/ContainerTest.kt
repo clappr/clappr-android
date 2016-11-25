@@ -55,13 +55,13 @@ open class ContainerTest {
     }
 
     @Test
-    fun shouldLoadNoOpPlaybackForUnsupportedSource() {
+    fun shouldNotLoadNoOpPlaybackForUnsupportedSource() {
         Loader.registerPlayback(NoOpPlayback::class)
         Loader.registerPlayback(MP4Playback::class)
         val container = Container(Loader(), Options("some_unknown_source.mp0"))
 
-        assertNotNull("should have created playback", container.playback)
-        assertEquals("should have created no-op playback", container.playback?.name, NoOpPlayback.name)
+        assertNull("should not have created playback", container.playback)
+        assertNotEquals("should not have created no-op playback", container.playback?.name, NoOpPlayback.name)
     }
 
     @Test

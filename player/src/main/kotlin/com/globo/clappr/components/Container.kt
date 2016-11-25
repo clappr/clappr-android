@@ -41,7 +41,10 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
         var supported = playback?.load(source, mimeType) ?: false
         if (!supported) {
             playback = loader.loadPlayback(source, mimeType, options)
-            supported = playback?.name == NoOpPlayback.name
+            if (playback?.name == NoOpPlayback.name) {
+                playback = null
+            }
+            supported = playback != null
         }
         return supported
     }
