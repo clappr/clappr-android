@@ -134,8 +134,6 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      * @return If the operation was accepted
      */
     fun play() : Boolean {
-        // TODO - Remove this test call
-        core?.activePlayback?.trigger(Event.PLAYING.value)
         return core?.activePlayback?.play() ?: false
     }
 

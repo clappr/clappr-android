@@ -66,4 +66,11 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         }
         return supported
     }
+
+    override fun render(): UIObject {
+        if (options.autoPlay) {
+            play()
+        }
+        return this
+    }
 }

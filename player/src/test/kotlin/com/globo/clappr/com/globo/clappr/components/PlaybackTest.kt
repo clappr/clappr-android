@@ -2,6 +2,7 @@ package com.globo.clappr.com.globo.clappr.components
 
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
+import com.globo.clappr.base.Options
 import com.globo.clappr.components.Playback
 import com.globo.clappr.components.PlaybackSupportInterface
 import com.globo.clappr.playback.NoOpPlayback
@@ -19,16 +20,22 @@ import org.junit.Assert.assertTrue
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class PlaybackTest {
 
-    class SomePlayback(source: String): Playback(source) {
+    class SomePlayback(source: String, options: Options = Options()): Playback(source, null, options) {
         companion object: PlaybackSupportInterface {
             val validSource = "valid-source.mp4"
-
             override val name = ""
 
             @JvmStatic
             override fun supportsSource(source: String, mimeType: String?): Boolean {
                 return source == validSource
             }
+        }
+
+        var playWasCalled = false
+
+        override fun play(): Boolean {
+            playWasCalled = true
+            return super.play()
         }
     }
 
@@ -52,5 +59,19 @@ open class PlaybackTest {
     fun loadCallShouldReturnTrueForSupportedSource() {
         val playback = NoOpPlayback("supported-source.mp4")
         assertTrue("load call should return true for a supported source", playback.load(""))
+    }
+
+    @Test
+    fun shouldCallPlayWhenOptionsHaveAutoplayOn() {
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = true))
+        playback.render()
+        assertTrue("play should be called when autoplay is on", playback.playWasCalled)
+    }
+
+    @Test
+    fun shouldNotCallPlayWhenOptionsHaveAutoplayOff() {
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        playback.render()
+        assertFalse("play should not be called when autoplay is off", playback.playWasCalled)
     }
 }

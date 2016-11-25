@@ -9,6 +9,8 @@ import com.globo.clappr.Player
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Event
 import com.globo.clappr.base.Options
+import com.globo.clappr.playback.ExoPlayerPlayback
+import com.globo.clappr.plugin.Loader
 
 class PlayerActivity : Activity() {
 
@@ -18,8 +20,11 @@ class PlayerActivity : Activity() {
 
 
         val player = Player()
+        Loader.registerPlayback(ExoPlayerPlayback::class)
         player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = false))
+        player.on(Event.WILL_PLAY.value, Callback.wrap {Log.i("PLAYER", "Will Play")})
         player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
+        player.on(Event.DID_COMPLETE.value, Callback.wrap {Log.i("PLAYER", "Completed")})
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player);
