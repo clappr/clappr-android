@@ -3,10 +3,12 @@ package com.globo.clappr.playback
 import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
+import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.RelativeLayout
 import com.globo.clappr.base.ClapprEvent
+import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Options
 import com.globo.clappr.base.UIObject
 import com.globo.clappr.components.Playback
@@ -193,6 +195,10 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override fun render() : UIObject {
+        if (options.autoPlay) {
+            this.once(Event.READY.value, Callback.wrap { bundle: Bundle? ->  play() } )
+        }
+
         return this
     }
 
