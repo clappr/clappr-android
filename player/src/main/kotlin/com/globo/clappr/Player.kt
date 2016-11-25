@@ -59,25 +59,26 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
 
     var core : Core? = null
         set(value) {
-            if (value != null) {
-                value.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
-                value.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
-                if (value.activePlayback != null) { bindPlaybackEvents() }
-            } else {
-                core?.stopListening()
-            }
+            core?.stopListening()
             field = value
+            core?.let {
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
+                if (it.activePlayback != null) { bindPlaybackEvents() }
+            }
         }
     val loader = Loader()
 
     /**
      * Media current position in seconds.
      */
-    val position: Double = core?.activePlayback?.position ?: Double.NaN
+    val position: Double
+            get() = core?.activePlayback?.position ?: Double.NaN
     /**
      * Media duration in seconds.
      */
-    val duration: Double = core?.activePlayback?.duration ?: Double.NaN
+    val duration: Double
+        get() = core?.activePlayback?.duration ?: Double.NaN
     /**
      * Current Player state.
      */
@@ -94,12 +95,13 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
             }
 
     init {
+        // TODO - Add default plugins and playbacks
         Loader.registerPlayback(NoOpPlayback::class)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
-        core?.let { playerViewGroup.addView(core!!.render().view) }
+        core?.let { playerViewGroup.addView(it.render().view) }
         return playerViewGroup
     }
 
@@ -132,7 +134,8 @@ class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventIn
      * @return If the operation was accepted
      */
     fun play() : Boolean {
-        trigger(Event.PLAYING.value)
+        // TODO - Remove this test call
+        core?.activePlayback?.trigger(Event.PLAYING.value)
         return core?.activePlayback?.play() ?: false
     }
 
