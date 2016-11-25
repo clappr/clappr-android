@@ -2,7 +2,6 @@ package com.globo.clappr.app
 
 import android.app.Activity
 import android.os.Bundle
-import android.os.Handler
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -13,15 +12,13 @@ import com.globo.clappr.base.Options
 
 class PlayerActivity : Activity() {
 
-//    private var player: Player? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
 
         val player = Player()
-        player.configure(Options(source = "http://clappr.io/highline.mp4"))
+        player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = false))
         player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
 
         val fragmentTransaction = fragmentManager.beginTransaction()
@@ -29,17 +26,6 @@ class PlayerActivity : Activity() {
         fragmentTransaction.commit();
 
         player.play()
-
-        if (savedInstanceState == null) {
-//            player = Player.newInstance()
-//            fragmentManager.beginTransaction().add(R.id.container, player).commit()
-        }
-
-        Handler().postDelayed(object : Runnable {
-            override fun run() {
-//                player!!.load("http://bem.tv/superMisto.mp4")
-            }
-        }, 100)
     }
 
 
