@@ -50,7 +50,7 @@ open class MediaPlayerPlaybackTest {
         validMedia = ShadowMediaPlayer.MediaInfo(1000,0)
         ShadowMediaPlayer.addMediaInfo(DataSource.toDataSource("valid"), validMedia)
 
-        mediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
+        mediaPlayerPlayback = MediaPlayerPlayback(source = "valid", options = Options(autoPlay = false))
         createSurface(mediaPlayerPlayback)
         mediaPlayerPlayback.render()
     }
@@ -239,5 +239,14 @@ open class MediaPlayerPlaybackTest {
         scheduler.advanceBy(1)
         assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
+    }
+
+    @Test
+    fun shouldHandleAutoplay() {
+        val mpp = MediaPlayerPlayback(source = "valid", options = Options(autoPlay = true))
+        createSurface(mpp)
+        mpp.render()
+
+        assertEquals("not playing", Playback.State.PLAYING, mpp.state)
     }
 }
