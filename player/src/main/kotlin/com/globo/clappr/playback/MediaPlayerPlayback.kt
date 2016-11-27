@@ -334,6 +334,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 State.STALLED -> {
                     trigger(Event.STALLED.value)
                 }
+                State.NONE -> { }
             }
         }
     }
