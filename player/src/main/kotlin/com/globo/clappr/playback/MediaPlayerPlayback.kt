@@ -102,6 +102,10 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
             Log.i(TAG, "buffered percentage: " + percent)
+            val bundle = Bundle()
+
+            bundle.putDouble("percentage", percent.toDouble())
+            trigger(Event.BUFFER_UPDATE.value, bundle)
         }
 
         mediaPlayer.setOnCompletionListener {
