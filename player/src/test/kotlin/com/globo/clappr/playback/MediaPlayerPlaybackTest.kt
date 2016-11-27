@@ -1,9 +1,7 @@
 package com.globo.clappr.playback
 
-import android.app.Activity
+import android.media.MediaPlayer
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.FrameLayout
 import com.globo.clappr.BuildConfig
 import com.globo.clappr.base.BaseObject
 import com.globo.clappr.base.Callback
@@ -15,22 +13,36 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.Assert.*
-import org.junit.Ignore
-import org.objectweb.asm.tree.analysis.Frame
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
 import org.robolectric.annotation.Config
+import org.robolectric.annotation.Implementation
+import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowMediaPlayer
 import org.robolectric.shadows.ShadowSurfaceView
 import org.robolectric.shadows.util.DataSource
-import org.robolectric.util.ActivityController
 import org.robolectric.util.Scheduler
 import java.io.IOException
 
+@Implements(MediaPlayer::class)
+open class MediaPlayerTestShadow : ShadowMediaPlayer() {
+    private var bufferingUpdateListener: MediaPlayer.OnBufferingUpdateListener? = null
+
+    @Implementation
+    fun setOnBufferingUpdateListener(listener: MediaPlayer.OnBufferingUpdateListener) {
+        bufferingUpdateListener = listener
+    }
+
+    fun invokeBufferingUpdateListener(player: MediaPlayer, percentage: Int) {
+        bufferingUpdateListener?.onBufferingUpdate(player, percentage)
+    }
+}
+
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = arrayOf(MediaPlayerTestShadow::class))
+
 open class MediaPlayerPlaybackTest {
     lateinit var mediaPlayerPlayback : MediaPlayerPlayback
     lateinit var scheduler: Scheduler
@@ -248,5 +260,23 @@ open class MediaPlayerPlaybackTest {
         mpp.render()
 
         assertEquals("not playing", Playback.State.PLAYING, mpp.state)
+    }
+
+    @Test
+    fun shouldHandleBufferingUpdate() {
+        var bufferPercentage = Double.NaN
+        mediaPlayerPlayback.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> bufferPercentage = bundle!!.getDouble("percentage") })
+
+        validMedia.scheduleEventAtOffset(100, { mp, smp -> (smp as MediaPlayerTestShadow).invokeBufferingUpdateListener(mp, 10)})
+
+        assertEquals("buffer update triggered", Double.NaN, bufferPercentage, 0.0)
+
+        mediaPlayerPlayback.play()
+
+        scheduler.advanceBy(99)
+        assertEquals("buffer update triggered", Double.NaN, bufferPercentage, 0.0)
+
+        scheduler.advanceBy(1)
+        assertEquals("buffer update triggered", 10.0, bufferPercentage, 0.0)
     }
 }
