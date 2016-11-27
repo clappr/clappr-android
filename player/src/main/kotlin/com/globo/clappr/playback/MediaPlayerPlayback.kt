@@ -125,7 +125,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
                 override fun surfaceDestroyed(sh: SurfaceHolder) {
                     Log.i(TAG, "surface destroyed")
-                    mediaPlayer.stop()
+                    stop()
                     mediaPlayer.setDisplay(null)
                     internalState = InternalState.IDLE
                 }
@@ -248,7 +248,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override val canSeek: Boolean
         get() = ( (state != State.NONE) && (state != State.ERROR) && (type == MediaType.VOD) )
     val canStop: Boolean
-        get() = ( (state != State.NONE) && (state != State.ERROR) )
+        get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLED) )
 
 
     override fun play(): Boolean {
