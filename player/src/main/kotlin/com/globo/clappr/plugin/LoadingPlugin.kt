@@ -95,6 +95,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
             container.playback?.on(Event.STALLED.value, startAnimating())
             container.playback?.on(Event.PLAYING.value, stopAnimating())
             container.playback?.on(Event.DID_STOP.value, stopAnimating())
+            container.playback?.on(Event.DID_PAUSE.value, stopAnimating())
         }
     }
 
