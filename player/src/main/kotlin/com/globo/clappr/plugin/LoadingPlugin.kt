@@ -22,6 +22,7 @@ import com.globo.clappr.base.NamedType
 import com.globo.clappr.components.Container
 import com.globo.clappr.plugin.container.UIContainerPlugin
 
+<<<<<<< HEAD
 open class LoadingPlugin(container: Container, context: Context) : UIContainerPlugin(container) {
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -57,6 +58,9 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
     }
 >>>>>>> feature(loading_plugin): create LoadingPlugin class
 =======
+=======
+open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
+>>>>>>> refactor(loading_plugin): remove context param from constructor
 
     private var spinner: ProgressBar?
 
