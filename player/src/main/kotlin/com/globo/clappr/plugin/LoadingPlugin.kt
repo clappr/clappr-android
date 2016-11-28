@@ -1,11 +1,14 @@
 package com.globo.clappr.plugin
 
+<<<<<<< HEAD
 import android.content.Context
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 =======
 >>>>>>> feature(loading_plugin): bind events to their respective callbacks
+=======
+>>>>>>> refactor(loading_plugin): extract spinner setup to a method
 import android.view.View
 import android.widget.ProgressBar
 import com.globo.clappr.base.Callback
@@ -62,16 +65,23 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
 open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 >>>>>>> refactor(loading_plugin): remove context param from constructor
 
-    private var spinner: ProgressBar?
+    private var spinner: ProgressBar? = null
 
-    companion object: NamedType {
+    companion object : NamedType {
         override val name = "spinner"
     }
 
     init {
-        spinner = ProgressBar(context)
+        setupSpinner()
         bindEventListeners()
+
+    }
+
+    private fun setupSpinner() {
+        spinner = ProgressBar(context)
+        spinner?.visibility = View.INVISIBLE
         container.frameLayout.addView(spinner)
+
     }
 
     fun bindEventListeners() {
