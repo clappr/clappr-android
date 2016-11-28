@@ -31,6 +31,24 @@ enum class Event(val value: String) {
      * Media playback stopped
      */
     DID_STOP("didStop"),
+    /**
+     * Seek completed
+     */
+    DID_SEEK("didSeek"),
+    /**
+     * Media source changed
+     */
+    DID_CHANGE_SOURCE("didChangeSource"),
+
+
+    /**
+     * Media buffer percentage updated
+     */
+    BUFFER_UPDATE("bufferUpdate"),
+    /**
+     * Media position updated
+     */
+    POSITION_UPDATE("positionUpdate"),
 
 
     /**
@@ -49,10 +67,8 @@ enum class Event(val value: String) {
      * Will stop media playback
      */
     WILL_STOP("willStop"),
-
-    DID_SEEK("didSeek"),
+    /**
+     * Will change media source
+     */
     WILL_CHANGE_SOURCE("willChangeSource"),
-    DID_CHANGE_SOURCE("didChangeSource"),
-    BUFFER_UPDATE("bufferUpdate"),
-    POSITION_UPDATE("positionUpdate")
 }
