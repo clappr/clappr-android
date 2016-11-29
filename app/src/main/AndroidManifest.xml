@@ -12,6 +12,7 @@
         android:name="io.clappr.player.app.PlayerApp" >
         <activity
             android:name=".PlayerActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_player" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
