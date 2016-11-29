@@ -90,6 +90,8 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         set(value) {
             if (value == State.ENABLED)
                 bindEventListeners()
+            else
+                stopListening()
             field = value
         }
 
