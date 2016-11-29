@@ -1,4 +1,4 @@
-package com.globo.clappr.app
+package io.clappr.player.app
 
 import android.app.Application
 import io.clappr.player.Player
