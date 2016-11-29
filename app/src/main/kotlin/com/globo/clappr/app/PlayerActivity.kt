@@ -5,12 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import com.globo.clappr.Player
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.Event
-import com.globo.clappr.base.Options
-import com.globo.clappr.playback.ExoPlayerPlayback
-import com.globo.clappr.plugin.Loader
+import io.clappr.player.Player
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.playback.ExoPlayerPlayback
+import io.clappr.player.plugin.Loader
 
 class PlayerActivity : Activity() {
 
