@@ -1,7 +1,7 @@
 package io.clappr.player.plugin
 
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.NamedType
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.NamedType
 
 abstract class Plugin(val component: BaseObject) : BaseObject(), NamedType {
 

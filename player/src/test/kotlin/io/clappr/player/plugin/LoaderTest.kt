@@ -1,15 +1,15 @@
 package io.clappr.player.plugin
 
-import com.globo.clappr.BuildConfig
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.ContainerTest
-import com.globo.clappr.base.NamedType
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Core
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
-import com.globo.clappr.playback.NoOpPlayback
-import com.globo.clappr.plugin.core.CorePlugin
+import io.clappr.player.BuildConfig
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.ContainerTest
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

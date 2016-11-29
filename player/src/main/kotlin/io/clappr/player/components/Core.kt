@@ -2,12 +2,12 @@ package io.clappr.player.components
 
 import android.os.Bundle
 import android.widget.FrameLayout
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.InternalEvent
-import com.globo.clappr.plugin.Loader
-import com.globo.clappr.base.Options
-import com.globo.clappr.base.UIObject
-import com.globo.clappr.plugin.Plugin
+import io.clappr.player.base.Callback
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.plugin.Loader
+import io.clappr.player.base.Options
+import io.clappr.player.base.UIObject
+import io.clappr.player.plugin.Plugin
 
 class Core(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>

@@ -1,8 +1,8 @@
 package io.clappr.player.playback
 
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 
 open class NoOpPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object: PlaybackSupportInterface {

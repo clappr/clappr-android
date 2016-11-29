@@ -1,8 +1,8 @@
-package com.globo.clappr.base;
+package io.clappr.player.base;
 
 import android.os.Bundle;
 
-import com.globo.clappr.BuildConfig;
+import io.clappr.player.BuildConfig;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;

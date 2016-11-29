@@ -3,10 +3,10 @@ package io.clappr.player.playback
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import com.globo.clappr.base.Event
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {

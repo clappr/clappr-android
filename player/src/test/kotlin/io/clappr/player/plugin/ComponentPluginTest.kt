@@ -1,11 +1,11 @@
 package io.clappr.player.plugin
 
-import com.globo.clappr.BuildConfig
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.plugin.container.ContainerPlugin
-import com.globo.clappr.plugin.container.UIContainerPlugin
-import com.globo.clappr.plugin.core.CorePlugin
-import com.globo.clappr.plugin.core.UICorePlugin
+import io.clappr.player.BuildConfig
+import io.clappr.player.base.BaseObject
+import io.clappr.player.plugin.container.ContainerPlugin
+import io.clappr.player.plugin.container.UIContainerPlugin
+import io.clappr.player.plugin.core.CorePlugin
+import io.clappr.player.plugin.core.UICorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

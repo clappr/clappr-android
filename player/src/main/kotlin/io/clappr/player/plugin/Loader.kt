@@ -1,10 +1,10 @@
 package io.clappr.player.plugin
 
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.NamedType
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 import kotlin.reflect.*
 
 class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlaybacks: List<KClass<out Playback>> = emptyList()) {

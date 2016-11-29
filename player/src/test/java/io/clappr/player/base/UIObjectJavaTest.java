@@ -1,8 +1,8 @@
-package com.globo.clappr.base;
+package io.clappr.player.base;
 
 import android.content.Context;
 
-import com.globo.clappr.BuildConfig;
+import io.clappr.player.BuildConfig;
 
 import org.junit.Before;
 import org.junit.Test;

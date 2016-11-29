@@ -1,7 +1,7 @@
 package io.clappr.player.plugin
 
-import com.globo.clappr.BuildConfig
-import com.globo.clappr.base.BaseObject
+import io.clappr.player.BuildConfig
+import io.clappr.player.base.BaseObject
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test

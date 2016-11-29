@@ -1,8 +1,8 @@
-package io.clappr.player.plugin.Core
+package io.clappr.player.plugin.core
 
-import com.globo.clappr.base.NamedType
-import com.globo.clappr.components.Core
-import com.globo.clappr.plugin.Plugin
+import io.clappr.player.base.NamedType
+import io.clappr.player.components.Core
+import io.clappr.player.plugin.Plugin
 
 open class CorePlugin (val core: Core) : Plugin(core) {
     companion object: NamedType {

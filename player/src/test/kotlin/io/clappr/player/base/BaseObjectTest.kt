@@ -1,7 +1,7 @@
 package io.clappr.player.base
 
 import android.os.Bundle
-import com.globo.clappr.BuildConfig
+import io.clappr.player.BuildConfig
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith

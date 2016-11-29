@@ -1,7 +1,7 @@
 package io.clappr.player.base
 
-import com.globo.clappr.components.Playback
-import com.globo.clappr.plugin.Plugin
+import io.clappr.player.components.Playback
+import io.clappr.player.plugin.Plugin
 import kotlin.reflect.KClass
 
 class Options(

@@ -1,13 +1,13 @@
 package io.clappr.player
 
 import android.os.Bundle
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.Event
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
-import com.globo.clappr.plugin.Loader
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.plugin.Loader
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

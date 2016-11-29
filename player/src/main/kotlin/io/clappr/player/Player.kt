@@ -1,16 +1,16 @@
 package io.clappr.player
 
-import com.globo.clappr.plugin.Loader
+import io.clappr.player.plugin.Loader
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.globo.clappr.base.*
-import com.globo.clappr.components.Core
-import com.globo.clappr.components.Playback
-import com.globo.clappr.playback.NoOpPlayback
+import io.clappr.player.base.*
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.playback.NoOpPlayback
 
 /**
  *  Main Player class.

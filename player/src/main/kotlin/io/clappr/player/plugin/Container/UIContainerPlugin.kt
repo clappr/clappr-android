@@ -1,8 +1,8 @@
-package io.clappr.player.plugin.Container
+package io.clappr.player.plugin.container
 
-import com.globo.clappr.base.NamedType
-import com.globo.clappr.components.Container
-import com.globo.clappr.plugin.UIPlugin
+import io.clappr.player.base.NamedType
+import io.clappr.player.components.Container
+import io.clappr.player.plugin.UIPlugin
 
 open class UIContainerPlugin(val container: Container) : UIPlugin(container) {
     companion object: NamedType {
