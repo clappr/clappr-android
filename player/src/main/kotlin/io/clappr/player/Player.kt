@@ -17,7 +17,7 @@ import io.clappr.player.playback.NoOpPlayback
  *
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
-class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventInterface by base {
+open class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         /**
          * Initialize Player for the application. This method need to be called before any Player instantiation.
