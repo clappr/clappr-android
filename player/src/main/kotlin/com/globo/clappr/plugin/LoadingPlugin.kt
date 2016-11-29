@@ -76,14 +76,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     }
 
     init {
-        setupSpinner()
         bindEventListeners()
-    }
-
-    private fun setupSpinner() {
-        spinner = ProgressBar(context)
-        spinner?.visibility = View.INVISIBLE
-        container.frameLayout.addView(spinner)
     }
 
     fun bindEventListeners() {
@@ -102,9 +95,18 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun startAnimating(): Callback {
         return Callback.wrap {
+            if (spinner == null)
+                setupSpinner()
+
             spinner?.visibility = View.VISIBLE
             visibility = Visibility.VISIBLE
         }
+    }
+
+    private fun setupSpinner() {
+        spinner = ProgressBar(context)
+        spinner?.visibility = View.INVISIBLE
+        container.frameLayout.addView(spinner)
     }
 
     private fun stopAnimating(): Callback {
