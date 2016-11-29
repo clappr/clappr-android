@@ -1,6 +1,7 @@
 package com.globo.clappr.plugin
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import android.content.Context
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -9,7 +10,13 @@ import android.content.Context
 >>>>>>> feature(loading_plugin): bind events to their respective callbacks
 =======
 >>>>>>> refactor(loading_plugin): extract spinner setup to a method
+=======
+import android.support.v4.content.ContextCompat
+import android.view.Gravity
+>>>>>>> feat(loading_plugin): add layout to wrap spinner
 import android.view.View
+import android.widget.LinearLayout
+import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
 import android.widget.ProgressBar
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Event
@@ -69,7 +76,7 @@ open class LoadingPlugin(container: Container, context: Context) : UIContainerPl
 open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 >>>>>>> refactor(loading_plugin): remove context param from constructor
 
-    private var spinner: ProgressBar? = null
+    private var spinnerLayout: LinearLayout? = null
 
     companion object : NamedType {
         override val name = "spinner"
@@ -86,7 +93,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     private fun bindLoadingVisibilityCallBacks(): Callback {
         return Callback.wrap {
             container.playback?.on(Event.STALLED.value, startAnimating())
-            container.playback?.on(Event.PLAYING.value, stopAnimating())
+            container.playback?.on(Event.PLAYING.value, startAnimating())
             container.playback?.on(Event.DID_STOP.value, stopAnimating())
             container.playback?.on(Event.DID_PAUSE.value, stopAnimating())
             container.playback?.on(Event.ERROR.value, stopAnimating())
@@ -95,23 +102,33 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun startAnimating(): Callback {
         return Callback.wrap {
-            if (spinner == null)
+            if (spinnerLayout == null)
                 setupSpinner()
 
-            spinner?.visibility = View.VISIBLE
+            spinnerLayout?.visibility = View.VISIBLE
             visibility = Visibility.VISIBLE
         }
     }
 
     private fun setupSpinner() {
-        spinner = ProgressBar(context)
-        spinner?.visibility = View.INVISIBLE
-        container.frameLayout.addView(spinner)
+        spinnerLayout = createSpinnerLayout()
+        spinnerLayout?.addView(ProgressBar(context))
+
+        container.frameLayout.addView(spinnerLayout)
+    }
+
+    private fun createSpinnerLayout(): LinearLayout {
+        val linearLayout = LinearLayout(context)
+        linearLayout.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        linearLayout.setGravity(Gravity.CENTER)
+        linearLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
+        linearLayout.alpha = 0.7f
+        return linearLayout
     }
 
     private fun stopAnimating(): Callback {
         return Callback.wrap {
-            spinner?.visibility = View.INVISIBLE
+            spinnerLayout?.visibility = View.INVISIBLE
             visibility = Visibility.HIDDEN
         }
     }
