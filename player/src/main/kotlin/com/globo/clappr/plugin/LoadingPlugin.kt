@@ -18,6 +18,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
 import android.widget.ProgressBar
+<<<<<<< HEAD
 import com.globo.clappr.base.Callback
 import com.globo.clappr.base.Event
 <<<<<<< HEAD
@@ -33,6 +34,9 @@ import android.widget.ProgressBar
 import com.globo.clappr.base.InternalEvent
 >>>>>>> refactor(loading_plugin): divide bindEventListeners to separated methods
 import com.globo.clappr.base.NamedType
+=======
+import com.globo.clappr.base.*
+>>>>>>> feat(exoplayer): bind visibility events when plugin is enable
 import com.globo.clappr.components.Container
 import com.globo.clappr.plugin.container.UIContainerPlugin
 
@@ -82,9 +86,12 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         override val name = "spinner"
     }
 
-    init {
-        bindEventListeners()
-    }
+    override var state: State = State.ENABLED
+        set(value) {
+            if (value == State.ENABLED)
+                bindEventListeners()
+            field = value
+        }
 
     fun bindEventListeners() {
         container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, bindLoadingVisibilityCallBacks())
@@ -92,13 +99,13 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun bindLoadingVisibilityCallBacks(): Callback {
         return Callback.wrap {
-            container.playback?.on(Event.STALLED.value, startAnimating())
-            container.playback?.on(Event.WILL_PLAY.value, startAnimating())
-            container.playback?.on(Event.PLAYING.value, stopAnimating())
-            container.playback?.on(Event.DID_STOP.value, stopAnimating())
-            container.playback?.on(Event.DID_PAUSE.value, stopAnimating())
-            container.playback?.on(Event.DID_COMPLETE.value, stopAnimating())
-            container.playback?.on(Event.ERROR.value, stopAnimating())
+            listenTo(container.playback!!, Event.STALLED.value, startAnimating())
+            listenTo(container.playback!!, Event.WILL_PLAY.value, startAnimating())
+            listenTo(container.playback!!, Event.PLAYING.value, stopAnimating())
+            listenTo(container.playback!!, Event.DID_STOP.value, stopAnimating())
+            listenTo(container.playback!!, Event.DID_PAUSE.value, stopAnimating())
+            listenTo(container.playback!!, Event.DID_COMPLETE.value, stopAnimating())
+            listenTo(container.playback!!, Event.ERROR.value, stopAnimating())
         }
     }
 
@@ -126,6 +133,10 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         linearLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
         linearLayout.alpha = 0.7f
         return linearLayout
+    }
+
+    init {
+        bindEventListeners()
     }
 
     private fun stopAnimating(): Callback {
