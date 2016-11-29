@@ -93,6 +93,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     private fun bindLoadingVisibilityCallBacks(): Callback {
         return Callback.wrap {
             container.playback?.on(Event.STALLED.value, startAnimating())
+            container.playback?.on(Event.WILL_PLAY.value, startAnimating())
             container.playback?.on(Event.PLAYING.value, startAnimating())
             container.playback?.on(Event.DID_STOP.value, stopAnimating())
             container.playback?.on(Event.DID_PAUSE.value, stopAnimating())
