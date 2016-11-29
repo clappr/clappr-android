@@ -101,13 +101,15 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun bindLoadingVisibilityCallBacks(): Callback {
         return Callback.wrap {
-            listenTo(container.playback!!, Event.STALLED.value, startAnimating())
-            listenTo(container.playback!!, Event.WILL_PLAY.value, startAnimating())
-            listenTo(container.playback!!, Event.PLAYING.value, stopAnimating())
-            listenTo(container.playback!!, Event.DID_STOP.value, stopAnimating())
-            listenTo(container.playback!!, Event.DID_PAUSE.value, stopAnimating())
-            listenTo(container.playback!!, Event.DID_COMPLETE.value, stopAnimating())
-            listenTo(container.playback!!, Event.ERROR.value, stopAnimating())
+            if (container.playback != null) {
+                listenTo(container.playback!!, Event.STALLED.value, startAnimating())
+                listenTo(container.playback!!, Event.WILL_PLAY.value, startAnimating())
+                listenTo(container.playback!!, Event.PLAYING.value, stopAnimating())
+                listenTo(container.playback!!, Event.DID_STOP.value, stopAnimating())
+                listenTo(container.playback!!, Event.DID_PAUSE.value, stopAnimating())
+                listenTo(container.playback!!, Event.DID_COMPLETE.value, stopAnimating())
+                listenTo(container.playback!!, Event.ERROR.value, stopAnimating())
+            }
         }
     }
 
