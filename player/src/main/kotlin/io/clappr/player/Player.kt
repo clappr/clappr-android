@@ -67,6 +67,12 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
                 if (it.activePlayback != null) { bindPlaybackEvents() }
             }
         }
+
+    init {
+        // TODO - Add default plugins and playbacks
+        Loader.registerPlayback(NoOpPlayback::class)
+    }
+
     internal val loader = Loader()
 
     /**
@@ -93,11 +99,6 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
                 Playback.State.ERROR -> State.ERROR
                 else -> State.NONE
             }
-
-    init {
-        // TODO - Add default plugins and playbacks
-        Loader.registerPlayback(NoOpPlayback::class)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
