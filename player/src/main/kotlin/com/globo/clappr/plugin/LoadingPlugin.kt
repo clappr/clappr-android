@@ -96,7 +96,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         }
 
     fun bindEventListeners() {
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
     }
 
     private fun bindLoadingVisibilityCallBacks() {
