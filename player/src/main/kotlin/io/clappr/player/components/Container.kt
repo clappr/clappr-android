@@ -1,5 +1,6 @@
 package io.clappr.player.components
 
+import android.os.Build
 import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.plugin.Loader
@@ -53,8 +54,17 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
         val playback = this.playback
         playback?.let {
             frameLayout.addView(playback.view)
+            sendPlayBackViewToBack(playback)
             playback.render()
         }
         return this
+    }
+
+    private fun sendPlayBackViewToBack(playback: Playback) {
+        val playBackViewIndex = frameLayout.indexOfChild(playback.view)
+
+        var index = 0
+        while (index < playBackViewIndex)
+            frameLayout.getChildAt(index++).bringToFront()
     }
 }

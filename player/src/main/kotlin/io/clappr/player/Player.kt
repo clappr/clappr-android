@@ -11,6 +11,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.LoadingPlugin
 
 /**
  *  Main Player class.
@@ -67,6 +68,13 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
                 if (it.activePlayback != null) { bindPlaybackEvents() }
             }
         }
+
+    init {
+        // TODO - Add default plugins and playbacks
+        Loader.registerPlugin(LoadingPlugin::class)
+        Loader.registerPlayback(NoOpPlayback::class)
+    }
+
     internal val loader = Loader()
 
     /**
@@ -93,11 +101,6 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
                 Playback.State.ERROR -> State.ERROR
                 else -> State.NONE
             }
-
-    init {
-        // TODO - Add default plugins and playbacks
-        Loader.registerPlayback(NoOpPlayback::class)
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
