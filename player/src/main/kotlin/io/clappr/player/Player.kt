@@ -11,6 +11,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.LoadingPlugin
 
 /**
  *  Main Player class.

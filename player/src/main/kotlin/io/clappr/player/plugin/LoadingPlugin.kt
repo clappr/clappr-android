@@ -1,84 +1,19 @@
-package com.globo.clappr.plugin
+package io.clappr.player.plugin
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import android.content.Context
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> feature(loading_plugin): bind events to their respective callbacks
-=======
->>>>>>> refactor(loading_plugin): extract spinner setup to a method
-=======
 import android.support.v4.content.ContextCompat
 import android.view.Gravity
->>>>>>> feat(loading_plugin): add layout to wrap spinner
 import android.view.View
 import android.widget.LinearLayout
-import android.widget.LinearLayout.LayoutParams.MATCH_PARENT
 import android.widget.ProgressBar
-<<<<<<< HEAD
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.Event
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> feature(loading_plugin): create LoadingPlugin class
-=======
-import android.widget.ProgressBar
->>>>>>> feature(loading_plugin): add ProgressBar var
-=======
->>>>>>> feature(loading_plugin): bind events to their respective callbacks
-=======
-import com.globo.clappr.base.InternalEvent
->>>>>>> refactor(loading_plugin): divide bindEventListeners to separated methods
-import com.globo.clappr.base.NamedType
-=======
-import com.globo.clappr.base.*
->>>>>>> feat(exoplayer): bind visibility events when plugin is enable
-import com.globo.clappr.components.Container
-import com.globo.clappr.plugin.container.UIContainerPlugin
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
+import io.clappr.player.components.Container
+import io.clappr.player.plugin.container.UIContainerPlugin
 
-<<<<<<< HEAD
-open class LoadingPlugin(container: Container, context: Context) : UIContainerPlugin(container) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-    private var spinner: ProgressBar?
-
-    companion object: NamedType {
-        override val name = "spinner"
-    }
-
-    init {
-        spinner = ProgressBar(context)
-        bindEventListeners()
-        container.frameLayout.addView(spinner)
-    }
-
-    fun bindEventListeners() {
-        listenTo(container.playback!!, Event.READY.value, startAnimating)
-        listenTo(container.playback!!, Event.PLAYING.value, stopAnimating)
-        listenTo(container.playback!!, Event.DID_COMPLETE.value, stopAnimating)
-    }
-
-    private val startAnimating = Callback.wrap {
-        spinner?.visibility = View.VISIBLE
-    }
-
-    private val stopAnimating = Callback.wrap {
-        spinner?.visibility = View.INVISIBLE
-    }
-=======
-    companion object: NamedType {
-        override val name = "spinner"
-    }
->>>>>>> feature(loading_plugin): create LoadingPlugin class
-=======
-=======
 open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
->>>>>>> refactor(loading_plugin): remove context param from constructor
 
     private var spinnerLayout: LinearLayout? = null
 
@@ -130,7 +65,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun createSpinnerLayout(): LinearLayout {
         val linearLayout = LinearLayout(context)
-        linearLayout.layoutParams = LinearLayout.LayoutParams(MATCH_PARENT, MATCH_PARENT)
+        linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
         linearLayout.setGravity(Gravity.CENTER)
         linearLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
         linearLayout.alpha = 0.7f
@@ -147,5 +82,4 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
             visibility = Visibility.HIDDEN
         }
     }
->>>>>>> feature(loading_plugin): add ProgressBar var
 }
