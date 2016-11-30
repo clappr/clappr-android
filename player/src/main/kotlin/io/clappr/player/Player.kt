@@ -70,6 +70,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
 
     init {
         // TODO - Add default plugins and playbacks
+        Loader.registerPlugin(LoadingPlugin::class)
         Loader.registerPlayback(NoOpPlayback::class)
     }
 
