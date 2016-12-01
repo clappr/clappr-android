@@ -8,6 +8,7 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.plugin.Plugin
+import io.clappr.player.plugin.core.UICorePlugin
 
 class Core(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>
@@ -48,8 +49,12 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
 
     override fun render(): Core {
         containers.forEach {
-            it.render()
             frameLayout.addView(it.view)
+            it.render()
+        }
+        plugins.filterIsInstance(UICorePlugin::class.java).forEach {
+            frameLayout.addView(it.view)
+            it.render()
         }
         return this
     }

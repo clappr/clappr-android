@@ -15,7 +15,7 @@ import io.clappr.player.plugin.container.UIContainerPlugin
 
 open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
-    private var spinnerLayout: LinearLayout? = null
+    private var spinnerLayout: LinearLayout? = LinearLayout(context)
 
     companion object : NamedType {
         override val name = "spinner"
@@ -29,6 +29,14 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
                 stopListening()
             field = value
         }
+
+    override val view: View?
+        get() = spinnerLayout
+
+    init {
+        setupSpinnerLayout()
+        bindEventListeners()
+    }
 
     fun bindEventListeners() {
         listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
@@ -48,32 +56,20 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun startAnimating(): Callback {
         return Callback.wrap {
-            if (spinnerLayout == null)
-                setupSpinner()
-
             spinnerLayout?.visibility = View.VISIBLE
             visibility = Visibility.VISIBLE
         }
     }
 
-    private fun setupSpinner() {
-        spinnerLayout = createSpinnerLayout()
-        spinnerLayout?.addView(ProgressBar(context))
+    private fun setupSpinnerLayout() {
+        spinnerLayout?.let {
+            it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
+            it.setGravity(Gravity.CENTER)
+            it.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
+            it.alpha = 0.7f
 
-        container.frameLayout.addView(spinnerLayout)
-    }
-
-    private fun createSpinnerLayout(): LinearLayout {
-        val linearLayout = LinearLayout(context)
-        linearLayout.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-        linearLayout.setGravity(Gravity.CENTER)
-        linearLayout.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
-        linearLayout.alpha = 0.7f
-        return linearLayout
-    }
-
-    init {
-        bindEventListeners()
+            it.addView(ProgressBar(context))
+        }
     }
 
     private fun stopAnimating(): Callback {
