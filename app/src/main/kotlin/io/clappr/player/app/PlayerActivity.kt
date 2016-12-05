@@ -27,8 +27,8 @@ class PlayerActivity : Activity() {
         player.on(Event.DID_COMPLETE.value, Callback.wrap {Log.i("PLAYER", "Completed")})
 
         val fragmentTransaction = fragmentManager.beginTransaction()
-        fragmentTransaction.add(R.id.container, player);
-        fragmentTransaction.commit();
+        fragmentTransaction.add(R.id.container, player)
+        fragmentTransaction.commit()
 
         player.play()
     }
