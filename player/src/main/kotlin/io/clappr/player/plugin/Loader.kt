@@ -1,5 +1,6 @@
 package io.clappr.player.plugin
 
+import android.util.Log
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
@@ -130,6 +131,7 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         try {
             plugin = constructor?.call(component) as? Plugin
         } catch (e: Exception) {
+            Log.e("Loader", "Exception when creating plugin $pluginClass: $e", e)
         }
 
         return plugin
