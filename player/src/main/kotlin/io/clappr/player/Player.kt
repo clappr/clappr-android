@@ -20,6 +20,12 @@ import io.clappr.player.plugin.LoadingPlugin
  */
 open class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
+        init {
+            // TODO - Add default plugins and playbacks
+            Loader.registerPlugin(LoadingPlugin::class)
+            Loader.registerPlayback(NoOpPlayback::class)
+        }
+
         /**
          * Initialize Player for the application. This method need to be called before any Player instantiation.
          */
@@ -68,12 +74,6 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
                 if (it.activePlayback != null) { bindPlaybackEvents() }
             }
         }
-
-    init {
-        // TODO - Add default plugins and playbacks
-        Loader.registerPlugin(LoadingPlugin::class)
-        Loader.registerPlayback(NoOpPlayback::class)
-    }
 
     internal val loader = Loader()
 
