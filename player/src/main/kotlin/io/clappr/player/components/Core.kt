@@ -48,6 +48,7 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
     }
 
     override fun render(): Core {
+        frameLayout.removeAllViews()
         containers.forEach {
             frameLayout.addView(it.view)
             it.render()
