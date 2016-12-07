@@ -3,10 +3,6 @@ package io.clappr.player.playback
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
@@ -24,6 +20,12 @@ import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
+import io.clappr.player.base.ErrorCode
+import io.clappr.player.base.ErrorInfo
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
 
@@ -60,10 +62,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = SimpleExoPlayerView::class.java
 
     override val duration: Double
-        get() = player?.duration?.let {it.toDouble() / ONE_SECOND_IN_MILLIS} ?: Double.NaN
+        get() = player?.duration?.let { it.toDouble() / ONE_SECOND_IN_MILLIS } ?: Double.NaN
 
     override val position: Double
-        get() = player?.currentPosition?.let {it.toDouble() / ONE_SECOND_IN_MILLIS} ?: Double.NaN
+        get() = player?.currentPosition?.let { it.toDouble() / ONE_SECOND_IN_MILLIS } ?: Double.NaN
 
     override val state: State
         get() = currentState
@@ -223,17 +225,19 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleError(error: Exception?) {
-        timeElapsedHandler.cancel()
-        currentState = State.ERROR
-        triggerErrorEvent(error)
+        if (currentState != State.ERROR) {
+            timeElapsedHandler.cancel()
+            currentState = State.ERROR
+            triggerErrorEvent(error)
+        }
     }
 
     private fun triggerErrorEvent(error: Exception?) {
         val bundle = Bundle()
-        bundle.putString(Event.ERROR.value, error?.message)
+        val message = error?.message ?: "Exoplayer Error"
+        bundle.putParcelable(Event.ERROR.value, ErrorInfo(message, ErrorCode.PLAYBACK_ERROR))
         trigger(Event.ERROR.value, bundle)
     }
-
 
     inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
         override fun onLoadError(error: IOException?) {
