@@ -18,9 +18,7 @@ class PlayerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-
         val player = Player()
-        Loader.registerPlayback(ExoPlayerPlayback::class)
         player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = false))
         player.on(Event.WILL_PLAY.value, Callback.wrap {Log.i("PLAYER", "Will Play")})
         player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})

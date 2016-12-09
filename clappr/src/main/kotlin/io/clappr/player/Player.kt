@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.LoadingPlugin
 
@@ -24,6 +25,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
             // TODO - Add default plugins and playbacks
             Loader.registerPlugin(LoadingPlugin::class)
             Loader.registerPlayback(NoOpPlayback::class)
+            Loader.registerPlayback(ExoPlayerPlayback::class)
         }
 
         /**
