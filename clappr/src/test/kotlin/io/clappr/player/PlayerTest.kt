@@ -38,7 +38,7 @@ open class PlayerTest {
 
         override fun play(): Boolean { return true }
         override fun stop(): Boolean { return true }
-        override fun seek(position: Int): Boolean { return true }
+        override fun seek(seconds: Int): Boolean { return true }
 
         override fun pause(): Boolean {
             trigger(Event.WILL_PAUSE.value)

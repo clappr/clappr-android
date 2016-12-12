@@ -35,6 +35,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':player')
+    compile project(':clappr')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
