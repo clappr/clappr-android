@@ -2,13 +2,13 @@ package com.globo.clappr.playback
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import com.globo.clappr.BuildConfig
-import com.globo.clappr.base.BaseObject
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.ClapprEvent
-import com.globo.clappr.base.Event
-import com.globo.clappr.base.Options
-import com.globo.clappr.components.Playback
+import io.clappr.player.BuildConfig
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.components.Playback
+import io.clappr.player.playback.MediaPlayerPlayback
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

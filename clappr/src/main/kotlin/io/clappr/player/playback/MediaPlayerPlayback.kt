@@ -1,4 +1,4 @@
-package com.globo.clappr.playback
+package io.clappr.player.playback
 
 import android.content.Context
 import android.media.AudioManager
@@ -6,13 +6,12 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.RelativeLayout
-import com.globo.clappr.base.ClapprEvent
-import com.globo.clappr.base.Callback
-import com.globo.clappr.base.Options
-import com.globo.clappr.base.UIObject
-import com.globo.clappr.components.Playback
-import com.globo.clappr.components.PlaybackSupportInterface
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
+import io.clappr.player.base.UIObject
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 
 
 class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options) {
@@ -82,7 +81,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         mediaPlayer.setOnSeekCompleteListener {
             Log.i(TAG, "seek completed")
             if (mediaPlayer?.isPlaying) {
-                trigger(ClapprEvent.PLAYING.value)
+                trigger(Event.PLAYING.value)
             }
         }
 
@@ -260,7 +259,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override fun play(): Boolean {
         if (canPlay) {
             if (state != State.PLAYING) {
-                trigger(ClapprEvent.WILL_PLAY.value)
+                trigger(Event.WILL_PLAY.value)
             }
             if (internalState == InternalState.ATTACHED) {
                 mediaPlayer.prepareAsync()
@@ -279,7 +278,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override fun pause(): Boolean {
         if (canPause) {
             if ( (state == State.PLAYING) || (state == State.STALLED) ) {
-                trigger(ClapprEvent.WILL_PAUSE.value)
+                trigger(Event.WILL_PAUSE.value)
                 mediaPlayer.pause()
             }
             if (state == State.PLAYING) {
@@ -293,7 +292,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override fun stop(): Boolean {
         if (canStop) {
-            trigger(ClapprEvent.WILL_STOP.value)
+            trigger(Event.WILL_STOP.value)
             try {
                 mediaPlayer.stop()
                 internalState = InternalState.STOPPED
@@ -308,7 +307,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override fun seek(seconds: Int): Boolean {
         if (canSeek) {
-            trigger(ClapprEvent.WILL_SEEK.value)
+            trigger(Event.WILL_SEEK.value)
             mediaPlayer.seekTo(seconds * 1000)
             return true
         } else {
@@ -321,21 +320,21 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             when (state) {
                 State.IDLE -> {
                     if (previousState == State.NONE) {
-                        trigger(ClapprEvent.READY.value)
+                        trigger(Event.READY.value)
                     } else if (internalState == InternalState.STOPPED) {
-                        trigger(ClapprEvent.DID_STOP.value)
+                        trigger(Event.DID_STOP.value)
                     } else if (previousState == State.PLAYING) {
-                            trigger(ClapprEvent.DID_COMPLETE.value)
+                            trigger(Event.DID_COMPLETE.value)
                     }
                 }
                 State.PLAYING -> {
-                    trigger(ClapprEvent.PLAYING.value)
+                    trigger(Event.PLAYING.value)
                 }
                 State.PAUSED -> {
-                    trigger(ClapprEvent.DID_PAUSE.value)
+                    trigger(Event.DID_PAUSE.value)
                 }
                 State.ERROR -> {
-                    trigger(ClapprEvent.ERROR.value)
+                    trigger(Event.ERROR.value)
                 }
                 State.STALLED -> {
                     trigger(Event.STALLED.value)

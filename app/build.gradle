@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 24
     buildToolsVersion "24.0.3"
     defaultConfig {
         applicationId 'io.clappr.player.app'
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 24
         versionCode 1
         versionName '1.0'
     }
