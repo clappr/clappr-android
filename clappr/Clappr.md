@@ -1,1 +1,0 @@
-# Clappr for Android Documentation
