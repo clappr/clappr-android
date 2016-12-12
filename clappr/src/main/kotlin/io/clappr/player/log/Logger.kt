@@ -2,7 +2,7 @@ package io.clappr.player.log
 
 import android.util.Log
 
-class Logger {
+object Logger {
     private var logLevel = LogLevel.INFO
 
     fun setLevel(level: LogLevel) {
