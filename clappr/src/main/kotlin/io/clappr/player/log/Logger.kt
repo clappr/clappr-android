@@ -1,4 +1,4 @@
-package com.globo.clappr.log
+package io.clappr.player.log
 
 import android.util.Log
 
@@ -16,7 +16,7 @@ class Logger {
 
             when (level) {
                 LogLevel.DEBUG -> Log.d(tag, formatted)
-                LogLevel.INFO -> Log.i(tag, formatted)
+                LogLevel.INFO -> Log.i(tag, formatted)g
                 LogLevel.WARNING -> Log.w(tag, formatted)
                 LogLevel.ERROR -> Log.e(tag, formatted)
             }

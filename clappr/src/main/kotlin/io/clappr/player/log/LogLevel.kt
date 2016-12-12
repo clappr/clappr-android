@@ -1,4 +1,4 @@
-package com.globo.clappr.log
+package io.clappr.player.log
 
 enum class LogLevel(level: Int) {
     OFF(0),
