@@ -11,6 +11,29 @@ import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
 class Core(val loader: Loader, val options: Options) : UIObject() {
+
+    enum class FullscreenState {
+        EMBEDDED, FULLSCREEN
+    }
+
+    var fullscreenState: FullscreenState = FullscreenState.EMBEDDED
+        set(value) {
+            if (value != fullscreenState) {
+                val beforeEvent: InternalEvent
+                val afterEvent: InternalEvent
+                if (value == FullscreenState.FULLSCREEN) {
+                    beforeEvent = InternalEvent.WILL_ENTER_FULLSCREEN
+                    afterEvent = InternalEvent.DID_ENTER_FULLSCREEN
+                } else {
+                    beforeEvent = InternalEvent.WILL_EXIT_FULLSCREEN
+                    afterEvent = InternalEvent.DID_EXIT_FULLSCREEN
+                }
+                trigger(beforeEvent.value)
+                field = value
+                trigger(afterEvent.value)
+            }
+        }
+
     val plugins: List<Plugin>
 
     val containers: MutableList<Container> = mutableListOf()
