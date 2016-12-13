@@ -1,8 +1,8 @@
 package io.clappr.player.components
 
-import io.clappr.player.base.UIObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
+import io.clappr.player.base.UIObject
 import kotlin.reflect.companionObjectInstance
 
 interface PlaybackSupportInterface: NamedType {

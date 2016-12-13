@@ -1,8 +1,6 @@
 package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
@@ -12,7 +10,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.annotation.Config
-
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 

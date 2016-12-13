@@ -23,6 +23,7 @@ class PlayerActivity : Activity() {
         player.on(Event.WILL_PLAY.value, Callback.wrap {Log.i("PLAYER", "Will Play")})
         player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
         player.on(Event.DID_COMPLETE.value, Callback.wrap {Log.i("PLAYER", "Completed")})
+        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Log.i("PLAYER", "Buffer update: " + bundle?.getDouble("percentage")) })
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player)
