@@ -3,7 +3,8 @@ package io.clappr.player.log
 import android.util.Log
 
 object Logger {
-    private var logLevel = LogLevel.INFO
+    var logLevel = LogLevel.INFO
+    var tag = "clappr"
 
     fun setLevel(level: LogLevel) {
         logLevel = level
@@ -11,12 +12,11 @@ object Logger {
 
     fun log(level: LogLevel, message: String, scope: String? = null) {
         if (level <= logLevel) {
-            val tag = "clappr"
             val formatted = formattedMessage(message, scope)
 
             when (level) {
                 LogLevel.DEBUG -> Log.d(tag, formatted)
-                LogLevel.INFO -> Log.i(tag, formatted)g
+                LogLevel.INFO -> Log.i(tag, formatted)
                 LogLevel.WARNING -> Log.w(tag, formatted)
                 LogLevel.ERROR -> Log.e(tag, formatted)
             }
