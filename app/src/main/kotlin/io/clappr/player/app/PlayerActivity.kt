@@ -2,15 +2,13 @@ package io.clappr.player.app
 
 import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import io.clappr.player.Player
 import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
-import io.clappr.player.playback.ExoPlayerPlayback
-import io.clappr.player.plugin.Loader
+import io.clappr.player.log.Logger
 
 class PlayerActivity : Activity() {
 
@@ -20,10 +18,10 @@ class PlayerActivity : Activity() {
 
         val player = Player()
         player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = false))
-        player.on(Event.WILL_PLAY.value, Callback.wrap {Log.i("PLAYER", "Will Play")})
-        player.on(Event.PLAYING.value, Callback.wrap {Log.i("PLAYER", "Playing")})
-        player.on(Event.DID_COMPLETE.value, Callback.wrap {Log.i("PLAYER", "Completed")})
-        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Log.i("PLAYER", "Buffer update: " + bundle?.getDouble("percentage")) })
+        player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("Will Play", "App") })
+        player.on(Event.PLAYING.value, Callback.wrap { Logger.info("Playing", "App") })
+        player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("Completed", "App") })
+        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Logger.info("Buffer update: " + bundle?.getDouble("percentage"), "App") })
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player)
@@ -31,7 +29,6 @@ class PlayerActivity : Activity() {
 
         player.play()
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
