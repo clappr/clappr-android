@@ -73,6 +73,8 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
+                it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
+                it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
                 if (it.activePlayback != null) { bindPlaybackEvents() }
             }
         }
@@ -89,6 +91,15 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      */
     val duration: Double
         get() = core?.activePlayback?.duration ?: Double.NaN
+
+    /**
+     * Whether the player is in fullscreen mode
+     */
+    var fullscreen = false
+        set(value) {
+            core?.fullscreenState = if (value) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
+        }
+
     /**
      * Current Player state.
      */

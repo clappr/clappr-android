@@ -71,4 +71,14 @@ enum class Event(val value: String) {
      * Will change media source
      */
     WILL_CHANGE_SOURCE("willChangeSource"),
+
+    /**
+     * Player is requesting to enter fullscreen
+     */
+    REQUEST_FULLSCREEN("requestFullscreen"),
+
+    /**
+     * Player is requesting to exit fullscreen
+     */
+    EXIT_FULLSCREEN("exitFullscreen")
 }
