@@ -31,6 +31,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
         /**
          * Initialize Player for the application. This method need to be called before any Player instantiation.
          */
+        @JvmStatic
         fun initialize(context: Context) {
             BaseObject.context = context
         }
@@ -142,6 +143,10 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      */
     fun load(source: String, mimeType: String? = null) : Boolean {
         return core?.activeContainer?.load(source, mimeType) ?: false
+    }
+
+    fun load(source: String) : Boolean {
+        return load(source, null)
     }
 
     /**
