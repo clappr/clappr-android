@@ -53,7 +53,7 @@ public class PlayerJavaTest {
 
     @Test
     public void shouldHaveInvalidStatesWithUnsupportedMedia() {
-        player.configure(new Options("", null, false, new LinkedList<KClass<Plugin>>(), new LinkedList<KClass<Playback>>(), new HashMap<String, Object>()));
+        player.configure(new Options());
 
         assertEquals("valid duration", Double.NaN, player.getDuration(), 0.0);
         assertEquals("valid position", Double.NaN, player.getPosition(), 0.0);
