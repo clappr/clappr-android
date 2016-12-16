@@ -1,0 +1,98 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'org.jetbrains.dokka-android'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
+
+group = 'io.clappr.player'
+version = '0.0.3'
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']
+    pkg {
+        repo = 'clappr'
+        name = 'clappr-android-release'
+        userOrg = 'clappr-android'
+        licenses = ['BSD 3-Clause']
+        vcsUrl = 'https://github.com/clappr/clappr-android.git'
+        version {
+            name = "$version"
+            desc = 'Clappr alpha version'
+            released  = new Date()
+            vcsTag = "$version"
+        }
+    }
+}
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "24.0.3"
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 25
+        versionCode 1
+        versionName '1.0'
+    }
+    packagingOptions {
+        // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    productFlavors {
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
+    }
+
+    testOptions {
+        unitTests.all {
+            jvmArgs '-XX:MaxPermSize=256m'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.android.support:appcompat-v7:25.0.1'
+    compile 'com.android.support:support-v4:25.0.1'
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    compile 'com.google.android.exoplayer:exoplayer:r2.0.2'
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.robolectric:robolectric:3.1.2"
+    testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+artifacts {
+    archives sourcesJar
+}
+
+dokka {
+    includes = ['clappr.md']
+
+    outputFormat = 'gfm'
+    outputDirectory = "$buildDir/dokka/gfm"
+
+    linkMapping {
+        dir = "src/main/kotlin"
+        url = "https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin"
+        suffix = "#L"
+    }
+}

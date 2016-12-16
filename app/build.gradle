@@ -2,12 +2,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '23.0.3'
+    compileSdkVersion 25
+    buildToolsVersion "24.0.3"
     defaultConfig {
-        applicationId 'com.globo.clappr.app'
+        applicationId 'io.clappr.player.app'
         minSdkVersion 14
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName '1.0'
     }
@@ -35,6 +35,6 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':player')
+    compile project(':clappr')
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }

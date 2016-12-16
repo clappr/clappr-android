@@ -6,8 +6,8 @@ env:
 android:
   components:
     - tools
-    - build-tools-23.0.3
-    - android-23
+    - build-tools-24.0.3
+    - android-25
     - extra-android-m2repository
     - sys-img-x86-android-23
   licenses:
