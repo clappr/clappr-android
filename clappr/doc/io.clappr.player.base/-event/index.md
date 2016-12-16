@@ -24,6 +24,8 @@
 | [WILL_SEEK](-w-i-l-l_-s-e-e-k.md) | Will change media position |
 | [WILL_STOP](-w-i-l-l_-s-t-o-p.md) | Will stop media playback |
 | [WILL_CHANGE_SOURCE](-w-i-l-l_-c-h-a-n-g-e_-s-o-u-r-c-e.md) | Will change media source |
+| [REQUEST_FULLSCREEN](-r-e-q-u-e-s-t_-f-u-l-l-s-c-r-e-e-n.md) | Player is requesting to enter fullscreen |
+| [EXIT_FULLSCREEN](-e-x-i-t_-f-u-l-l-s-c-r-e-e-n.md) | Player is requesting to exit fullscreen |
 
 ### Properties
 

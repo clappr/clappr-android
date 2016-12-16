@@ -2,4 +2,4 @@
 
 # activeContainer
 
-`var activeContainer: `[`Container`](../-container/index.md)`?` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Core.kt#L17)
+`var activeContainer: `[`Container`](../-container/index.md)`?` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Core.kt#L40)

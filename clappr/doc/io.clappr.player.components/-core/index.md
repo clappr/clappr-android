@@ -4,6 +4,12 @@
 
 `class Core : `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Core.kt#L13)
 
+### Types
+
+| Name | Summary |
+|---|---|
+| [FullscreenState](-fullscreen-state/index.md) | `enum class FullscreenState : Enum<`[`FullscreenState`](-fullscreen-state/index.md)`>` |
+
 ### Constructors
 
 | Name | Summary |
@@ -18,6 +24,7 @@
 | [activePlayback](active-playback.md) | `val activePlayback: `[`Playback`](../-playback/index.md)`?` |
 | [containers](containers.md) | `val containers: MutableList<`[`Container`](../-container/index.md)`>` |
 | [frameLayout](frame-layout.md) | `val frameLayout: FrameLayout` |
+| [fullscreenState](fullscreen-state.md) | `var fullscreenState: `[`FullscreenState`](-fullscreen-state/index.md) |
 | [loader](loader.md) | `val loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md) |
 | [options](options.md) | `val options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [plugins](plugins.md) | `val plugins: List<`[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)`>` |
