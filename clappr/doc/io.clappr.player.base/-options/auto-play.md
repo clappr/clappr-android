@@ -2,4 +2,4 @@
 
 # autoPlay
 
-`var autoPlay: Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/base/Options.kt#L10)
+`var autoPlay: Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/base/Options.kt#L6)

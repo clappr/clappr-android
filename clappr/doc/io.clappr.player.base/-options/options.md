@@ -2,4 +2,4 @@
 
 # options
 
-`val options: Map<String, Any>` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/base/Options.kt#L13)
+`val options: Map<String, Any>` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/base/Options.kt#L7)
