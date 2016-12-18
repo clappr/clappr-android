@@ -3,5 +3,15 @@
 
 # Clappr for Android
 
+## Documentation
+
 Package documentation in [doc](clappr/doc/index.md) folder
 
+## License
+
+You can find it [here](LICENSE).
+
+
+## Sponsor
+
+[![image](https://cloud.githubusercontent.com/assets/244265/5900100/ef156258-a54b-11e4-9862-7e5851ed9b81.png)](http://globo.com)
