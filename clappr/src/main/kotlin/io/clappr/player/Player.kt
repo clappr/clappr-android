@@ -188,7 +188,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
         return core?.activePlayback?.seek(position) ?: false
     }
 
-    private fun bindPlaybackEvents() {
+    protected fun bindPlaybackEvents() {
         for (event in Event.values()) {
             core?.activePlayback?.on(event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) })
         }
