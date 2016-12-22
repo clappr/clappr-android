@@ -67,7 +67,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         ERROR
     }
 
-    internal var core: Core? = null
+    protected var core: Core? = null
         set(value) {
             core?.stopListening()
             field = value
