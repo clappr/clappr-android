@@ -1,6 +1,5 @@
 package io.clappr.player
 
-import io.clappr.player.plugin.Loader
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
@@ -12,6 +11,7 @@ import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.LoadingPlugin
 
 /**
@@ -19,7 +19,7 @@ import io.clappr.player.plugin.LoadingPlugin
  *
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
-open class Player(private val base : BaseObject = BaseObject()) : Fragment(), EventInterface by base {
+open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         init {
             // TODO - Add default plugins and playbacks
@@ -67,16 +67,25 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
         ERROR
     }
 
-    internal var core : Core? = null
-        set(value) {
+    var core: Core? = null
+        private set(value) {
             core?.stopListening()
             field = value
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> unbindContainerEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> bindContainerEvents() })
                 it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
                 it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
-                if (it.activePlayback != null) { bindPlaybackEvents() }
+
+                if (it.activeContainer != null) {
+                    bindContainerEvents()
+                }
+
+                if (it.activePlayback != null) {
+                    bindPlaybackEvents()
+                }
             }
         }
 
@@ -86,7 +95,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      * Media current position in seconds.
      */
     val position: Double
-            get() = core?.activePlayback?.position ?: Double.NaN
+        get() = core?.activePlayback?.position ?: Double.NaN
     /**
      * Media duration in seconds.
      */
@@ -106,15 +115,15 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      */
     val state: State
         get() =
-            when(core?.activePlayback?.state ?: Playback.State.NONE) {
-                Playback.State.NONE -> State.NONE
-                Playback.State.IDLE -> State.IDLE
-                Playback.State.PLAYING -> State.PLAYING
-                Playback.State.PAUSED -> State.PAUSED
-                Playback.State.STALLED -> State.STALLED
-                Playback.State.ERROR -> State.ERROR
-                else -> State.NONE
-            }
+        when (core?.activePlayback?.state ?: Playback.State.NONE) {
+            Playback.State.NONE -> State.NONE
+            Playback.State.IDLE -> State.IDLE
+            Playback.State.PLAYING -> State.PLAYING
+            Playback.State.PAUSED -> State.PAUSED
+            Playback.State.STALLED -> State.STALLED
+            Playback.State.ERROR -> State.ERROR
+            else -> State.NONE
+        }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
@@ -141,11 +150,11 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      * @param mimeType
      *          (Optional) media mime type.
      */
-    fun load(source: String, mimeType: String? = null) : Boolean {
+    fun load(source: String, mimeType: String? = null): Boolean {
         return core?.activeContainer?.load(source, mimeType) ?: false
     }
 
-    fun load(source: String) : Boolean {
+    fun load(source: String): Boolean {
         return load(source, null)
     }
 
@@ -154,7 +163,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      *
      * @return If the operation was accepted
      */
-    fun play() : Boolean {
+    fun play(): Boolean {
         return core?.activePlayback?.play() ?: false
     }
 
@@ -163,7 +172,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      *
      * @return If the operation was accepted
      */
-    fun pause() : Boolean {
+    fun pause(): Boolean {
         return core?.activePlayback?.pause() ?: false
     }
 
@@ -172,7 +181,7 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      *
      * @return If the operation was accepted
      */
-    fun stop() : Boolean {
+    fun stop(): Boolean {
         return core?.activePlayback?.stop() ?: false
     }
 
@@ -184,11 +193,11 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
      *
      * @return If the operation was accepted
      */
-    fun seek(position: Int) : Boolean {
+    fun seek(position: Int): Boolean {
         return core?.activePlayback?.seek(position) ?: false
     }
 
-    private fun bindPlaybackEvents() {
+    protected open fun bindPlaybackEvents() {
         for (event in Event.values()) {
             core?.activePlayback?.on(event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) })
         }
@@ -196,5 +205,12 @@ open class Player(private val base : BaseObject = BaseObject()) : Fragment(), Ev
 
     private fun unbindPlaybackEvents() {
         core?.activePlayback?.stopListening()
+    }
+
+    protected open fun bindContainerEvents() {
+    }
+
+    private fun unbindContainerEvents() {
+        core?.activeContainer?.stopListening()
     }
 }
