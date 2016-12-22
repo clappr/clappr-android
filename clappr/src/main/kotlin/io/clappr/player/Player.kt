@@ -78,6 +78,11 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> bindContainerEvents() })
                 it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
                 it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
+
+                if (it.activeContainer != null) {
+                    bindContainerEvents()
+                }
+
                 if (it.activePlayback != null) {
                     bindPlaybackEvents()
                 }
