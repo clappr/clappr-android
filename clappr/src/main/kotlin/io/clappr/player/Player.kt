@@ -192,7 +192,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         return core?.activePlayback?.seek(position) ?: false
     }
 
-    protected fun bindPlaybackEvents() {
+    protected open fun bindPlaybackEvents() {
         for (event in Event.values()) {
             core?.activePlayback?.on(event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) })
         }
@@ -202,7 +202,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         core?.activePlayback?.stopListening()
     }
 
-    protected fun bindContainerEvents() {
+    protected open fun bindContainerEvents() {
     }
 
     private fun unbindContainerEvents() {
