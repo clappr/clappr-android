@@ -1,8 +1,6 @@
 package io.clappr.player.components
 
-import io.clappr.player.base.NamedType
-import io.clappr.player.base.Options
-import io.clappr.player.base.UIObject
+import io.clappr.player.base.*
 import kotlin.reflect.companionObjectInstance
 
 interface PlaybackSupportInterface: NamedType {
@@ -68,6 +66,15 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     }
 
     override fun render(): UIObject {
+        if (options.containsKey(PlaybackOption.START_AT.value)) {
+            once(Event.READY.value, Callback.wrap {
+                (options.get(PlaybackOption.START_AT.value) as? Int)?.let {
+                    seek(it)
+                }
+                options.remove(PlaybackOption.START_AT.value)
+            })
+        }
+
         if (options.autoPlay) {
             play()
         }
