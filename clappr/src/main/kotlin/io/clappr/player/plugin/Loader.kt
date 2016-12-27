@@ -131,7 +131,6 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         try {
             plugin = constructor?.call(component) as? Plugin
         } catch (e: Exception) {
-            Log.e("Loader", "Exception when creating plugin $pluginClass: $e", e)
         }
 
         return plugin
