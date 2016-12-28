@@ -6,7 +6,7 @@ class Options(
     var autoPlay: Boolean = true,
     val options: MutableMap<String, Any> = mutableMapOf<String, Any>()): MutableMap<String, Any> by options
 
-enum class PlaybackOption(val value: String) {
+enum class ClapprOption(val value: String) {
     /**
      * Media start position
      */
