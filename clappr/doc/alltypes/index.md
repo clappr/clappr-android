@@ -6,6 +6,7 @@
 |---|---|
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.base.Callback](../io.clappr.player.base/-callback/index.md) |  |
+| [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
 | [io.clappr.player.plugin.container.ContainerPlugin](../io.clappr.player.plugin.container/-container-plugin/index.md) |  |
 | [io.clappr.player.components.Core](../io.clappr.player.components/-core/index.md) |  |

@@ -2,4 +2,4 @@
 
 # seek
 
-`open fun seek(seconds: Int): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L54)
+`open fun seek(seconds: Int): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L52)

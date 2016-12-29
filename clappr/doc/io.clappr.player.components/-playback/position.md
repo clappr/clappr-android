@@ -2,4 +2,4 @@
 
 # position
 
-`open val position: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L36)
+`open val position: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L34)

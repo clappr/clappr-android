@@ -2,7 +2,7 @@
 
 # configure
 
-`fun configure(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`): Unit` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L132)
+`fun configure(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`): Unit` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L141)
 
 Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
 
