@@ -2,7 +2,7 @@
 
 # seek
 
-`fun seek(position: Int): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L196)
+`fun seek(position: Int): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L187)
 
 Move current playback position.
 

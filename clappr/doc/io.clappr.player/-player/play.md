@@ -2,7 +2,7 @@
 
 # play
 
-`fun play(): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L166)
+`fun play(): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L157)
 
 Start or resume media playing.
 

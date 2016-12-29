@@ -2,7 +2,7 @@
 
 # name
 
-`val name: String` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L17)
+`val name: String` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L19)
 
 Overrides [NamedType.name](../../io.clappr.player.base/-named-type/name.md)
 

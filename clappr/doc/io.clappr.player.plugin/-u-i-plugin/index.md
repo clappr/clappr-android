@@ -21,7 +21,7 @@
 | Name | Summary |
 |---|---|
 | [view](view.md) | `open val view: View?` |
-| [visibility](visibility.md) | `open var visibility: `[`Visibility`](-visibility/index.md) |
+| [visibility](visibility.md) | `var visibility: `[`Visibility`](-visibility/index.md) |
 
 ### Inherited Properties
 

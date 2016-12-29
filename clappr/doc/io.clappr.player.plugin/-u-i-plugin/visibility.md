@@ -2,4 +2,4 @@
 
 # visibility
 
-`open var visibility: `[`Visibility`](-visibility/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/plugin/UIPlugin.kt#L11)
+`var visibility: `[`Visibility`](-visibility/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/plugin/UIPlugin.kt#L11)
