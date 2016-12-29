@@ -2,7 +2,7 @@
 
 # load
 
-`fun load(source: String, mimeType: String? = null): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L144)
+`fun load(source: String, mimeType: String? = null): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L153)
 
 Load a new media
 
@@ -12,4 +12,4 @@ Load a new media
 
 `mimeType` - (Optional) media mime type.
 
-`fun load(source: String): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L148)
+`fun load(source: String): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L157)

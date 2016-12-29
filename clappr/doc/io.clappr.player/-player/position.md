@@ -2,7 +2,7 @@
 
 # position
 
-`val position: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L88)
+`val position: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L97)
 
 Media current position in seconds.
 

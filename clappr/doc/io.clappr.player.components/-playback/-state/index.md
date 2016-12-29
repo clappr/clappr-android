@@ -2,7 +2,7 @@
 
 # State
 
-`enum class State : Enum<State>` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L14)
+`enum class State : Enum<State>` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L12)
 
 ### Enum Values
 
