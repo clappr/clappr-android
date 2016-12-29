@@ -2,7 +2,7 @@
 
 # fullscreen
 
-`var fullscreen: Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L99)
+`var fullscreen: Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L108)
 
 Whether the player is in fullscreen mode
 

@@ -24,6 +24,7 @@ Once instantiated it should be [configured](configure.md) and added to a view hi
 
 | Name | Summary |
 |---|---|
+| [core](core.md) | `var core: `[`Core`](../../io.clappr.player.components/-core/index.md)`?` |
 | [duration](duration.md) | `val duration: Double`<br>Media duration in seconds. |
 | [fullscreen](fullscreen.md) | `var fullscreen: Boolean`<br>Whether the player is in fullscreen mode |
 | [position](position.md) | `val position: Double`<br>Media current position in seconds. |
@@ -33,6 +34,8 @@ Once instantiated it should be [configured](configure.md) and added to a view hi
 
 | Name | Summary |
 |---|---|
+| [bindContainerEvents](bind-container-events.md) | `open fun bindContainerEvents(): Unit` |
+| [bindPlaybackEvents](bind-playback-events.md) | `open fun bindPlaybackEvents(): Unit` |
 | [configure](configure.md) | `fun configure(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`): Unit`<br>Configure Player. This configuration must be performed before adding fragment to a view hierarchy. |
 | [load](load.md) | `fun load(source: String, mimeType: String? = null): Boolean`<br>Load a new media`fun load(source: String): Boolean` |
 | [onCreateView](on-create-view.md) | `open fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View` |
