@@ -2,7 +2,7 @@
 
 # pause
 
-`fun pause(): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L166)
+`fun pause(): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L175)
 
 Pause media playing. Media playback may be resumed.
 

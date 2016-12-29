@@ -2,7 +2,7 @@
 
 # Playback
 
-`abstract class Playback : `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md)`, `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L12)
+`abstract class Playback : `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md)`, `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L10)
 
 ### Types
 
