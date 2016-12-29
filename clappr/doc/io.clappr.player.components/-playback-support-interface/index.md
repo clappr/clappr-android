@@ -2,7 +2,7 @@
 
 # PlaybackSupportInterface
 
-`interface PlaybackSupportInterface : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L6)
+`interface PlaybackSupportInterface : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L8)
 
 ### Inherited Properties
 

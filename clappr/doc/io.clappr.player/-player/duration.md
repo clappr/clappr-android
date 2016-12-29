@@ -2,7 +2,7 @@
 
 # duration
 
-`val duration: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L102)
+`val duration: Double` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/Player.kt#L93)
 
 Media duration in seconds.
 

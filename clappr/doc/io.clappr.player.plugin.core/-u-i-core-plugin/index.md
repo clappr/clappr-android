@@ -21,7 +21,7 @@
 | Name | Summary |
 |---|---|
 | [view](../../io.clappr.player.plugin/-u-i-plugin/view.md) | `open val view: View?` |
-| [visibility](../../io.clappr.player.plugin/-u-i-plugin/visibility.md) | `open var visibility: `[`Visibility`](../../io.clappr.player.plugin/-u-i-plugin/-visibility/index.md) |
+| [visibility](../../io.clappr.player.plugin/-u-i-plugin/visibility.md) | `var visibility: `[`Visibility`](../../io.clappr.player.plugin/-u-i-plugin/-visibility/index.md) |
 
 ### Inherited Functions
 

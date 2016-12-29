@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`Options(source: String? = null, mimeType: String? = null, autoPlay: Boolean = true, options: MutableMap<String, Any> = mutableMapOf<String, Any>())`
+`Options(source: String? = null, mimeType: String? = null, autoPlay: Boolean = true, options: Map<String, Any> = mutableMapOf<String, Any>())`
