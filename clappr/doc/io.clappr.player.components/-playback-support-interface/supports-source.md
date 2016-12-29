@@ -2,4 +2,4 @@
 
 # supportsSource
 
-`abstract fun supportsSource(source: String, mimeType: String? = null): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L9)
+`abstract fun supportsSource(source: String, mimeType: String? = null): Boolean` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/components/Playback.kt#L7)
