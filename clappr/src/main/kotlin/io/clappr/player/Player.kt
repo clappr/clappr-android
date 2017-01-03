@@ -29,6 +29,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Loader.registerPlugin(LoadingPlugin::class)
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
+
+            Event.values().forEach { playbackEvents.add(it.value) }
         }
 
         /**
@@ -204,7 +206,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     protected open fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            Event.values().mapTo(playbackEventsIds) { event -> listenTo(it, event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) }) }
+            playbackEvents.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
