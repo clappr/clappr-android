@@ -26,6 +26,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         val playbackEventsIds: MutableList<String> = mutableListOf()
 
         val containerEvents = mutableSetOf<String>()
+        val containerEventsIds = mutableSetOf<String>()
 
         init {
             // TODO - Add default plugins and playbacks
