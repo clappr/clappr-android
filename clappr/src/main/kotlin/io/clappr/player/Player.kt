@@ -214,6 +214,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         playbackEventsIds.forEach {
             core?.activePlayback?.stopListening(it)
         }
+        playbackEventsIds.clear()
     }
 
     protected open fun bindContainerEvents() {
