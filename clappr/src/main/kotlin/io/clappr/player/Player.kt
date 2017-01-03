@@ -220,7 +220,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     }
 
     protected open fun bindContainerEvents() {
-
+        core?.activeContainer?.let {
+            containerEvents.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+        }
     }
 
     private fun unbindContainerEvents() {
