@@ -200,10 +200,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     }
 
     protected open fun bindPlaybackEvents() {
-        for (event in Event.values()) {
-            core?.activePlayback?.let {
-                playbackEventsIds.add(listenTo(it, event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) }))
-            }
+        core?.activePlayback?.let {
+            Event.values().mapTo(playbackEventsIds) { event -> listenTo(it, event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) }) }
         }
     }
 
