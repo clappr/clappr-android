@@ -219,7 +219,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         playbackEventsIds.clear()
     }
 
-    protected open fun bindContainerEvents() {
+    private fun bindContainerEvents() {
         core?.activeContainer?.let {
             containerEvents.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
         }
