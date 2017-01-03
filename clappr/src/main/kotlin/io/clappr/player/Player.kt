@@ -125,6 +125,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             else -> State.NONE
         }
 
+    val playbackEventsIds: MutableList<String> = mutableListOf()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
         core?.let { playerViewGroup.addView(it.render().view) }
@@ -199,7 +201,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     protected open fun bindPlaybackEvents() {
         for (event in Event.values()) {
-            core?.activePlayback?.on(event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) })
+            core?.activePlayback?.let {
+                playbackEventsIds.add(listenTo(it, event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) }))
+            }
         }
     }
 
