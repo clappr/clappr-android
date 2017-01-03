@@ -23,7 +23,7 @@ import io.clappr.player.plugin.LoadingPlugin
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         val playbackEvents = mutableSetOf<String>()
-        val playbackEventsIds: MutableList<String> = mutableListOf()
+        val playbackEventsIds = mutableSetOf<String>()
 
         val containerEvents = mutableSetOf<String>()
         val containerEventsIds = mutableSetOf<String>()
