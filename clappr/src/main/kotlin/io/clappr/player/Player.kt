@@ -226,6 +226,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     }
 
     private fun unbindContainerEvents() {
-        core?.activeContainer?.stopListening()
+        containerEventsIds.forEach {
+            core?.activeContainer?.stopListening(it)
+        }
+        containerEventsIds.clear()
     }
 }
