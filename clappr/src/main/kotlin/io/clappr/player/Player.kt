@@ -22,7 +22,7 @@ import io.clappr.player.plugin.LoadingPlugin
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         val playbackEventsToListen = mutableSetOf<String>()
-        val containerEvents = mutableSetOf<String>()
+        val containerEventsToListen = mutableSetOf<String>()
 
         init {
             // TODO - Add default plugins and playbacks
@@ -221,7 +221,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
-            containerEvents.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
