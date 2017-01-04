@@ -22,10 +22,7 @@ import io.clappr.player.plugin.LoadingPlugin
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         val playbackEvents = mutableSetOf<String>()
-        val playbackEventsIds = mutableSetOf<String>()
-
         val containerEvents = mutableSetOf<String>()
-        val containerEventsIds = mutableSetOf<String>()
 
         init {
             // TODO - Add default plugins and playbacks
@@ -132,6 +129,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Playback.State.ERROR -> State.ERROR
             else -> State.NONE
         }
+
+    val playbackEventsIds = mutableSetOf<String>()
+
+    val containerEventsIds = mutableSetOf<String>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
