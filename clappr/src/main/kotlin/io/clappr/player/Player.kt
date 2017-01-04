@@ -21,7 +21,7 @@ import io.clappr.player.plugin.LoadingPlugin
  */
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
-        val playbackEvents = mutableSetOf<String>()
+        val playbackEventsToListen = mutableSetOf<String>()
         val containerEvents = mutableSetOf<String>()
 
         init {
@@ -30,7 +30,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
 
-            Event.values().forEach { playbackEvents.add(it.value) }
+            Event.values().forEach { playbackEventsToListen.add(it.value) }
         }
 
         /**
@@ -208,7 +208,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     private fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            playbackEvents.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
