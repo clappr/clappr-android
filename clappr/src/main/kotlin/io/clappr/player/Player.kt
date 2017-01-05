@@ -21,11 +21,16 @@ import io.clappr.player.plugin.LoadingPlugin
  */
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
+        val playbackEventsToListen = mutableSetOf<String>()
+        val containerEventsToListen = mutableSetOf<String>()
+
         init {
             // TODO - Add default plugins and playbacks
             Loader.registerPlugin(LoadingPlugin::class)
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
+
+            Event.values().forEach { playbackEventsToListen.add(it.value) }
         }
 
         /**
@@ -125,6 +130,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             else -> State.NONE
         }
 
+    val playbackEventsIds = mutableSetOf<String>()
+
+    val containerEventsIds = mutableSetOf<String>()
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
         core?.let { playerViewGroup.addView(it.render().view) }
@@ -197,20 +206,29 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         return core?.activePlayback?.seek(position) ?: false
     }
 
-    protected open fun bindPlaybackEvents() {
-        for (event in Event.values()) {
-            core?.activePlayback?.on(event.value, Callback.wrap { bundle: Bundle? -> trigger(event.value, bundle) })
+    private fun bindPlaybackEvents() {
+        core?.activePlayback?.let {
+            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
     private fun unbindPlaybackEvents() {
-        core?.activePlayback?.stopListening()
+        playbackEventsIds.forEach {
+            stopListening(it)
+        }
+        playbackEventsIds.clear()
     }
 
-    protected open fun bindContainerEvents() {
+    private fun bindContainerEvents() {
+        core?.activeContainer?.let {
+            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+        }
     }
 
     private fun unbindContainerEvents() {
-        core?.activeContainer?.stopListening()
+        containerEventsIds.forEach {
+            stopListening(it)
+        }
+        containerEventsIds.clear()
     }
 }
