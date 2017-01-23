@@ -39,7 +39,7 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
     }
 
     fun load(source: String, mimeType: String? = null): Boolean {
-        trigger(InternalEvent.WILL_CHANGE_SOURCE.value)
+        trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
         var supported = playback?.load(source, mimeType) ?: false
 
@@ -52,7 +52,7 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
             render()
         }
 
-        if (supported) trigger(InternalEvent.DID_CHANGE_SOURCE.value)
+        if (supported) trigger(InternalEvent.DID_LOAD_SOURCE.value)
 
         return supported
     }

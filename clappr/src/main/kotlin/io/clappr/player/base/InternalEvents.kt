@@ -11,6 +11,6 @@ enum class InternalEvent (val value: String) {
     DID_ENTER_FULLSCREEN("didEnterFullscreen"),
     WILL_EXIT_FULLSCREEN("willExitFullscreen"),
     DID_EXIT_FULLSCREEN("didExitFullscreen"),
-    WILL_CHANGE_SOURCE("willChangeSource"),
-    DID_CHANGE_SOURCE("didChangeSource")
+    WILL_LOAD_SOURCE("willChangeSource"),
+    DID_LOAD_SOURCE("didChangeSource")
 }
