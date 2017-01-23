@@ -1,12 +1,11 @@
 package io.clappr.player.components
 
-import android.os.Build
 import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
-import io.clappr.player.plugin.Loader
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
@@ -41,7 +40,9 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
 
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_CHANGE_SOURCE.value)
+
         var supported = playback?.load(source, mimeType) ?: false
+
         if (!supported) {
             playback = loader.loadPlayback(source, mimeType, options)
             if (playback?.name == NoOpPlayback.name) {
@@ -50,6 +51,9 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
             supported = playback != null
             render()
         }
+
+        if (supported) trigger(InternalEvent.DID_CHANGE_SOURCE.value)
+
         return supported
     }
 
