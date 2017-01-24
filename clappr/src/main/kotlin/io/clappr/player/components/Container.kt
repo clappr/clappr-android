@@ -52,7 +52,8 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
             render()
         }
 
-        if (supported) trigger(InternalEvent.DID_LOAD_SOURCE.value)
+        val eventToTrigger = if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
+        trigger(eventToTrigger.value)
 
         return supported
     }
