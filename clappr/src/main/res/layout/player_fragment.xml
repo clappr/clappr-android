@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/player_background"
+    android:keepScreenOn="true"
     tools:context="io.clappr.player.Player">
 
 </FrameLayout>
