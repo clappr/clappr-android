@@ -140,6 +140,11 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         return playerViewGroup
     }
 
+    override fun onPause() {
+        pause()
+        super.onPause()
+    }
+
     /**
      * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
      *
