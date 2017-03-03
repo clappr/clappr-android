@@ -145,6 +145,11 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         super.onPause()
     }
 
+    override fun onDestroy() {
+        stop()
+        super.onDestroy()
+    }
+
     /**
      * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
      *
