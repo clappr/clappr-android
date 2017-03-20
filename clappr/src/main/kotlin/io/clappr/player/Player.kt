@@ -147,15 +147,16 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     }
 
     override fun onPause() {
-        pause()
         super.onPause()
+        pause()
     }
 
     override fun onDestroyView() {
+        super.onDestroyView()
         stop()
         playerViewGroup?.removeView(core?.view)
         playerViewGroup = null
-        super.onDestroyView()
+        core = null
     }
 
     /**
