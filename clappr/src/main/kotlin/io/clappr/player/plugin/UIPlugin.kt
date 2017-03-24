@@ -16,4 +16,14 @@ abstract class UIPlugin (component: BaseObject, private val uiObject: UIObject =
     open fun render() {
         uiObject.render()
     }
+
+    open fun show() {
+        visibility = Visibility.VISIBLE
+        view?.visibility = View.VISIBLE
+    }
+
+    open fun hide() {
+        visibility = Visibility.HIDDEN
+        view?.visibility = View.GONE
+    }
 }
