@@ -10,5 +10,9 @@ enum class ClapprOption(val value: String) {
     /**
      * Media start position
      */
-    START_AT("startAt")
+    START_AT("startAt"),
+    /**
+     * Poster URL
+     */
+    POSTER("poster")
 }
