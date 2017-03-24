@@ -80,5 +80,18 @@ enum class Event(val value: String) {
     /**
      * Player is requesting to exit fullscreen
      */
-    EXIT_FULLSCREEN("exitFullscreen")
+    EXIT_FULLSCREEN("exitFullscreen"),
+
+    /**
+     * Request to update poster
+     */
+    REQUEST_POSTER_UPDATE("requestPosterUpdate"),
+    /**
+     * Will update poster image
+     */
+    WILL_UPDATE_POSTER("willUpdatePoster"),
+    /**
+     * Poster image updated
+     */
+    DID_UPDATE_POSTER("didUpdatePoster")
 }
