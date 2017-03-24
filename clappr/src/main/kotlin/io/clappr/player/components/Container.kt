@@ -60,10 +60,9 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
 
     override fun render(): Container {
         frameLayout.removeAllViews()
-        val playback = this.playback
         playback?.let {
-            frameLayout.addView(playback.view)
-            playback.render()
+            frameLayout.addView(it.view)
+            it.render()
         }
         plugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
             frameLayout.addView(it.view)

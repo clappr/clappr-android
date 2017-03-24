@@ -75,6 +75,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     var core: Core? = null
         private set(value) {
             core?.stopListening()
+            playerViewGroup?.removeView(core?.view)
+
             field = value
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
@@ -91,6 +93,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
                 if (it.activePlayback != null) {
                     bindPlaybackEvents()
                 }
+
+                playerViewGroup?.addView(it.render().view)
             }
         }
 
@@ -134,10 +138,25 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     val containerEventsIds = mutableSetOf<String>()
 
+    var playerViewGroup: ViewGroup? = null
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        val playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
-        core?.let { playerViewGroup.addView(it.render().view) }
-        return playerViewGroup
+        playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
+        core?.let { playerViewGroup?.addView(it.render().view) }
+        return (playerViewGroup as View)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        pause()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        stop()
+        playerViewGroup?.removeView(core?.view)
+        playerViewGroup = null
+        core = null
     }
 
     /**
