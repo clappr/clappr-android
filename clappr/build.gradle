@@ -80,6 +80,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile 'com.google.android.exoplayer:exoplayer:r2.0.2'
 
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
+
     testCompile "junit:junit:4.12"
     testCompile "org.robolectric:robolectric:3.1.2"
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'

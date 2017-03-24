@@ -13,6 +13,7 @@ import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.LoadingPlugin
+import io.clappr.player.plugin.PosterPlugin
 
 /**
  *  Main Player class.
@@ -26,6 +27,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
         init {
             // TODO - Add default plugins and playbacks
+            Loader.registerPlugin(PosterPlugin::class)
             Loader.registerPlugin(LoadingPlugin::class)
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
