@@ -130,8 +130,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         this.source = source
         this.mimeType = mimeType
         stop()
+        setupPlayer()
         trigger(Event.DID_CHANGE_SOURCE)
-        play()
         return true
     }
 
@@ -193,6 +193,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleExoplayerReadyState(playWhenReady: Boolean) {
+        if (currentState == State.NONE) {
+            currentState = State.IDLE
+            trigger(Event.READY)
+
+            if (!playWhenReady) return
+        }
+
         if (playWhenReady) {
             currentState = State.PLAYING
             trigger(Event.PLAYING)
