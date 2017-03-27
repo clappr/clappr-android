@@ -76,18 +76,21 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 (currentState == State.STALLED && player?.playWhenReady == false)
 
     override val canPause: Boolean
-        get() = currentState == State.PLAYING || currentState == State.STALLED
+        get() = currentState == State.PLAYING ||
+                currentState == State.STALLED ||
+                currentState == State.IDLE
 
     override val canSeek: Boolean
-        get() = duration != 0.0 && currentState != State.IDLE && currentState != State.ERROR
+        get() = duration != 0.0 && currentState != State.ERROR
 
     init {
         playerView.setUseController(false)
     }
 
     override fun play(): Boolean {
-        if (!canPlay && player != null) return false
         if (player == null) setupPlayer()
+
+        if (!canPlay && player != null) return false
 
         trigger(Event.WILL_PLAY)
         player?.playWhenReady = true
@@ -127,8 +130,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         this.source = source
         this.mimeType = mimeType
         stop()
+        setupPlayer()
         trigger(Event.DID_CHANGE_SOURCE)
-        play()
         return true
     }
 
@@ -190,6 +193,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleExoplayerReadyState(playWhenReady: Boolean) {
+        if (currentState == State.NONE) {
+            currentState = State.IDLE
+            trigger(Event.READY)
+
+            if (!playWhenReady) return
+        }
+
         if (playWhenReady) {
             currentState = State.PLAYING
             trigger(Event.PLAYING)
@@ -201,8 +211,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleExoplayerBufferingState() {
-        currentState = State.STALLED
-        trigger(Event.STALLED)
+        if (currentState != State.NONE) {
+            currentState = State.STALLED
+            trigger(Event.STALLED)
+        }
     }
 
     private fun handleExoplayerEndedState() {
@@ -212,12 +224,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun handleExoplayerIdleState() {
-        if (currentState == State.NONE) {
-            trigger(Event.READY)
-        }
-
         timeElapsedHandler.cancel()
-        currentState = State.IDLE
+        currentState = State.NONE
     }
 
     private fun trigger(event: Event) {
@@ -257,6 +265,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onLoadingChanged(isLoading: Boolean) {
+            if (isLoading && currentState == State.NONE) {
+                currentState = State.IDLE
+                trigger(Event.READY.value)
+            }
         }
 
         override fun onPositionDiscontinuity() {

@@ -76,7 +76,9 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         }
 
         if (options.autoPlay) {
-            play()
+            if (!play()) {
+                once(Event.READY.value, Callback.wrap { play() })
+            }
         }
         return this
     }

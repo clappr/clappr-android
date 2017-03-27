@@ -17,7 +17,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'io.clappr.player'
-version = '0.0.6'
+version = '0.0.7'
 
 bintray {
     user = System.getenv('BINTRAY_USER')
@@ -79,6 +79,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     compile 'com.google.android.exoplayer:exoplayer:r2.0.2'
+
+    compile 'com.squareup.picasso:picasso:2.5.2'
+    compile 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     testCompile "junit:junit:4.12"
     testCompile "org.robolectric:robolectric:3.1.2"
