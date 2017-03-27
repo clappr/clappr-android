@@ -17,7 +17,7 @@ class PlayerActivity : Activity() {
         setContentView(R.layout.activity_player)
 
         val player = Player()
-        player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = false))
+        player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = true))
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("Will Play", "App") })
         player.on(Event.PLAYING.value, Callback.wrap { Logger.info("Playing", "App") })
         player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("Completed", "App") })
@@ -26,8 +26,6 @@ class PlayerActivity : Activity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player)
         fragmentTransaction.commit()
-
-        player.play()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
