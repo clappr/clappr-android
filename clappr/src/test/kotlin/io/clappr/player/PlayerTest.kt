@@ -16,6 +16,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
 import org.junit.Assert.*
+import org.junit.Ignore
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
@@ -75,7 +76,7 @@ open class PlayerTest {
         assertFalse("load enabled", player.load(""))
     }
 
-    @Test
+    @Ignore @Test
     fun shouldHaveInvalidStatesWithUnsupportedMedia() {
         player.configure(Options(source = ""))
 
