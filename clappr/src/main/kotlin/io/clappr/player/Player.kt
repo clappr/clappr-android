@@ -181,7 +181,17 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      *          (Optional) media mime type.
      */
     fun load(source: String, mimeType: String? = null): Boolean {
-        return core?.activeContainer?.load(source, mimeType) ?: false
+        // TODO: Use container load instead of a new Player configuration
+        core?.let {
+            val options = it.options
+            options.autoPlay = true
+            options.source = source
+            options.mimeType = mimeType
+            configure(options)
+            return true
+        }
+
+        return false
     }
 
     fun load(source: String): Boolean {

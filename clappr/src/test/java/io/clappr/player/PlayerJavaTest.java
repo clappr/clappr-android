@@ -1,6 +1,7 @@
 package io.clappr.player;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -51,7 +52,7 @@ public class PlayerJavaTest {
         assertFalse("load enabled", player.load(""));
     }
 
-    @Test
+    @Ignore @Test
     public void shouldHaveInvalidStatesWithUnsupportedMedia() {
         player.configure(new Options());
 
