@@ -38,6 +38,14 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
         }
     }
 
+    fun destroy() {
+        trigger(InternalEvent.WILL_DESTROY.value)
+        playback?.destroy()
+        plugins.forEach { it.destroy() }
+        stopListening()
+        trigger(InternalEvent.DID_DESTROY.value)
+    }
+
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 

@@ -70,6 +70,14 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
         activeContainer = containers.first()
     }
 
+    fun destroy() {
+        trigger(InternalEvent.WILL_DESTROY.value)
+        containers.forEach { it.destroy() }
+        plugins.forEach { it.destroy() }
+        stopListening()
+        trigger(InternalEvent.DID_DESTROY.value)
+    }
+
     override fun render(): Core {
         frameLayout.removeAllViews()
         containers.forEach {

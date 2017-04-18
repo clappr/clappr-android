@@ -8,4 +8,6 @@ abstract class Plugin(val component: BaseObject) : BaseObject(), NamedType {
     enum class State { ENABLED, DISABLED }
 
     open var state = State.DISABLED
+
+    open fun destroy() {}
 }

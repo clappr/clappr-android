@@ -28,6 +28,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         }
     }
 
+    open fun destroy() {
+        stopListening()
+    }
+
     open val duration: Double
         get() = Double.NaN
 
