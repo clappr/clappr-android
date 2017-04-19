@@ -9,5 +9,7 @@ abstract class Plugin(val component: BaseObject) : BaseObject(), NamedType {
 
     open var state = State.DISABLED
 
-    open fun destroy() {}
+    open fun destroy() {
+        stopListening()
+    }
 }
