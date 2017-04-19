@@ -118,6 +118,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      */
     var fullscreen = false
         set(value) {
+            field = value
             core?.fullscreenState = if (value) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
         }
 
@@ -170,6 +171,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      */
     fun configure(options: Options) {
         core = Core(loader, options)
+        fullscreen = fullscreen
     }
 
     /**
