@@ -80,6 +80,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             playerViewGroup?.removeView(core?.view)
 
             field = value
+            updateCoreFullScreenStatus()
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
@@ -171,7 +172,6 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      */
     fun configure(options: Options) {
         core = Core(loader, options)
-        updateCoreFullScreenStatus()
     }
 
     /**
