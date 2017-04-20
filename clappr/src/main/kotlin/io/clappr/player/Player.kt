@@ -80,6 +80,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             playerViewGroup?.removeView(core?.view)
 
             field = value
+            updateCoreFullScreenStatus()
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
@@ -118,7 +119,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      */
     var fullscreen = false
         set(value) {
-            core?.fullscreenState = if (value) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
+            field = value
+            updateCoreFullScreenStatus()
         }
 
     /**
@@ -261,5 +263,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             stopListening(it)
         }
         containerEventsIds.clear()
+    }
+
+    private fun updateCoreFullScreenStatus() {
+        core?.fullscreenState = if (this.fullscreen) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
     }
 }
