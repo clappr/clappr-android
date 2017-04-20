@@ -120,6 +120,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun release() {
         timeElapsedHandler.cancel()
+        player?.removeListener(eventsListener)
         player?.release()
         player = null
     }
