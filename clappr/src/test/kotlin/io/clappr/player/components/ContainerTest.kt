@@ -155,4 +155,33 @@ open class ContainerTest {
         assertTrue("Did Not Load Source was not called", didNotLoadWasCalled)
         assertFalse("Did Load Source was called", didLoadWasCalled)
     }
+
+    @Test
+    fun shouldTriggerDestroyEvents() {
+        val container = Container(Loader(), Options())
+        val listenObject = BaseObject()
+
+        var willDestroyCalled = false
+        var didDestroyCalled = false
+
+        listenObject.listenTo(container, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
+        listenObject.listenTo(container, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        container.destroy()
+
+        assertTrue("Will Destroy was not called", willDestroyCalled)
+        assertTrue("Did Destroy was not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldDestroyPlaybackOnDestroy() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_source.mp4"))
+
+        assertNotNull("No playback", container.playback)
+
+        container.destroy()
+
+        assertNull("Valid playback", container.playback)
+    }
 }

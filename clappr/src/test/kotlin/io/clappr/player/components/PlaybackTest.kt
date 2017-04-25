@@ -4,14 +4,13 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.annotation.Config
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
@@ -70,5 +69,22 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
         playback.render()
         assertFalse("play should not be called when autoplay is off", playback.playWasCalled)
+    }
+
+    @Test
+    fun shouldStopListeningOnDestroy() {
+        val triggerObject = BaseObject()
+        val playback = SomePlayback("valid-source.mp4", Options())
+
+        var numberOfTriggers = 0
+        playback.listenTo(triggerObject, "pluginTest", Callback.wrap { numberOfTriggers++ })
+
+        triggerObject.trigger("pluginTest")
+        assertEquals("no trigger", 1, numberOfTriggers)
+
+        playback.destroy()
+        triggerObject.trigger("pluginTest")
+        assertEquals("no trigger", 1, numberOfTriggers)
+
     }
 }
