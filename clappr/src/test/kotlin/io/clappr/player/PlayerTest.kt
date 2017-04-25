@@ -8,6 +8,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,6 +55,7 @@ open class PlayerTest {
     fun setup() {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
         Loader.clearPlaybacks()
+        Loader.registerPlugin(CorePlugin::class)
         player = Player()
         Loader.registerPlayback(PlayerTestPlayback::class)
     }
@@ -139,4 +141,37 @@ open class PlayerTest {
         testPlayback.internalState = Playback.State.STALLED
         assertEquals("invalid state (not STALLED)", Player.State.STALLED, player.state)
     }
+
+    @Test
+    fun shouldUnbindOnConfigure() {
+        var willPauseCalled = false
+        var didPauseCalled = false
+        player.on(Event.WILL_PAUSE.value, Callback.wrap { bundle: Bundle? -> willPauseCalled = true })
+        player.on(Event.DID_PAUSE.value, Callback.wrap { bundle: Bundle? -> didPauseCalled = true })
+
+        player.configure(Options(source = "valid"))
+
+        val oldCore = player.core
+
+        player.configure(Options(source = ""))
+
+        oldCore!!.activePlayback?.pause()
+
+        assertFalse("WILL_PAUSE triggered", willPauseCalled)
+        assertFalse("DID_PAUSE triggered", didPauseCalled)
+    }
+
+    @Test
+    fun shouldDestroyCorePluginsOnConfigure() {
+        player.configure(Options(source = "valid"))
+
+        val oldCore = player.core
+
+        assertTrue("no plugins", (oldCore?.plugins?.size ?: 0) > 0)
+
+        player.configure(Options(source = ""))
+
+        assertFalse("plugins", (oldCore?.plugins?.size ?: 0) > 0)
+    }
+
 }
