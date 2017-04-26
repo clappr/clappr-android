@@ -85,7 +85,7 @@ open class PlaybackTest {
 
         playback.destroy()
         triggerObject.trigger("playbackTest")
-        assertEquals("no trigger", 1, numberOfTriggers)
+        assertEquals("trigger", 1, numberOfTriggers)
     }
 
     @Test @Ignore
