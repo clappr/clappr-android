@@ -1,10 +1,7 @@
 package io.clappr.player
 
 import android.os.Bundle
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
@@ -165,13 +162,12 @@ open class PlayerTest {
     fun shouldDestroyCorePluginsOnConfigure() {
         player.configure(Options(source = "valid"))
 
-        val oldCore = player.core
-
-        assertTrue("no plugins", (oldCore?.plugins?.size ?: 0) > 0)
+        var didDestroyTriggered = false
+        player.listenTo(player.core!!, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyTriggered = true })
 
         player.configure(Options(source = ""))
 
-        assertFalse("plugins", (oldCore?.plugins?.size ?: 0) > 0)
+        assertTrue("Did destroy not triggered", didDestroyTriggered)
     }
 
 }
