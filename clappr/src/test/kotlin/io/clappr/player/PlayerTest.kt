@@ -5,7 +5,6 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -52,7 +51,6 @@ open class PlayerTest {
     fun setup() {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
         Loader.clearPlaybacks()
-        Loader.registerPlugin(CorePlugin::class)
         player = Player()
         Loader.registerPlayback(PlayerTestPlayback::class)
     }
