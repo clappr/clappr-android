@@ -76,6 +76,7 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
     fun destroy() {
         trigger(InternalEvent.WILL_DESTROY.value)
         containers.forEach { it.destroy() }
+        containers.clear()
         internalPlugins.forEach { it.destroy() }
         internalPlugins.clear()
         stopListening()
