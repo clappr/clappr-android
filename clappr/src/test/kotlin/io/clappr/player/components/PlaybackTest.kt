@@ -6,6 +6,7 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
 import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -77,14 +78,29 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var numberOfTriggers = 0
-        playback.listenTo(triggerObject, "pluginTest", Callback.wrap { numberOfTriggers++ })
+        playback.listenTo(triggerObject, "playbackTest", Callback.wrap { numberOfTriggers++ })
 
-        triggerObject.trigger("pluginTest")
+        triggerObject.trigger("playbackTest")
         assertEquals("no trigger", 1, numberOfTriggers)
 
         playback.destroy()
-        triggerObject.trigger("pluginTest")
+        triggerObject.trigger("playbackTest")
         assertEquals("no trigger", 1, numberOfTriggers)
+    }
 
+    @Test @Ignore
+    fun shouldTriggerEventsOnDestroy() {
+        val listenObject = BaseObject()
+        val playback = SomePlayback("valid-source.mp4", Options())
+
+        var willDestroyCalled = false
+        var didDestroyCalled = false
+        listenObject.listenTo(playback, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
+        listenObject.listenTo(playback, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        playback.destroy()
+
+        assertTrue("Will destroy not triggered", willDestroyCalled)
+        assertTrue("Did destroy not triggered", didDestroyCalled)
     }
 }
