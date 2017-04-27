@@ -8,9 +8,13 @@ import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
+import org.jetbrains.annotations.Mutable
 
 class Container(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>
+        get() = internalPlugins
+
+    private val internalPlugins: MutableList<Plugin>
 
     var playback: Playback? = null
         set(value) {
@@ -30,12 +34,22 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
         get() = FrameLayout::class.java
 
     init {
-        plugins = loader.loadPlugins(this)
+        internalPlugins = loader.loadPlugins(this).toMutableList()
         val source = options.source
         val mimeType = options.mimeType
         if (source != null) {
             load(source, mimeType)
         }
+    }
+
+    fun destroy() {
+        trigger(InternalEvent.WILL_DESTROY.value)
+        playback?.destroy()
+        playback = null
+        internalPlugins.forEach { it.destroy() }
+        internalPlugins.clear()
+        stopListening()
+        trigger(InternalEvent.DID_DESTROY.value)
     }
 
     fun load(source: String, mimeType: String? = null): Boolean {
@@ -64,7 +78,7 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
             frameLayout.addView(it.view)
             it.render()
         }
-        plugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
+        internalPlugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
             frameLayout.addView(it.view)
             it.render()
         }

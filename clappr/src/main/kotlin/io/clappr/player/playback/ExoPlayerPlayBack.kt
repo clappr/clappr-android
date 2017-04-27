@@ -87,6 +87,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         playerView.setUseController(false)
     }
 
+    override fun destroy() {
+        release()
+        super.destroy()
+    }
+
     override fun play(): Boolean {
         if (player == null) setupPlayer()
 
@@ -107,12 +112,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override fun stop(): Boolean {
         trigger(Event.WILL_STOP)
-        timeElapsedHandler.cancel()
         player?.stop()
-        player?.release()
-        player = null
+        release()
         trigger(Event.DID_STOP)
         return true
+    }
+
+    private fun release() {
+        timeElapsedHandler.cancel()
+        player?.removeListener(eventsListener)
+        player?.release()
+        player = null
     }
 
     override fun seek(seconds: Int): Boolean {

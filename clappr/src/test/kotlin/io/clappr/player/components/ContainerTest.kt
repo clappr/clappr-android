@@ -155,4 +155,92 @@ open class ContainerTest {
         assertTrue("Did Not Load Source was not called", didNotLoadWasCalled)
         assertFalse("Did Load Source was called", didLoadWasCalled)
     }
+
+    @Test
+    fun shouldTriggerDestroyEvents() {
+        val container = Container(Loader(), Options())
+        val listenObject = BaseObject()
+
+        var willDestroyCalled = false
+        var didDestroyCalled = false
+
+        listenObject.listenTo(container, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
+        listenObject.listenTo(container, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        container.destroy()
+
+        assertTrue("Will Destroy was not called", willDestroyCalled)
+        assertTrue("Did Destroy was not called", didDestroyCalled)
+    }
+
+    @Test @Ignore
+    fun shouldDestroyPlaybackOnDestroy() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_source.mp4"))
+
+        assertNotNull("No playback", container.playback)
+
+        var didDestroyCalled = false
+        container.listenTo(container.playback!!, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        container.destroy()
+
+        assertTrue("Playback did destroy not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldClearPlaybackOnDestroy() {
+        Loader.registerPlayback(MP4Playback::class)
+        val container = Container(Loader(), Options("some_source.mp4"))
+
+        assertNotNull("No playback", container.playback)
+
+        container.destroy()
+
+        assertNull("Valid playback", container.playback)
+    }
+
+    @Test @Ignore
+    fun shouldDestroyPluginsOnDestroy() {
+        Loader.registerPlugin(ContainerPlugin::class)
+        val container = Container(Loader(), Options())
+
+        assertTrue("No plugins", container.plugins.size > 0)
+
+        var didDestroyCalled = false
+        container.listenTo(container.plugins.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        container.destroy()
+
+        assertTrue("Plugin did destroy not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldClearPluginsOnDestroy() {
+        Loader.registerPlugin(ContainerPlugin::class)
+        val container = Container(Loader(), Options())
+
+        assertFalse("No plugins", container.plugins.isEmpty())
+
+        container.destroy()
+
+        assertTrue("Plugins not cleared", container.plugins.isEmpty())
+    }
+
+    @Test
+    fun shouldStoplisteningOnDestroy() {
+        val triggerObject = BaseObject()
+        val container = Container(Loader(), Options())
+
+        var numberOfTriggers = 0
+        container.listenTo(triggerObject, "containerTest", Callback.wrap { numberOfTriggers++ })
+
+        triggerObject.trigger("containerTest")
+        assertEquals("no trigger", 1, numberOfTriggers)
+
+        container.destroy()
+
+        triggerObject.trigger("containerTest")
+        assertEquals("trigger", 1, numberOfTriggers)
+    }
 }

@@ -35,6 +35,9 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
         }
 
     val plugins: List<Plugin>
+        get() = internalPlugins
+
+    private val internalPlugins: MutableList<Plugin>
 
     val containers: MutableList<Container> = mutableListOf()
     var activeContainer: Container? = null
@@ -63,11 +66,21 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
         get() = FrameLayout::class.java
 
     init {
-        plugins = loader.loadPlugins(this)
+        internalPlugins = loader.loadPlugins(this).toMutableList()
 
         val container = Container(loader, options)
         containers.add(container)
         activeContainer = containers.first()
+    }
+
+    fun destroy() {
+        trigger(InternalEvent.WILL_DESTROY.value)
+        containers.forEach { it.destroy() }
+        containers.clear()
+        internalPlugins.forEach { it.destroy() }
+        internalPlugins.clear()
+        stopListening()
+        trigger(InternalEvent.DID_DESTROY.value)
     }
 
     override fun render(): Core {
@@ -76,7 +89,7 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
             frameLayout.addView(it.view)
             it.render()
         }
-        plugins.filterIsInstance(UICorePlugin::class.java).forEach {
+        internalPlugins.filterIsInstance(UICorePlugin::class.java).forEach {
             frameLayout.addView(it.view)
             it.render()
         }
