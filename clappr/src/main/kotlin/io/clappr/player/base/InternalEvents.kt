@@ -13,5 +13,7 @@ enum class InternalEvent (val value: String) {
     DID_EXIT_FULLSCREEN("didExitFullscreen"),
     WILL_LOAD_SOURCE("willLoadSource"),
     DID_LOAD_SOURCE("didLoadSource"),
-    DID_NOT_LOAD_SOURCE("didNotLoadSource")
+    DID_NOT_LOAD_SOURCE("didNotLoadSource"),
+    WILL_DESTROY("willDestroy"),
+    DID_DESTROY("didDestroy")
 }

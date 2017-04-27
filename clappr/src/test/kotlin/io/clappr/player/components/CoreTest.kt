@@ -120,4 +120,90 @@ open class CoreTest {
         core.activeContainer?.load(source = "some_media")
         assertTrue("should trigger DID_CHANGE_ACTIVE_PLAYBACK for different value", callbackWasCalled)
     }
+
+    @Test
+    fun shouldTriggerDestroyEvents() {
+        val core = Core(Loader(), Options())
+        val listenObject = BaseObject()
+
+        var willDestroyCalled = false
+        var didDestroyCalled = false
+
+        listenObject.listenTo(core, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
+        listenObject.listenTo(core, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        core.destroy()
+
+        assertTrue("Will Destroy was not called", willDestroyCalled)
+        assertTrue("Did Destroy was not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldDestroyContainersOnDestroy() {
+        val core = Core(Loader(), Options())
+
+        assertFalse("No container", core.containers.isEmpty())
+
+        var didDestroyCalled = false
+        core.listenTo(core.containers.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        core.destroy()
+
+        assertTrue("Container did destroy not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldClearContainersOnDestroy() {
+        val core = Core(Loader(), Options())
+
+        assertFalse("No container", core.containers.isEmpty())
+
+        core.destroy()
+
+        assertTrue("Valid container", core.containers.isEmpty())
+    }
+
+    @Test @Ignore
+    fun shouldDestroyPluginsOnDestroy() {
+        Loader.registerPlugin(CorePlugin::class)
+        val core = Core(Loader(), Options())
+
+        assertTrue("No plugins", core.plugins.size > 0)
+
+        var didDestroyCalled = false
+        core.listenTo(core.plugins.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+
+        core.destroy()
+
+        assertTrue("Plugin did destroy not called", didDestroyCalled)
+    }
+
+    @Test
+    fun shouldClearPluginsOnDestroy() {
+        Loader.registerPlugin(CorePlugin::class)
+        val core = Core(Loader(), Options())
+
+        assertFalse("No plugins", core.plugins.isEmpty())
+
+        core.destroy()
+
+        assertTrue("Valid plugin", core.plugins.isEmpty())
+    }
+
+    @Test
+    fun shouldStoplisteningOnDestroy() {
+        val triggerObject = BaseObject()
+        val core = Core(Loader(), Options())
+
+        var numberOfTriggers = 0
+        core.listenTo(triggerObject, "coreTest", Callback.wrap { numberOfTriggers++ })
+
+        triggerObject.trigger("coreTest")
+        assertEquals("no trigger", 1, numberOfTriggers)
+
+        core.destroy()
+
+        triggerObject.trigger("coreTest")
+        assertEquals("trigger", 1, numberOfTriggers)
+    }
 }

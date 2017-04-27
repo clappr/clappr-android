@@ -76,8 +76,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     var core: Core? = null
         private set(value) {
-            core?.stopListening()
             playerViewGroup?.removeView(core?.view)
+            unbindPlaybackEvents()
+            unbindContainerEvents()
+            core?.destroy()
 
             field = value
             updateCoreFullScreenStatus()
