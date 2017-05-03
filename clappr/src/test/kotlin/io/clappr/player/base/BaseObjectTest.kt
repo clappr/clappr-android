@@ -16,9 +16,7 @@ open class BaseObjectTest {
     var callbackWasCalled = false
 
     val eventName = "some-event"
-    val callback = Callback.wrap { bundle: Bundle? ->
-        callbackWasCalled = true
-    }
+    val callback = Callback.wrap { callbackWasCalled = true }
 
     @Before
     fun setup() {
@@ -52,7 +50,7 @@ open class BaseObjectTest {
         baseObject?.on(eventName, callback)
 
         var secondCallbackCalled = false
-        baseObject?.on(eventName, Callback.wrap { bundle: Bundle? -> secondCallbackCalled = true })
+        baseObject?.on(eventName, Callback.wrap { secondCallbackCalled = true })
 
         baseObject?.trigger(eventName)
 
@@ -63,7 +61,7 @@ open class BaseObjectTest {
     @Test
     fun onCallbackShouldOnlyBeRegisteredOnce() {
         var numberOfCalls = 0
-        val localCallback = Callback.wrap { bundle: Bundle? -> numberOfCalls += 1 }
+        val localCallback = Callback.wrap { numberOfCalls += 1 }
         baseObject?.on(eventName, localCallback)
         baseObject?.on(eventName, localCallback)
 
@@ -142,7 +140,7 @@ open class BaseObjectTest {
     @Test
     fun offOtherShouldBeCalledAfterRemoval() {
         var anotherCallbackWasCalled = false
-        val anotherCallback = Callback.wrap { bundle: Bundle? -> anotherCallbackWasCalled = true}
+        val anotherCallback = Callback.wrap { anotherCallbackWasCalled = true}
 
         val listenId = baseObject?.on(eventName, callback)
         baseObject?.on(eventName, anotherCallback)
@@ -171,7 +169,7 @@ open class BaseObjectTest {
     fun stopListeningShouldCancelOnlyOnObject() {
         val anotherObject = BaseObject()
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName, Callback.wrap { bundle: Bundle? -> anotherCallbackWasCalled = true})
+        anotherObject.on(eventName, Callback.wrap { anotherCallbackWasCalled = true})
 
         baseObject?.on(eventName, callback)
 

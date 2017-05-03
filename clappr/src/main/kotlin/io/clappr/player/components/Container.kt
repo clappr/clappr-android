@@ -8,7 +8,6 @@ import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
-import org.jetbrains.annotations.Mutable
 
 class Container(val loader: Loader, val options: Options) : UIObject() {
     val plugins: List<Plugin>

@@ -30,10 +30,10 @@ open class BaseObject() : EventInterface {
         val bm = LocalBroadcastManager.getInstance(context?.applicationContext)
 
         if (receivers[listenId] == null) {
-            val receiver = Utils.broadcastReceiver { context: Context?, intent: Intent? ->
+            val receiver = Utils.broadcastReceiver { _, intent: Intent? ->
                 val objContext = intent?.getStringExtra(CONTEXT_KEY)
                 if (objContext == obj.id) {
-                    handler.invoke(intent?.getBundleExtra(USERDATA_KEY))
+                    handler.invoke(intent.getBundleExtra(USERDATA_KEY))
                 }
             }
 
