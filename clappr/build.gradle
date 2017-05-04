@@ -12,7 +12,6 @@ buildscript {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-//apply plugin: 'org.jetbrains.dokka-android'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
@@ -97,16 +96,3 @@ task sourcesJar(type: Jar) {
 artifacts {
     archives sourcesJar
 }
-
-//dokka {
-//    includes = ['clappr.md']
-//
-//    outputFormat = 'gfm'
-//    outputDirectory = "$buildDir/dokka/gfm"
-//
-//    linkMapping {
-//        dir = "src/main/kotlin"
-//        url = "https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin"
-//        suffix = "#L"
-//    }
-//}
