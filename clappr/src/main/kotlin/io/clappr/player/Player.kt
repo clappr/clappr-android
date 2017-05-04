@@ -84,10 +84,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             field = value
             updateCoreFullScreenStatus()
             core?.let {
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> unbindPlaybackEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> bindPlaybackEvents() })
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> unbindContainerEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> bindContainerEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { unbindPlaybackEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindPlaybackEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { unbindContainerEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindContainerEvents() })
                 it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
                 it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
 

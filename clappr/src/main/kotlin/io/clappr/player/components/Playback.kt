@@ -1,7 +1,7 @@
 package io.clappr.player.components
 
 import io.clappr.player.base.*
-import kotlin.reflect.companionObjectInstance
+import kotlin.reflect.full.companionObjectInstance
 
 interface PlaybackSupportInterface: NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean

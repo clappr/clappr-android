@@ -18,7 +18,7 @@ open class UIObjectTest {
         val uiObject = UIObject()
         var callbackWasCalled = false
 
-        uiObject.on("some-event", Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        uiObject.on("some-event", Callback.wrap { callbackWasCalled = true })
         uiObject.trigger("some-event")
 
         assertTrue("event not triggered", callbackWasCalled)

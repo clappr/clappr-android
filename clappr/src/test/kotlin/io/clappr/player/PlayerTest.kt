@@ -106,8 +106,8 @@ open class PlayerTest {
     fun shouldTriggerEvents() {
         var willPauseCalled = false
         var didPauseCalled = false
-        player.on(Event.WILL_PAUSE.value, Callback.wrap { bundle: Bundle? -> willPauseCalled = true })
-        player.on(Event.DID_PAUSE.value, Callback.wrap { bundle: Bundle? -> didPauseCalled = true })
+        player.on(Event.WILL_PAUSE.value, Callback.wrap { willPauseCalled = true })
+        player.on(Event.DID_PAUSE.value, Callback.wrap { didPauseCalled = true })
 
         player.configure(Options(source = "valid"))
         player.pause()
@@ -141,8 +141,8 @@ open class PlayerTest {
     fun shouldUnbindOnConfigure() {
         var willPauseCalled = false
         var didPauseCalled = false
-        player.on(Event.WILL_PAUSE.value, Callback.wrap { bundle: Bundle? -> willPauseCalled = true })
-        player.on(Event.DID_PAUSE.value, Callback.wrap { bundle: Bundle? -> didPauseCalled = true })
+        player.on(Event.WILL_PAUSE.value, Callback.wrap { willPauseCalled = true })
+        player.on(Event.DID_PAUSE.value, Callback.wrap { didPauseCalled = true })
 
         player.configure(Options(source = "valid"))
 
