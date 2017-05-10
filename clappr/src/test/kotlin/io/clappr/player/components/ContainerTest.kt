@@ -70,8 +70,8 @@ open class ContainerTest {
         val container = Container(Loader(), Options("some_unknown_source.mp0"))
 
         var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true})
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true})
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
 
         container.load(source = "some_unknown_source.mp0")
         assertFalse("CHANGE_PLAYBACK triggered " + container.playback, callbackWasCalled)
@@ -84,11 +84,11 @@ open class ContainerTest {
 
         val previousPlayback: Playback? = container.playback
         var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? ->
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap {
             assertFalse("DID_CHANGE_PLAYBACK triggered before WILL_CHANGE_PLAYBACK", callbackWasCalled)
             assertEquals("playback already changed", previousPlayback, container.playback)
         })
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
 
         container.load(source = "some_source.mp4")
         assertTrue("DID_CHANGE_PLAYBACK not triggered", callbackWasCalled)
@@ -100,8 +100,8 @@ open class ContainerTest {
         val container = Container(Loader(), Options("some_unknown_source.mp4"))
 
         var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true})
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true})
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
 
         container.load(source = "some_unknown_source.mp4")
         assertFalse("CHANGE_PLAYBACK triggered", callbackWasCalled)
@@ -114,8 +114,8 @@ open class ContainerTest {
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> willLoadWasCalled = true})
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> didLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true})
+        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
 
         container.load(source = "anotherSource.mp4")
         assertTrue("Will Load Source was not called", willLoadWasCalled)
@@ -129,8 +129,8 @@ open class ContainerTest {
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> willLoadWasCalled = true})
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> didLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true})
+        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
 
         container.load(source = "aSource.mp4")
         assertTrue("Will Load Source was not called", willLoadWasCalled)
@@ -146,9 +146,9 @@ open class ContainerTest {
         var didLoadWasCalled = false
         var didNotLoadWasCalled = false
 
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> willLoadWasCalled = true})
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> didLoadWasCalled = true })
-        container.on(InternalEvent.DID_NOT_LOAD_SOURCE.value, Callback.wrap { bundle: Bundle? -> didNotLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true})
+        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
+        container.on(InternalEvent.DID_NOT_LOAD_SOURCE.value, Callback.wrap { didNotLoadWasCalled = true })
 
         container.load(source = "invalid_source.mp8")
         assertTrue("Will Load Source was not called", willLoadWasCalled)

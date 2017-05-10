@@ -15,6 +15,7 @@ object Logger {
                 LogLevel.INFO -> Log.i(tag, formatted)
                 LogLevel.WARNING -> Log.w(tag, formatted)
                 LogLevel.ERROR -> Log.e(tag, formatted)
+                LogLevel.OFF -> {}
             }
         }
     }
