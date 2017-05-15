@@ -1,7 +1,8 @@
 package io.clappr.player.components
 
-/**
- * Created by fernando on 5/15/17.
- */
-class MediaOption {
+data class MediaOption(val name: String, val type: MediaOptionType, val raw: Any?, val info: Map<String, Any>?)
+
+enum class MediaOptionType {
+    SUBTITLE,
+    AUDIO
 }
