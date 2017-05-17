@@ -55,6 +55,29 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     open fun stop(): Boolean { return false }
     open fun seek(seconds: Int): Boolean { return false }
 
+    private var mediaOptionList : MutableList<MediaOption> = ArrayList()
+    private var selectedMediaOptionList : MutableList<MediaOption> = ArrayList()
+
+    fun addAvailableMediaOption(media: MediaOption) {
+        mediaOptionList.add(media)
+    }
+
+    fun availableMediaOptions(type: MediaOptionType): List<MediaOption>? {
+        return mediaOptionList.filter{it.type==type}
+    }
+
+    fun selectedMediaOption(type: MediaOptionType): MediaOption? {
+        val selectedList = selectedMediaOptionList.filter{it.type==type}
+        return if (!selectedList.isEmpty()) selectedList.first() else null
+    }
+
+    open fun setSelectedMediaOption(mediaOption: MediaOption) {
+        selectedMediaOptionList.removeAll {  it.type.equals(mediaOption.type)}
+        selectedMediaOptionList.add(mediaOption)
+
+        trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
+    }
+
     internal fun supportsSource(source: String, mimeType: String?): Boolean {
         val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
         return companion?.supportsSource(source, mimeType) ?: false
