@@ -62,7 +62,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         mediaOptionList.add(media)
     }
 
-    fun availableMediaOptions(type: MediaOptionType): List<MediaOption>? {
+    fun availableMediaOptions(type: MediaOptionType): List<MediaOption> {
         return mediaOptionList.filter{it.type==type}
     }
 
@@ -76,6 +76,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         selectedMediaOptionList.add(mediaOption)
 
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
+    }
+
+    open fun resetAvailableMediaOptions(){
+        mediaOptionList = ArrayList()
     }
 
     internal fun supportsSource(source: String, mimeType: String?): Boolean {

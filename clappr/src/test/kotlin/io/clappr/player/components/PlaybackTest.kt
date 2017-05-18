@@ -1,6 +1,8 @@
 package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
+import io.clappr.player.components.MediaOption
+import io.clappr.player.components.MediaOptionType
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
@@ -12,6 +14,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.annotation.Config
+import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
@@ -103,4 +106,74 @@ open class PlaybackTest {
         assertTrue("Will destroy not triggered", willDestroyCalled)
         assertTrue("Did destroy not triggered", didDestroyCalled)
     }
+
+    @Test
+    fun shouldReturnAllAvailableMediaOptionSubtitle() {
+        checkAvailableMedia(MediaOptionType.SUBTITLE)
+    }
+
+    @Test
+    fun shouldReturnAllAvailableMediaOptionAudio() {
+        checkAvailableMedia(MediaOptionType.AUDIO)
+    }
+
+    private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val random = Random()
+        val randomNumber = random.nextInt(10)
+        var mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+
+        var addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
+        assertEquals(mediaOptionList.size, addedMediaOptionList!!.size)
+        for (i in 0..(randomNumber-1)) {
+            assertEquals(mediaOptionList.get(i), addedMediaOptionList.get(i))
+        }
+    }
+
+    private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int) : MutableList<MediaOption>{
+        var mediaOptionList : MutableList<MediaOption> = ArrayList()
+        for (i in 1..quantity) {
+            val mediaOption = MediaOption("Name $i", mediaOptionType, i, null)
+            playback.addAvailableMediaOption(mediaOption)
+            mediaOptionList.add(mediaOption)
+        }
+
+        return mediaOptionList
+    }
+
+    @Test
+    fun shouldSetSelectedMediaOptionAudio() {
+        testSetSelectedMediaOption(MediaOptionType.AUDIO)
+    }
+
+    @Test
+    fun shouldSetSelectedMediaOptionSubtitle() {
+        testSetSelectedMediaOption(MediaOptionType.SUBTITLE)
+    }
+
+    private fun testSetSelectedMediaOption(mediaOptionType: MediaOptionType){
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val random = Random()
+        val randomNumber = random.nextInt(10)
+        var mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+
+        mediaOptionList.forEach {
+            playback.setSelectedMediaOption(it)
+            assertEquals(it, playback.selectedMediaOption(mediaOptionType))
+        }
+    }
+
+    @Test
+    fun shouldResetAvailableMediaOptions() {
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val random = Random()
+        val randomNumber = random.nextInt(10)
+        insertMedia(playback, MediaOptionType.SUBTITLE, randomNumber)
+        insertMedia(playback, MediaOptionType.AUDIO, random.nextInt(10))
+        playback.resetAvailableMediaOptions()
+
+        assertTrue(playback.availableMediaOptions(MediaOptionType.SUBTITLE).isEmpty())
+        assertTrue(playback.availableMediaOptions(MediaOptionType.AUDIO).isEmpty())
+    }
+
 }
