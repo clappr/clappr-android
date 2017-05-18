@@ -72,14 +72,14 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     }
 
     open fun setSelectedMediaOption(mediaOption: MediaOption) {
-        selectedMediaOptionList.removeAll {  it.type.equals(mediaOption.type)}
+        selectedMediaOptionList.removeAll{it.type.equals(mediaOption.type)}
         selectedMediaOptionList.add(mediaOption)
 
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
     }
 
     open fun resetAvailableMediaOptions(){
-        mediaOptionList = ArrayList()
+        mediaOptionList.clear()
     }
 
     internal fun supportsSource(source: String, mimeType: String?): Boolean {
