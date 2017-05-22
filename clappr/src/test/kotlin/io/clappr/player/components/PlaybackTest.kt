@@ -1,11 +1,10 @@
 package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
-import io.clappr.player.components.MediaOption
-import io.clappr.player.components.MediaOptionType
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -176,4 +175,28 @@ open class PlaybackTest {
         assertTrue(playback.availableMediaOptions(MediaOptionType.AUDIO).isEmpty())
     }
 
+    @Test
+    fun shouldReturnNoOneSelectedMediaOption(){
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+
+        playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
+        val mediaSelectedAudio = playback.selectedMediaOption(MediaOptionType.AUDIO)
+
+        assertNull(mediaSelectedAudio)
+    }
+
+    @Test
+    fun shouldTriggerMediaOptionsUpdateEvents() {
+        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+
+        val listenObject = BaseObject()
+
+        var mediaOptionsUpdateCalled = false
+
+        listenObject.listenTo(playback, InternalEvent.MEDIA_OPTIONS_UPDATE.value, Callback.wrap { mediaOptionsUpdateCalled = true })
+
+        playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
+
+        assertTrue("Media_Options_Update was not called", mediaOptionsUpdateCalled)
+    }
 }
