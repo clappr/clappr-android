@@ -55,8 +55,8 @@ open class CoreTest {
         val core = Core(Loader(), Options())
 
         var callbackWasCalled = false
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
 
         assertNotNull("invalid container", core.activeContainer)
 
@@ -70,11 +70,11 @@ open class CoreTest {
 
         var callbackWasCalled = false
         val previousActiveContainer: Container? = core.activeContainer
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? ->
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap {
             assertFalse("DID_CHANGE_ACTIVE_CONTAINER triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActiveContainer, core.activeContainer)
         })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
 
         assertNotNull("invalid container", core.activeContainer)
 
@@ -88,8 +88,8 @@ open class CoreTest {
         val core = Core(Loader(), Options())
 
         var callbackWasCalled = false
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
 
         assertNull("valid playback for no source", core.activePlayback)
         core.activeContainer?.playback = null
@@ -109,11 +109,11 @@ open class CoreTest {
 
         var callbackWasCalled = false
         var previousActivePlayback: Playback? = core.activePlayback
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bundle: Bundle? ->
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap {
             assertFalse("DID_CHANGE_ACTIVE_PLAYBACK triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActivePlayback, core.activePlayback)
         })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bundle: Bundle? -> callbackWasCalled = true })
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
 
         assertNull("valid playback for no source", core.activePlayback)
 

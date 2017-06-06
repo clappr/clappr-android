@@ -1,12 +1,13 @@
 package io.clappr.player.plugin
 
-import android.util.Log
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import kotlin.reflect.*
+import kotlin.reflect.KClass
+import kotlin.reflect.full.companionObjectInstance
+import kotlin.reflect.full.primaryConstructor
 
 class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlaybacks: List<KClass<out Playback>> = emptyList()) {
     companion object {

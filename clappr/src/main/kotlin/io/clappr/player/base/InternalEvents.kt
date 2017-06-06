@@ -15,5 +15,7 @@ enum class InternalEvent (val value: String) {
     DID_LOAD_SOURCE("didLoadSource"),
     DID_NOT_LOAD_SOURCE("didNotLoadSource"),
     WILL_DESTROY("willDestroy"),
-    DID_DESTROY("didDestroy")
+    DID_DESTROY("didDestroy"),
+    MEDIA_OPTIONS_READY("mediaOptionsReady"),
+    MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate")
 }

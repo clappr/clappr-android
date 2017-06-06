@@ -1,7 +1,7 @@
 package io.clappr.player.base
 
 import kotlin.reflect.KClass
-import kotlin.reflect.companionObjectInstance
+import kotlin.reflect.full.companionObjectInstance
 
 interface NamedType {
     companion object: NamedType {
