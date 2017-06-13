@@ -3,31 +3,23 @@ package io.clappr.player.playback
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
-import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.trackselection.*
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import io.clappr.player.base.ErrorCode
-import io.clappr.player.base.ErrorInfo
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.base.*
+import io.clappr.player.components.*
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
 
@@ -53,6 +45,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
     private var lastPositionSent = 0.0
+
+    private var needSetupMediaOptions = true
+    private val languageOptionKey = "language"
+    private val trackIndexKey = "trackIndexKey"
+    private val trackGroupIndexKey = "trackGroupIndexKey"
+    private val formatIndexKey = "formatIndexKey"
 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
@@ -212,6 +210,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             if (!playWhenReady) return
         }
 
+        if (needSetupMediaOptions) {
+            setUpMediaOptions()
+            needSetupMediaOptions = false
+            trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        }
+
         if (playWhenReady) {
             currentState = State.PLAYING
             trigger(Event.PLAYING)
@@ -309,6 +313,98 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
 
+        }
+    }
+
+    private var audioRenderedTrackIndex: Int = -1
+
+    private var videoRenderedTrackIndex: Int = -1
+
+
+    private fun setUpMediaOptions() {
+        val tag = "####"
+        trackSelector?.currentMappedTrackInfo?.let {
+            (0..it.length - 1).forEachIndexed { index, _ ->
+
+                when (player?.getRendererType(index)) {
+                    C.TRACK_TYPE_AUDIO -> {
+                        Log.d(tag, "  Audio Track: ")
+                        audioRenderedTrackIndex = index
+                    }
+                    C.TRACK_TYPE_VIDEO -> {
+                        Log.d(tag, "  Video Track: ")
+                        videoRenderedTrackIndex = index
+                    }
+                    C.TRACK_TYPE_TEXT -> {
+                        Log.d(tag, "   Text Track: ")
+                        setUpSubtitleOptions(index, it)
+                    }
+                    else -> {
+                    }
+                }
+            }
+
+            setSelectedMediaOption(SUBTITLE_OFF)
+        }
+    }
+
+    private fun setUpSubtitleOptions(renderedTextIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo) {
+        val trackGroup = trackGroups.getTrackGroups(renderedTextIndex)
+        (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
+            addSubtitlesOptions(renderedTextIndex, index, trackGroup.get(index))
+        }
+        super.setSelectedMediaOption(SUBTITLE_OFF)
+    }
+
+    private fun addSubtitlesOptions(renderedTextIndex: Int, trackGroupIndex: Int, subtitleGroup: TrackGroup) {
+        (0..(subtitleGroup.length - 1)).forEachIndexed { index, _ ->
+            val format = subtitleGroup.getFormat(index)
+            addAvailableMediaOption(createSubtitleMediaOption(renderedTextIndex, trackGroupIndex, index, format))
+        }
+    }
+
+    private fun createSubtitleMediaOption(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption {
+        val option = Options()
+        option.put(trackIndexKey, renderedTextIndex)
+        option.put(trackGroupIndexKey, trackGroupIndex)
+        option.put(formatIndexKey, formatIndex)
+
+        when (format.language) {
+            "pt" -> return MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, format, options)
+        }
+        return SUBTITLE_OFF
+    }
+
+    override fun setSelectedMediaOption(mediaOption: MediaOption) {
+        trackSelector?.currentMappedTrackInfo?.let { mappedTrackInfo ->
+            val options = (mediaOption.raw as? Options)
+            options?.let {
+                val trackIndex = it[trackIndexKey] as Int
+                val trackGroupIndexKey = it[trackGroupIndexKey] as Int
+                val formatIndexKey = it[formatIndexKey] as Int
+
+                trackSelector?.setRendererDisabled(trackIndex, false)
+                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
+                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+
+                super.setSelectedMediaOption(mediaOption)
+            }
+        }
+    }
+
+    private fun logTrack(textTrackGroups: TrackGroupArray, tag: String) {
+        (0..textTrackGroups.length - 1).forEachIndexed { index, _ ->
+            val group = textTrackGroups.get(index)
+            (0..group.length - 1).forEachIndexed { trackGroupIndex, _ ->
+                Log.d(tag, "groupIndex: $index, trackGroupIndexKey: $trackGroupIndex")
+                logFormat(tag, group.getFormat(trackGroupIndex))
+            }
+        }
+    }
+
+    private fun logFormat(tag: String, format: Format?) {
+        format?.let {
+            Log.d(tag, "Format: id: ${it.id}, lng:${it.language}")
         }
     }
 }
