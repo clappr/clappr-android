@@ -3,7 +3,6 @@ package io.clappr.player.playback
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
@@ -84,7 +83,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.ERROR
 
     init {
-        playerView.setUseController(false)
+        playerView.useController = false
     }
 
     override fun destroy() {
@@ -263,7 +262,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.ERROR.value, bundle)
     }
 
-    inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
+    inner class ExoplayerEventsListener : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
         override fun onLoadError(error: IOException?) {
             handleError(error)
         }
@@ -316,36 +315,23 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private var audioRenderedTrackIndex: Int = -1
-
-    private var videoRenderedTrackIndex: Int = -1
-
-
     private fun setUpMediaOptions() {
-        val tag = "####"
         trackSelector?.currentMappedTrackInfo?.let {
             (0..it.length - 1).forEachIndexed { index, _ ->
-
                 when (player?.getRendererType(index)) {
                     C.TRACK_TYPE_AUDIO -> {
-                        Log.d(tag, "  Audio Track: ")
-                        audioRenderedTrackIndex = index
-                    }
-                    C.TRACK_TYPE_VIDEO -> {
-                        Log.d(tag, "  Video Track: ")
-                        videoRenderedTrackIndex = index
+                        setUpAudioOptions(index, it)
                     }
                     C.TRACK_TYPE_TEXT -> {
-                        Log.d(tag, "   Text Track: ")
                         setUpSubtitleOptions(index, it)
-                    }
-                    else -> {
                     }
                 }
             }
-
-            setSelectedMediaOption(SUBTITLE_OFF)
         }
+    }
+
+    private fun setUpAudioOptions(renderedAudioIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo) {
+        //TODO Waiting video with multiples audios
     }
 
     private fun setUpSubtitleOptions(renderedTextIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo) {
@@ -357,6 +343,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun addSubtitlesOptions(renderedTextIndex: Int, trackGroupIndex: Int, subtitleGroup: TrackGroup) {
+        addAvailableMediaOption(SUBTITLE_OFF)
         (0..(subtitleGroup.length - 1)).forEachIndexed { index, _ ->
             val format = subtitleGroup.getFormat(index)
             addAvailableMediaOption(createSubtitleMediaOption(renderedTextIndex, trackGroupIndex, index, format))
@@ -369,10 +356,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         option.put(trackGroupIndexKey, trackGroupIndex)
         option.put(formatIndexKey, formatIndex)
 
-        when (format.language) {
-            "pt" -> return MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, format, options)
+        val language = when (format.language) {
+            "pt" -> MediaOptionType.Language.PT_BR.value
+            else -> format.language
         }
-        return SUBTITLE_OFF
+        option.put(languageOptionKey, language)
+
+        return MediaOption(format.sampleMimeType, MediaOptionType.SUBTITLE, format, options)
     }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
@@ -389,22 +379,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
                 super.setSelectedMediaOption(mediaOption)
             }
-        }
-    }
-
-    private fun logTrack(textTrackGroups: TrackGroupArray, tag: String) {
-        (0..textTrackGroups.length - 1).forEachIndexed { index, _ ->
-            val group = textTrackGroups.get(index)
-            (0..group.length - 1).forEachIndexed { trackGroupIndex, _ ->
-                Log.d(tag, "groupIndex: $index, trackGroupIndexKey: $trackGroupIndex")
-                logFormat(tag, group.getFormat(trackGroupIndex))
-            }
-        }
-    }
-
-    private fun logFormat(tag: String, format: Format?) {
-        format?.let {
-            Log.d(tag, "Format: id: ${it.id}, lng:${it.language}")
         }
     }
 }
