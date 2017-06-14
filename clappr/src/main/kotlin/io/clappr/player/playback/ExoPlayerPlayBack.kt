@@ -46,10 +46,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastPositionSent = 0.0
 
     private var needSetupMediaOptions = true
-    private val languageOptionKey = "language"
     private val trackIndexKey = "trackIndexKey"
     private val trackGroupIndexKey = "trackGroupIndexKey"
     private val formatIndexKey = "formatIndexKey"
+    private var subtitleOff: MediaOption? = null
 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
@@ -343,7 +343,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun addSubtitlesOptions(renderedTextIndex: Int, trackGroupIndex: Int, subtitleGroup: TrackGroup) {
-        addAvailableMediaOption(SUBTITLE_OFF)
         (0..(subtitleGroup.length - 1)).forEachIndexed { index, _ ->
             val format = subtitleGroup.getFormat(index)
             addAvailableMediaOption(createSubtitleMediaOption(renderedTextIndex, trackGroupIndex, index, format))
@@ -351,34 +350,51 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun createSubtitleMediaOption(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption {
-        val option = Options()
-        option.put(trackIndexKey, renderedTextIndex)
-        option.put(trackGroupIndexKey, trackGroupIndex)
-        option.put(formatIndexKey, formatIndex)
+        val mediaInfo = Options()
+        mediaInfo.put(trackIndexKey, renderedTextIndex)
+        mediaInfo.put(trackGroupIndexKey, trackGroupIndex)
+        mediaInfo.put(formatIndexKey, formatIndex)
 
-        val language = when (format.language) {
-            "pt" -> MediaOptionType.Language.PT_BR.value
-            else -> format.language
+        val mediaOption = when (format.language) {
+            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, format, mediaInfo)
+            null -> createSubtitleOffOption(format, mediaInfo)
+            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, format, mediaInfo)
         }
-        option.put(languageOptionKey, language)
 
-        return MediaOption(format.sampleMimeType, MediaOptionType.SUBTITLE, format, options)
+        return mediaOption
+    }
+
+    private fun createSubtitleOffOption(format: Format, mediaInfo: Options): MediaOption {
+        subtitleOff = MediaOption(SUBTITLE_OFF.name, MediaOptionType.SUBTITLE, format, mediaInfo)
+        return SUBTITLE_OFF
     }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
-        trackSelector?.currentMappedTrackInfo?.let { mappedTrackInfo ->
-            val options = (mediaOption.raw as? Options)
-            options?.let {
-                val trackIndex = it[trackIndexKey] as Int
-                val trackGroupIndexKey = it[trackGroupIndexKey] as Int
-                val formatIndexKey = it[formatIndexKey] as Int
+        trackSelector?.currentMappedTrackInfo?.let {
+            setMediaOption(mediaOption, it)
+            super.setSelectedMediaOption(mediaOption)
+        }
+    }
 
+    private fun setMediaOption(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
+        if (mediaOption == SUBTITLE_OFF)
+            subtitleOff?.let { setMediaOptionOnPlayback(subtitleOff!!, mappedTrackInfo) }
+        else
+            setMediaOptionOnPlayback(mediaOption, mappedTrackInfo)
+    }
+
+    private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
+        mediaOption.info?.let {
+            val trackIndex = it[trackIndexKey] as? Int
+            val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
+            val formatIndexKey = it[formatIndexKey] as? Int
+
+            if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
                 trackSelector?.setRendererDisabled(trackIndex, false)
                 val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
                 trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
-
-                super.setSelectedMediaOption(mediaOption)
             }
+
         }
     }
 }
