@@ -334,13 +334,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, mediaOptionType: MediaOptionType) {
         trackGroup.forEachFormatIndexed { index, format ->
-            val mediaOption = when (mediaOptionType) {
-                MediaOptionType.AUDIO -> createAudioMediaOption(renderedIndex, trackGroupIndex, index, format)
-                MediaOptionType.SUBTITLE -> createSubtitleMediaOption(renderedIndex, trackGroupIndex, index, format)
-            }
+           // format.language?.let {
+                val mediaOption = when (mediaOptionType) {
+                    MediaOptionType.AUDIO -> createAudioMediaOption(renderedIndex, trackGroupIndex, index, format)
+                    MediaOptionType.SUBTITLE -> createSubtitleMediaOption(renderedIndex, trackGroupIndex, index, format)
+                }
 
-            addAvailableMediaOption(mediaOption)
-            selectedDefaultMediaOption(renderedIndex, format, mediaOption)
+                mediaOption?.let {
+                    addAvailableMediaOption(mediaOption)
+                    selectedDefaultMediaOption(renderedIndex, format, mediaOption)
+                }
+            //}
         }
 
         if (mediaOptionType == MediaOptionType.SUBTITLE && selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
@@ -355,13 +359,16 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun createAudioMediaOption(renderedAudioIndex: Int, audioTrackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption {
+    private fun createAudioMediaOption(renderedAudioIndex: Int, audioTrackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption? {
         val mediaInfo = createMediaInfo(renderedAudioIndex, audioTrackGroupIndex, formatIndex)
 
-        val mediaOption = when (format.language) {
-            "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, format, mediaInfo)
-            "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, format, mediaInfo)
-            else -> MediaOption(format.language, MediaOptionType.AUDIO, format, mediaInfo)
+        var mediaOption : MediaOption? = null
+        format.language?.let {
+            mediaOption = when (format.language) {
+                "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, format, mediaInfo)
+                "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, format, mediaInfo)
+                else -> MediaOption(format.language, MediaOptionType.AUDIO, format, mediaInfo)
+            }
         }
 
         return mediaOption
