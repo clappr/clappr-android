@@ -320,36 +320,36 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             (0..it.length - 1).forEachIndexed { index, _ ->
                 when (player?.getRendererType(index)) {
                     C.TRACK_TYPE_AUDIO -> {
-                        setUpAudioOptions(index, it)
+                        setUpOptions(index, it, MediaOptionType.AUDIO)
                     }
                     C.TRACK_TYPE_TEXT -> {
-                        setUpSubtitleOptions(index, it)
+                        setUpOptions(index, it, MediaOptionType.SUBTITLE)
                     }
                 }
             }
         }
-
-
     }
 
-    private fun setUpAudioOptions(renderedAudioIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo) {
-        trackGroups.forEachGroupIndexed(renderedAudioIndex) { index, trackGroup ->
-            addAudioOptions(renderedAudioIndex, index, trackGroup)
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, mediaOptionType: MediaOptionType) {
+        trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
+            addOptions(renderedIndex, index, trackGroup, mediaOptionType)
         }
     }
 
-    private fun addAudioOptions(renderedAudioIndex: Int, audioTrackGroupIndex: Int, audioTrackGroup: TrackGroup) {
-        audioTrackGroup.forEachFormatIndexed { index, format ->
-            addAvailableAudioOptions(renderedAudioIndex, audioTrackGroupIndex, index, format)
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, mediaOptionType: MediaOptionType) {
+        trackGroup.forEachFormatIndexed { index, format ->
+            val mediaOption = when (mediaOptionType) {
+                MediaOptionType.AUDIO -> createAudioMediaOption(renderedIndex, trackGroupIndex, index, format)
+                MediaOptionType.SUBTITLE -> createSubtitleMediaOption(renderedIndex, trackGroupIndex, index, format)
+            }
+
+            addAvailableMediaOption(mediaOption)
+
+            selectedDefaultMediaOption(renderedIndex, format, mediaOption)
         }
-    }
 
-    private fun addAvailableAudioOptions(renderedAudioIndex: Int, audioTrackGroupIndex: Int, formatIndex: Int, format: Format) {
-        val mediaOption = createAudioMediaOption(renderedAudioIndex, audioTrackGroupIndex, formatIndex, format)
-
-        addAvailableMediaOption(mediaOption)
-
-        selectedDefaultMediaOption(renderedAudioIndex, format, mediaOption)
+        if (mediaOptionType == MediaOptionType.SUBTITLE && selectedMediaOption(MediaOptionType.SUBTITLE) == null)
+            setSelectedMediaOption(SUBTITLE_OFF)
     }
 
     private fun selectedDefaultMediaOption(renderedAudioIndex: Int, format: Format, mediaOption: MediaOption) {
@@ -369,26 +369,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         return mediaOption
-    }
-
-    private fun setUpSubtitleOptions(renderedTextIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo) {
-        trackGroups.forEachGroupIndexed(renderedTextIndex) { index, trackGroup ->
-            addSubtitlesOptions(renderedTextIndex, index, trackGroup)
-        }
-    }
-
-    private fun addSubtitlesOptions(renderedTextIndex: Int, trackGroupIndex: Int, subtitleTrackGroup: TrackGroup) {
-        subtitleTrackGroup.forEachFormatIndexed { index, format ->
-            val mediaOption = createSubtitleMediaOption(renderedTextIndex, trackGroupIndex, index, format)
-
-            addAvailableMediaOption(mediaOption)
-
-            selectedDefaultMediaOption(renderedTextIndex, format, mediaOption)
-        }
-
-        if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
-            setSelectedMediaOption(SUBTITLE_OFF)
-
     }
 
     private fun createSubtitleMediaOption(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption {
@@ -443,15 +423,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             }
         }
     }
-}
-
-private fun MappingTrackSelector.MappedTrackInfo.forEachGroupIndexed(renderedTextIndex: Int, function: (index: Int, trackGroup: TrackGroup) -> Unit) {
-    val trackGroup = getTrackGroups(renderedTextIndex)
-    (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
-        function(index, trackGroup.get(index))
+    private fun MappingTrackSelector.MappedTrackInfo.forEachGroupIndexed(renderedTextIndex: Int, function: (index: Int, trackGroup: TrackGroup) -> Unit) {
+        val trackGroup = getTrackGroups(renderedTextIndex)
+        (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
+            function(index, trackGroup.get(index))
+        }
     }
-}
 
-private fun TrackGroup.forEachFormatIndexed(function: (index: Int, format: Format) -> Unit) {
-    (0..(length - 1)).forEachIndexed { index, _ -> function(index, getFormat(index)) }
+    private fun TrackGroup.forEachFormatIndexed(function: (index: Int, format: Format) -> Unit) {
+        (0..(length - 1)).forEachIndexed { index, _ -> function(index, getFormat(index)) }
+    }
 }
