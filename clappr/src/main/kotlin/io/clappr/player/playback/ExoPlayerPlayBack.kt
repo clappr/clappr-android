@@ -334,7 +334,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, mediaOptionType: MediaOptionType) {
         trackGroup.forEachFormatIndexed { index, format ->
-           // format.language?.let {
                 val mediaOption = when (mediaOptionType) {
                     MediaOptionType.AUDIO -> createAudioMediaOption(renderedIndex, trackGroupIndex, index, format)
                     MediaOptionType.SUBTITLE -> createSubtitleMediaOption(renderedIndex, trackGroupIndex, index, format)
@@ -344,7 +343,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     addAvailableMediaOption(mediaOption)
                     selectedDefaultMediaOption(renderedIndex, format, mediaOption)
                 }
-            //}
         }
 
         if (mediaOptionType == MediaOptionType.SUBTITLE && selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
