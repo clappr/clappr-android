@@ -212,7 +212,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (needSetupMediaOptions) {
             setUpMediaOptions()
             needSetupMediaOptions = false
-            trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
         }
 
         if (playWhenReady) {
@@ -316,65 +315,70 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpMediaOptions() {
+        setupAudioAndSubtitleOptions()
+        setDefaultSubtitle()
+        trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+    }
+
+    private fun setDefaultSubtitle() {
+        if (selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
+            setSelectedMediaOption(SUBTITLE_OFF)
+        }
+    }
+
+    private fun setupAudioAndSubtitleOptions() {
         trackSelector?.currentMappedTrackInfo?.let {
             (0..it.length - 1).forEachIndexed { index, _ ->
                 when (player?.getRendererType(index)) {
-                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it, MediaOptionType.AUDIO)
-                    C.TRACK_TYPE_TEXT -> setUpOptions(index, it, MediaOptionType.SUBTITLE)
+                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
+                        createAudioMediaOption(format, mediaInfo)
+                    }
+                    C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
+                        createSubtitleMediaOption(format, mediaInfo)
+                    }
                 }
             }
         }
     }
 
-    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, mediaOptionType: MediaOptionType) {
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
-            addOptions(renderedIndex, index, trackGroup, mediaOptionType)
+            addOptions(renderedIndex, index, trackGroup, block)
         }
     }
 
-    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, mediaOptionType: MediaOptionType) {
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroup.forEachFormatIndexed { index, format ->
-                val mediaOption = when (mediaOptionType) {
-                    MediaOptionType.AUDIO -> createAudioMediaOption(renderedIndex, trackGroupIndex, index, format)
-                    MediaOptionType.SUBTITLE -> createSubtitleMediaOption(renderedIndex, trackGroupIndex, index, format)
-                }
 
-                mediaOption?.let {
-                    addAvailableMediaOption(mediaOption)
-                    selectedDefaultMediaOption(renderedIndex, format, mediaOption)
-                }
-        }
+            val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+            val mediaOption = block(format, mediaInfo)
 
-        if (mediaOptionType == MediaOptionType.SUBTITLE && selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
-            setSelectedMediaOption(SUBTITLE_OFF)
+            mediaOption?.let {
+                addAvailableMediaOption(mediaOption)
+                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+            }
         }
     }
 
-    private fun selectedDefaultMediaOption(renderedAudioIndex: Int, format: Format, mediaOption: MediaOption) {
+    private fun selectActualSelectedMediaOption(renderedAudioIndex: Int, format: Format, mediaOption: MediaOption) {
         player?.let {
             if (it.currentTrackSelections.get(renderedAudioIndex)?.selectedFormat == format)
                 setSelectedMediaOption(mediaOption)
         }
     }
 
-    private fun createAudioMediaOption(renderedAudioIndex: Int, audioTrackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption? {
-        val mediaInfo = createMediaInfo(renderedAudioIndex, audioTrackGroupIndex, formatIndex)
-
-        var mediaOption : MediaOption? = null
-        format.language?.let {
-            mediaOption = when (format.language) {
-                "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, format, mediaInfo)
-                "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, format, mediaInfo)
-                else -> MediaOption(format.language, MediaOptionType.AUDIO, format, mediaInfo)
-            }
+    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption? {
+        return when (format.language) {
+            "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, format, mediaInfo)
+            "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, format, mediaInfo)
+            null -> createAudioOffOption(format, mediaInfo)
+            else -> MediaOption(format.language, MediaOptionType.AUDIO, format, mediaInfo)
         }
-
-        return mediaOption
     }
 
-    private fun createSubtitleMediaOption(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int, format: Format): MediaOption {
-        val mediaInfo = createMediaInfo(renderedTextIndex, trackGroupIndex, formatIndex)
+    private fun createAudioOffOption(format: Format, mediaInfo: Options) = MediaOption("Original", MediaOptionType.AUDIO, format, mediaInfo)
 
+    private fun createSubtitleMediaOption(format: Format, mediaInfo: Options): MediaOption {
         val mediaOption = when (format.language) {
             "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, format, mediaInfo)
             null -> createSubtitleOffOption(format, mediaInfo)
@@ -425,6 +429,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             }
         }
     }
+
     private fun MappingTrackSelector.MappedTrackInfo.forEachGroupIndexed(renderedTextIndex: Int, function: (index: Int, trackGroup: TrackGroup) -> Unit) {
         val trackGroup = getTrackGroups(renderedTextIndex)
         (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
