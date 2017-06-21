@@ -1,5 +1,6 @@
 package io.clappr.player.playback
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -11,6 +12,7 @@ import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
+import com.google.android.exoplayer2.text.CaptionStyleCompat
 import com.google.android.exoplayer2.trackselection.*
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
@@ -57,6 +59,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
 
+    private val subtitleStyle = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
+
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
 
@@ -84,6 +88,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     init {
         playerView.useController = false
+        playerView.subtitleView?.setStyle(subtitleStyle)
     }
 
     override fun destroy() {
