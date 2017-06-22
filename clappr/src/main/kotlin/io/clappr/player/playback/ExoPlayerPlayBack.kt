@@ -415,6 +415,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             setMediaOption(mediaOption, it)
             super.setSelectedMediaOption(mediaOption)
         }
+        Logger.info("setSelectedMediaOption", tag)
     }
 
     private fun setMediaOption(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
