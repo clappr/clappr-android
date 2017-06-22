@@ -1,38 +1,34 @@
 package io.clappr.player.playback
 
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
-import com.google.android.exoplayer2.source.AdaptiveMediaSourceEventListener
-import com.google.android.exoplayer2.source.ExtractorMediaSource
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.TrackGroupArray
+import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.text.CaptionStyleCompat
+import com.google.android.exoplayer2.trackselection.*
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import io.clappr.player.base.ErrorCode
-import io.clappr.player.base.ErrorInfo
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.base.*
+import io.clappr.player.components.*
+import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
+        val tag: String = "ExoPlayerPlayback"
+
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
@@ -54,11 +50,19 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastBufferPercentageSent = 0.0
     private var lastPositionSent = 0.0
 
+    private var needSetupMediaOptions = true
+    private val trackIndexKey = "trackIndexKey"
+    private val trackGroupIndexKey = "trackGroupIndexKey"
+    private val formatIndexKey = "formatIndexKey"
+    private var subtitleOff: MediaOption? = null
+
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
+
+    private val subtitleStyle = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
@@ -86,7 +90,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.ERROR
 
     init {
-        playerView.setUseController(false)
+        playerView.useController = false
+        playerView.subtitleView?.setStyle(subtitleStyle)
     }
 
     override fun destroy() {
@@ -212,6 +217,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             if (!playWhenReady) return
         }
 
+        if (needSetupMediaOptions) {
+            setUpMediaOptions()
+            needSetupMediaOptions = false
+        }
+
         if (playWhenReady) {
             currentState = State.PLAYING
             trigger(Event.PLAYING)
@@ -259,7 +269,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.ERROR.value, bundle)
     }
 
-    inner class ExoplayerEventsListener() : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
+    inner class ExoplayerEventsListener : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
         override fun onLoadError(error: IOException?) {
             handleError(error)
         }
@@ -308,7 +318,136 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-
+            Logger.info("onTracksChanged", tag)
         }
+    }
+
+    private fun setUpMediaOptions() {
+        setupAudioAndSubtitleOptions()
+        setDefaultSubtitle()
+        trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        Logger.info("MEDIA_OPTIONS_READY", tag)
+    }
+
+    private fun setDefaultSubtitle() {
+        if (selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
+            setSelectedMediaOption(SUBTITLE_OFF)
+        }
+    }
+
+    private fun setupAudioAndSubtitleOptions() {
+        trackSelector?.currentMappedTrackInfo?.let {
+            (0..it.length - 1).forEachIndexed { index, _ ->
+                when (player?.getRendererType(index)) {
+                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
+                        createAudioMediaOption(format, mediaInfo)
+                    }
+                    C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
+                        createSubtitleMediaOption(format, mediaInfo)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+        trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
+            addOptions(renderedIndex, index, trackGroup, block)
+        }
+    }
+
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+        trackGroup.forEachFormatIndexed { index, format ->
+
+            val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+            val mediaOption = block(format, mediaInfo)
+
+            mediaOption?.let {
+                addAvailableMediaOption(mediaOption)
+                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+            }
+        }
+    }
+
+    private fun selectActualSelectedMediaOption(renderedAudioIndex: Int, format: Format, mediaOption: MediaOption) {
+        player?.let {
+            if (it.currentTrackSelections.get(renderedAudioIndex)?.selectedFormat == format)
+                setSelectedMediaOption(mediaOption)
+        }
+    }
+
+    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption? {
+        return when (format.language) {
+            "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
+            "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
+            null -> createAudioOffOption(mediaInfo)
+            else -> MediaOption(format.language, MediaOptionType.AUDIO, mediaInfo, null)
+        }
+    }
+
+    private fun createAudioOffOption(mediaInfo: Options) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
+
+    private fun createSubtitleMediaOption(format: Format, mediaInfo: Options): MediaOption {
+        val mediaOption = when (format.language) {
+            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, mediaInfo, null)
+            null -> createSubtitleOffOption(mediaInfo)
+            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, mediaInfo, null)
+        }
+
+        return mediaOption
+    }
+
+    private fun createMediaInfo(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int): Options {
+        val mediaInfo = Options()
+        mediaInfo.put(trackIndexKey, renderedTextIndex)
+        mediaInfo.put(trackGroupIndexKey, trackGroupIndex)
+        mediaInfo.put(formatIndexKey, formatIndex)
+        return mediaInfo
+    }
+
+    private fun createSubtitleOffOption(mediaInfo: Options): MediaOption {
+        subtitleOff = MediaOption(SUBTITLE_OFF.name, MediaOptionType.SUBTITLE, mediaInfo, null)
+        return SUBTITLE_OFF
+    }
+
+    override fun setSelectedMediaOption(mediaOption: MediaOption) {
+        trackSelector?.currentMappedTrackInfo?.let {
+            setMediaOption(mediaOption, it)
+            super.setSelectedMediaOption(mediaOption)
+        }
+        Logger.info("setSelectedMediaOption", tag)
+    }
+
+    private fun setMediaOption(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
+        if (mediaOption == SUBTITLE_OFF) {
+            subtitleOff?.let { setMediaOptionOnPlayback(it, mappedTrackInfo) }
+        } else {
+            setMediaOptionOnPlayback(mediaOption, mappedTrackInfo)
+        }
+    }
+
+    private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
+        (mediaOption.raw as? Options)?.let {
+            val trackIndex = it[trackIndexKey] as? Int
+            val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
+            val formatIndexKey = it[formatIndexKey] as? Int
+
+            if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
+                trackSelector?.setRendererDisabled(trackIndex, false)
+                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
+                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+            }
+        }
+    }
+
+    private fun MappingTrackSelector.MappedTrackInfo.forEachGroupIndexed(renderedTextIndex: Int, function: (index: Int, trackGroup: TrackGroup) -> Unit) {
+        val trackGroup = getTrackGroups(renderedTextIndex)
+        (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
+            function(index, trackGroup.get(index))
+        }
+    }
+
+    private fun TrackGroup.forEachFormatIndexed(function: (index: Int, format: Format) -> Unit) {
+        (0..(length - 1)).forEachIndexed { index, _ -> function(index, getFormat(index)) }
     }
 }

@@ -6,5 +6,14 @@ val SUBTITLE_OFF = MediaOption("", MediaOptionType.SUBTITLE, null, null)
 
 enum class MediaOptionType {
     SUBTITLE,
-    AUDIO
+    AUDIO;
+
+    enum class Language(val value: String) {
+        PT_BR("Por")
+    }
+
+    enum class Audio(val value: String) {
+        PT_BR("Por"),
+        ORIGINAL("Original")
+    }
 }
