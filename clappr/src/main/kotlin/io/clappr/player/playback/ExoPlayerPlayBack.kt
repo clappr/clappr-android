@@ -21,11 +21,14 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
 import io.clappr.player.components.*
+import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
+        val tag: String = "ExoPlayerPlayback"
+
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
@@ -315,7 +318,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-
+            Logger.info("onTracksChanged", tag)
         }
     }
 
@@ -323,6 +326,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         setupAudioAndSubtitleOptions()
         setDefaultSubtitle()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        Logger.info("MEDIA_OPTIONS_READY", tag)
     }
 
     private fun setDefaultSubtitle() {
