@@ -4,7 +4,10 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.drm.DrmSessionManager
+import com.google.android.exoplayer2.drm.FrameworkMediaCrypto
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -40,21 +43,22 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
 
-    private val mainHandler = Handler()
-    private val bandwidthMeter = DefaultBandwidthMeter()
+    protected val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
-    private var player: SimpleExoPlayer? = null
-    private var currentState = State.NONE
-    private var trackSelector: DefaultTrackSelector? = null
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
+    private var player: SimpleExoPlayer? = null
     private var lastBufferPercentageSent = 0.0
+    private var trackSelector: DefaultTrackSelector? = null
+    private var currentState = State.NONE
     private var lastPositionSent = 0.0
 
-    private var needSetupMediaOptions = true
     private val trackIndexKey = "trackIndexKey"
     private val trackGroupIndexKey = "trackGroupIndexKey"
     private val formatIndexKey = "formatIndexKey"
+    private var needSetupMediaOptions = true
     private var subtitleOff: MediaOption? = null
+
+    protected val bandwidthMeter = DefaultBandwidthMeter()
 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
@@ -166,14 +170,24 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupPlayer() {
-        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-        trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
-        player = ExoPlayerFactory.newSimpleInstance(context, trackSelector)
+        val rendererFactory = setUpRendererFactory()
+        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+
+        player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         playerView.player = player
         player?.prepare(mediaSource(Uri.parse(source)))
     }
+
+    private fun setUpRendererFactory(): DefaultRenderersFactory {
+        val rendererFactory = DefaultRenderersFactory(context,
+                buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
+        return rendererFactory
+    }
+
+    //Implement if DRM is necessary
+    open protected fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? = null
 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
@@ -254,7 +268,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(event.value)
     }
 
-    private fun handleError(error: Exception?) {
+    protected fun handleError(error: Exception?) {
         if (currentState != State.ERROR) {
             timeElapsedHandler.cancel()
             currentState = State.ERROR
@@ -267,59 +281,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val message = error?.message ?: "Exoplayer Error"
         bundle.putParcelable(Event.ERROR.value, ErrorInfo(message, ErrorCode.PLAYBACK_ERROR))
         trigger(Event.ERROR.value, bundle)
-    }
-
-    inner class ExoplayerEventsListener : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
-        override fun onLoadError(error: IOException?) {
-            handleError(error)
-        }
-
-        override fun onLoadError(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long, error: IOException?, wasCanceled: Boolean) {
-            handleError(error)
-        }
-
-        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-            updateState(playWhenReady, playbackState)
-        }
-
-        override fun onPlayerError(error: ExoPlaybackException?) {
-            handleError(error)
-        }
-
-        override fun onLoadingChanged(isLoading: Boolean) {
-            if (isLoading && currentState == State.NONE) {
-                currentState = State.IDLE
-                trigger(Event.READY.value)
-            }
-        }
-
-        override fun onPositionDiscontinuity() {
-        }
-
-        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
-        }
-
-        override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
-        }
-
-        override fun onDownstreamFormatChanged(trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaTimeMs: Long) {
-        }
-
-        override fun onUpstreamDiscarded(trackType: Int, mediaStartTimeMs: Long, mediaEndTimeMs: Long) {
-        }
-
-        override fun onLoadCanceled(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
-        }
-
-        override fun onLoadCompleted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
-        }
-
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
-        }
-
-        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-            Logger.info("onTracksChanged", tag)
-        }
     }
 
     private fun setUpMediaOptions() {
@@ -337,7 +298,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun setupAudioAndSubtitleOptions() {
         trackSelector?.currentMappedTrackInfo?.let {
-            (0..it.length - 1).forEachIndexed { index, _ ->
+            for (index in 0 until it.length) {
                 when (player?.getRendererType(index)) {
                     C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
                         createAudioMediaOption(format, mediaInfo)
@@ -380,6 +341,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return when (format.language) {
             "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
             "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
+            "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
             null -> createAudioOffOption(mediaInfo)
             else -> MediaOption(format.language, MediaOptionType.AUDIO, mediaInfo, null)
         }
@@ -442,12 +404,67 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun MappingTrackSelector.MappedTrackInfo.forEachGroupIndexed(renderedTextIndex: Int, function: (index: Int, trackGroup: TrackGroup) -> Unit) {
         val trackGroup = getTrackGroups(renderedTextIndex)
-        (0..(trackGroup.length - 1)).forEachIndexed { index, _ ->
+        for (index in 0 until trackGroup.length) {
             function(index, trackGroup.get(index))
         }
     }
 
     private fun TrackGroup.forEachFormatIndexed(function: (index: Int, format: Format) -> Unit) {
-        (0..(length - 1)).forEachIndexed { index, _ -> function(index, getFormat(index)) }
+        for (index in 0 until length) {
+            function(index, getFormat(index))
+        }
+    }
+
+    inner class ExoplayerEventsListener : AdaptiveMediaSourceEventListener, ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
+        override fun onLoadError(error: IOException?) {
+            handleError(error)
+        }
+
+        override fun onLoadError(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long, error: IOException?, wasCanceled: Boolean) {
+            handleError(error)
+        }
+
+        override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
+            updateState(playWhenReady, playbackState)
+        }
+
+        override fun onPlayerError(error: ExoPlaybackException?) {
+            handleError(error)
+        }
+
+        override fun onLoadingChanged(isLoading: Boolean) {
+            if (isLoading && currentState == State.NONE) {
+                currentState = State.IDLE
+                trigger(Event.READY.value)
+            }
+        }
+
+        override fun onPositionDiscontinuity() {
+        }
+
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+        }
+
+        override fun onLoadStarted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long) {
+        }
+
+        override fun onDownstreamFormatChanged(trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaTimeMs: Long) {
+        }
+
+        override fun onUpstreamDiscarded(trackType: Int, mediaStartTimeMs: Long, mediaEndTimeMs: Long) {
+        }
+
+        override fun onLoadCanceled(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
+        }
+
+        override fun onLoadCompleted(dataSpec: DataSpec?, dataType: Int, trackType: Int, trackFormat: Format?, trackSelectionReason: Int, trackSelectionData: Any?, mediaStartTimeMs: Long, mediaEndTimeMs: Long, elapsedRealtimeMs: Long, loadDurationMs: Long, bytesLoaded: Long) {
+        }
+
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
+        }
+
+        override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
+            Logger.info("onTracksChanged", tag)
+        }
     }
 }
