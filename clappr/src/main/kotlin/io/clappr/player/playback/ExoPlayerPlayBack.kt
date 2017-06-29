@@ -2,11 +2,13 @@ package io.clappr.player.playback
 
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.support.annotation.RequiresApi
+import android.view.View
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.drm.DrmSessionManager
-import com.google.android.exoplayer2.drm.FrameworkMediaCrypto
+import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -20,6 +22,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView
 import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
 import io.clappr.player.components.*
@@ -42,7 +45,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
 
-    protected val mainHandler = Handler()
+    private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var player: SimpleExoPlayer? = null
@@ -57,7 +60,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var needSetupMediaOptions = true
     private var subtitleOff: MediaOption? = null
 
-    protected val bandwidthMeter = DefaultBandwidthMeter()
+    private val bandwidthMeter = DefaultBandwidthMeter()
+    private val drmEventsListeners = ExoplayerDrmEventsListeners()
+    private val drmScheme = C.WIDEVINE_UUID
+    private val drmLicenseUrl: String?
+        get() {
+            return options.options["drmLicence"] as? String
+        }
 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
@@ -88,6 +97,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = currentState == State.PLAYING ||
                 currentState == State.STALLED ||
                 currentState == State.IDLE
+
 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.ERROR
@@ -185,8 +195,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return rendererFactory
     }
 
-    //Implement if DRM is necessary
-    open protected fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? = null
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
+        if (Util.SDK_INT < 18 || drmLicenseUrl == null) {
+            return null
+        }
+
+        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context?.packageName), bandwidthMeter)
+
+        val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
+
+        return DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null, mainHandler, drmEventsListeners)
+    }
 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
@@ -290,10 +310,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setDefaultSubtitle() {
-        if (selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
-            setSelectedMediaOption(SUBTITLE_OFF)
+        if (availableMediaOptions(MediaOptionType.SUBTITLE).isNotEmpty()) {
+            addAvailableMediaOption(SUBTITLE_OFF)
+            if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
+                setSelectedMediaOption(SUBTITLE_OFF)
         }
-        if(!hasMediaOptionAvailable(SUBTITLE_OFF)){
+        if (!hasMediaOptionAvailable(SUBTITLE_OFF)) {
             addAvailableMediaOption(SUBTITLE_OFF)
         }
     }
@@ -306,7 +328,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                         createAudioMediaOption(format, mediaInfo)
                     }
                     C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
-                        createSubtitleMediaOption(format, mediaInfo)
+                        if (format.language != null)
+                            createSubtitleMediaOption(format, mediaInfo)
+                        else null
                     }
                 }
             }
@@ -354,7 +378,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun createSubtitleMediaOption(format: Format, mediaInfo: Options): MediaOption {
         val mediaOption = when (format.language) {
             "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, mediaInfo, null)
-            null -> createSubtitleOffOption(mediaInfo)
             else -> MediaOption(format.language, MediaOptionType.SUBTITLE, mediaInfo, null)
         }
 
@@ -369,25 +392,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return mediaInfo
     }
 
-    private fun createSubtitleOffOption(mediaInfo: Options): MediaOption {
-        subtitleOff = MediaOption(SUBTITLE_OFF.name, MediaOptionType.SUBTITLE, mediaInfo, null)
-        return SUBTITLE_OFF
-    }
-
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
+        if (mediaOption == SUBTITLE_OFF) {
+            playerView.subtitleView.visibility = View.GONE
+        } else {
+            playerView.subtitleView.visibility = View.VISIBLE
+        }
+
         trackSelector?.currentMappedTrackInfo?.let {
-            setMediaOption(mediaOption, it)
+            setMediaOptionOnPlayback(mediaOption, it)
             super.setSelectedMediaOption(mediaOption)
         }
         Logger.info("setSelectedMediaOption", tag)
-    }
-
-    private fun setMediaOption(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
-        if (mediaOption == SUBTITLE_OFF) {
-            subtitleOff?.let { setMediaOptionOnPlayback(it, mappedTrackInfo) }
-        } else {
-            setMediaOptionOnPlayback(mediaOption, mappedTrackInfo)
-        }
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
@@ -467,6 +483,21 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
             Logger.info("onTracksChanged", tag)
+        }
+    }
+
+    inner class ExoplayerDrmEventsListeners : DefaultDrmSessionManager.EventListener {
+        override fun onDrmKeysRestored() {
+        }
+
+        override fun onDrmKeysLoaded() {
+        }
+
+        override fun onDrmKeysRemoved() {
+        }
+
+        override fun onDrmSessionManagerError(error: java.lang.Exception?) {
+            handleError(error)
         }
     }
 }
