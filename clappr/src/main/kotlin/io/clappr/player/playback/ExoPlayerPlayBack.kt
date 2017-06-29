@@ -311,7 +311,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun setDefaultSubtitle() {
         if (availableMediaOptions(MediaOptionType.SUBTITLE).isNotEmpty()) {
-            addAvailableMediaOption(SUBTITLE_OFF)
+            addAvailableMediaOption(SUBTITLE_OFF, 0)
             if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
                 setSelectedMediaOption(SUBTITLE_OFF)
         }
