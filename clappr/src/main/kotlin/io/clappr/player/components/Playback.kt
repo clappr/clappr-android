@@ -66,6 +66,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         return mediaOptionList.filter{it.type==type}
     }
 
+    fun hasMediaOptionAvailable(mediaOption: MediaOption): Boolean {
+        return mediaOptionList.contains(mediaOption)
+    }
+
     fun selectedMediaOption(type: MediaOptionType): MediaOption? {
         val selectedList = selectedMediaOptionList.filter{it.type==type}
         return if (!selectedList.isEmpty()) selectedList.first() else null

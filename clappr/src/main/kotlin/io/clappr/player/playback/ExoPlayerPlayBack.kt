@@ -4,7 +4,6 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.drm.DrmSessionManager
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto
@@ -293,6 +292,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun setDefaultSubtitle() {
         if (selectedMediaOption(MediaOptionType.SUBTITLE) == null) {
             setSelectedMediaOption(SUBTITLE_OFF)
+        }
+        if(!hasMediaOptionAvailable(SUBTITLE_OFF)){
+            addAvailableMediaOption(SUBTITLE_OFF)
         }
     }
 
