@@ -58,14 +58,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val trackGroupIndexKey = "trackGroupIndexKey"
     private val formatIndexKey = "formatIndexKey"
     private var needSetupMediaOptions = true
-    private var subtitleOff: MediaOption? = null
 
     private val bandwidthMeter = DefaultBandwidthMeter()
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
     private val drmScheme = C.WIDEVINE_UUID
     private val drmLicenseUrl: String?
         get() {
-            return options.options["drmLicence"] as? String
+            return options.options[ClapprOption.DRM_LICENCE.value] as? String
         }
 
     private val bufferPercentage: Double
