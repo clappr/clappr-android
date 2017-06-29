@@ -392,11 +392,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
-        if (mediaOption == SUBTITLE_OFF) {
-            playerView.subtitleView.visibility = View.GONE
-        } else {
-            playerView.subtitleView.visibility = View.VISIBLE
-        }
+        playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
 
         trackSelector?.currentMappedTrackInfo?.let {
             setMediaOptionOnPlayback(mediaOption, it)
