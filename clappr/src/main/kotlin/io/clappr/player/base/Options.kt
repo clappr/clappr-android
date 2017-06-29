@@ -18,5 +18,9 @@ enum class ClapprOption(val value: String) {
     /**
      * Poster URL
      */
-    POSTER("poster")
+    POSTER("poster"),
+    /**
+     * Inform the URL license if DRM is necessary
+     */
+    DRM_LICENSE_URL("drmLicenseUrl")
 }
