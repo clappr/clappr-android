@@ -22,5 +22,9 @@ enum class ClapprOption(val value: String) {
     /**
      * Inform the URL license if DRM is necessary
      */
-    DRM_LICENSE_URL("drmLicenseUrl")
+    DRM_LICENSE_URL("drmLicenseUrl"),
+    /**
+     * List from subtitles URL`s
+     */
+    SUBTITLES("subtitles")
 }
