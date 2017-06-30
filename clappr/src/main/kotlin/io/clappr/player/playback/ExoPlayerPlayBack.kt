@@ -64,7 +64,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val drmScheme = C.WIDEVINE_UUID
     private val drmLicenseUrl: String?
         get() {
-            return options.options[ClapprOption.DRM_LICENCE.value] as? String
+            return options.options[ClapprOption.DRM_LICENSE_URL.value] as? String
         }
 
     private val bufferPercentage: Double
@@ -313,9 +313,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             addAvailableMediaOption(SUBTITLE_OFF, 0)
             if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
                 setSelectedMediaOption(SUBTITLE_OFF)
-        }
-        if (!hasMediaOptionAvailable(SUBTITLE_OFF)) {
-            addAvailableMediaOption(SUBTITLE_OFF)
         }
     }
 
