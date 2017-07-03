@@ -375,13 +375,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroup.forEachFormatIndexed { index, format ->
+            format.language?.let {
+                val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+                val mediaOption = block(format, mediaInfo)
 
-            val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
-            val mediaOption = block(format, mediaInfo)
-
-            mediaOption?.let {
-                addAvailableMediaOption(mediaOption)
-                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+                mediaOption?.let {
+                    addAvailableMediaOption(mediaOption)
+                    selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+                }
             }
         }
     }
