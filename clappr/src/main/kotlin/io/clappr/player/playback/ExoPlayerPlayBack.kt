@@ -23,12 +23,14 @@ import com.google.android.exoplayer2.upstream.DataSpec
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
+import java.util.HashMap
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
@@ -60,6 +62,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var needSetupMediaOptions = true
 
     private val bandwidthMeter = DefaultBandwidthMeter()
+    private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+    private var mediaSource : MediaSource? = null
+    private var mediaType : Int = 0
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
     private val drmScheme = C.WIDEVINE_UUID
     private val drmLicenseUrl: String?
@@ -165,15 +170,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun mediaSource(uri: Uri): MediaSource {
-        val type = Util.inferContentType(uri.lastPathSegment)
+        mediaType = Util.inferContentType(uri.lastPathSegment)
         val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
 
-        when (type) {
+        when (mediaType) {
             C.TYPE_DASH -> return DashMediaSource(uri, dataSourceFactory, DefaultDashChunkSource.Factory(dataSourceFactory), mainHandler, eventsListener)
             C.TYPE_SS -> return SsMediaSource(uri, dataSourceFactory, DefaultSsChunkSource.Factory(dataSourceFactory), mainHandler, eventsListener)
             C.TYPE_HLS -> return HlsMediaSource(uri, dataSourceFactory, mainHandler, eventsListener)
             C.TYPE_OTHER -> return ExtractorMediaSource(uri, dataSourceFactory, DefaultExtractorsFactory(), mainHandler, eventsListener)
-            else -> throw IllegalStateException("Unsupported type: " + type)
+            else -> throw IllegalStateException("Unsupported type: " + mediaType)
         }
     }
 
@@ -185,7 +190,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.playWhenReady = false
         player?.addListener(eventsListener)
         playerView.player = player
-        player?.prepare(mediaSource(Uri.parse(source)))
+        mediaSource = mediaSource(Uri.parse(source))
+        player?.prepare(mediaSource)
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
@@ -302,7 +308,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpMediaOptions() {
-        setupAudioAndSubtitleOptions()
+        if(mediaType == C.TYPE_DASH){
+            setupAudioOptions()
+            setupSubtitlesFromClapprOptions()
+        } else {
+            setupAudioAndSubtitleOptions()
+        }
+
         setDefaultSubtitle()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
         Logger.info("MEDIA_OPTIONS_READY", tag)
@@ -316,6 +328,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
+    private fun setupAudioOptions() {
+        trackSelector?.currentMappedTrackInfo?.let {
+            for (index in 0 until it.length) {
+                when (player?.getRendererType(index)) {
+                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
+                        createAudioMediaOption(format, mediaInfo)
+                    }
+                }
+            }
+        }
+    }
+
     private fun setupAudioAndSubtitleOptions() {
         trackSelector?.currentMappedTrackInfo?.let {
             for (index in 0 until it.length) {
@@ -324,12 +348,22 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                         createAudioMediaOption(format, mediaInfo)
                     }
                     C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
-                        if (format.language != null)
-                            createSubtitleMediaOption(format, mediaInfo)
-                        else null
+                        createSubtitleMediaOption(format, mediaInfo)
                     }
                 }
             }
+        }
+    }
+
+    private fun setupSubtitlesFromClapprOptions()  {
+        var subtitle = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
+        subtitle?.forEach {
+            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE,
+                    Format.NO_VALUE, it.key, null)
+            val uri = Uri.parse(it.value)
+            val subtitleSource = SingleSampleMediaSource(uri, dataSourceFactory, textFormat, C.TIME_UNSET)
+            val mediaOption = MediaOption(it.key, MediaOptionType.SUBTITLE, subtitleSource, null)
+            addAvailableMediaOption(mediaOption)
         }
     }
 
@@ -389,12 +423,23 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
-        playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
-
-        trackSelector?.currentMappedTrackInfo?.let {
-            setMediaOptionOnPlayback(mediaOption, it)
+        if (mediaType == C.TYPE_DASH &&
+                mediaOption.type == MediaOptionType.SUBTITLE) {
+            var mergedSource = mediaSource
+            if(mediaOption != SUBTITLE_OFF){
+                mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
+            }
+            player?.prepare(mergedSource, false, false)
             super.setSelectedMediaOption(mediaOption)
+        } else {
+            playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
+
+            trackSelector?.currentMappedTrackInfo?.let {
+                setMediaOptionOnPlayback(mediaOption, it)
+                super.setSelectedMediaOption(mediaOption)
+            }
         }
+
         Logger.info("setSelectedMediaOption", tag)
     }
 
