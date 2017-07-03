@@ -16,7 +16,7 @@ apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
 group = 'io.clappr.player'
-version = '0.0.11'
+version = '0.0.12'
 
 bintray {
     user = System.getenv('BINTRAY_USER')
