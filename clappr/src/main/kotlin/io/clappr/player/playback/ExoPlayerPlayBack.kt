@@ -63,8 +63,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val bandwidthMeter = DefaultBandwidthMeter()
     private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
-    private var mediaSource : MediaSource? = null
-    private var mediaType : Int = 0
+    private var mediaSource: MediaSource? = null
+    private var mediaType: Int = 0
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
     private val drmScheme = C.WIDEVINE_UUID
     private val drmLicenseUrl: String?
@@ -77,8 +77,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val playerView: SimpleExoPlayerView
         get() = view as SimpleExoPlayerView
-
-    private val subtitleStyle = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
@@ -108,8 +106,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     init {
         playerView.useController = false
-        playerView.subtitleView?.setStyle(subtitleStyle)
+        playerView.subtitleView?.setStyle(getSubtitleStyle())
     }
+
+    open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
+
 
     override fun destroy() {
         release()
@@ -308,7 +309,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpMediaOptions() {
-        if(mediaType == C.TYPE_DASH){
+        if (mediaType == C.TYPE_DASH) {
             setupAudioOptions()
             setupSubtitlesFromClapprOptions()
         } else {
@@ -355,7 +356,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun setupSubtitlesFromClapprOptions()  {
+    private fun setupSubtitlesFromClapprOptions() {
         var subtitle = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
         subtitle?.forEach {
             val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE,
@@ -427,7 +428,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (mediaType == C.TYPE_DASH &&
                 mediaOption.type == MediaOptionType.SUBTITLE) {
             var mergedSource = mediaSource
-            if(mediaOption != SUBTITLE_OFF){
+            if (mediaOption != SUBTITLE_OFF) {
                 mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
             }
             player?.prepare(mergedSource, false, false)
