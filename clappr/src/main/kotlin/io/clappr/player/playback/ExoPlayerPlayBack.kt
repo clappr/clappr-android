@@ -430,28 +430,35 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             super.setSelectedMediaOption(mediaOption)
         }
 
-
         Logger.info("setSelectedMediaOption", tag)
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
-        if (useSubtitleFromOptions && mediaOption.type == MediaOptionType.SUBTITLE) {
-            var mergedSource = mediaSource
-            if (mediaOption != SUBTITLE_OFF) {
-                mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
-            }
-            player?.prepare(mergedSource, false, false)
-        } else {
-            (mediaOption.raw as? Options)?.let {
-                val trackIndex = it[trackIndexKey] as? Int
-                val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
-                val formatIndexKey = it[formatIndexKey] as? Int
+        if (useSubtitleFromOptions && mediaOption.type == MediaOptionType.SUBTITLE)
+            setSubtitleFromOptions(mediaOption)
+        else
+            setMediaOptionFromTracks(mediaOption, mappedTrackInfo)
 
-                if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
-                    trackSelector?.setRendererDisabled(trackIndex, false)
-                    val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
-                    trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
-                }
+    }
+
+    private fun setSubtitleFromOptions(mediaOption: MediaOption) {
+        var mergedSource = mediaSource
+        if (mediaOption != SUBTITLE_OFF) {
+            mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
+        }
+        player?.prepare(mergedSource, false, false)
+    }
+
+    private fun setMediaOptionFromTracks(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
+        (mediaOption.raw as? Options)?.let {
+            val trackIndex = it[trackIndexKey] as? Int
+            val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
+            val formatIndexKey = it[formatIndexKey] as? Int
+
+            if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
+                trackSelector?.setRendererDisabled(trackIndex, false)
+                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
+                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
             }
         }
     }
