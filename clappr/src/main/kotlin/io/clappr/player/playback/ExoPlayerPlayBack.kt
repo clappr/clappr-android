@@ -357,14 +357,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupSubtitlesFromClapprOptions() {
-        var subtitle = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
+        val subtitle = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
         subtitle?.forEach {
-            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE,
-                    Format.NO_VALUE, it.key, null)
-            val uri = Uri.parse(it.value)
-            val subtitleSource = SingleSampleMediaSource(uri, dataSourceFactory, textFormat, C.TIME_UNSET)
-            val mediaOption = MediaOption(it.key, MediaOptionType.SUBTITLE, subtitleSource, null)
-            addAvailableMediaOption(mediaOption)
+            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE, Format.NO_VALUE, it.key, null)
+            val subtitleSource = SingleSampleMediaSource(Uri.parse(it.value), dataSourceFactory, textFormat, C.TIME_UNSET)
+            addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
         }
     }
 
@@ -407,10 +404,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun createAudioOffOption(mediaInfo: Options) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
 
-    private fun createSubtitleMediaOption(format: Format, mediaInfo: Options): MediaOption {
+    private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
         val mediaOption = when (format.language) {
-            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, mediaInfo, null)
-            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, mediaInfo, null)
+            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
+            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, raw, null)
         }
 
         return mediaOption
@@ -425,36 +422,35 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
-        if (mediaType == C.TYPE_DASH &&
-                mediaOption.type == MediaOptionType.SUBTITLE) {
-            var mergedSource = mediaSource
-            if (mediaOption != SUBTITLE_OFF) {
-                mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
-            }
-            player?.prepare(mergedSource, false, false)
-            super.setSelectedMediaOption(mediaOption)
-        } else {
-            playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
+        playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
 
-            trackSelector?.currentMappedTrackInfo?.let {
-                setMediaOptionOnPlayback(mediaOption, it)
-                super.setSelectedMediaOption(mediaOption)
-            }
+        trackSelector?.currentMappedTrackInfo?.let {
+            setMediaOptionOnPlayback(mediaOption, it)
+            super.setSelectedMediaOption(mediaOption)
         }
+
 
         Logger.info("setSelectedMediaOption", tag)
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
-        (mediaOption.raw as? Options)?.let {
-            val trackIndex = it[trackIndexKey] as? Int
-            val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
-            val formatIndexKey = it[formatIndexKey] as? Int
+        if (mediaType == C.TYPE_DASH && mediaOption.type == MediaOptionType.SUBTITLE) {
+            var mergedSource = mediaSource
+            if (mediaOption != SUBTITLE_OFF) {
+                mergedSource = MergingMediaSource(mediaSource, mediaOption.raw as MediaSource)
+            }
+            player?.prepare(mergedSource, false, false)
+        } else {
+            (mediaOption.raw as? Options)?.let {
+                val trackIndex = it[trackIndexKey] as? Int
+                val trackGroupIndexKey = it[trackGroupIndexKey] as? Int
+                val formatIndexKey = it[formatIndexKey] as? Int
 
-            if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
-                trackSelector?.setRendererDisabled(trackIndex, false)
-                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
-                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+                if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
+                    trackSelector?.setRendererDisabled(trackIndex, false)
+                    val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
+                    trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+                }
             }
         }
     }
