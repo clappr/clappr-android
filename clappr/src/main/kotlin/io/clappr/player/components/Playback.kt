@@ -1,9 +1,11 @@
 package io.clappr.player.components
 
 import io.clappr.player.base.*
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.reflect.full.companionObjectInstance
 
-interface PlaybackSupportInterface: NamedType {
+interface PlaybackSupportInterface : NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean
 }
 
@@ -13,7 +15,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         NONE, IDLE, PLAYING, PAUSED, STALLED, ERROR
     }
 
-    companion object: PlaybackSupportInterface {
+    companion object : PlaybackSupportInterface {
         override val name = ""
 
         @JvmStatic
@@ -50,35 +52,50 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     open val canSeek: Boolean
         get() = false
 
-    open fun play(): Boolean { return false }
-    open fun pause(): Boolean { return false }
-    open fun stop(): Boolean { return false }
-    open fun seek(seconds: Int): Boolean { return false }
+    open fun play(): Boolean {
+        return false
+    }
 
-    private var mediaOptionList : MutableList<MediaOption> = ArrayList()
-    private var selectedMediaOptionList : MutableList<MediaOption> = ArrayList()
+    open fun pause(): Boolean {
+        return false
+    }
 
-    fun addAvailableMediaOption(media: MediaOption) {
-        mediaOptionList.add(media)
+    open fun stop(): Boolean {
+        return false
+    }
+
+    open fun seek(seconds: Int): Boolean {
+        return false
+    }
+
+    private var mediaOptionList = LinkedList<MediaOption>()
+    private var selectedMediaOptionList = ArrayList<MediaOption>()
+
+    fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
+        mediaOptionList.add(index, media)
     }
 
     fun availableMediaOptions(type: MediaOptionType): List<MediaOption> {
-        return mediaOptionList.filter{it.type==type}
+        return mediaOptionList.filter { it.type == type }
+    }
+
+    fun hasMediaOptionAvailable(mediaOption: MediaOption): Boolean {
+        return mediaOptionList.contains(mediaOption)
     }
 
     fun selectedMediaOption(type: MediaOptionType): MediaOption? {
-        val selectedList = selectedMediaOptionList.filter{it.type==type}
+        val selectedList = selectedMediaOptionList.filter { it.type == type }
         return if (!selectedList.isEmpty()) selectedList.first() else null
     }
 
     open fun setSelectedMediaOption(mediaOption: MediaOption) {
-        selectedMediaOptionList.removeAll{it.type.equals(mediaOption.type)}
+        selectedMediaOptionList.removeAll { it.type == mediaOption.type }
         selectedMediaOptionList.add(mediaOption)
 
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
     }
 
-    open fun resetAvailableMediaOptions(){
+    open fun resetAvailableMediaOptions() {
         mediaOptionList.clear()
     }
 
