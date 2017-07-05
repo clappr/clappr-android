@@ -318,16 +318,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             setupAudioAndSubtitleOptions()
         }
 
-        setDefaultSubtitle()
+        setDefaultMedias()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
         Logger.info("MEDIA_OPTIONS_READY", tag)
     }
 
-    private fun setDefaultSubtitle() {
+    private fun setDefaultMedias() {
         if (availableMediaOptions(MediaOptionType.SUBTITLE).isNotEmpty()) {
             addAvailableMediaOption(SUBTITLE_OFF, 0)
             if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
                 setSelectedMediaOption(SUBTITLE_OFF)
+        }
+        if (availableMediaOptions(MediaOptionType.AUDIO).isNotEmpty()) {
+            if (selectedMediaOption(MediaOptionType.AUDIO) == null)
+                setSelectedMediaOption(availableMediaOptions(MediaOptionType.AUDIO).first())
         }
     }
 
