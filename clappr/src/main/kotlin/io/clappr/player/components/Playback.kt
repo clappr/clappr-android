@@ -2,6 +2,7 @@ package io.clappr.player.components
 
 import io.clappr.player.base.*
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.reflect.full.companionObjectInstance
 
 interface PlaybackSupportInterface : NamedType {
@@ -67,8 +68,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         return false
     }
 
-    private var mediaOptionList: LinkedList<MediaOption> = LinkedList()
-    private var selectedMediaOptionList: MutableList<MediaOption> = ArrayList()
+    private var mediaOptionList = LinkedList<MediaOption>()
+    private var selectedMediaOptionList = ArrayList<MediaOption>()
 
     fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
         mediaOptionList.add(index, media)

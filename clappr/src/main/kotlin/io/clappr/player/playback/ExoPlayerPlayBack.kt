@@ -3,10 +3,8 @@ package io.clappr.player.playback
 import android.annotation.SuppressLint
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.support.annotation.RequiresApi
 import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.drm.*
@@ -31,7 +29,7 @@ import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.io.IOException
-import java.util.HashMap
+import java.util.*
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
@@ -203,7 +201,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         return rendererFactory
     }
-    
+
     @SuppressLint("NewApi")
     fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
         if (Util.SDK_INT < 18 || drmLicenseUrl == null) {
