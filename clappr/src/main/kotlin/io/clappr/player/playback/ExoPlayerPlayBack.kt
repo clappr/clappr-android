@@ -1,5 +1,6 @@
 package io.clappr.player.playback
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.net.Uri
 import android.os.Build
@@ -202,8 +203,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         return rendererFactory
     }
-
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    
+    @SuppressLint("NewApi")
     fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
         if (Util.SDK_INT < 18 || drmLicenseUrl == null) {
             return null
