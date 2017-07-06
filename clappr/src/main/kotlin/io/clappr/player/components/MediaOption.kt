@@ -14,6 +14,7 @@ enum class MediaOptionType {
 
     enum class Audio(val value: String) {
         PT_BR("Por"),
-        ORIGINAL("Original")
+        ORIGINAL("Original"),
+        EN("en")
     }
 }
