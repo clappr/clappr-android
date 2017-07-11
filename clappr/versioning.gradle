@@ -1,0 +1,10 @@
+ext {
+    buildVersionCode = {
+        def (major, minor, patch) = version.toLowerCase().replaceAll('-', '').tokenize('.')
+        patch = patch.replaceAll("[^0-9]","")
+
+        (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
+
+        (major * 1000000) + (minor * 1000) + patch;
+    }
+}
