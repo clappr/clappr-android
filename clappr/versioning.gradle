@@ -1,5 +1,5 @@
 ext {
-    buildVersionCode = {
+    buildVersionCode = { version ->
         def (major, minor, patch) = version.toLowerCase().replaceAll('-', '').tokenize('.')
         patch = patch.replaceAll("[^0-9]","")
 
