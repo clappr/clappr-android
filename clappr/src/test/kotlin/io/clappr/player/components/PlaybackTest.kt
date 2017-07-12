@@ -19,6 +19,8 @@ import java.util.*
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class PlaybackTest {
 
+    //TODO ADD NEW JUNIT TESTS
+
     class SomePlayback(source: String, options: Options = Options()): Playback(source, null, options) {
         companion object: PlaybackSupportInterface {
             val validSource = "valid-source.mp4"

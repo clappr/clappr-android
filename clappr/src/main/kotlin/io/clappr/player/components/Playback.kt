@@ -1,6 +1,8 @@
 package io.clappr.player.components
 
 import io.clappr.player.base.*
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.reflect.full.companionObjectInstance
@@ -97,6 +99,34 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
 
     open fun resetAvailableMediaOptions() {
         mediaOptionList.clear()
+    }
+
+    fun convertSelectedMediaOptionsToJson(mediaOption: MediaOption): String {
+        val json = JSONArray()
+        selectedMediaOptionList.forEach {
+            val jsonObject = JSONObject()
+            jsonObject.put("media_option_name", mediaOption.name)
+            jsonObject.put("media_option_type", mediaOption.type)
+            json.put(jsonObject)
+        }
+
+        return json.toString()
+    }
+
+    fun setupInitialMediasFromClapprOptions(){
+        val jsonArray = JSONArray(options.get(ClapprOption.SELECTED_MEDIA_OPTIONS.value) as? String)
+        for (i in 0 until jsonArray.length()) {
+            val media = jsonArray.getJSONObject(i)
+            setSelectedMediaOption(media.getString("media_option_name"), media.getString("media_option_type"))
+        }
+    }
+
+    internal fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
+        mediaOptionList.forEach {
+            if(it.name.equals(mediaOptionName) && it.type.name.equals(mediaOptionType)){
+                setSelectedMediaOption(it)
+            }
+        }
     }
 
     internal fun supportsSource(source: String, mimeType: String?): Boolean {
