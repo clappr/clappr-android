@@ -1,5 +1,6 @@
 package io.clappr.player.components
 
+import android.os.Bundle
 import io.clappr.player.base.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -95,6 +96,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         selectedMediaOptionList.add(mediaOption)
 
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
+
+        val bundle = Bundle()
+        bundle.putString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value, convertSelectedMediaOptionsToJson(mediaOption))
+        trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
     }
 
     open fun resetAvailableMediaOptions() {
