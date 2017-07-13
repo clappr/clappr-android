@@ -3,8 +3,6 @@ package io.clappr.player.base
 import io.clappr.player.BuildConfig
 import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
-import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -14,12 +12,12 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.annotation.Config
 import java.util.*
+import kotlin.collections.HashMap
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 open class PlaybackTest {
 
-    //TODO ADD NEW JUNIT TESTS
 
     class SomePlayback(source: String, options: Options = Options()): Playback(source, null, options) {
         companion object: PlaybackSupportInterface {
@@ -47,7 +45,7 @@ open class PlaybackTest {
 
     @Test(expected = IllegalArgumentException::class)
     fun shouldThrowWhenInstantiatingWithInvalidSource() {
-        val playback = object: Playback("some-invalid-source.mp4") {}
+        object: Playback("some-invalid-source.mp4") {}
     }
 
     @Test
@@ -122,17 +120,17 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
         val random = Random()
         val randomNumber = random.nextInt(10)
-        var mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+        val mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
 
-        var addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
-        assertEquals(mediaOptionList.size, addedMediaOptionList!!.size)
+        val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
+        assertEquals(mediaOptionList.size, addedMediaOptionList.size)
         for (i in 0..(randomNumber-1)) {
-            assertEquals(mediaOptionList.get(i), addedMediaOptionList.get(i))
+            assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
     }
 
     private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int) : MutableList<MediaOption>{
-        var mediaOptionList : MutableList<MediaOption> = ArrayList()
+        val mediaOptionList : MutableList<MediaOption> = ArrayList()
         for (i in 1..quantity) {
             val mediaOption = MediaOption("Name $i", mediaOptionType, i, null)
             playback.addAvailableMediaOption(mediaOption)
@@ -156,7 +154,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
         val random = Random()
         val randomNumber = random.nextInt(10)
-        var mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+        val mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
 
         mediaOptionList.forEach {
             playback.setSelectedMediaOption(it)
@@ -200,5 +198,29 @@ open class PlaybackTest {
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
 
         assertTrue("Media_Options_Update was not called", mediaOptionsUpdateCalled)
+    }
+
+    @Test
+    fun shouldWorkWithEmptySelectedMediaOptions() {
+        checkSelectedMediaOptions("")
+    }
+
+    @Test
+    fun shouldWorkWithInvalidSelectedMediaOptions() {
+        checkSelectedMediaOptions("error")
+    }
+
+    private fun checkSelectedMediaOptions(mediaOptionJson: String) {
+        try {
+            val hashMap = HashMap<String, Any>()
+            hashMap.put(ClapprOption.SELECTED_MEDIA_OPTIONS.value, mediaOptionJson)
+
+            val options = Options(options = hashMap)
+            val playback = SomePlayback("valid-source.mp4", options)
+            playback.setupInitialMediasFromClapprOptions()
+
+        } catch (ex: Exception){
+            fail("Exception: ${ex.message}")
+        }
     }
 }

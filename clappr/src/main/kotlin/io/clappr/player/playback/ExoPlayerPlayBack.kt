@@ -317,20 +317,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             setupAudioAndSubtitleOptions()
         }
 
+        setDefaultMedias()
         checkInitialMedias()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
         Logger.info("MEDIA_OPTIONS_READY", tag)
-    }
-
-    private fun checkInitialMedias(){
-        val initialMediasFromOptions = options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value] as? String
-        val useInitialMediasFromOptions = initialMediasFromOptions?.isNotEmpty() ?: false
-
-        if(useInitialMediasFromOptions){
-            setupInitialMediasFromClapprOptions()
-        } else {
-            setDefaultMedias()
-        }
     }
 
     private fun setDefaultMedias() {
@@ -342,6 +332,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (availableMediaOptions(MediaOptionType.AUDIO).isNotEmpty()) {
             if (selectedMediaOption(MediaOptionType.AUDIO) == null)
                 setSelectedMediaOption(availableMediaOptions(MediaOptionType.AUDIO).first())
+        }
+    }
+
+    private fun checkInitialMedias(){
+        options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
+            setupInitialMediasFromClapprOptions()
         }
     }
 

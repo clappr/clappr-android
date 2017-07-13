@@ -2,7 +2,9 @@ package io.clappr.player.components
 
 import android.os.Bundle
 import io.clappr.player.base.*
+import io.clappr.player.log.Logger
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
@@ -74,6 +76,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     private var mediaOptionList = LinkedList<MediaOption>()
     private var selectedMediaOptionList = ArrayList<MediaOption>()
 
+    private val mediaOptionsArrayJson = "media_option"
+    private val mediaOptionsNameJson = "name"
+    private val mediaOptionsTypeJson = "type"
+
     fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
         mediaOptionList.add(index, media)
     }
@@ -98,7 +104,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
 
         val bundle = Bundle()
-        bundle.putString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value, convertSelectedMediaOptionsToJson(mediaOption))
+        bundle.putString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value, convertSelectedMediaOptionsToJson())
         trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
     }
 
@@ -106,29 +112,37 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         mediaOptionList.clear()
     }
 
-    fun convertSelectedMediaOptionsToJson(mediaOption: MediaOption): String {
-        val json = JSONArray()
+    fun convertSelectedMediaOptionsToJson(): String {
+        val result = JSONObject()
+        val jsonArray = JSONArray()
         selectedMediaOptionList.forEach {
             val jsonObject = JSONObject()
-            jsonObject.put("media_option_name", mediaOption.name)
-            jsonObject.put("media_option_type", mediaOption.type)
-            json.put(jsonObject)
+            jsonObject.put(mediaOptionsNameJson, it.name)
+            jsonObject.put(mediaOptionsTypeJson, it.type)
+            jsonArray.put(jsonObject)
         }
-
-        return json.toString()
+        result.put(mediaOptionsArrayJson, jsonArray)
+        return result.toString()
     }
 
     fun setupInitialMediasFromClapprOptions(){
-        val jsonArray = JSONArray(options.get(ClapprOption.SELECTED_MEDIA_OPTIONS.value) as? String)
-        for (i in 0 until jsonArray.length()) {
-            val media = jsonArray.getJSONObject(i)
-            setSelectedMediaOption(media.getString("media_option_name"), media.getString("media_option_type"))
+        try {
+            options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
+                val jsonObject = JSONObject(it as? String)
+                val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
+                (0 until jsonArray.length())
+                        .map { jsonArray.getJSONObject(it) }
+                        .forEach { setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson)) }
+            }
+        } catch (jsonException: JSONException){
+            Logger.error("Parser Json Exception ${jsonException.message}", name)
         }
     }
 
     internal fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList.forEach {
-            if(it.name.equals(mediaOptionName) && it.type.name.equals(mediaOptionType)){
+            if(it.name.toUpperCase() == mediaOptionName.toUpperCase()
+                    && it.type.name.toUpperCase() == mediaOptionType.toUpperCase()){
                 setSelectedMediaOption(it)
             }
         }
@@ -151,7 +165,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     override fun render(): UIObject {
         if (options.containsKey(ClapprOption.START_AT.value)) {
             once(Event.READY.value, Callback.wrap {
-                (options.get(ClapprOption.START_AT.value) as? Int)?.let {
+                (options[ClapprOption.START_AT.value] as? Int)?.let {
                     seek(it)
                 }
                 options.remove(ClapprOption.START_AT.value)
