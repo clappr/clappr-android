@@ -139,7 +139,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         }
     }
 
-    internal fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
+    private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList.forEach {
             if(it.name.toUpperCase() == mediaOptionName.toUpperCase()
                     && it.type.name.toUpperCase() == mediaOptionType.toUpperCase()){

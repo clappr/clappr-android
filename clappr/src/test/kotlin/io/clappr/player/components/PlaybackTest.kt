@@ -210,6 +210,46 @@ open class PlaybackTest {
         checkSelectedMediaOptions("error")
     }
 
+    @Test
+    fun shouldWorkWithInvalidArraySelectedMediaOptions() {
+        checkSelectedMediaOptions("{\"invalid_array_name\":[{\"name\":\"Por\",\"type\":\"AUDIO\"}]}")
+    }
+
+    @Test
+    fun shouldWorkWithInvalidTypeInSelectedMediaOptions() {
+        checkSelectedMediaOptions("{\"media_option\":[{\"name\":\"invalid_name\",\"type\":\"AUDIO\"}]}")
+    }
+
+    @Test
+    fun shouldWorkWithInvalidNameInSelectedMediaOptions() {
+        checkSelectedMediaOptions("{\"media_option\":[{\"name\":\"Por\",\"type\":\"invalid_type\"}]}")
+    }
+
+    @Test
+    fun shouldSelectMediaFromSelectedMediaOptions() {
+        val jsonMediaOptionNameAudio = "Por"
+        val jsonMediaOptionTypeAudio = "AUDIO"
+        val jsonMediaOptionNameSubtitle = "por"
+        val jsonMediaOptionTypeSubtitle = "SUBTITLE"
+        val validJson = "{\"media_option\":[{\"name\":\"$jsonMediaOptionNameAudio\",\"type\":\"$jsonMediaOptionTypeAudio\"},{\"name\":\"$jsonMediaOptionNameSubtitle\",\"type\":\"$jsonMediaOptionTypeSubtitle\"}]}"
+
+        val options = Options(options = hashMapOf(ClapprOption.SELECTED_MEDIA_OPTIONS.value to validJson))
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.addAvailableMediaOption(MediaOption(jsonMediaOptionNameAudio, MediaOptionType.AUDIO, null, null))
+        playback.addAvailableMediaOption(MediaOption(jsonMediaOptionNameSubtitle, MediaOptionType.SUBTITLE, null, null))
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        val audioSelected = playback.selectedMediaOption(MediaOptionType.AUDIO)
+        assertEquals(jsonMediaOptionNameAudio, audioSelected?.name)
+        assertEquals(jsonMediaOptionTypeAudio, audioSelected?.type?.name)
+
+        val subtitleSelected = playback.selectedMediaOption(MediaOptionType.SUBTITLE)
+        assertEquals(jsonMediaOptionNameSubtitle, subtitleSelected?.name)
+        assertEquals(jsonMediaOptionTypeSubtitle, subtitleSelected?.type?.name)
+    }
+
     private fun checkSelectedMediaOptions(mediaOptionJson: String) {
         try {
             val hashMap = HashMap<String, Any>()
@@ -218,7 +258,6 @@ open class PlaybackTest {
             val options = Options(options = hashMap)
             val playback = SomePlayback("valid-source.mp4", options)
             playback.setupInitialMediasFromClapprOptions()
-
         } catch (ex: Exception){
             fail("Exception: ${ex.message}")
         }
