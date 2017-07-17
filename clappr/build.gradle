@@ -15,8 +15,10 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
+apply from: 'versioning.gradle'
+
 group = 'io.clappr.player'
-version = '0.0.13'
+version = '0.0.14'
 
 bintray {
     user = System.getenv('BINTRAY_USER')
@@ -43,8 +45,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode 1
-        versionName '1.0'
+        versionCode buildVersionCode(version)
+        versionName version
     }
     packagingOptions {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
