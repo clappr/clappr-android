@@ -26,5 +26,9 @@ enum class ClapprOption(val value: String) {
     /**
      * Map from subtitles URL`s with name and URL to each one
      */
-    SUBTITLES("subtitles")
+    SUBTITLES("subtitles"),
+    /**
+     * String List to selected MediaOptions
+     */
+    SELECTED_MEDIA_OPTIONS("selectedMediaOptions")
 }
