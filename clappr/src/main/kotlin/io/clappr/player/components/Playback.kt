@@ -11,6 +11,12 @@ interface PlaybackSupportInterface : NamedType {
 
 abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : UIObject(), NamedType {
 
+    enum class MediaType {
+        UNKNOWN,
+        VOD,
+        LIVE
+    }
+
     enum class State {
         NONE, IDLE, PLAYING, PAUSED, STALLED, ERROR
     }
@@ -33,6 +39,9 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     open fun destroy() {
         stopListening()
     }
+
+    open val mediaType: MediaType
+            get() = MediaType.UNKNOWN
 
     open val duration: Double
         get() = Double.NaN

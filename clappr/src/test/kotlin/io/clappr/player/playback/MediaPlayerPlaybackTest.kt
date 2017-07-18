@@ -167,9 +167,9 @@ open class MediaPlayerPlaybackTest {
         validMedia.scheduleErrorAtOffset(400, -1, -2)
 
         assertTrue("play not allowed", mediaPlayerPlayback.canPlay)
-        assertFalse("stop allowed", mediaPlayerPlayback.canStop)
-        assertFalse("seek allowed", mediaPlayerPlayback.canSeek)
-        assertFalse("pause not allowed", mediaPlayerPlayback.canPause)
+        assertTrue("seek not allowed", mediaPlayerPlayback.canSeek)
+        assertTrue("pause not allowed", mediaPlayerPlayback.canPause)
+        assertFalse("stop allowed before play", mediaPlayerPlayback.canStop)
 
         mediaPlayerPlayback.play()
         assertFalse("error callback called", callbackCalled)
