@@ -16,12 +16,6 @@ import io.clappr.player.components.PlaybackSupportInterface
 
 class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options) {
 
-    enum class MediaType {
-        UNKNOWN,
-        VOD,
-        LIVE
-    }
-
     enum class InternalState {
         NONE,
         IDLE,
@@ -49,7 +43,6 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         get() = PlaybackView::class.java
 
     private var mediaPlayer: MediaPlayer
-    private var type: MediaType = MediaType.UNKNOWN
 
     private var internalState: InternalState = InternalState.NONE
         set(value) {
@@ -93,7 +86,6 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
         mediaPlayer.setOnPreparedListener {
-            type = if (mediaPlayer.duration > -1) MediaType.VOD else MediaType.LIVE
             internalState = InternalState.PREPARED
             mediaPlayer.start()
             internalState = InternalState.STARTED
@@ -222,6 +214,14 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
     }
 
+    override val mediaType: MediaType
+        get() {
+            mediaPlayer?.let {
+                if (it.duration > -1) return MediaType.VOD else return MediaType.LIVE
+            }
+            return MediaType.UNKNOWN
+        }
+
     override val duration: Double
         get() {
             if (state != State.NONE && state != State.ERROR && internalState != InternalState.ATTACHED) {
@@ -249,9 +249,9 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override val canPlay: Boolean
         get() = ( (state != State.NONE) && (state != State.ERROR) )
     override val canPause: Boolean
-        get() = ( (state != State.NONE) && (state != State.ERROR) && (type == MediaType.VOD) )
+        get() = ( (state != State.NONE) && (state != State.ERROR) && (mediaType == MediaType.VOD) )
     override val canSeek: Boolean
-        get() = ( (state != State.NONE) && (state != State.ERROR) && (type == MediaType.VOD) )
+        get() = ( (state != State.NONE) && (state != State.ERROR) && (mediaType == MediaType.VOD) )
     val canStop: Boolean
         get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLED) )
 

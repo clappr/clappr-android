@@ -1,5 +1,8 @@
 package io.clappr.player.base
 
+import android.support.annotation.Keep
+
+@Keep
 enum class Event(val value: String) {
     /**
      * Player is ready for playback
@@ -93,5 +96,25 @@ enum class Event(val value: String) {
     /**
      * Poster image updated
      */
-    DID_UPDATE_POSTER("didUpdatePoster")
+    DID_UPDATE_POSTER("didUpdatePoster"),
+
+    /**
+     * Media Options Selected. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
+     */
+    MEDIA_OPTIONS_SELECTED("mediaOptionsSelected")
+}
+
+/**
+ * Event bundle data keys for selected Events
+ */
+@Keep
+enum class EventData(val value: String) {
+    /**
+     * [Event.MEDIA_OPTIONS_SELECTED] data
+     *
+     * Type: String
+     *
+     * Selected media options.
+     */
+    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse")
 }

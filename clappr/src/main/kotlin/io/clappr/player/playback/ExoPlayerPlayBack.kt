@@ -82,6 +82,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val viewClass: Class<*>
         get() = SimpleExoPlayerView::class.java
 
+    override val mediaType: MediaType
+        get() {
+            player?.let {
+                if (it.isCurrentWindowDynamic || it.duration == C.TIME_UNSET) return MediaType.LIVE else return MediaType.VOD
+            }
+            return MediaType.UNKNOWN
+        }
+
     override val duration: Double
         get() = player?.duration?.let { it.toDouble() / ONE_SECOND_IN_MILLIS } ?: Double.NaN
 
@@ -318,6 +326,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         setDefaultMedias()
+        checkInitialMedias()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
         Logger.info("MEDIA_OPTIONS_READY", tag)
     }
@@ -331,6 +340,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (availableMediaOptions(MediaOptionType.AUDIO).isNotEmpty()) {
             if (selectedMediaOption(MediaOptionType.AUDIO) == null)
                 setSelectedMediaOption(availableMediaOptions(MediaOptionType.AUDIO).first())
+        }
+    }
+
+    private fun checkInitialMedias(){
+        options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
+            setupInitialMediasFromClapprOptions()
         }
     }
 
