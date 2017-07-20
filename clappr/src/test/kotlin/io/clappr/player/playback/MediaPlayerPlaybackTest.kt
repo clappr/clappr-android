@@ -64,7 +64,6 @@ open class MediaPlayerPlaybackTest {
 
         mediaPlayerPlayback = MediaPlayerPlayback(source = "valid", options = Options())
         createSurface(mediaPlayerPlayback)
-        mediaPlayerPlayback.render()
     }
 
     private fun createSurface(mpp: MediaPlayerPlayback) {
