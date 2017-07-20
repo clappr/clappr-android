@@ -62,16 +62,9 @@ open class PlaybackTest {
 
     @Test
     fun shouldCallPlayWhenOptionsHaveAutoplayOn() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = true))
+        val playback = SomePlayback("valid-source.mp4", Options())
         playback.render()
         assertTrue("play should be called when autoplay is on", playback.playWasCalled)
-    }
-
-    @Test
-    fun shouldNotCallPlayWhenOptionsHaveAutoplayOff() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
-        playback.render()
-        assertFalse("play should not be called when autoplay is off", playback.playWasCalled)
     }
 
     @Test
@@ -117,7 +110,7 @@ open class PlaybackTest {
     }
 
     private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
         val quantity = 10
         val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
 
@@ -152,7 +145,7 @@ open class PlaybackTest {
     }
 
     private fun testSetSelectedMediaOption(mediaOptionType: MediaOptionType){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
         val random = Random()
         val randomNumber = random.nextInt(10)
         val mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
@@ -165,7 +158,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldResetAvailableMediaOptions() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
         val random = Random()
         val randomNumber = random.nextInt(10)
         insertMedia(playback, MediaOptionType.SUBTITLE, randomNumber)
@@ -179,7 +172,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldReturnNoOneSelectedMediaOption(){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
         val mediaSelectedAudio = playback.selectedMediaOption(MediaOptionType.AUDIO)
@@ -189,7 +182,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldTriggerMediaOptionsUpdateEvents() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
 
         val listenObject = BaseObject()
 
