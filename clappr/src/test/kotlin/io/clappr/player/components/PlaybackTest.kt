@@ -127,6 +127,8 @@ open class PlaybackTest {
         for (i in 0..(randomNumber-1)) {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
+
+        assertTrue(playback.hasMediaOptionAvailable)
     }
 
     private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int) : MutableList<MediaOption>{
@@ -173,6 +175,7 @@ open class PlaybackTest {
 
         assertTrue(playback.availableMediaOptions(MediaOptionType.SUBTITLE).isEmpty())
         assertTrue(playback.availableMediaOptions(MediaOptionType.AUDIO).isEmpty())
+        assertFalse(playback.hasMediaOptionAvailable)
     }
 
     @Test
