@@ -118,13 +118,12 @@ open class PlaybackTest {
 
     private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
         val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
-        val random = Random()
-        val randomNumber = random.nextInt(10)
-        val mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+        val quantity = 10
+        val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
 
         val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
         assertEquals(mediaOptionList.size, addedMediaOptionList.size)
-        for (i in 0..(randomNumber-1)) {
+        for (i in 0..quantity-1) {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
 
