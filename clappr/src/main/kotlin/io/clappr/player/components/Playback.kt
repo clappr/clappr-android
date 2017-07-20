@@ -66,6 +66,9 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     open val canSeek: Boolean
         get() = false
 
+    open val hasMediaOptionAvailable: Boolean
+        get() = mediaOptionList.isNotEmpty()
+
     open fun play(): Boolean {
         return false
     }
