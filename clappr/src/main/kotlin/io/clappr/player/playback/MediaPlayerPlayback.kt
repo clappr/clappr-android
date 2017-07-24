@@ -190,10 +190,8 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override fun render() : UIObject {
-        if (options.autoPlay) {
-            if (!play()) {
-                this.once(Event.READY.value, Callback.wrap { bundle: Bundle? -> play() })
-            }
+        if (!play()) {
+            this.once(Event.READY.value, Callback.wrap { bundle: Bundle? -> play() })
         }
 
         return this
