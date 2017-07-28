@@ -380,26 +380,25 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         subtitlesFromOptions?.forEach {
             val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE, Format.NO_VALUE, it.key, null)
             val subtitleSource = SingleSampleMediaSource(Uri.parse(it.value), dataSourceFactory, textFormat, C.TIME_UNSET)
-            addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
+
+            createSubtitleMediaOption(textFormat, subtitleSource)?.let { addAvailableMediaOption(it) }
         }
     }
 
-    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, createMediaOption: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
-            addOptions(renderedIndex, index, trackGroup, block)
+            addOptions(renderedIndex, index, trackGroup, createMediaOption)
         }
     }
 
-    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, createMediaOption: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroup.forEachFormatIndexed { index, format ->
-            format.language?.let {
-                val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
-                val mediaOption = block(format, mediaInfo)
+            val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+            val mediaOption = createMediaOption(format, mediaInfo)
 
-                mediaOption?.let {
-                    addAvailableMediaOption(mediaOption)
-                    selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
-                }
+            mediaOption?.let {
+                addAvailableMediaOption(mediaOption)
+                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
             }
         }
     }
@@ -411,24 +410,29 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption? {
-        return when (format.language?.toLowerCase()) {
-            "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
+    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption {
+        return format.language?.let { createAudioMediaOptionFromLanguage(it, mediaInfo) } ?: createAudioOffOption(mediaInfo)
+    }
+
+    private fun createAudioMediaOptionFromLanguage(language: String, mediaInfo: Options): MediaOption {
+        return when (language) {
+            "und" -> createAudioOffOption(mediaInfo)
             "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
-            null -> createAudioOffOption(mediaInfo)
-            else -> MediaOption(format.language, MediaOptionType.AUDIO, mediaInfo, null)
+            else -> MediaOption(language, MediaOptionType.AUDIO, mediaInfo, null)
         }
     }
 
-    private fun createAudioOffOption(mediaInfo: Options) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
+    private fun createAudioOffOption(raw: Any?) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
 
-    private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
-        val mediaOption = when (format.language?.toLowerCase()) {
+    private fun createSubtitleMediaOption(format: Format, raw: Any?) = format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
+
+    private fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
+        val mediaOption = when (language.toLowerCase()) {
             "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
             "por" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
-            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, raw, null)
+            else -> MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
         }
 
         return mediaOption
