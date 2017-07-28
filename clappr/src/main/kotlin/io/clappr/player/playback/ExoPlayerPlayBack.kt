@@ -343,7 +343,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun checkInitialMedias(){
+    private fun checkInitialMedias() {
         options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
             setupInitialMediasFromClapprOptions()
         }
@@ -412,9 +412,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption? {
-        return when (format.language) {
+        return when (format.language?.toLowerCase()) {
             "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
             "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
+            "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
             null -> createAudioOffOption(mediaInfo)
             else -> MediaOption(format.language, MediaOptionType.AUDIO, mediaInfo, null)
@@ -424,8 +425,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun createAudioOffOption(mediaInfo: Options) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
 
     private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
-        val mediaOption = when (format.language) {
+        val mediaOption = when (format.language?.toLowerCase()) {
             "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
+            "por" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
             else -> MediaOption(format.language, MediaOptionType.SUBTITLE, raw, null)
         }
 
