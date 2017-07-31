@@ -411,19 +411,19 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption {
-        return format.language?.let { createAudioMediaOptionFromLanguage(it, mediaInfo) } ?: createAudioOffOption(mediaInfo)
+        return format.language?.let { createAudioMediaOptionFromLanguage(it, mediaInfo) } ?: createOriginalOption(mediaInfo)
     }
 
     private fun createAudioMediaOptionFromLanguage(language: String, mediaInfo: Options): MediaOption {
         return when (language.toLowerCase()) {
-            "und" -> createAudioOffOption(mediaInfo)
+            "und" -> createOriginalOption(mediaInfo)
             "pt", "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
             else -> MediaOption(language, MediaOptionType.AUDIO, mediaInfo, null)
         }
     }
 
-    private fun createAudioOffOption(raw: Any?) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
+    private fun createOriginalOption(raw: Any?) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
 
     private fun createSubtitleMediaOption(format: Format, raw: Any?) = format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
 
