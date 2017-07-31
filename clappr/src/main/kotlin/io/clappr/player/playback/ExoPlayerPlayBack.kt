@@ -415,10 +415,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun createAudioMediaOptionFromLanguage(language: String, mediaInfo: Options): MediaOption {
-        return when (language) {
+        return when (language.toLowerCase()) {
             "und" -> createAudioOffOption(mediaInfo)
-            "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
-            "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
+            "pt", "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
             else -> MediaOption(language, MediaOptionType.AUDIO, mediaInfo, null)
         }
@@ -430,8 +429,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
         val mediaOption = when (language.toLowerCase()) {
-            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
-            "por" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
+            "pt", "por" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
             else -> MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
         }
 
