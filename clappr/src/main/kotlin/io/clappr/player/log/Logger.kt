@@ -1,6 +1,7 @@
 package io.clappr.player.log
 
 import android.util.Log
+import io.clappr.player.BuildConfig
 
 object Logger {
     var tag = "Clappr"
@@ -35,6 +36,6 @@ object Logger {
     }
 
     fun debug(scope: String? = null, message: String) {
-        log(LogLevel.DEBUG, scope, message)
+        if (BuildConfig.DEBUG_MODE) log(LogLevel.DEBUG, scope, message)
     }
 }
