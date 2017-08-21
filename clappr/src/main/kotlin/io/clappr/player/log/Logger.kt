@@ -21,8 +21,9 @@ object Logger {
         return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 
-    fun error(scope: String? = null, message: String) {
+    fun error(scope: String? = null, message: String, exception: Exception? = null) {
         log(LogLevel.ERROR, scope, message)
+        exception?.printStackTrace()
     }
 
     fun warning(scope: String? = null, message: String) {
