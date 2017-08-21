@@ -17,23 +17,23 @@ object Logger {
         }
     }
 
-    fun formattedMessage(message: String, scope: String? = null): String {
+    fun formattedMessage(scope: String? = null, message: String): String {
         return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 
-    fun error(message: String, scope: String? = null) {
-        log(LogLevel.ERROR, message, scope)
+    fun error(scope: String? = null, message: String) {
+        log(LogLevel.ERROR, scope, message)
     }
 
-    fun warning(message: String, scope: String? = null) {
-        log(LogLevel.WARNING, message, scope)
+    fun warning(scope: String? = null, message: String) {
+        log(LogLevel.WARNING, scope, message)
     }
 
-    fun info(message: String, scope: String? = null) {
-        log(LogLevel.INFO, message, scope)
+    fun info(scope: String? = null, message: String) {
+        log(LogLevel.INFO, scope, message)
     }
 
-    fun debug(message: String, scope: String? = null) {
-        log(LogLevel.DEBUG, message, scope)
+    fun debug(scope: String? = null, message: String) {
+        log(LogLevel.DEBUG, scope, message)
     }
 }

@@ -328,7 +328,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         setDefaultMedias()
         checkInitialMedias()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
-        Logger.info("MEDIA_OPTIONS_READY", tag)
+        Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
     private fun setDefaultMedias() {
@@ -452,7 +452,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             super.setSelectedMediaOption(mediaOption)
         }
 
-        Logger.info("setSelectedMediaOption", tag)
+        Logger.info(tag, "setSelectedMediaOption")
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
@@ -547,7 +547,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-            Logger.info("onTracksChanged", tag)
+            Logger.info(tag, "onTracksChanged")
         }
     }
 
