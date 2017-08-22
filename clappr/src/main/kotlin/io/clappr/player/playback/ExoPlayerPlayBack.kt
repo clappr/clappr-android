@@ -46,10 +46,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
 
+    protected var player: SimpleExoPlayer? = null
+    protected val bandwidthMeter = DefaultBandwidthMeter()
+
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
-    private var player: SimpleExoPlayer? = null
     private var lastBufferPercentageSent = 0.0
     private var trackSelector: DefaultTrackSelector? = null
     private var currentState = State.NONE
@@ -60,7 +62,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val formatIndexKey = "formatIndexKey"
     private var needSetupMediaOptions = true
 
-    private val bandwidthMeter = DefaultBandwidthMeter()
     private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
