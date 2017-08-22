@@ -46,10 +46,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
 
+    protected var player: SimpleExoPlayer? = null
+    protected val bandwidthMeter = DefaultBandwidthMeter()
+
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
-    private var player: SimpleExoPlayer? = null
     private var lastBufferPercentageSent = 0.0
     private var trackSelector: DefaultTrackSelector? = null
     private var currentState = State.NONE
@@ -60,7 +62,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val formatIndexKey = "formatIndexKey"
     private var needSetupMediaOptions = true
 
-    private val bandwidthMeter = DefaultBandwidthMeter()
     private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
@@ -328,7 +329,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         setDefaultMedias()
         checkInitialMedias()
         trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
-        Logger.info("MEDIA_OPTIONS_READY", tag)
+        Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
     private fun setDefaultMedias() {
@@ -343,7 +344,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun checkInitialMedias(){
+    private fun checkInitialMedias() {
         options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
             setupInitialMediasFromClapprOptions()
         }
@@ -380,26 +381,25 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         subtitlesFromOptions?.forEach {
             val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE, Format.NO_VALUE, it.key, null)
             val subtitleSource = SingleSampleMediaSource(Uri.parse(it.value), dataSourceFactory, textFormat, C.TIME_UNSET)
-            addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
+
+            createSubtitleMediaOption(textFormat, subtitleSource)?.let { addAvailableMediaOption(it) }
         }
     }
 
-    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, createMediaOption: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
-            addOptions(renderedIndex, index, trackGroup, block)
+            addOptions(renderedIndex, index, trackGroup, createMediaOption)
         }
     }
 
-    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, block: (format: Format, mediaInfo: Options) -> MediaOption?) {
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, createMediaOption: (format: Format, mediaInfo: Options) -> MediaOption?) {
         trackGroup.forEachFormatIndexed { index, format ->
-            format.language?.let {
-                val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
-                val mediaOption = block(format, mediaInfo)
+            val mediaInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+            val mediaOption = createMediaOption(format, mediaInfo)
 
-                mediaOption?.let {
-                    addAvailableMediaOption(mediaOption)
-                    selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
-                }
+            mediaOption?.let {
+                addAvailableMediaOption(mediaOption)
+                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
             }
         }
     }
@@ -411,22 +411,27 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption? {
-        return when (format.language) {
-            "und" -> MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
-            "pt" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
+    private fun createAudioMediaOption(format: Format, mediaInfo: Options): MediaOption {
+        return format.language?.let { createAudioMediaOptionFromLanguage(it, mediaInfo) } ?: createOriginalOption(mediaInfo)
+    }
+
+    private fun createAudioMediaOptionFromLanguage(language: String, mediaInfo: Options): MediaOption {
+        return when (language.toLowerCase()) {
+            "und" -> createOriginalOption(mediaInfo)
+            "pt", "por" -> MediaOption(MediaOptionType.Audio.PT_BR.value, MediaOptionType.AUDIO, mediaInfo, null)
             "en" -> MediaOption(MediaOptionType.Audio.EN.value, MediaOptionType.AUDIO, mediaInfo, null)
-            null -> createAudioOffOption(mediaInfo)
-            else -> MediaOption(format.language, MediaOptionType.AUDIO, mediaInfo, null)
+            else -> MediaOption(language, MediaOptionType.AUDIO, mediaInfo, null)
         }
     }
 
-    private fun createAudioOffOption(mediaInfo: Options) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, mediaInfo, null)
+    private fun createOriginalOption(raw: Any?) = MediaOption(MediaOptionType.Audio.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
 
-    private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
-        val mediaOption = when (format.language) {
-            "pt" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
-            else -> MediaOption(format.language, MediaOptionType.SUBTITLE, raw, null)
+    private fun createSubtitleMediaOption(format: Format, raw: Any?) = format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
+
+    private fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
+        val mediaOption = when (language.toLowerCase()) {
+            "pt", "por" -> MediaOption(MediaOptionType.Language.PT_BR.value, MediaOptionType.SUBTITLE, raw, null)
+            else -> MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
         }
 
         return mediaOption
@@ -448,7 +453,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             super.setSelectedMediaOption(mediaOption)
         }
 
-        Logger.info("setSelectedMediaOption", tag)
+        Logger.info(tag, "setSelectedMediaOption")
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
@@ -543,7 +548,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
-            Logger.info("onTracksChanged", tag)
+            Logger.info(tag, "onTracksChanged")
         }
     }
 

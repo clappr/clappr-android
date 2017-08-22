@@ -1,42 +1,41 @@
 package io.clappr.player.log
 
 import android.util.Log
+import io.clappr.player.BuildConfig
 
 object Logger {
-    var level = LogLevel.INFO
     var tag = "Clappr"
 
-    fun log(level: LogLevel, message: String, scope: String? = null) {
-        if (level <= level) {
-            val formatted = formattedMessage(message, scope)
+    fun log(level: LogLevel, scope: String? = null, message: String) {
+        val formatted = formattedMessage(scope, message)
 
-            when (level) {
-                LogLevel.DEBUG -> Log.d(tag, formatted)
-                LogLevel.INFO -> Log.i(tag, formatted)
-                LogLevel.WARNING -> Log.w(tag, formatted)
-                LogLevel.ERROR -> Log.e(tag, formatted)
-                LogLevel.OFF -> {}
-            }
+        when (level) {
+            LogLevel.DEBUG -> Log.d(tag, formatted)
+            LogLevel.INFO -> Log.i(tag, formatted)
+            LogLevel.WARNING -> Log.w(tag, formatted)
+            LogLevel.ERROR -> Log.e(tag, formatted)
+            LogLevel.OFF -> {}
         }
     }
 
-    fun formattedMessage(message: String, scope: String? = null): String {
+    fun formattedMessage(scope: String? = null, message: String): String {
         return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 
-    fun error(message: String, scope: String? = null) {
-        log(LogLevel.ERROR, message, scope)
+    fun error(scope: String? = null, message: String, exception: Exception? = null) {
+        log(LogLevel.ERROR, scope, message)
+        exception?.printStackTrace()
     }
 
-    fun warning(message: String, scope: String? = null) {
-        log(LogLevel.WARNING, message, scope)
+    fun warning(scope: String? = null, message: String) {
+        log(LogLevel.WARNING, scope, message)
     }
 
-    fun info(message: String, scope: String? = null) {
-        log(LogLevel.INFO, message, scope)
+    fun info(scope: String? = null, message: String) {
+        log(LogLevel.INFO, scope, message)
     }
 
-    fun debug(message: String, scope: String? = null) {
-        log(LogLevel.DEBUG, message, scope)
+    fun debug(scope: String? = null, message: String) {
+        if (BuildConfig.DEBUG_MODE) log(LogLevel.DEBUG, scope, message)
     }
 }

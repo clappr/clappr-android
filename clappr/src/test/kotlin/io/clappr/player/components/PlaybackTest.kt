@@ -19,8 +19,8 @@ import kotlin.collections.HashMap
 open class PlaybackTest {
 
 
-    class SomePlayback(source: String, options: Options = Options()): Playback(source, null, options) {
-        companion object: PlaybackSupportInterface {
+    class SomePlayback(source: String, options: Options = Options()) : Playback(source, null, options) {
+        companion object : PlaybackSupportInterface {
             val validSource = "valid-source.mp4"
             override val name = ""
 
@@ -40,12 +40,12 @@ open class PlaybackTest {
 
     @Before
     fun setup() {
-      BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.context = ShadowApplication.getInstance().applicationContext
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun shouldThrowWhenInstantiatingWithInvalidSource() {
-        object: Playback("some-invalid-source.mp4") {}
+        object : Playback("some-invalid-source.mp4") {}
     }
 
     @Test
@@ -62,16 +62,9 @@ open class PlaybackTest {
 
     @Test
     fun shouldCallPlayWhenOptionsHaveAutoplayOn() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = true))
+        val playback = SomePlayback("valid-source.mp4", Options())
         playback.render()
         assertTrue("play should be called when autoplay is on", playback.playWasCalled)
-    }
-
-    @Test
-    fun shouldNotCallPlayWhenOptionsHaveAutoplayOff() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
-        playback.render()
-        assertFalse("play should not be called when autoplay is off", playback.playWasCalled)
     }
 
     @Test
@@ -117,7 +110,7 @@ open class PlaybackTest {
     }
 
     private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
         val quantity = 10
         val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
 
@@ -130,8 +123,8 @@ open class PlaybackTest {
         assertTrue(playback.hasMediaOptionAvailable)
     }
 
-    private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int) : MutableList<MediaOption>{
-        val mediaOptionList : MutableList<MediaOption> = ArrayList()
+    private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int): MutableList<MediaOption> {
+        val mediaOptionList: MutableList<MediaOption> = ArrayList()
         for (i in 1..quantity) {
             val mediaOption = MediaOption("Name $i", mediaOptionType, i, null)
             playback.addAvailableMediaOption(mediaOption)
@@ -151,11 +144,9 @@ open class PlaybackTest {
         testSetSelectedMediaOption(MediaOptionType.SUBTITLE)
     }
 
-    private fun testSetSelectedMediaOption(mediaOptionType: MediaOptionType){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
-        val random = Random()
-        val randomNumber = random.nextInt(10)
-        val mediaOptionList = insertMedia(playback, mediaOptionType, randomNumber)
+    private fun testSetSelectedMediaOption(mediaOptionType: MediaOptionType) {
+        val playback = SomePlayback("valid-source.mp4")
+        val mediaOptionList = insertMedia(playback, mediaOptionType, 3)
 
         mediaOptionList.forEach {
             playback.setSelectedMediaOption(it)
@@ -165,7 +156,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldResetAvailableMediaOptions() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
         val random = Random()
         val randomNumber = random.nextInt(10)
         insertMedia(playback, MediaOptionType.SUBTITLE, randomNumber)
@@ -179,7 +170,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldReturnNoOneSelectedMediaOption(){
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
         val mediaSelectedAudio = playback.selectedMediaOption(MediaOptionType.AUDIO)
@@ -189,7 +180,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldTriggerMediaOptionsUpdateEvents() {
-        val playback = SomePlayback("valid-source.mp4", Options(autoPlay = false))
+        val playback = SomePlayback("valid-source.mp4", Options())
 
         val listenObject = BaseObject()
 
@@ -260,7 +251,7 @@ open class PlaybackTest {
             val options = Options(options = hashMap)
             val playback = SomePlayback("valid-source.mp4", options)
             playback.setupInitialMediasFromClapprOptions()
-        } catch (ex: Exception){
+        } catch (ex: Exception) {
             fail("Exception: ${ex.message}")
         }
     }

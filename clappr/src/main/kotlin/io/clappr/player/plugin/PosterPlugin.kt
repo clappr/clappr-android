@@ -30,7 +30,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         val picasso: Picasso by lazy {
             Picasso.Builder(context).downloader(OkHttp3Downloader(httpClient))
-                .listener({ _, uri, _ -> Logger.error("Failed to load image: $uri") })
+                .listener({ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") })
                 .build()
         }
     }

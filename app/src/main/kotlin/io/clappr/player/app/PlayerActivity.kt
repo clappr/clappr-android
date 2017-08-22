@@ -10,14 +10,14 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.log.Logger
 
-class PlayerActivity : Activity() {
+class  PlayerActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
         val player = Player()
-        player.configure(Options(source = "http://clappr.io/highline.mp4", autoPlay = true))
+        player.configure(Options(source = "http://clappr.io/highline.mp4"))
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("Will Play", "App") })
         player.on(Event.PLAYING.value, Callback.wrap { Logger.info("Playing", "App") })
         player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("Completed", "App") })
@@ -26,6 +26,8 @@ class PlayerActivity : Activity() {
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player)
         fragmentTransaction.commit()
+
+        player.play()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

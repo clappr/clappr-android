@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
@@ -12,6 +11,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.log.Logger
 
 
 class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options) {
@@ -57,7 +57,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         mediaPlayer = MediaPlayer()
 
         mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->
-            Log.i(TAG, infoLog(what, extra))
+            infoLog(what, extra)?.let { Logger.info(TAG, it) }
             when(what) {
                 MediaPlayer.MEDIA_INFO_BUFFERING_START -> internalState = InternalState.BUFFERING
                 MediaPlayer.MEDIA_INFO_BUFFERING_END -> internalState = InternalState.STARTED
@@ -66,20 +66,20 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
         mediaPlayer.setOnErrorListener { mp, what, extra ->
-            Log.i(TAG, "error: " + what + "(" + extra + ")" )
+            Logger.info(TAG, "error: " + what + "(" + extra + ")" )
             internalState = InternalState.ERROR
             true
         }
 
         mediaPlayer.setOnSeekCompleteListener {
-            Log.i(TAG, "seek completed")
+            Logger.info(TAG, "seek completed")
             if (mediaPlayer?.isPlaying) {
                 trigger(Event.PLAYING.value)
             }
         }
 
         mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
-            Log.i(TAG, "video size: " + width + " / " + height)
+            Logger.info(TAG, "video size: " + width + " / " + height)
             (view as? PlaybackView)?.videoWidth = width
             (view as? PlaybackView)?.videoHeight = height
             view?.requestLayout()
@@ -92,7 +92,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
         mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
-            Log.i(TAG, "buffered percentage: " + percent)
+            Logger.info(TAG, "buffered percentage: " + percent)
             val bundle = Bundle()
 
             bundle.putDouble("percentage", percent.toDouble())
@@ -115,18 +115,18 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             val holder = (view as? PlaybackView)?.holder
             holder?.addCallback(object: SurfaceHolder.Callback {
                 override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
-                    Log.i(TAG, "surface changed: " + format + "/" + width + "/" + height)
+                    Logger.info(TAG, "surface changed: " + format + "/" + width + "/" + height)
                 }
 
                 override fun surfaceDestroyed(sh: SurfaceHolder) {
-                    Log.i(TAG, "surface destroyed")
+                    Logger.info(TAG, "surface destroyed")
                     stop()
                     mediaPlayer.setDisplay(null)
                     internalState = InternalState.IDLE
                 }
 
                 override fun surfaceCreated(sh: SurfaceHolder) {
-                    Log.i(TAG, "surface created")
+                    Logger.info(TAG, "surface created")
                     mediaPlayer.setDisplay(holder)
                     internalState = InternalState.ATTACHED
                 }
@@ -170,30 +170,28 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
             var width = View.getDefaultSize(videoWidth, widthMeasureSpec)
             var height = View.getDefaultSize(videoHeight, heightMeasureSpec)
-            Log.i(TAG, "onMeasure: " + width + "/" + height)
+            Logger.info(TAG, "onMeasure: " + width + "/" + height)
 
             if ( (videoWidth > 0) && (videoHeight > 0) ) {
                 if (videoWidth * height > width * videoHeight) {
-                    Log.i(TAG, "image too tall")
+                    Logger.info(TAG, "image too tall")
                     height = width * videoHeight / videoWidth
                 } else if (videoWidth * height <  width * videoHeight) {
-                    Log.i(TAG, "image too wide")
+                    Logger.info(TAG, "image too wide")
                     width = height * videoWidth / videoHeight
                 } else {
-                    Log.i(TAG, "aspect ratio is correct: " + width + "/" + height + " = " + videoWidth + "/" + videoHeight)
+                    Logger.info(TAG, "aspect ratio is correct: " + width + "/" + height + " = " + videoWidth + "/" + videoHeight)
                 }
             }
 
-            Log.i(TAG, "setting size to: " + width + "/" + height)
+            Logger.info(TAG, "setting size to: " + width + "/" + height)
             setMeasuredDimension(width, height)
         }
     }
 
     override fun render() : UIObject {
-        if (options.autoPlay) {
-            if (!play()) {
-                this.once(Event.READY.value, Callback.wrap { bundle: Bundle? -> play() })
-            }
+        if (!play()) {
+            this.once(Event.READY.value, Callback.wrap { bundle: Bundle? -> play() })
         }
 
         return this
@@ -297,7 +295,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 mediaPlayer.stop()
                 internalState = InternalState.STOPPED
             } catch (iee: IllegalStateException) {
-                Log.i(TAG, "stop", iee)
+                Logger.info(TAG, "stop - $iee")
             }
             return true
         } else {

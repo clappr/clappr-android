@@ -188,7 +188,6 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         // TODO: Use container load instead of a new Player configuration
         core?.let {
             val options = it.options
-            options.autoPlay = true
             options.source = source
             options.mimeType = mimeType
             configure(options)

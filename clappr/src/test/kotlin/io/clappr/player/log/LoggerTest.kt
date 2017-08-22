@@ -14,14 +14,14 @@ class LoggerTest {
     @Test
     fun shouldFormatMessageWithScope() {
         val expected = "[scope] message"
-        val result = Logger.formattedMessage("message", "scope")
+        val result = Logger.formattedMessage("scope", "message")
         assertEquals(expected, result)
     }
 
     @Test
     fun shouldFormatMessageWithoutScope() {
         val expected = "message"
-        val result = Logger.formattedMessage("message")
+        val result = Logger.formattedMessage(message = "message")
         assertEquals(expected, result)
     }
 }
