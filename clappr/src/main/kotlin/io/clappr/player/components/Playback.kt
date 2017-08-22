@@ -147,7 +147,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
                         .forEach { setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson)) }
             }
         } catch (jsonException: JSONException){
-            Logger.error("Parser Json Exception ${jsonException.message}", name)
+            Logger.error(name, "Parser Json Exception ${jsonException.message}")
         }
     }
 

@@ -57,6 +57,11 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "DEBUG_MODE", "false"
+        }
+
+        debug {
+            buildConfigField "boolean", "DEBUG_MODE", "true"
         }
     }
     productFlavors {
