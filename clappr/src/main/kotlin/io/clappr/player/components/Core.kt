@@ -49,9 +49,9 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
                 field = value
 
                 activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle) } )
+                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
                 activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle) } )
+                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
                 trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
@@ -70,7 +70,13 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
 
         val container = Container(loader, options)
         containers.add(container)
+    }
+
+    fun load() {
         activeContainer = containers.first()
+        options.source?.let {
+            activeContainer?.load(it, options.mimeType)
+        }
     }
 
     fun destroy() {

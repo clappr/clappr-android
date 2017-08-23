@@ -173,7 +173,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      *
      */
     fun configure(options: Options) {
-        core = Core(loader, options)
+        core = Core(loader, options).apply { load() }
     }
 
     /**

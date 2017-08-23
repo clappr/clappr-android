@@ -34,11 +34,6 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
 
     init {
         internalPlugins = loader.loadPlugins(this).toMutableList()
-        val source = options.source
-        val mimeType = options.mimeType
-        if (source != null) {
-            load(source, mimeType)
-        }
     }
 
     fun destroy() {
