@@ -31,10 +31,16 @@ open class PlaybackTest {
         }
 
         var playWasCalled = false
+        var seekWasCalled = false
 
         override fun play(): Boolean {
             playWasCalled = true
             return super.play()
+        }
+
+        override fun seek(seconds: Int): Boolean {
+            seekWasCalled = true
+            return super.seek(seconds)
         }
     }
 
@@ -65,6 +71,39 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
         playback.render()
         assertTrue("play should be called when autoplay is on", playback.playWasCalled)
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveIntValueStartAt() {
+        var option = Options()
+        option.put(ClapprOption.START_AT.value, 80)
+        val playback = SomePlayback("valid-source.mp4", option)
+        playback.render()
+        playback.once(Event.READY.value, Callback.wrap {
+            assertTrue("seek should be called when start at is set", playback.seekWasCalled)
+        })
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveFloatValueStartAt() {
+        var option = Options()
+        option.put(ClapprOption.START_AT.value, 70.0)
+        val playback = SomePlayback("valid-source.mp4", option)
+        playback.render()
+        playback.once(Event.READY.value, Callback.wrap {
+            assertTrue("seek should be called when start at is set", playback.seekWasCalled)
+        })
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveNotANumberValueStartAt() {
+        var option = Options()
+        option.put(ClapprOption.START_AT.value, "fail")
+        val playback = SomePlayback("valid-source.mp4", option)
+        playback.render()
+        playback.once(Event.READY.value, Callback.wrap {
+            assertFalse("seek should be called when start at is set", playback.seekWasCalled)
+        })
     }
 
     @Test
