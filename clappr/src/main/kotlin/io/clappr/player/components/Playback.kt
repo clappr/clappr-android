@@ -46,7 +46,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     }
 
     open val mediaType: MediaType
-            get() = MediaType.UNKNOWN
+        get() = MediaType.UNKNOWN
 
     open val duration: Double
         get() = Double.NaN
@@ -137,7 +137,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
         return result.toString()
     }
 
-    fun setupInitialMediasFromClapprOptions(){
+    fun setupInitialMediasFromClapprOptions() {
         try {
             options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
                 val jsonObject = JSONObject(it as? String)
@@ -146,15 +146,15 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
                         .map { jsonArray.getJSONObject(it) }
                         .forEach { setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson)) }
             }
-        } catch (jsonException: JSONException){
+        } catch (jsonException: JSONException) {
             Logger.error(name, "Parser Json Exception ${jsonException.message}")
         }
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList.forEach {
-            if(it.name.toUpperCase() == mediaOptionName.toUpperCase()
-                    && it.type.name.toUpperCase() == mediaOptionType.toUpperCase()){
+            if (it.name.toUpperCase() == mediaOptionName.toUpperCase()
+                    && it.type.name.toUpperCase() == mediaOptionType.toUpperCase()) {
                 setSelectedMediaOption(it)
             }
         }
@@ -177,8 +177,9 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     override fun render(): UIObject {
         if (options.containsKey(ClapprOption.START_AT.value)) {
             once(Event.READY.value, Callback.wrap {
-                (options[ClapprOption.START_AT.value] as? Int)?.let {
-                    seek(it)
+                val playbackStartPointInSeconds = options[ClapprOption.START_AT.value]
+                if (playbackStartPointInSeconds is Number) {
+                    seek(playbackStartPointInSeconds.toInt())
                 }
                 options.remove(ClapprOption.START_AT.value)
             })
