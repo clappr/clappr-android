@@ -9,7 +9,7 @@ class Options(
 
 enum class ClapprOption(val value: String) {
     /**
-     * Media start position. This value can be a number, but the value may be trunked to an Integer
+     * This value can be a number, but will be converted to Integer and may cause a truncated value
      */
     START_AT("startAt"),
     /**
