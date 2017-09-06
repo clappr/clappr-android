@@ -31,10 +31,18 @@ open class PlaybackTest {
         }
 
         var playWasCalled = false
+        var seekWasCalled = false
+        var seekValueInSeconds: Int = 0
 
         override fun play(): Boolean {
             playWasCalled = true
             return super.play()
+        }
+
+        override fun seek(seconds: Int): Boolean {
+            seekWasCalled = true
+            seekValueInSeconds = seconds
+            return super.seek(seconds)
         }
     }
 
@@ -65,6 +73,46 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
         playback.render()
         assertTrue("play should be called when autoplay is on", playback.playWasCalled)
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveIntValueStartAt() {
+        testPlaybackSeek(80, shouldAssertSeekValue = true)
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveFloatValueStartAt() {
+        testPlaybackSeek(70.0f, shouldAssertSeekValue = true)
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveDoubleValueStartAt() {
+        testPlaybackSeek(70.0, shouldAssertSeekValue = true)
+    }
+
+    @Test
+    fun shouldCallSeekWhenOptionsHaveNotANumberValueStartAt() {
+        testPlaybackSeek("fail", shouldAssertSeekValue = false)
+    }
+
+    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean) {
+        var option = Options()
+        option.put(ClapprOption.START_AT.value, startAtValue)
+
+        var willSeekBeCalled = false
+
+        val playback = SomePlayback("valid-source.mp4", option)
+        playback.render()
+        playback.once(Event.READY.value, Callback.wrap {
+            willSeekBeCalled = shouldAssertSeekValue
+        }, playback)
+
+        playback.trigger(Event.READY.value)
+
+        assertEquals("seek should be called when start at is set", willSeekBeCalled, playback.seekWasCalled)
+        if (shouldAssertSeekValue) {
+            assertEquals("seek value in seconds ", (startAtValue as Number).toInt() , playback.seekValueInSeconds)
+        }
     }
 
     @Test
