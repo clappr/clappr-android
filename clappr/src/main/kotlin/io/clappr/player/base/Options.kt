@@ -9,7 +9,7 @@ class Options(
 
 enum class ClapprOption(val value: String) {
     /**
-     * This value can be a number, but will be converted to Integer and may cause a truncated value
+     * This value can be a number, but will be converted to Integer and may cause a truncated value branch
      */
     START_AT("startAt"),
     /**
