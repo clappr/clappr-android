@@ -6,6 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.15"
     }
 }
 
@@ -14,6 +15,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'org.jetbrains.dokka-android'
 
 apply from: 'versioning.gradle'
 
@@ -102,4 +104,23 @@ task sourcesJar(type: Jar) {
 
 artifacts {
     archives sourcesJar
+}
+
+
+dokka {
+    includes = ['clappr.md']
+
+    outputFormat = 'gfm'
+    outputDirectory = "$buildDir/dokka/gfm"
+
+    linkMapping {
+        dir = "src/main/kotlin"
+        url = "https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin"
+        suffix = "#L"
+    }
+}
+
+task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
+    outputFormat = "javadoc"
+    outputDirectory = "$buildDir/dokkaJavadoc"
 }
