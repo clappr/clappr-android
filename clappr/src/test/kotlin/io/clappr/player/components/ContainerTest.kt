@@ -1,15 +1,16 @@
 package io.clappr.player.base
 
-import android.os.Bundle
 import io.clappr.player.BuildConfig
 import io.clappr.player.components.Container
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
-import io.clappr.player.plugin.container.ContainerPlugin
 import io.clappr.player.plugin.Loader
-import org.junit.*
+import io.clappr.player.plugin.container.ContainerPlugin
 import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Ignore
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -48,7 +49,8 @@ open class ContainerTest {
     @Test
     fun shouldLoadPlaybackForSupportedSource() {
         Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options("some_source.mp4"))
+        val container = Container(Loader(), Options())
+        container.load("some_source.mp4")
 
         assertNotNull("should have created playback", container.playback)
         assertEquals("should have created mp4 playback", container.playback?.name, MP4Playback.name)
@@ -97,7 +99,8 @@ open class ContainerTest {
     @Test
     fun shouldNotTriggerPlaybackChangedWhenSamePlayback() {
         Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options("some_unknown_source.mp4"))
+        val container = Container(Loader(), Options())
+        container.load("some_unknown_source.mp4")
 
         var callbackWasCalled = false
         container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true})
@@ -176,7 +179,8 @@ open class ContainerTest {
     @Test @Ignore
     fun shouldDestroyPlaybackOnDestroy() {
         Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options("some_source.mp4"))
+        val container = Container(Loader(), Options())
+        container.load("some_source.mp4")
 
         assertNotNull("No playback", container.playback)
 
@@ -191,7 +195,9 @@ open class ContainerTest {
     @Test
     fun shouldClearPlaybackOnDestroy() {
         Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options("some_source.mp4"))
+
+        val container = Container(Loader(), Options())
+        container.load("some_source.mp4")
 
         assertNotNull("No playback", container.playback)
 

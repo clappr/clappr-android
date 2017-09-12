@@ -18,7 +18,9 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.0.18'
+def clapprVersion = '0.0.19'
+def branchName = 'release/0.0.19' // ex: empty or release/x.y.z or [feature or fix]/abc_xyz
+def releaseType = 'RELEASE' // ex: RELEASE or RCx
 
 bintray {
     user = System.getenv('BINTRAY_USER')
@@ -40,13 +42,14 @@ bintray {
 }
 
 android {
+    publishNonDefault true
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode buildVersionCode(version)
-        versionName version
+        versionCode buildVersionCode(clapprVersion)
+        versionName buildVersionName(clapprVersion, branchName, releaseType)
     }
     packagingOptions {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
@@ -57,11 +60,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "boolean", "DEBUG_MODE", "false"
-        }
-
-        debug {
-            buildConfigField "boolean", "DEBUG_MODE", "true"
         }
     }
     productFlavors {
@@ -76,6 +74,11 @@ android {
             jvmArgs '-XX:MaxPermSize=256m'
         }
     }
+}
+
+configurations {
+    debug
+    release
 }
 
 dependencies {

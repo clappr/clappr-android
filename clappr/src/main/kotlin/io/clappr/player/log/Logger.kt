@@ -36,6 +36,6 @@ object Logger {
     }
 
     fun debug(scope: String? = null, message: String) {
-        if (BuildConfig.DEBUG_MODE) log(LogLevel.DEBUG, scope, message)
+        log(LogLevel.DEBUG, scope, message)
     }
 }
