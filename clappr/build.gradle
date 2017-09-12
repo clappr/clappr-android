@@ -111,7 +111,8 @@ dokka {
     includes = ['clappr.md']
 
     outputFormat = 'gfm'
-    outputDirectory = "$buildDir/dokka/gfm"
+    outputDirectory = "$projectDir/doc"
+    processConfigurations = []
 
     linkMapping {
         dir = "src/main/kotlin"
@@ -120,7 +121,3 @@ dokka {
     }
 }
 
-task dokkaJavadoc(type: org.jetbrains.dokka.gradle.DokkaTask) {
-    outputFormat = "javadoc"
-    outputDirectory = "$buildDir/dokkaJavadoc"
-}
