@@ -7,4 +7,19 @@ ext {
 
         (major * 1000000) + (minor * 1000) + patch;
     }
+    buildVersionName = { version, branchName, releaseType ->
+        // branchName: empty or release/x.y.z or [feature or fix]/abc_xyz
+        // releaseType: RELEASE, RCx or SNAPSHOTx
+        def name = ''
+        if (releaseType.toUpperCase().startsWith("RC") || releaseType.toUpperCase().startsWith("SNAPSHOT")) {
+            if (branchName.startsWith("release/") || branchName == "master" || branchName == "") {
+                name = version + '-' + releaseType.toUpperCase()
+            } else {
+                name = branchName + '-' + releaseType.toUpperCase()
+            }
+        } else {
+            name = version
+        }
+        name;
+    }
 }
