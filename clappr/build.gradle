@@ -18,8 +18,8 @@ apply plugin: 'com.github.dcendents.android-maven'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-def clapprVersion = '0.0.18'
-def branchName = 'release/0.0.18' // ex: empty or release/x.y.z or [feature or fix]/abc_xyz
+def clapprVersion = '0.0.19'
+def branchName = 'release/0.0.19' // ex: empty or release/x.y.z or [feature or fix]/abc_xyz
 def releaseType = 'RELEASE' // ex: RELEASE or RCx
 
 bintray {
