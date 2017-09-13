@@ -40,7 +40,6 @@ bintray {
 }
 
 android {
-    publishNonDefault true
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
@@ -77,11 +76,6 @@ android {
             jvmArgs '-XX:MaxPermSize=256m'
         }
     }
-}
-
-configurations {
-    debug
-    release
 }
 
 dependencies {
