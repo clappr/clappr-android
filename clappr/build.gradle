@@ -108,8 +108,6 @@ artifacts {
 
 
 dokka {
-    includes = ['clappr.md']
-
     outputFormat = 'gfm'
     outputDirectory = "$projectDir/doc"
     processConfigurations = []
