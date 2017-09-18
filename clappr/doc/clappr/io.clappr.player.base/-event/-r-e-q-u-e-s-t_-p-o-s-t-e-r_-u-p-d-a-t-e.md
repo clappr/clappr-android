@@ -1,0 +1,13 @@
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [REQUEST_POSTER_UPDATE](.)
+
+# REQUEST_POSTER_UPDATE
+
+`REQUEST_POSTER_UPDATE`
+
+Request to update poster
+
+### Inherited Properties
+
+| Name | Summary |
+|---|---|
+| [value](value.md) | `val value: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
