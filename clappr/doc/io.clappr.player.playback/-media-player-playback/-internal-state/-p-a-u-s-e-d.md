@@ -1,5 +1,0 @@
-[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [MediaPlayerPlayback](../index.md) / [InternalState](index.md) / [PAUSED](.)
-
-# PAUSED
-
-`PAUSED` [(source)](https://github.com/clappr/clappr-android/tree/dev/clappr/src/main/kotlin/io/clappr/player/playback/MediaPlayerPlayback.kt#L32)

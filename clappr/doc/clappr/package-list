@@ -1,0 +1,13 @@
+$dokka.format:gfm
+$dokka.linkExtension:md
+
+io.clappr.player
+io.clappr.player.base
+io.clappr.player.components
+io.clappr.player.log
+io.clappr.player.periodicTimer
+io.clappr.player.playback
+io.clappr.player.plugin
+io.clappr.player.plugin.container
+io.clappr.player.plugin.core
+io.clappr.player.widget
