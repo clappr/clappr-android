@@ -22,33 +22,36 @@ apply from: 'versioning.gradle'
 group = 'io.clappr.player'
 version = '0.0.19'
 
+def publishAttrs = buildPublishAttrs(version)
+
 bintray {
     user = System.getenv('BINTRAY_USER')
     key = System.getenv('BINTRAY_API_KEY')
     configurations = ['archives']
     pkg {
         repo = 'clappr'
-        name = 'clappr-android-release'
+        name = publishAttrs['bintrayRepoName']
         userOrg = 'clappr-android'
         licenses = ['BSD 3-Clause']
         vcsUrl = 'https://github.com/clappr/clappr-android.git'
         version {
-            name = "$version"
-            desc = 'Clappr alpha version'
+            name = publishAttrs['versionName']
+            desc = publishAttrs['bintrayVersionDesc']
             released  = new Date()
-            vcsTag = "$version"
+            vcsTag = publishAttrs['versionName']
         }
     }
 }
 
 android {
+    publishNonDefault true
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 25
-        versionCode buildVersionCode(version)
-        versionName version
+        versionCode publishAttrs['versionCode']
+        versionName publishAttrs['versionName']
     }
     packagingOptions {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
@@ -59,11 +62,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "boolean", "DEBUG_MODE", "false"
-        }
-
-        debug {
-            buildConfigField "boolean", "DEBUG_MODE", "true"
         }
     }
     productFlavors {
@@ -78,6 +76,11 @@ android {
             jvmArgs '-XX:MaxPermSize=256m'
         }
     }
+}
+
+configurations {
+    debug
+    release
 }
 
 dependencies {
