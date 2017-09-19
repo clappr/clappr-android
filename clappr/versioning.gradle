@@ -1,4 +1,9 @@
 ext {
+    def version_regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
+    def version_suffix_regex = "[-\\w]*"
+    def RC = "RC"
+    def RELEASE = "RELEASE"
+
     buildVersionCode = { version ->
         def (major, minor, patch) = version.toLowerCase().tokenize('.')
         patch = patch.tokenize('-').first()
@@ -9,17 +14,17 @@ ext {
     }
     // major.minor.patch[-abc]
     isWellFormatted = { version ->
-        version.matches("\\d{1,3}.\\d{1,3}.\\d{1,3}[-\\w]*");
+        version.matches(version_regex + version_suffix_regex);
     }
     buildVersionType = { version ->
         if (version.toUpperCase().contains("SNAPSHOT")) {
             throw new Exception("Reserved word \"SNAPSHOT\" can not be used in the version name")
-        } else if (isWellFormatted(version) == false) {
+        } else if (!isWellFormatted(version)) {
             throw new Exception("Wrong version format \"$version\"")
         } else if (version.contains("-RC")) {
-            "RC";
-        } else if (version.matches("\\d{1,3}.\\d{1,3}.\\d{1,3}")) {
-            "RELEASE";
+            RC;
+        } else if (version.matches(version_regex)) {
+            RELEASE;
         } else {
             throw new Exception("Wrong version format \"$version\"")
         }
@@ -29,8 +34,8 @@ ext {
         def versionName = version
         def versionCode = buildVersionCode(version)
 
-        def bintrayRepoName = (versionType == "RC")? 'clappr-android-snapshot' : 'clappr-android-release'
-        def bintrayVersionDesc = versionType == "RC"? 'Clappr release candidate' : 'Clappr alpha version'
+        def bintrayRepoName = (versionType == RC)? 'clappr-android-snapshot' : 'clappr-android-release'
+        def bintrayVersionDesc = (versionType == RC)? 'Clappr release candidate' : 'Clappr alpha version'
         println "Building $bintrayVersionDesc ($versionCode - $versionName) as $versionType to publish on $bintrayRepoName"
 
         [
