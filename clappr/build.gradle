@@ -29,6 +29,7 @@ bintray {
     key = System.getenv('BINTRAY_API_KEY')
     configurations = ['archives']
     pkg {
+        publish = true
         repo = 'clappr'
         name = publishAttrs['bintrayRepoName']
         userOrg = 'clappr-android'
@@ -44,7 +45,7 @@ bintray {
 }
 
 android {
-    publishNonDefault true
+    publishNonDefault publishAttrs['bintrayPublishNonDefault']
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
@@ -69,6 +70,9 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+    }
+    lintOptions {
+        abortOnError false
     }
 
     testOptions {
