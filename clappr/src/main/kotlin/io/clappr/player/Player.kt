@@ -167,13 +167,13 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     /**
      * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
-     *
      * @param options
      *          a map of key-value options.
      *
      */
     fun configure(options: Options) {
-        core = Core(loader, options).apply { load() }
+        core = Core(loader, options)
+        core?.load()
     }
 
     /**
