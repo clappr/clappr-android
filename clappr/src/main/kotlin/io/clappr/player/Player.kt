@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
 import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
@@ -154,7 +155,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     override fun onPause() {
         super.onPause()
-        pause()
+        activity?.let {
+            if (!it.isRunningInAndroidTvDevice())
+                pause()
+        }
     }
 
     override fun onDestroyView() {
@@ -167,13 +171,13 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     /**
      * Configure Player. This configuration must be performed before adding fragment to a view hierarchy.
-     *
      * @param options
      *          a map of key-value options.
      *
      */
     fun configure(options: Options) {
         core = Core(loader, options)
+        core?.load()
     }
 
     /**

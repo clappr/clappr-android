@@ -35,7 +35,7 @@ open class CoreTest {
     @Test
     fun shouldLoadPlugins() {
         Loader.registerPlugin(CorePlugin::class)
-        val core = Core(Loader(), Options())
+        val core = Core(Loader(), Options()).apply { load() }
 
         assertTrue("no plugins", core.plugins.isNotEmpty())
         assertTrue("no containers", core.containers.isNotEmpty())
@@ -45,14 +45,14 @@ open class CoreTest {
     @Test
     fun shouldLoadPlayback() {
         Loader.registerPlayback(CoreTestPlayback::class)
-        val core = Core(Loader(), options = Options(source = "some_source"))
+        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
 
         assertNotNull("no active playback", core.activePlayback)
     }
 
     @Test
     fun shouldNotTriggerActiveContainerChangedForSameContainer() {
-        val core = Core(Loader(), Options())
+        val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
@@ -66,7 +66,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActiveContainerChanged() {
-        val core = Core(Loader(), Options())
+        val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
         val previousActiveContainer: Container? = core.activeContainer
@@ -85,7 +85,7 @@ open class CoreTest {
     @Test
     fun shouldNotTriggerActivePlaybackChangedForSamePlayback() {
         Loader.registerPlayback(CoreTestPlayback::class)
-        val core = Core(Loader(), Options())
+        val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
@@ -105,7 +105,7 @@ open class CoreTest {
     @Test
     fun shouldTriggerActivePlaybackChanged() {
         Loader.registerPlayback(CoreTestPlayback::class)
-        val core = Core(Loader(), Options())
+        val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
         var previousActivePlayback: Playback? = core.activePlayback
