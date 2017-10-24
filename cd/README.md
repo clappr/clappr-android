@@ -12,19 +12,7 @@ your computer environment is ready verify if Python 3 is available
 in your CLI of choice. For further configuration help,
 enter the Python 3 [website](https://www.python.org/download/releases/3.0/).
 
-
-### 1. Checkout Branch:
-First you will need to ensure your master branch
-        is updated with the latest code available in the remote repo.
-        In order to do so, run:
-        
-```shellscript
-
-python3 release.py checkout_branch
-
-```
-        
-### 2. Run Tests:
+### 1. Run Tests:
 Since your local master branch is now up to date,
         it' time to build the project and run all automated
         tests from the project,  to make it possible, run: 
@@ -35,7 +23,7 @@ python3 release.py run_tests
 
 ```
         
-### 3. Bintray Upload:
+### 2. Bintray Upload:
 Once everything is builded and tested, now we can upload 
         the generated artifact to the Bintray repository in order
         to make it public and widely available, so now run:
@@ -46,7 +34,7 @@ python3 release.py bintray_upload
 
 ```
         
-### 4. Send Release Notes:
+### 3. Send Release Notes:
 Anytime we upload a new Clappr-Android artifact to
         the release Bintray repository, we need to describe
         what was changes or added on this new version, ensure then
