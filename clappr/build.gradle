@@ -71,6 +71,7 @@ android {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
     }
+    // ignore lint temporarily until gocd can handle the report correctly
     lintOptions {
         abortOnError false
     }
@@ -102,6 +103,10 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.1.2"
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+}
+
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
 }
 
 task sourcesJar(type: Jar) {
