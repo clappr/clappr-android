@@ -1,25 +1,30 @@
 import sys
 import time
-from repository_manager import bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, update_gradle_version
+from repository_manager import release_version_regex, snapshot_version_regex, bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle
 from command_manager import print_error, execute_stage, print_success, run_tests
 
-release_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+))\''
-snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-dev-(\d+))\''
+
+def update_gradle_version():
+    version = get_gradle_version(release_version_regex)
+    new_version = version + '-dev-' + time.strftime('%Y%m%d%H%M%S')
+    return replace_string_on_gradle(version, new_version)
 
 
-def verify_snapshot_pre_requisites(version):
+def verify_snapshot_pre_requisites():
+    version = get_gradle_version(snapshot_version_regex)
     if version == "":
         print_error("Wrong version format")
         sys.exit(1)
+
+    return True
 
 
 if __name__ == '__main__':
     print('Starting snapshot process')
 
     stages = {
-        'update_gradle_version': [],
-        'run_tests': [run_tests],
-        'bintray_upload': [bintray_upload]
+        'run_unit_tests': [update_gradle_version, verify_snapshot_pre_requisites, run_tests],
+        'publish_bintray': [verify_snapshot_pre_requisites, bintray_upload]
     }
 
     if len(sys.argv) != 2:
@@ -30,17 +35,7 @@ if __name__ == '__main__':
     from_release_to_clappr_dir()
 
     stage = sys.argv[1]
-    version = ""
-    if stage == 'update_gradle_version':
-        version = get_gradle_version(release_version_regex)
-        verify_snapshot_pre_requisites(version)
-        new_version = version + '-dev-' + str(round(time.time() * 1000))
-        update_gradle_version(version, new_version)
-
-    version = get_gradle_version(snapshot_version_regex)
-    verify_snapshot_pre_requisites(version)
-
-    execute_stage(version, stages, stage)
+    execute_stage(stages, stage)
 
     print('Changing back to release dir')
     from_clappr_to_release_dir()

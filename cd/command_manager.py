@@ -24,11 +24,11 @@ def print_success():
     print(bcolors.BOLD + "Uhuuuuu! zo/ Success" + bcolors.ENDC)
 
 
-def execute_stage(version, stages, stage_key):
+def execute_stage(stages, stage_key):
     try:
         for task in stages[stage_key]:
-            print("task: %s , Clappr: vrs %s on branch" % (task.__name__, version))
-            if not task(version):
+            print("task: %s , Clappr on branch" % (task.__name__))
+            if not task():
                 sys.exit(1)
 
     except IndexError:
@@ -41,7 +41,7 @@ def execute_gradle(tasks):
     return execute_command(command='../gradlew', attributes=tasks)
 
 
-def run_tests(new_release_version):
+def run_tests():
     response = execute_gradle(tasks=['clean', 'build', 'test', '--continue'])
 
     if not response:

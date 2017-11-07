@@ -8,7 +8,8 @@ from git_manager import get_current_branch, get_tag_branch
 release_dir_path = '../cd/'
 clappr_dir_path = '../clappr/'
 gradle_file_path = 'build.gradle'
-release_note_file_path = '../release_notes.md'
+release_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+))\''
+snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-dev-(\d{14}))\''
 
 
 def get_gradle_version(version_regex):
@@ -18,7 +19,7 @@ def get_gradle_version(version_regex):
     return full_version.group(1) if full_version is not None else ""
 
 
-def update_gradle_version(old_version, new_version):
+def replace_string_on_gradle(old_version, new_version):
     with open(gradle_file_path) as f:
         s = f.read()
 
@@ -26,6 +27,8 @@ def update_gradle_version(old_version, new_version):
         print("Changing %s to %s in %s" % (old_version, new_version, gradle_file_path))
         s = s.replace(old_version, new_version)
         f.write(s)
+
+    return True
 
 
 def from_clappr_to_release_dir():
@@ -36,12 +39,13 @@ def from_release_to_clappr_dir():
     os.chdir(path=clappr_dir_path)
 
 
-def send_release_notes(new_release_version):
+def send_release_notes():
     branch_name = get_current_branch()
-    return publish_release_notes(branch_name, new_release_version, release_note_file_path)
+    version = get_gradle_version(release_version_regex)
+    return publish_release_notes(branch_name, version, True, False)
 
 
-def bintray_upload(new_release_version):
+def bintray_upload():
     bintray_user = "BINTRAY_USER"
     bintray_api_key = "BINTRAY_API_KEY"
 
@@ -56,12 +60,7 @@ def bintray_upload(new_release_version):
     return execute_gradle(tasks=['bintrayUpload'])
 
 
-def read_release_notes(release_note_file_path):
-    with open(release_note_file_path) as file:
-        return file.read()
-
-
-def publish_release_notes(branch_name, new_release_version, release_note_file_path):
+def publish_release_notes(branch_name, new_release_version, draft, prerelease):
     repository_path = "REPOSITORY_PATH"
     repository_token = "REPOSITORY_TOKEN"
 
@@ -78,14 +77,13 @@ def publish_release_notes(branch_name, new_release_version, release_note_file_pa
         print_error("Tag '%s' not exist" % new_release_version)
         return False
 
-    release_notes = read_release_notes(release_note_file_path)
     body = {
         'tag_name': new_release_version,
         'target_commitish': branch_name,
         'name': 'Alpha Release',
-        'body': release_notes,
-        'draft': True,
-        'prerelease': False
+        'body': "add release notes for version %s here..." % new_release_version,
+        'draft': draft,
+        'prerelease': prerelease
     }
     response = requests.post(url=os.environ[repository_path],
                   auth=('token', os.environ[repository_token]),
@@ -96,3 +94,4 @@ def publish_release_notes(branch_name, new_release_version, release_note_file_pa
         return False
 
     return True
+
