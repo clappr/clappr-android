@@ -175,7 +175,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      *          a map of key-value options.
      *
      */
-    fun configure(options: Options) {
+    open fun configure(options: Options) {
         core = Core(loader, options)
         core?.load()
     }
