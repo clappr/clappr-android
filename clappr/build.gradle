@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.0.20'
+version = '0.0.21'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -29,6 +29,7 @@ bintray {
     key = System.getenv('BINTRAY_API_KEY')
     configurations = ['archives']
     pkg {
+        publish = true
         repo = 'clappr'
         name = publishAttrs['bintrayRepoName']
         userOrg = 'clappr-android'
@@ -44,7 +45,7 @@ bintray {
 }
 
 android {
-    publishNonDefault true
+    publishNonDefault publishAttrs['bintrayPublishNonDefault']
     compileSdkVersion 25
     buildToolsVersion '25.0.2'
     defaultConfig {
@@ -69,6 +70,10 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
         test.java.srcDirs += 'src/test/kotlin'
+    }
+    // ignore lint temporarily until gocd can handle the report correctly
+    lintOptions {
+        abortOnError false
     }
 
     testOptions {
@@ -98,6 +103,10 @@ dependencies {
     testCompile "org.robolectric:robolectric:3.1.2"
     testCompile 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testCompile "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+}
+
+tasks.matching {it instanceof Test}.all {
+    testLogging.events = ["failed", "passed", "skipped"]
 }
 
 task sourcesJar(type: Jar) {

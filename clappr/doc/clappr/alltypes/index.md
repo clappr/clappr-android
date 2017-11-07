@@ -9,6 +9,7 @@
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
 | [io.clappr.player.plugin.container.ContainerPlugin](../io.clappr.player.plugin.container/-container-plugin/index.md) |  |
+| [android.content.Context](../io.clappr.player.extensions.context/android.content.-context/index.md) (extensions in package io.clappr.player.extensions.context) |  |
 | [io.clappr.player.components.Core](../io.clappr.player.components/-core/index.md) |  |
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |

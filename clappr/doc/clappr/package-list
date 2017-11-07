@@ -1,9 +1,10 @@
 $dokka.format:gfm
 $dokka.linkExtension:md
-
+$dokka.location:io.clappr.player.extensions.context$isRunningInAndroidTvDevice(android.content.Context)io.clappr.player.extensions.context/android.content.-context/is-running-in-android-tv-device.md
 io.clappr.player
 io.clappr.player.base
 io.clappr.player.components
+io.clappr.player.extensions.context
 io.clappr.player.log
 io.clappr.player.periodicTimer
 io.clappr.player.playback
