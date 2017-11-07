@@ -9,7 +9,7 @@
 | Name | Summary |
 |---|---|
 | [ExoplayerDrmEventsListeners](-exoplayer-drm-events-listeners/index.md) | `inner class ExoplayerDrmEventsListeners : EventListener` |
-| [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : AdaptiveMediaSourceEventListener, EventListener, EventListener` |
+| [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener, EventListener` |
 
 ### Constructors
 
