@@ -1,9 +1,17 @@
 import sys
 import time
-from repository_manager import release_version_regex, rc_version_regex, bintray_upload, get_current_branch, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle, publish_release_notes
+from repository_manager import release_version_regex, rc_version_regex, bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle, publish_release_notes
 from command_manager import print_error, execute_stage, print_success, run_tests
-from git_manager import create_tag
+from git_manager import create_tag, find_release_branch, get_current_branch
 
+
+def search_release_branch():
+    branch = find_release_branch()
+    if branch is None or branch == "":
+        print_error("Release branch doesnt existe or is not unique")
+        return False
+
+    return True
 
 def update_gradle_version():
     version = get_gradle_version(release_version_regex)
@@ -12,13 +20,12 @@ def update_gradle_version():
 
 
 def verify_release_pre_requisites():
-    branch_name = get_current_branch()
     version = get_gradle_version(release_version_regex)
-
     if version == "":
         print_error("Wrong release version format")
         sys.exit(1)
 
+    branch_name = get_current_branch()
     if branch_name != "release/%s" % version:
         print_error("Branch is not a release branch: %s" % branch_name)
         sys.exit(1)
@@ -50,7 +57,8 @@ if __name__ == '__main__':
     print('Starting RC process')
 
     stages = {
-        'run_unit_tests': [verify_release_pre_requisites, update_gradle_version, verify_rc_pre_requisites, run_tests],
+        'release_branch': [search_release_branch, verify_release_pre_requisites, update_gradle_version, verify_rc_pre_requisites],
+        'run_unit_tests': [verify_rc_pre_requisites, run_tests],
         'publish_bintray': [verify_rc_pre_requisites, bintray_upload],
         'send_release_notes': [verify_rc_pre_requisites, send_release_notes]
     }

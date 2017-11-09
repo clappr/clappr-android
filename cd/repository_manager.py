@@ -3,7 +3,6 @@ import requests
 import re
 
 from command_manager import print_error, execute_gradle
-from git_manager import get_current_branch, get_tag_branch, create_tag
 
 release_dir_path = '../cd/'
 clappr_dir_path = '../clappr/'
