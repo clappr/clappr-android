@@ -25,11 +25,15 @@ def create_tag(tag_name):
 
 
 def find_release_branch():
-    output = subprocess.check_output(["git branch -r | grep release"], shell=True).decode('utf8')
-    print("release branch=\n%s" % output)
+    try:
+        output = subprocess.check_output(["git ls-remote --heads origin | grep release"], shell=True).decode('utf8')
+        print("release branch=\n%s" % output)
 
-    list = output.split('\n')
+        list = output.split('\n')
 
-    if len(list) != 2:
+        if len(list) != 2:
+            return None
+        return list[0].split('refs/heads/')[1].strip(" ")
+
+    except subprocess.CalledProcessError:
         return None
-    return list[0].strip(" ").strip("origin/")
