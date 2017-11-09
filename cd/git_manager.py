@@ -11,6 +11,7 @@ def get_current_branch():
 def checkout_branch(branch):
     return execute_command(command='git', attributes=['checkout', '-b', branch, 'origin/'+branch])
 
+
 def get_tag_branch(tag_name):
     output = subprocess.check_output(['git', 'branch', '--contains', tag_name]).decode('utf8')
     return output
@@ -24,7 +25,7 @@ def create_tag(tag_name):
 
 
 def find_release_branch():
-    output = subprocess.check_output(["git branch -r | grep ci_rc"], shell=True).decode('utf8')
+    output = subprocess.check_output(["git branch -r | grep release"], shell=True).decode('utf8')
     print("release branch=\n%s" % output)
 
     list = output.split('\n')

@@ -2,16 +2,17 @@ import sys
 import time
 from repository_manager import release_version_regex, rc_version_regex, bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle, publish_release_notes
 from command_manager import print_error, execute_stage, print_success, run_tests
-from git_manager import create_tag, find_release_branch, get_current_branch
+from git_manager import create_tag, find_release_branch, get_current_branch, checkout_branch
 
 
 def search_release_branch():
     branch = find_release_branch()
     if branch is None or branch == "":
-        print_error("Release branch doesnt existe or is not unique")
+        print_error("Release branch does not exist or is not unique")
         return False
 
-    return True
+    return checkout_branch(branch)
+
 
 def update_gradle_version():
     version = get_gradle_version(release_version_regex)
