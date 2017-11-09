@@ -3,13 +3,13 @@ import requests
 import re
 
 from command_manager import print_error, execute_gradle
-from git_manager import get_current_branch, get_tag_branch
 
 release_dir_path = '../cd/'
 clappr_dir_path = '../clappr/'
 gradle_file_path = 'build.gradle'
 release_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+))\''
-snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-dev-(\d{14}))\''
+snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-SNAP[-\w]*-(\d{14}))\''
+rc_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-RC-(\d{14}))\''
 
 
 def get_gradle_version(version_regex):
@@ -39,12 +39,6 @@ def from_release_to_clappr_dir():
     os.chdir(path=clappr_dir_path)
 
 
-def send_release_notes():
-    branch_name = get_current_branch()
-    version = get_gradle_version(release_version_regex)
-    return publish_release_notes(branch_name, version, True, False)
-
-
 def bintray_upload():
     bintray_user = "BINTRAY_USER"
     bintray_api_key = "BINTRAY_API_KEY"
@@ -70,11 +64,6 @@ def publish_release_notes(branch_name, new_release_version, draft, prerelease):
 
     if not repository_token in os.environ:
         print_error("Env variable '%s' is not defined" % repository_token)
-        return False
-
-    tag_branch = get_tag_branch(new_release_version)
-    if tag_branch is None or tag_branch.strip(" ") != branch_name:
-        print_error("Tag '%s' not exist" % new_release_version)
         return False
 
     body = {

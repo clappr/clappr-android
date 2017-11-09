@@ -1,6 +1,6 @@
 import sys
 
-from repository_manager import release_version_regex, bintray_upload, send_release_notes, from_release_to_clappr_dir, from_clappr_to_release_dir, get_gradle_version
+from repository_manager import release_version_regex, bintray_upload, from_release_to_clappr_dir, from_clappr_to_release_dir, get_tag_branch, get_gradle_version, publish_release_notes, get_current_branch
 from command_manager import print_error, execute_stage, print_success, run_tests
 
 
@@ -11,6 +11,18 @@ def verify_release_pre_requisites():
         sys.exit(1)
 
     return True
+
+
+def send_release_notes():
+    branch_name = get_current_branch()
+    version = get_gradle_version(release_version_regex)
+
+    tag_branch = get_tag_branch(version)
+    if tag_branch is None or tag_branch.strip(" ") != branch_name:
+        print_error("Tag '%s' not exist on branch %s" % version, branch_name)
+        return False
+
+    return publish_release_notes(branch_name, version, True, False)
 
 
 if __name__ == '__main__':

@@ -2,6 +2,7 @@ import sys
 
 from subprocess import call
 
+
 def execute_command(command, attributes):
     task_executed_with_success = 0
     attributes.insert(0, command)
@@ -32,9 +33,10 @@ def execute_stage(stages, stage_key):
                 sys.exit(1)
 
     except IndexError:
-        print("Can not Moisés! The options are: ")
+        print_error("Can not Moisés! The options are: ")
         for stage_key in stages.keys():
-            print(stage_key)
+            print_error(stage_key)
+        sys.exit(1)
 
 
 def execute_gradle(tasks):
