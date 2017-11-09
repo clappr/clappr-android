@@ -1,7 +1,7 @@
 ext {
     def version_regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-    def version_snapshot_regex = "-dev-\\d+"
-    def version_rc_regex = "-RC\\d*"
+    def version_snapshot_regex = "-SNAP[-\\w]*-\\d{14}"
+    def version_rc_regex = "-RC-\\d{14}"
     def RC = "RC"
     def RELEASE = "RELEASE"
     def SNAPSHOT = "SNAPSHOT"
