@@ -2,7 +2,7 @@ import sys
 import time
 from repository_manager import release_version_regex, rc_version_regex, bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle, publish_release_notes
 from command_manager import print_error, execute_stage, print_success, run_tests
-from git_manager import create_tag, find_release_branch, get_current_branch, checkout_branch
+from git_manager import create_tag, find_release_branch, get_current_branch, checkout_remote_branch
 
 
 def search_release_branch():
@@ -11,11 +11,14 @@ def search_release_branch():
         print_error("Release branch does not exist or is not unique")
         return False
 
-    return checkout_branch(branch)
+    return checkout_remote_branch(branch)
 
 
 def update_gradle_version():
     version = get_gradle_version(release_version_regex)
+    if version == "":
+        print_error("Wrong release version format")
+        sys.exit(1)
     new_version = version + '-RC-' + time.strftime('%Y%m%d%H%M%S')
     return replace_string_on_gradle(version, new_version)
 

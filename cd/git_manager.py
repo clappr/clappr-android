@@ -8,7 +8,7 @@ def get_current_branch():
     return output
 
 
-def checkout_branch(branch):
+def checkout_remote_branch(branch):
     return execute_command(command='git', attributes=['checkout', '-b', branch, 'origin/'+branch])
 
 
