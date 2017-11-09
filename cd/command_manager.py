@@ -2,6 +2,7 @@ import sys
 
 from subprocess import call
 
+
 def execute_command(command, attributes):
     task_executed_with_success = 0
     attributes.insert(0, command)
