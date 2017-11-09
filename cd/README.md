@@ -1,10 +1,52 @@
 # Clappr-Android automated release Step-by-Step
 
-This document describes how to proceed with 
-the required steps to make a release using the automation
-resources available for the Clappr-Android source code. Before doing any action
-described in this document, ensure you already proceeded with the release branch
+This document describes how to proceed with the required steps to make releases, candidate releases and snapshots
+from dev ou feature branches using the automation resources available for the Clappr-Android source code.
+
+All release scripts are written in Python. To make sure your computer environment is ready verify if Python 3
+is available in your CLI of choice. For further configuration help, enter the
+Python 3 [website](https://www.python.org/download/releases/3.0/).
+
+The Go.CD pipelines include the additional capability to notify Slack channel about all stages running.
+
+
+## Snapshot
+Snapshot releases are published on `https://bintray.com/clappr-android/clappr/clappr-android-snapshot` and has no Release Notes published.
+
+### Using scripts-only
+
+1. Checkout desired branch (dev, hotfix or feature) and go to folder cd
+
+2. Since your local branch is now up to date, it' time to build the project and run all automated unit tests from
+the project, to make it possible, run:
+
+```shellscript
+
+python3 snapshot.py run_unit_tests
+
+```
+3. Once everything is builded and tested, now we can upload the generated artifacts to the Bintray repository
+in order to make it public and widely available, so now run:
+
+```shellscript
+
+python3 snapshot.py publish_bintray
+
+```
+
+## Using a Go.CD pipeline
+The Go.CD pipeline `clappr-android-dev` will be triggered everytime a change is done to the dev branch.
+To generate a snapshot for a feature ou hotfix branch, trigger mannually the Go.CD pipeline `clappr-android-dev`
+
+
+
+## Release
+
+Before doing any action described in this document, ensure you already proceeded with the release branch
 creation, configuration and integration to the master branch.
+
+
+## Candidate Release
 
 ## Release using scripts-only
 All release scripts are written in Python, to make sure

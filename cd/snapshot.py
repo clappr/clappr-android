@@ -1,7 +1,16 @@
 import sys
 import time
-from repository_manager import release_version_regex, snapshot_version_regex, bintray_upload, get_current_branch, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle
+from repository_manager import release_version_regex, snapshot_version_regex, bintray_upload, get_gradle_version, from_release_to_clappr_dir, from_clappr_to_release_dir, replace_string_on_gradle
 from command_manager import print_error, execute_stage, print_success, run_tests
+from git_manager import checkout_branch, get_current_branch
+
+
+def search_snapshot_branch():
+    branch = sys.argv[2]
+    if branch is not None or branch != "":
+        return checkout_branch(branch)
+
+    return True
 
 
 def update_gradle_version():
@@ -24,11 +33,12 @@ if __name__ == '__main__':
     print('Starting snapshot process')
 
     stages = {
-        'run_unit_tests': [update_gradle_version, verify_snapshot_pre_requisites, run_tests],
+        'snapshot_branch': [search_snapshot_branch, update_gradle_version, verify_snapshot_pre_requisites],
+        'run_unit_tests': [verify_snapshot_pre_requisites, run_tests],
         'publish_bintray': [verify_snapshot_pre_requisites, bintray_upload]
     }
 
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print_error("Wrong number of arguments")
         sys.exit(1)
 
