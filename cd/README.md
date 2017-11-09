@@ -41,7 +41,7 @@ python3 snapshot.py publish_bintray
 
 ```
 
-## Using a Go.CD pipeline
+### Using a Go.CD pipeline
 The Go.CD pipeline `clappr-android-dev` will be triggered everytime a change is done to the dev branch.
 To generate a snapshot for a feature ou hotfix branch, trigger mannually the Go.CD pipeline `clappr-android-snapshot`
 
@@ -83,7 +83,7 @@ python3 release.py send_release_notes
 
 ```
 
-## Using a Go.CD pipeline
+### Using a Go.CD pipeline
 The Go.CD pipeline `clappr-android` will be triggered everytime a change is done to the master branch.
 
 
@@ -129,5 +129,5 @@ python3 rc.py send_release_notes
 
 ```
 
-## Using a Go.CD pipeline
+### Using a Go.CD pipeline
 The Go.CD pipeline `clappr-android-rc` can be triggred manually, since thare is only one release branch on remote repository.
