@@ -9,7 +9,7 @@ release_dir_path = '../cd/'
 clappr_dir_path = '../clappr/'
 gradle_file_path = 'build.gradle'
 release_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+))\''
-snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-dev-(\d{14}))\''
+snapshot_version_regex = r'version = \'((\d+)\.(\d+)\.(\d+)-SNAP[-\w]*-(\d{14}))\''
 
 
 def get_gradle_version(version_regex):
