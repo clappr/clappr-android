@@ -10,7 +10,7 @@ target_branch = None
 def search_snapshot_branch():
     print("branch=%s" % target_branch)
     current_branch = get_current_branch()
-    if (target_branch is not None or target_branch != "") and target_branch != current_branch:
+    if target_branch is not None and target_branch != "" and target_branch != current_branch:
         return checkout_remote_branch(target_branch)
 
     return True
