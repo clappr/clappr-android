@@ -1,4 +1,3 @@
-from command_manager import execute_command
 import subprocess
 
 
@@ -11,9 +10,11 @@ def get_current_branch():
 def checkout_remote_branch(branch):
     try:
         subprocess.check_output(["git checkout %s" % branch], shell=True)
+        subprocess.check_output(["git checkout ."], shell=True)
+        subprocess.check_output(["git pull"], shell=True)
     except subprocess.CalledProcessError:
         try:
-            subprocess.check_output(["git checkout -b "+branch+"origin/"+branch], shell=True)
+            subprocess.check_output(["git checkout -b "+branch+" origin/"+branch], shell=True)
         except subprocess.CalledProcessError:
             return False
 
