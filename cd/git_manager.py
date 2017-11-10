@@ -3,24 +3,37 @@ import subprocess
 
 
 def get_current_branch():
-    output = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode('utf8').replace('\n','')
-    print("branch=%s" % output)
+    output = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode('utf8').replace('\n', '')
+    print("current branch=%s" % output)
     return output
 
 
 def checkout_remote_branch(branch):
-    return execute_command(command='git', attributes=['checkout', '-b', branch, 'origin/'+branch])
+    try:
+        subprocess.check_output(["git checkout %s" % branch], shell=True)
+    except subprocess.CalledProcessError:
+        try:
+            subprocess.check_output(["git checkout -b "+branch+"origin/"+branch], shell=True)
+        except subprocess.CalledProcessError:
+            return False
+
+    return True
 
 
 def get_tag_branch(tag_name):
-    output = subprocess.check_output(['git', 'branch', '--contains', tag_name]).decode('utf8')
-    return output
+    try:
+        output = subprocess.check_output(["git branch --contains %s" % tag_name]).decode('utf8')
+        return output
+    except subprocess.CalledProcessError:
+        return None
 
 
 def create_tag(tag_name):
-    if execute_command(command='git', attributes=['tag', '-a', tag_name, '-m', tag_name]):
-        return execute_command(command='git', attributes=['push', 'origin', tag_name])
-    else:
+    try:
+        subprocess.check_output(["git tag -a %s -m %s" % tag_name, tag_name], shell=True)
+        subprocess.check_output(["git push origin %s" % tag_name], shell=True)
+        return True
+    except subprocess.CalledProcessError:
         return False
 
 

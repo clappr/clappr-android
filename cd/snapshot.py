@@ -6,6 +6,7 @@ from git_manager import checkout_remote_branch, get_current_branch
 
 target_branch = None
 
+
 def search_snapshot_branch():
     print("branch=%s" % target_branch)
     current_branch = get_current_branch()
