@@ -51,7 +51,7 @@ def send_release_notes():
     version = get_gradle_version(rc_version_regex)
 
     if not create_tag(version):
-        print_error("Tag '%s' cannot be created on branch %s" % version, branch_name)
+        print_error("Tag '%s' cannot be created on branch %s" % (version, branch_name))
         return False
 
     return publish_release_notes(branch_name, version, True, False)
