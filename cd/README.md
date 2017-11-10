@@ -1,7 +1,7 @@
 # Clappr-Android automated release Step-by-Step
 
 This document describes how to proceed with the required steps to make releases, candidate releases and snapshots
-from dev ou feature branches using the automation resources available for the Clappr-Android source code.
+from dev or feature branches using the automation resources available for the Clappr-Android source code.
 
 All release scripts are written in Python. To make sure your computer environment is ready verify if Python 3
 is available in your CLI of choice. For further configuration help, enter the
@@ -42,8 +42,8 @@ python3 snapshot.py publish_bintray
 ```
 
 ### Using a Go.CD pipeline
-The Go.CD pipeline `clappr-android-dev` will be triggered everytime a change is done to the dev branch.
-To generate a snapshot for a feature ou hotfix branch, trigger mannually the Go.CD pipeline `clappr-android-snapshot`
+The Go.CD pipeline `clappr-android-snapshot` will be triggered everytime a change is done to the dev branch.
+To generate a snapshot for a feature ou hotfix branch, trigger mannually the Go.CD pipeline `clappr-android-snapshot` and inform BRANCH value.
 
 
 ## Release
