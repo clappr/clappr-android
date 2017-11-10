@@ -32,7 +32,7 @@ def execute_stage(stages, stage_key):
             if not task():
                 sys.exit(1)
 
-    except IndexError:
+    except KeyError:
         print_error("Can not Moisés! The options are: ")
         for stage_key in stages.keys():
             print_error(stage_key)
