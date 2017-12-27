@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.0.21'
+version = '0.0.21-SNAP-LIVE_ERROR-20171226190100'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -130,4 +130,15 @@ dokka {
         suffix = "#L"
     }
 }
+task clearJar(type: Delete) {
+    delete 'build/outputs/Clappr.jar'
+}
 
+task makeJar(type: Copy) {
+    from('build/intermediates/bundles/release/')
+    into('build/outputs/')
+    include('classes.jar')
+    rename ('classes.jar', 'Clappr.jar')
+}
+
+makeJar.dependsOn(clearJar, build)
