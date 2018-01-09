@@ -304,10 +304,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected fun handleError(error: Exception?) {
         if (error?.cause is BehindLiveWindowException) {
-            setupPlayer()
-            currentState = State.IDLE
-            play()
-        } else if (currentState != State.ERROR) {
+            player?.prepare(mediaSource, true, false)
+        } else
+            if (currentState != State.ERROR) {
             timeElapsedHandler.cancel()
             currentState = State.ERROR
             triggerErrorEvent(error)
