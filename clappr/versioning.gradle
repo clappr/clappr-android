@@ -34,7 +34,7 @@ ext {
 
         def bintrayRepoName = (versionType == SNAPSHOT)? 'clappr-android-snapshot' : 'clappr-android-release'
         def bintrayVersionDesc = (versionType == SNAPSHOT)? 'Clappr snapshot' : (versionType == RC)? 'Clappr candidate alpha version': 'Clappr alpha version'
-        def bintrayPublishNonDefault = false
+        def bintrayPublishNonDefault = (versionType == RELEASE)? false : true
         println "Building $bintrayVersionDesc ($versionCode - $versionName) as $versionType to publish on $bintrayRepoName"
 
         [
