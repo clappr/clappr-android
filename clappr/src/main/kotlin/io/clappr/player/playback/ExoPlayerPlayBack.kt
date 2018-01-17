@@ -298,6 +298,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         timeElapsedHandler.cancel()
         if(!recoveredFromBehindLiveWindowException) {
             currentState = State.NONE
+        } else {
+            recoveredFromBehindLiveWindowException = false
         }
     }
 
