@@ -55,6 +55,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var trackSelector: DefaultTrackSelector? = null
     private var currentState = State.NONE
     private var lastPositionSent = 0.0
+    private var recoveredFromBehindLiveWindowException = false
 
     private val trackIndexKey = "trackIndexKey"
     private val trackGroupIndexKey = "trackGroupIndexKey"
@@ -295,7 +296,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun handleExoplayerIdleState() {
         timeElapsedHandler.cancel()
-        currentState = State.NONE
+        if(!recoveredFromBehindLiveWindowException) {
+            currentState = State.NONE
+        }
     }
 
     private fun trigger(event: Event) {
@@ -305,7 +308,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     protected fun handleError(error: Exception?) {
         if (error?.cause is BehindLiveWindowException) {
             Logger.info(tag, "BehindLiveWindowException")
-            player?.prepare(mediaSource, true, false)
+            recoveredFromBehindLiveWindowException = true
+            player?.prepare(mediaSource, false, false)
         } else if (currentState != State.ERROR) {
             timeElapsedHandler.cancel()
             currentState = State.ERROR
