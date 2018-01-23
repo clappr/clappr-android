@@ -31,6 +31,11 @@ android {
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
+
+    // ignore lint temporarily until gocd can handle the report correctly
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {

@@ -1,7 +1,7 @@
 ext {
     def version_regex = "\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}"
-    def version_snapshot_regex = "-dev-\\d+"
-    def version_rc_regex = "-RC\\d*"
+    def version_snapshot_regex = "-SNAP[-\\w]*-\\d{14}"
+    def version_rc_regex = "-RC-\\d{14}"
     def RC = "RC"
     def RELEASE = "RELEASE"
     def SNAPSHOT = "SNAPSHOT"
@@ -33,7 +33,7 @@ ext {
         def versionCode = buildVersionCode(version)
 
         def bintrayRepoName = (versionType == SNAPSHOT)? 'clappr-android-snapshot' : 'clappr-android-release'
-        def bintrayVersionDesc = (versionType == SNAPSHOT)? 'Clappr snapshot' : (versionType == RC)? 'Clappr candidate release': 'Clappr alpha version'
+        def bintrayVersionDesc = (versionType == SNAPSHOT)? 'Clappr snapshot' : (versionType == RC)? 'Clappr candidate alpha version': 'Clappr alpha version'
         def bintrayPublishNonDefault = (versionType == RELEASE)? false : true
         println "Building $bintrayVersionDesc ($versionCode - $versionName) as $versionType to publish on $bintrayRepoName"
 
