@@ -178,7 +178,6 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     open fun configure(options: Options) {
         core?.let {
             it.options = options
-            it.activeContainer?.options = options
         }.run {
             core = Core(loader, options)
         }

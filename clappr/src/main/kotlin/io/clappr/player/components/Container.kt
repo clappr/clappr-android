@@ -9,7 +9,7 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
-class Container(val loader: Loader, var options: Options) : UIObject() {
+class Container(val loader: Loader, options: Options) : UIObject() {
     val plugins: List<Plugin>
         get() = internalPlugins
 
@@ -28,6 +28,12 @@ class Container(val loader: Loader, var options: Options) : UIObject() {
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
+
+    var options : Options = options
+        set(options)  {
+            field = options
+            playback?.options = options
+        }
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
