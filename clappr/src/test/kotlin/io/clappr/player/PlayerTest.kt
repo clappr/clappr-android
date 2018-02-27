@@ -168,4 +168,30 @@ open class PlayerTest {
         assertTrue("Did destroy not triggered", didDestroyTriggered)
     }
 
+    @Test
+    fun shouldCoreHaveSameInstanceOnPlayerConfigure() {
+        player.configure(Options(source = "valid"))
+        val expectedCore = player.core
+        player.configure(Options(source = ""))
+
+        assertSame(expectedCore, player.core)
+    }
+
+    @Test
+    fun shouldCoreChangeOptionsOnPlayerConfigure() {
+        player.configure(Options(source = "valid"))
+        val expectedSource = "new source"
+        player.configure(Options(expectedSource))
+
+        assertSame(expectedSource, player.core?.options?.source)
+    }
+
+    @Test
+    fun shouldCoreChangeOptionsOnPlayerLoad() {
+        player.configure(Options(source = "valid"))
+        val expectedSource = "new source"
+        player.load(expectedSource)
+
+        assertSame(expectedSource, player.core?.options?.source)
+    }
 }
