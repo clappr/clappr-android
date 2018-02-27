@@ -10,7 +10,7 @@ import io.clappr.player.base.UIObject
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
-class Core(val loader: Loader, val options: Options) : UIObject() {
+class Core(val loader: Loader, var options: Options) : UIObject() {
 
     enum class FullscreenState {
         EMBEDDED, FULLSCREEN

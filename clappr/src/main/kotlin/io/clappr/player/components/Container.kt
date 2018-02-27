@@ -9,7 +9,7 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
-class Container(val loader: Loader, val options: Options) : UIObject() {
+class Container(val loader: Loader, var options: Options) : UIObject() {
     val plugins: List<Plugin>
         get() = internalPlugins
 
