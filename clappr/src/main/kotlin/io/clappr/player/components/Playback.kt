@@ -14,7 +14,7 @@ interface PlaybackSupportInterface : NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean
 }
 
-abstract class Playback(var source: String, var mimeType: String? = null, var options: Options = Options()) : UIObject(), NamedType {
+abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : UIObject(), NamedType {
 
     enum class MediaType {
         UNKNOWN,
