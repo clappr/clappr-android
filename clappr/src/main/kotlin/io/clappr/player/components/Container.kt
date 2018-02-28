@@ -32,7 +32,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     var options : Options = options
         set(options)  {
             field = options
-            playback?.options = options
+            playback = null
         }
 
     override val viewClass: Class<*>
