@@ -157,18 +157,6 @@ open class PlayerTest {
     }
 
     @Test
-    fun shouldDestroyCorePluginsOnConfigure() {
-        player.configure(Options(source = "valid"))
-
-        var didDestroyTriggered = false
-        player.listenTo(player.core!!, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyTriggered = true })
-
-        player.configure(Options(source = ""))
-
-        assertTrue("Did destroy not triggered", didDestroyTriggered)
-    }
-
-    @Test
     fun shouldCoreHaveSameInstanceOnPlayerConfigure() {
         player.configure(Options(source = "valid"))
         val expectedCore = player.core

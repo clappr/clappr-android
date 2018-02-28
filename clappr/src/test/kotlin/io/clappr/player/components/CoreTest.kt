@@ -206,4 +206,12 @@ open class CoreTest {
         triggerObject.trigger("coreTest")
         assertEquals("trigger", 1, numberOfTriggers)
     }
+
+    @Test
+    fun shouldSetContainerOptionsWhenSetOptions() {
+        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+        core.options = Options(source = "newsource")
+
+        assertEquals(core.options, core.activeContainer?.options)
+    }
 }

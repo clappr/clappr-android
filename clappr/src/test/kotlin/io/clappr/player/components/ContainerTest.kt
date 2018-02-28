@@ -249,4 +249,13 @@ open class ContainerTest {
         triggerObject.trigger("containerTest")
         assertEquals("trigger", 1, numberOfTriggers)
     }
+
+    @Test
+    fun shouldSetActivePlaybackNullWhenSetOptions() {
+        val container = Container(Loader(), Options())
+        container.playback = MP4Playback("source.mp4", "mimetype", Options())
+        container.options = Options()
+
+        assertNull(container.playback)
+    }
 }
