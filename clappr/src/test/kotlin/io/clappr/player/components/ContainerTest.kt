@@ -258,4 +258,13 @@ open class ContainerTest {
 
         assertNull(container.playback)
     }
+
+    @Test
+    fun shouldSetPlaybackOptionsWhenLoadContainer() {
+        Loader.registerPlayback(MP4Playback::class)
+        val source = "some_source.mp4"
+        val container = Container(Loader(), options = Options()).apply { load(source) }
+
+        assertEquals(container.options, container.playback?.options)
+    }
 }
