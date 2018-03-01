@@ -210,8 +210,20 @@ open class CoreTest {
     @Test
     fun shouldSetContainerOptionsWhenSetOptions() {
         val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
-        core.options = Options(source = "newsource")
+        core.options = Options(source = "new_source")
 
         assertEquals(core.options, core.activeContainer?.options)
+    }
+
+    @Test
+    fun shouldTriggerUpdateOptionOnSetOptions() {
+        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+
+        var callbackWasCalled = false
+        core.on(InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+
+        core.options = Options(source = "new_source")
+
+        assertTrue("should trigger UPDATE_OPTIONS on set options", callbackWasCalled)
     }
 }

@@ -267,4 +267,18 @@ open class ContainerTest {
 
         assertEquals(container.options, container.playback?.options)
     }
+
+    @Test
+    fun shouldTriggerUpdateOptionOnSetOptions() {
+        Loader.registerPlayback(MP4Playback::class)
+        val source = "some_source.mp4"
+        val container = Container(Loader(), options = Options()).apply { load(source) }
+
+        var callbackWasCalled = false
+        container.on(InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+
+        container.options = Options(source = "new_source")
+
+        assertTrue("should trigger UPDATE_OPTIONS on set options", callbackWasCalled)
+    }
 }

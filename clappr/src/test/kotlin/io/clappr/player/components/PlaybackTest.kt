@@ -303,4 +303,16 @@ open class PlaybackTest {
             fail("Exception: ${ex.message}")
         }
     }
+
+    @Test
+    fun shouldTriggerUpdateOptionOnSetOptions() {
+        val playback = SomePlayback("valid-source.mp4", Options())
+
+        var callbackWasCalled = false
+        playback.on(InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+
+        playback.options = Options(source = "new_source")
+
+        assertTrue("should trigger UPDATE_OPTIONS on set options", callbackWasCalled)
+    }
 }
