@@ -33,6 +33,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         set(options)  {
             field = options
             playback = null
+            trigger(InternalEvent.UPDATE_OPTIONS.value)
         }
 
     override val viewClass: Class<*>

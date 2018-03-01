@@ -65,9 +65,13 @@ class Core(val loader: Loader, options: Options) : UIObject() {
     var options : Options = options
         set(options)  {
             field = options
-            activeContainer?.options = options
+            updateContainerOptions(options)
+            trigger(InternalEvent.UPDATE_OPTIONS.value)
         }
 
+    private fun updateContainerOptions(options: Options) {
+        containers.forEach { it.options = options}
+    }
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
