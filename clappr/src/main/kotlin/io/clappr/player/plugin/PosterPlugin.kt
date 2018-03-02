@@ -23,7 +23,6 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
     private val imageView = ImageView(context)
 
     var posterImageUrl: String? = null
-        get() = posterImageUrl
         private set
 
     companion object : NamedType {
