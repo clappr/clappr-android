@@ -32,7 +32,6 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     var options : Options = options
         set(options)  {
             field = options
-            playback = null
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
 
