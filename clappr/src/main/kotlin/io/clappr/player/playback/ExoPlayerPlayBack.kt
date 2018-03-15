@@ -177,6 +177,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         stop()
         setupPlayer()
         trigger(Event.DID_CHANGE_SOURCE)
+        return true
     }
 
     private fun mediaSource(uri: Uri): MediaSource {
