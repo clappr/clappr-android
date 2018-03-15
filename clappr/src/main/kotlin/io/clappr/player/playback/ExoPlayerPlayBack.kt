@@ -35,6 +35,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val tag: String = "ExoPlayerPlayback"
 
         override fun supportsSource(source: String, mimeType: String?): Boolean {
+            mimeType?.let {
+                if (it.startsWith("application/video-id")) return false
+            }
+
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
             return type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
@@ -171,13 +175,16 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun load(source: String, mimeType: String?): Boolean {
-        trigger(Event.WILL_CHANGE_SOURCE)
-        this.source = source
-        this.mimeType = mimeType
-        stop()
-        setupPlayer()
-        trigger(Event.DID_CHANGE_SOURCE)
-        return true
+        val supported = super.load(source, mimeType)
+        if(supported){
+            trigger(Event.WILL_CHANGE_SOURCE)
+            this.source = source
+            this.mimeType = mimeType
+            stop()
+            setupPlayer()
+            trigger(Event.DID_CHANGE_SOURCE)
+        }
+        return supported
     }
 
     private fun mediaSource(uri: Uri): MediaSource {
