@@ -275,10 +275,10 @@ open class ContainerTest {
         val container = Container(Loader(), options = Options()).apply { load(source) }
 
         var callbackWasCalled = false
-        container.on(InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+        container.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
 
         container.options = Options(source = "new_source")
 
-        assertTrue("should trigger UPDATE_OPTIONS on set options", callbackWasCalled)
+        assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
 }

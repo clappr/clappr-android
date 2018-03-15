@@ -65,8 +65,8 @@ class Core(val loader: Loader, options: Options) : UIObject() {
     var options : Options = options
         set(options)  {
             field = options
+            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
             updateContainerOptions(options)
-            trigger(InternalEvent.UPDATE_OPTIONS.value)
         }
 
     private fun updateContainerOptions(options: Options) {

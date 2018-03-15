@@ -1,5 +1,4 @@
 package io.clappr.player.base
-import android.os.Bundle
 import io.clappr.player.BuildConfig
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
@@ -220,10 +219,10 @@ open class CoreTest {
         val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
 
         var callbackWasCalled = false
-        core.on(InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
 
         core.options = Options(source = "new_source")
 
-        assertTrue("should trigger UPDATE_OPTIONS on set options", callbackWasCalled)
+        assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
 }

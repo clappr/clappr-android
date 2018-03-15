@@ -58,7 +58,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         updatePoster()
         listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindPlaybackListeners() })
         listenTo(container, Event.REQUEST_POSTER_UPDATE.value, Callback.wrap { it -> updatePoster(it) })
-        listenTo(container, InternalEvent.UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
+        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
     }
 
     fun bindPlaybackListeners() {

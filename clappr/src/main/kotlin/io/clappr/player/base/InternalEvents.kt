@@ -18,5 +18,5 @@ enum class InternalEvent (val value: String) {
     DID_DESTROY("didDestroy"),
     MEDIA_OPTIONS_READY("mediaOptionsReady"),
     MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
-    UPDATE_OPTIONS("updateOptions")
+    DID_UPDATE_OPTIONS("didUpdateOptions")
 }

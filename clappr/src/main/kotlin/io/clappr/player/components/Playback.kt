@@ -48,7 +48,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     var options : Options = options
         set(options)  {
             field = options
-            trigger(InternalEvent.UPDATE_OPTIONS.value)
+            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
 
     open val mediaType: MediaType
