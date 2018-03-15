@@ -55,16 +55,12 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
-        var supported = playback?.load(source, mimeType) ?: false
-
-        if (!supported) {
-            playback = loader.loadPlayback(source, mimeType, options)
-            if (playback?.name == NoOpPlayback.name) {
-                playback = null
-            }
-            supported = playback != null
-            render()
+        playback = loader.loadPlayback(source, mimeType, options)
+        if (playback?.name == NoOpPlayback.name) {
+            playback = null
         }
+        var supported = playback != null
+        render()
 
         val eventToTrigger = if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
         trigger(eventToTrigger.value)
