@@ -97,20 +97,6 @@ open class ContainerTest {
     }
 
     @Test
-    fun shouldNotTriggerPlaybackChangedWhenSamePlayback() {
-        Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options())
-        container.load("some_unknown_source.mp4")
-
-        var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true})
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
-
-        container.load(source = "some_unknown_source.mp4")
-        assertFalse("CHANGE_PLAYBACK triggered", callbackWasCalled)
-    }
-
-    @Test
     fun shouldTriggerLoadSourceEventsOnNewSource() {
         Loader.registerPlayback(MP4Playback::class)
         val container = Container(Loader(), Options("aSource.mp4"))
@@ -248,15 +234,6 @@ open class ContainerTest {
 
         triggerObject.trigger("containerTest")
         assertEquals("trigger", 1, numberOfTriggers)
-    }
-
-    @Test
-    fun shouldSetActivePlaybackNullWhenSetOptions() {
-        val container = Container(Loader(), Options())
-        container.playback = MP4Playback("source.mp4", "mimetype", Options())
-        container.options = Options()
-
-        assertNull(container.playback)
     }
 
     @Test
