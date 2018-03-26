@@ -240,8 +240,12 @@ open class ContainerTest {
     fun shouldSetPlaybackOptionsWhenLoadContainer() {
         Loader.registerPlayback(MP4Playback::class)
         val source = "some_source.mp4"
-        val container = Container(Loader(), options = Options()).apply { load(source) }
+        val newOptions = Options()
+        newOptions.put(ClapprOption.POSTER.value, "fake-poster-url")
 
+        val container = Container(Loader(), options = newOptions).apply { load(source) }
+
+        assertNotNull(container.options)
         assertEquals(container.options, container.playback?.options)
     }
 
