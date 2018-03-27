@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.0.22'
+version = '0.0.23'
 
 def publishAttrs = buildPublishAttrs(version)
 
