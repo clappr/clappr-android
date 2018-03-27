@@ -5,7 +5,7 @@
 
 ## Documentation
 
-Package documentation in [doc](clappr/doc/index.md) folder
+Package documentation in [doc](clappr/doc/clappr/index.md) folder
 
 ## License
 
