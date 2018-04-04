@@ -1,5 +1,4 @@
 package io.clappr.player.base
-import android.os.Bundle
 import io.clappr.player.BuildConfig
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
@@ -205,5 +204,25 @@ open class CoreTest {
 
         triggerObject.trigger("coreTest")
         assertEquals("trigger", 1, numberOfTriggers)
+    }
+
+    @Test
+    fun shouldSetContainerOptionsWhenSetOptions() {
+        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+        core.options = Options(source = "new_source")
+
+        assertEquals(core.options, core.activeContainer?.options)
+    }
+
+    @Test
+    fun shouldTriggerUpdateOptionOnSetOptions() {
+        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+
+        var callbackWasCalled = false
+        core.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+
+        core.options = Options(source = "new_source")
+
+        assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
 }

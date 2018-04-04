@@ -97,20 +97,6 @@ open class ContainerTest {
     }
 
     @Test
-    fun shouldNotTriggerPlaybackChangedWhenSamePlayback() {
-        Loader.registerPlayback(MP4Playback::class)
-        val container = Container(Loader(), Options())
-        container.load("some_unknown_source.mp4")
-
-        var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true})
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
-
-        container.load(source = "some_unknown_source.mp4")
-        assertFalse("CHANGE_PLAYBACK triggered", callbackWasCalled)
-    }
-
-    @Test
     fun shouldTriggerLoadSourceEventsOnNewSource() {
         Loader.registerPlayback(MP4Playback::class)
         val container = Container(Loader(), Options("aSource.mp4"))
@@ -248,5 +234,32 @@ open class ContainerTest {
 
         triggerObject.trigger("containerTest")
         assertEquals("trigger", 1, numberOfTriggers)
+    }
+
+    @Test
+    fun shouldSetPlaybackOptionsWhenLoadContainer() {
+        Loader.registerPlayback(MP4Playback::class)
+        val source = "some_source.mp4"
+        val newOptions = Options()
+        newOptions.put(ClapprOption.POSTER.value, "fake-poster-url")
+
+        val container = Container(Loader(), options = newOptions).apply { load(source) }
+
+        assertNotNull(container.options)
+        assertEquals(container.options, container.playback?.options)
+    }
+
+    @Test
+    fun shouldTriggerUpdateOptionOnSetOptions() {
+        Loader.registerPlayback(MP4Playback::class)
+        val source = "some_source.mp4"
+        val container = Container(Loader(), options = Options()).apply { load(source) }
+
+        var callbackWasCalled = false
+        container.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+
+        container.options = Options(source = "new_source")
+
+        assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
 }

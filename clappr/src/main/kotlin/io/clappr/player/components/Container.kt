@@ -9,7 +9,7 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
-class Container(val loader: Loader, val options: Options) : UIObject() {
+class Container(val loader: Loader, options: Options) : UIObject() {
     val plugins: List<Plugin>
         get() = internalPlugins
 
@@ -28,6 +28,12 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
+
+    var options : Options = options
+        set(options)  {
+            field = options
+            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
+        }
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
@@ -49,16 +55,12 @@ class Container(val loader: Loader, val options: Options) : UIObject() {
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
-        var supported = playback?.load(source, mimeType) ?: false
-
-        if (!supported) {
-            playback = loader.loadPlayback(source, mimeType, options)
-            if (playback?.name == NoOpPlayback.name) {
-                playback = null
-            }
-            supported = playback != null
-            render()
+        playback = loader.loadPlayback(source, mimeType, options)
+        if (playback?.name == NoOpPlayback.name) {
+            playback = null
         }
+        var supported = playback != null
+        render()
 
         val eventToTrigger = if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
         trigger(eventToTrigger.value)

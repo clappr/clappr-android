@@ -22,7 +22,8 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
     private val imageView = ImageView(context)
 
-    private var posterImageUrl: String? = null
+    var posterImageUrl: String? = null
+        private set
 
     companion object : NamedType {
         override val name = "poster"
@@ -48,7 +49,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         get() = posterLayout
 
     init {
-        posterImageUrl = container.options[ClapprOption.POSTER.value] as? String
+        updateImageUrlFromOptions()
         setupPosterLayout()
         bindEventListeners()
     }
@@ -57,6 +58,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         updatePoster()
         listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindPlaybackListeners() })
         listenTo(container, Event.REQUEST_POSTER_UPDATE.value, Callback.wrap { it -> updatePoster(it) })
+        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
     }
 
     fun bindPlaybackListeners() {
@@ -67,6 +69,10 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
             listenTo(it, Event.DID_STOP.value, Callback.wrap { show() })
             listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { show() })
         }
+    }
+
+    private fun updateImageUrlFromOptions(){
+        posterImageUrl = container.options[ClapprOption.POSTER.value] as? String
     }
 
     private fun setupPosterLayout() {

@@ -10,7 +10,7 @@ import io.clappr.player.base.UIObject
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
-class Core(val loader: Loader, val options: Options) : UIObject() {
+class Core(val loader: Loader, options: Options) : UIObject() {
 
     enum class FullscreenState {
         EMBEDDED, FULLSCREEN
@@ -61,6 +61,17 @@ class Core(val loader: Loader, val options: Options) : UIObject() {
 
     val frameLayout: FrameLayout
         get() = view as FrameLayout
+
+    var options : Options = options
+        set(options)  {
+            field = options
+            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
+            updateContainerOptions(options)
+        }
+
+    private fun updateContainerOptions(options: Options) {
+        containers.forEach { it.options = options}
+    }
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
