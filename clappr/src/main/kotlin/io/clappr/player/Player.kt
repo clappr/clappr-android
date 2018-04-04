@@ -176,8 +176,14 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
      *
      */
     open fun configure(options: Options) {
+        core?.let {
+            it.options = options
+        } ?: createCore(options)
+        load()
+    }
+
+    private fun createCore(options: Options){
         core = Core(loader, options)
-        core?.load()
     }
 
     /**
@@ -203,6 +209,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     fun load(source: String): Boolean {
         return load(source, null)
+    }
+
+    fun load(){
+        core?.load()
     }
 
     /**
