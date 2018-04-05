@@ -14,7 +14,7 @@ interface PlaybackSupportInterface : NamedType {
     fun supportsSource(source: String, mimeType: String? = null): Boolean
 }
 
-abstract class Playback(var source: String, var mimeType: String? = null, val options: Options = Options()) : UIObject(), NamedType {
+abstract class Playback(var source: String, var mimeType: String? = null, options: Options = Options()) : UIObject(), NamedType {
 
     enum class MediaType {
         UNKNOWN,
@@ -44,6 +44,12 @@ abstract class Playback(var source: String, var mimeType: String? = null, val op
     open fun destroy() {
         stopListening()
     }
+
+    var options : Options = options
+        set(options)  {
+            field = options
+            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
+        }
 
     open val mediaType: MediaType
         get() = MediaType.UNKNOWN
