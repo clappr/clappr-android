@@ -4,7 +4,9 @@ import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.view.*
+import android.view.SurfaceHolder
+import android.view.SurfaceView
+import android.view.View
 import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -29,7 +31,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     companion object: PlaybackSupportInterface {
-        val TAG: String = "MediaPlayerPlayback"
+        const val TAG: String = "MediaPlayerPlayback"
 
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             return true
@@ -42,7 +44,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override val viewClass: Class<*>
         get() = PlaybackView::class.java
 
-    private var mediaPlayer: MediaPlayer
+    private var mediaPlayer = MediaPlayer()
 
     private var internalState: InternalState = InternalState.NONE
         set(value) {
@@ -54,9 +56,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
 
     init {
-        mediaPlayer = MediaPlayer()
-
-        mediaPlayer.setOnInfoListener { mediaPlayer, what, extra ->
+        mediaPlayer.setOnInfoListener { _, what, extra ->
             infoLog(what, extra)?.let { Logger.info(TAG, it) }
             when(what) {
                 MediaPlayer.MEDIA_INFO_BUFFERING_START -> internalState = InternalState.BUFFERING
@@ -65,21 +65,21 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             false
         }
 
-        mediaPlayer.setOnErrorListener { mp, what, extra ->
-            Logger.info(TAG, "error: " + what + "(" + extra + ")" )
+        mediaPlayer.setOnErrorListener { _, what, extra ->
+            Logger.info(TAG, "error: $what($extra)" )
             internalState = InternalState.ERROR
             true
         }
 
         mediaPlayer.setOnSeekCompleteListener {
             Logger.info(TAG, "seek completed")
-            if (mediaPlayer?.isPlaying) {
+            if (mediaPlayer.isPlaying) {
                 trigger(Event.PLAYING.value)
             }
         }
 
-        mediaPlayer.setOnVideoSizeChangedListener { mp, width, height ->
-            Logger.info(TAG, "video size: " + width + " / " + height)
+        mediaPlayer.setOnVideoSizeChangedListener { _, width, height ->
+            Logger.info(TAG, "video size: $width / $height")
             (view as? PlaybackView)?.videoWidth = width
             (view as? PlaybackView)?.videoHeight = height
             view?.requestLayout()
@@ -91,8 +91,8 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             internalState = InternalState.STARTED
         }
 
-        mediaPlayer.setOnBufferingUpdateListener { mp, percent ->
-            Logger.info(TAG, "buffered percentage: " + percent)
+        mediaPlayer.setOnBufferingUpdateListener { _, percent ->
+            Logger.info(TAG, "buffered percentage: $percent")
             val bundle = Bundle()
 
             bundle.putDouble("percentage", percent.toDouble())
@@ -115,7 +115,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             val holder = (view as? PlaybackView)?.holder
             holder?.addCallback(object: SurfaceHolder.Callback {
                 override fun surfaceChanged(sh: SurfaceHolder, format: Int, width: Int, height: Int) {
-                    Logger.info(TAG, "surface changed: " + format + "/" + width + "/" + height)
+                    Logger.info(TAG, "surface changed: $format/$width/$height")
                 }
 
                 override fun surfaceDestroyed(sh: SurfaceHolder) {
@@ -137,40 +137,31 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     private fun infoLog(what: Int, extra: Int): String? {
-        var log : String
-        when(what) {
-            MediaPlayer.MEDIA_INFO_BUFFERING_START -> log = "MEDIA_INFO_BUFFERING_START"
-            MediaPlayer.MEDIA_INFO_BUFFERING_END -> log = "MEDIA_INFO_BUFFERING_END"
-            MediaPlayer.MEDIA_INFO_UNKNOWN -> log = "MEDIA_INFO_UNKNOWN"
-            MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> log = "MEDIA_INFO_VIDEO_TRACK_LAGGING"
-            MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> log = "MEDIA_INFO_VIDEO_RENDERING_START"
-            MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING -> log = "MEDIA_INFO_BAD_INTERLEAVING"
-            MediaPlayer.MEDIA_INFO_NOT_SEEKABLE -> log = "MEDIA_INFO_NOT_SEEKABLE"
-            MediaPlayer.MEDIA_INFO_METADATA_UPDATE -> log = "MEDIA_INFO_METADATA_UPDATE"
-            MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE -> log = "MEDIA_INFO_UNSUPPORTED_SUBTITLE"
-            MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT -> log = "MEDIA_INFO_SUBTITLE_TIMED_OUT"
-            else -> log = "UNKNOWN"
+        val log = when(what) {
+            MediaPlayer.MEDIA_INFO_BUFFERING_START -> "MEDIA_INFO_BUFFERING_START"
+            MediaPlayer.MEDIA_INFO_BUFFERING_END -> "MEDIA_INFO_BUFFERING_END"
+            MediaPlayer.MEDIA_INFO_UNKNOWN -> "MEDIA_INFO_UNKNOWN"
+            MediaPlayer.MEDIA_INFO_VIDEO_TRACK_LAGGING -> "MEDIA_INFO_VIDEO_TRACK_LAGGING"
+            MediaPlayer.MEDIA_INFO_VIDEO_RENDERING_START -> "MEDIA_INFO_VIDEO_RENDERING_START"
+            MediaPlayer.MEDIA_INFO_BAD_INTERLEAVING -> "MEDIA_INFO_BAD_INTERLEAVING"
+            MediaPlayer.MEDIA_INFO_NOT_SEEKABLE -> "MEDIA_INFO_NOT_SEEKABLE"
+            MediaPlayer.MEDIA_INFO_METADATA_UPDATE -> "MEDIA_INFO_METADATA_UPDATE"
+            MediaPlayer.MEDIA_INFO_UNSUPPORTED_SUBTITLE -> "MEDIA_INFO_UNSUPPORTED_SUBTITLE"
+            MediaPlayer.MEDIA_INFO_SUBTITLE_TIMED_OUT -> "MEDIA_INFO_SUBTITLE_TIMED_OUT"
+            else -> "UNKNOWN"
         }
 
-        return log + " (" + what + " / " + extra + ")"
+        return "$log ($what / $extra)"
     }
 
     class PlaybackView(context: Context?) : SurfaceView(context) {
         var videoHeight = 0
         var videoWidth = 0
 
-        override fun onTouchEvent(event: MotionEvent?): Boolean {
-            return super.onTouchEvent(event)
-        }
-
-        override fun onTrackballEvent(event: MotionEvent?): Boolean {
-            return super.onTrackballEvent(event)
-        }
-
         override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
             var width = View.getDefaultSize(videoWidth, widthMeasureSpec)
             var height = View.getDefaultSize(videoHeight, heightMeasureSpec)
-            Logger.info(TAG, "onMeasure: " + width + "/" + height)
+            Logger.info(TAG, "onMeasure: $width/$height")
 
             if ( (videoWidth > 0) && (videoHeight > 0) ) {
                 if (videoWidth * height > width * videoHeight) {
@@ -180,18 +171,18 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                     Logger.info(TAG, "image too wide")
                     width = height * videoWidth / videoHeight
                 } else {
-                    Logger.info(TAG, "aspect ratio is correct: " + width + "/" + height + " = " + videoWidth + "/" + videoHeight)
+                    Logger.info(TAG, "aspect ratio is correct: $width/$height = $videoWidth/$videoHeight")
                 }
             }
 
-            Logger.info(TAG, "setting size to: " + width + "/" + height)
+            Logger.info(TAG, "setting size to: $width/$height")
             setMeasuredDimension(width, height)
         }
     }
 
     override fun render() : UIObject {
         if (!play()) {
-            this.once(Event.READY.value, Callback.wrap { bundle: Bundle? -> play() })
+            this.once(Event.READY.value, Callback.wrap { _: Bundle? -> play() })
         }
 
         return this
@@ -201,23 +192,19 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         get() = getState(internalState)
 
     private fun getState (internal: InternalState) : State {
-        when (internal) {
-            InternalState.NONE, InternalState.IDLE -> { return State.NONE }
-            InternalState.ATTACHED, InternalState.PREPARED, InternalState.STOPPED -> { return State.IDLE }
-            InternalState.STARTED -> { return State.PLAYING }
-            InternalState.PAUSED -> { return State.PAUSED }
-            InternalState.BUFFERING -> { return State.STALLED }
-            InternalState.ERROR -> { return State.ERROR}
-            else -> return State.NONE
+        return when (internal) {
+            InternalState.NONE, InternalState.IDLE -> { State.NONE }
+            InternalState.ATTACHED, InternalState.PREPARED, InternalState.STOPPED -> { State.IDLE }
+            InternalState.STARTED -> { State.PLAYING }
+            InternalState.PAUSED -> { State.PAUSED }
+            InternalState.BUFFERING -> { State.STALLED }
+            InternalState.ERROR -> { State.ERROR}
         }
     }
 
     override val mediaType: MediaType
         get() {
-            mediaPlayer?.let {
-                if (it.duration > -1) return MediaType.VOD else return MediaType.LIVE
-            }
-            return MediaType.UNKNOWN
+            return if (mediaPlayer.duration > -1) MediaType.VOD else MediaType.LIVE
         }
 
     override val duration: Double
@@ -274,7 +261,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     override fun pause(): Boolean {
-        if (canPause) {
+        return if (canPause) {
             if ( (state == State.PLAYING) || (state == State.STALLED) ) {
                 trigger(Event.WILL_PAUSE.value)
                 mediaPlayer.pause()
@@ -282,14 +269,14 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             if (state == State.PLAYING) {
                 internalState = InternalState.PAUSED
             }
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
     override fun stop(): Boolean {
-        if (canStop) {
+        return if (canStop) {
             trigger(Event.WILL_STOP.value)
             try {
                 mediaPlayer.stop()
@@ -297,19 +284,19 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             } catch (iee: IllegalStateException) {
                 Logger.info(TAG, "stop - $iee")
             }
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
     override fun seek(seconds: Int): Boolean {
-        if (canSeek) {
+        return if (canSeek) {
             trigger(Event.WILL_SEEK.value)
             mediaPlayer.seekTo(seconds * 1000)
-            return true
+            true
         } else {
-            return false
+            false
         }
     }
 
@@ -322,7 +309,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                     } else if (internalState == InternalState.STOPPED) {
                         trigger(Event.DID_STOP.value)
                     } else if (previousState == State.PLAYING) {
-                            trigger(Event.DID_COMPLETE.value)
+                        trigger(Event.DID_COMPLETE.value)
                     }
                 }
                 State.PLAYING -> {
