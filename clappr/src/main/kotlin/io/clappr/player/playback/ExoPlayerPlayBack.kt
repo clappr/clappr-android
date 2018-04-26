@@ -8,7 +8,6 @@ import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.drm.*
-import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
@@ -17,7 +16,7 @@ import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.text.CaptionStyleCompat
 import com.google.android.exoplayer2.trackselection.*
-import com.google.android.exoplayer2.ui.SimpleExoPlayerView
+import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
@@ -27,7 +26,6 @@ import io.clappr.player.base.*
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
-import java.io.IOException
 import java.util.*
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
@@ -77,11 +75,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val bufferPercentage: Double
         get() = player?.bufferedPercentage?.toDouble() ?: 0.0
 
-    private val playerView: SimpleExoPlayerView
-        get() = view as SimpleExoPlayerView
+    private val playerView: PlayerView
+        get() = view as PlayerView
 
     override val viewClass: Class<*>
-        get() = SimpleExoPlayerView::class.java
+        get() = PlayerView::class.java
 
     override val mediaType: MediaType
         get() {
@@ -185,10 +183,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
 
         when (mediaType) {
-            C.TYPE_DASH -> return DashMediaSource(uri, dataSourceFactory, DefaultDashChunkSource.Factory(dataSourceFactory), mainHandler, null)
-            C.TYPE_SS -> return SsMediaSource(uri, dataSourceFactory, DefaultSsChunkSource.Factory(dataSourceFactory), mainHandler, null)
-            C.TYPE_HLS -> return HlsMediaSource(uri, dataSourceFactory, mainHandler, null)
-            C.TYPE_OTHER -> return ExtractorMediaSource(uri, dataSourceFactory, DefaultExtractorsFactory(), mainHandler, eventsListener)
+            C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            C.TYPE_SS -> return  SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            C.TYPE_HLS -> return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            C.TYPE_OTHER -> return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
             else -> throw IllegalStateException("Unsupported type: " + mediaType)
         }
     }
@@ -251,10 +249,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
-            ExoPlayer.STATE_IDLE -> handleExoplayerIdleState()
-            ExoPlayer.STATE_ENDED -> handleExoplayerEndedState()
-            ExoPlayer.STATE_BUFFERING -> handleExoplayerBufferingState()
-            ExoPlayer.STATE_READY -> handleExoplayerReadyState(playWhenReady)
+            Player.STATE_IDLE -> handleExoplayerIdleState()
+            Player.STATE_ENDED -> handleExoplayerEndedState()
+            Player.STATE_BUFFERING -> handleExoplayerBufferingState()
+            Player.STATE_READY -> handleExoplayerReadyState(playWhenReady)
         }
     }
 
@@ -387,8 +385,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun setupSubtitlesFromClapprOptions() {
         subtitlesFromOptions?.forEach {
-            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, null, Format.NO_VALUE, Format.NO_VALUE, it.key, null)
-            val subtitleSource = SingleSampleMediaSource(Uri.parse(it.value), dataSourceFactory, textFormat, C.TIME_UNSET)
+            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
+            val subtitleSource = SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, C.TIME_UNSET)
 
             createSubtitleMediaOption(textFormat, subtitleSource)?.let { addAvailableMediaOption(it) }
         }
@@ -507,11 +505,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener: ExtractorMediaSource.EventListener, ExoPlayer.EventListener {
-        override fun onLoadError(error: IOException?) {
-            handleError(error)
-        }
-
+    inner class ExoplayerEventsListener: Player.EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
@@ -527,10 +521,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             }
         }
 
-        override fun onPositionDiscontinuity() {
+        override fun onPositionDiscontinuity(reason: Int) {
         }
 
-        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?) {
+        override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
@@ -538,6 +532,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
             Logger.info(tag, "onTracksChanged")
+        }
+
+        override fun onSeekProcessed() {
+        }
+
+        override fun onRepeatModeChanged(repeatMode: Int) {
+        }
+
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         }
     }
 
