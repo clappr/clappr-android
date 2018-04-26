@@ -138,7 +138,6 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Playback.State.PAUSED -> State.PAUSED
             Playback.State.STALLED -> State.STALLED
             Playback.State.ERROR -> State.ERROR
-            else -> State.NONE
         }
 
     val playbackEventsIds = mutableSetOf<String>()

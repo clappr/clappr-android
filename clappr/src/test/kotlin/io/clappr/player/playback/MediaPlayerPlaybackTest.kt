@@ -9,10 +9,10 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.playback.MediaPlayerPlayback
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.junit.Assert.*
 import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
@@ -74,7 +74,7 @@ open class MediaPlayerPlaybackTest {
 
     @Test
     fun shouldTransitionToIdleWithValidMedia() {
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
+        val mpp = MediaPlayerPlayback(source = "valid")
         assertEquals("should not transition from NONE", Playback.State.NONE, mpp.state)
         createSurface(mpp)
         assertEquals("should transition to IDLE", Playback.State.IDLE, mpp.state)
@@ -83,24 +83,24 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldTrhrowWithInvalidMedia() {
         ShadowMediaPlayer.addException(DataSource.toDataSource("io_invalid"), IOException())
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "io_invalid")
+        val mpp = MediaPlayerPlayback(source = "io_invalid")
         assertEquals("should transition to ERROR", mpp.state, Playback.State.ERROR)
     }
 
     @Test
     fun shouldTrhrowWithUnsupportedMedia() {
         ShadowMediaPlayer.addException(DataSource.toDataSource("runtime_invalid"), RuntimeException())
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "runtime_invalid")
+        val mpp = MediaPlayerPlayback(source = "runtime_invalid")
         assertEquals("should transition to ERROR", mpp.state, Playback.State.ERROR)
     }
 
     @Test
     fun shouldOnlyPlayOnValidState() {
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
+        val mpp = MediaPlayerPlayback(source = "valid")
 
         var callbackCalled = false
-        mpp.on(Event.WILL_PLAY.value, Callback.wrap { bundle: Bundle? -> callbackCalled = true })
-        mpp.on(Event.PLAYING.value, Callback.wrap { bundle: Bundle? -> callbackCalled = true })
+        mpp.on(Event.WILL_PLAY.value, Callback.wrap { _: Bundle? -> callbackCalled = true })
+        mpp.on(Event.PLAYING.value, Callback.wrap { _: Bundle? -> callbackCalled = true })
 
         var result = mpp.play()
         assertFalse("play allowed in invalid state", result)
@@ -112,7 +112,7 @@ open class MediaPlayerPlaybackTest {
 
     @Test
     fun shouldOnlyAllowPlayInValidState() {
-        val mpp : MediaPlayerPlayback = MediaPlayerPlayback(source = "valid")
+        val mpp = MediaPlayerPlayback(source = "valid")
 
         assertFalse("play allowed in invalid state", mpp.canPlay)
         assertTrue("play not allowed in valid state", mediaPlayerPlayback.canPlay)
@@ -129,11 +129,11 @@ open class MediaPlayerPlaybackTest {
     fun shouldTriggerPlayEventsWhenPlay() {
         var willPlayCount = 0
         var playingCount = 0
-        mediaPlayerPlayback.on(Event.WILL_PLAY.value, Callback.wrap { bundle: Bundle? ->
+        mediaPlayerPlayback.on(Event.WILL_PLAY.value, Callback.wrap { _: Bundle? ->
             willPlayCount += 1
             assertEquals("playing trigerred", 0, playingCount)
         })
-        mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { bundle: Bundle? -> playingCount += 1 })
+        mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { _: Bundle? -> playingCount += 1 })
 
         mediaPlayerPlayback.play()
 
@@ -145,7 +145,7 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldTriggerEventOnCompletion() {
         var callbackCalled = false
-        mediaPlayerPlayback.on(Event.DID_COMPLETE.value, Callback.wrap { bundle: Bundle? -> callbackCalled = true })
+        mediaPlayerPlayback.on(Event.DID_COMPLETE.value, Callback.wrap { _ : Bundle? -> callbackCalled = true })
 
         mediaPlayerPlayback.play()
         assertFalse("complete called", callbackCalled)
@@ -162,7 +162,7 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldStopAllInteractionsOnError() {
         var callbackCalled = false
-        mediaPlayerPlayback.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? -> callbackCalled = true })
+        mediaPlayerPlayback.on(Event.ERROR.value, Callback.wrap { _ : Bundle? -> callbackCalled = true })
 
         validMedia.scheduleErrorAtOffset(400, -1, -2)
 
@@ -200,9 +200,9 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldTriggerStalledEvents() {
         var stalledCallbackCalled = false
-        mediaPlayerPlayback.on(Event.STALLED.value, Callback.wrap { bundle: Bundle? -> stalledCallbackCalled = true })
-        var playingCallbackCalled = false
-        mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { bundle: Bundle? -> playingCallbackCalled = true })
+        mediaPlayerPlayback.on(Event.STALLED.value, Callback.wrap { _ : Bundle? -> stalledCallbackCalled = true })
+        var playingCallbackCalled : Boolean
+        mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { _ : Bundle? -> playingCallbackCalled = true })
 
         validMedia.scheduleBufferUnderrunAtOffset(150, 100)
 
