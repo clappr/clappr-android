@@ -46,11 +46,11 @@ bintray {
 
 android {
     publishNonDefault publishAttrs['bintrayPublishNonDefault']
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '25.0.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode publishAttrs['versionCode']
         versionName publishAttrs['versionName']
     }
