@@ -1,4 +1,4 @@
-package com.globo.clappr.playback
+package io.clappr.player.playback
 
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -8,7 +8,6 @@ import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
-import io.clappr.player.playback.MediaPlayerPlayback
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -41,18 +40,18 @@ open class MediaPlayerTestShadow : ShadowMediaPlayer() {
 }
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = arrayOf(MediaPlayerTestShadow::class))
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [MediaPlayerTestShadow::class])
 
 open class MediaPlayerPlaybackTest {
-    lateinit var mediaPlayerPlayback : MediaPlayerPlayback
-    lateinit var scheduler: Scheduler
-    lateinit var validMedia: ShadowMediaPlayer.MediaInfo
+    private lateinit var mediaPlayerPlayback : MediaPlayerPlayback
+    private lateinit var scheduler: Scheduler
+    private lateinit var validMedia: ShadowMediaPlayer.MediaInfo
 
     @Before
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
 
-        ShadowMediaPlayer.setCreateListener { mediaPlayer, shadowMediaPlayer ->
+        ShadowMediaPlayer.setCreateListener { _, shadowMediaPlayer ->
             // Disabling invalid state emulation as it is not compatible with releases newer than KitKat (MediaTimeProvider)
             shadowMediaPlayer.invalidStateBehavior = ShadowMediaPlayer.InvalidStateBehavior.SILENT
         }
