@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.1.0'
+version = '0.1.1'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -46,11 +46,11 @@ bintray {
 
 android {
     publishNonDefault publishAttrs['bintrayPublishNonDefault']
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion '25.0.2'
     defaultConfig {
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode publishAttrs['versionCode']
         versionName publishAttrs['versionName']
     }
