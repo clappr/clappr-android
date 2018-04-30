@@ -68,6 +68,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() {
             return options.options[ClapprOption.DRM_LICENSE_URL.value] as? String
         }
+    private val offLicenses: ByteArray?
+        get() {
+            return options.options[ClapprOption.DRM_LICENSES.value] as? ByteArray
+        }
+
     private val subtitlesFromOptions = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
 
     private val useSubtitleFromOptions = subtitlesFromOptions?.isNotEmpty() ?: false
@@ -210,7 +215,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     @SuppressLint("NewApi")
-    fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
+    private fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
         if (Util.SDK_INT < 18 || drmLicenseUrl == null) {
             return null
         }
@@ -220,6 +225,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
 
         return DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null, mainHandler, drmEventsListeners)
+                .apply {
+                    offLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) }
+                }
     }
 
     private fun checkPeriodicUpdates() {
