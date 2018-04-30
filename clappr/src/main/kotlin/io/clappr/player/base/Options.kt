@@ -27,5 +27,9 @@ enum class ClapprOption(val value: String) {
     /**
      * String List to selected MediaOptions
      */
-    SELECTED_MEDIA_OPTIONS("selectedMediaOptions")
+    SELECTED_MEDIA_OPTIONS("selectedMediaOptions"),
+    /**
+     * Byte Array of drm licenses
+     */
+    DRM_LICENSES("drmLicenses")
 }
