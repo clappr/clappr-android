@@ -225,9 +225,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
 
         return DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null, mainHandler, drmEventsListeners)
-                .apply {
-                    offLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) }
-                }
+                .apply { offLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) } }
     }
 
     private fun checkPeriodicUpdates() {
