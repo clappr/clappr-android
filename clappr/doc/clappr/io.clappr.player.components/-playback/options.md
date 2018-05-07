@@ -2,4 +2,4 @@
 
 # options
 
-`val options: `[`Options`](../../io.clappr.player.base/-options/index.md)
+`var options: `[`Options`](../../io.clappr.player.base/-options/index.md)
