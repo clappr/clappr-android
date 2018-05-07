@@ -9,7 +9,7 @@
 | Name | Summary |
 |---|---|
 | [ExoplayerDrmEventsListeners](-exoplayer-drm-events-listeners/index.md) | `inner class ExoplayerDrmEventsListeners : EventListener` |
-| [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener, EventListener` |
+| [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener` |
 
 ### Constructors
 
@@ -38,7 +38,7 @@
 |---|---|
 | [hasMediaOptionAvailable](../../io.clappr.player.components/-playback/has-media-option-available.md) | `open val hasMediaOptionAvailable: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [mimeType](../../io.clappr.player.components/-playback/mime-type.md) | `var mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
-| [options](../../io.clappr.player.components/-playback/options.md) | `val options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
+| [options](../../io.clappr.player.components/-playback/options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [source](../../io.clappr.player.components/-playback/source.md) | `var source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 
 ### Functions

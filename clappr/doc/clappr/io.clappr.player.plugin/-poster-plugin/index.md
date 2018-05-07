@@ -14,6 +14,7 @@
 
 | Name | Summary |
 |---|---|
+| [posterImageUrl](poster-image-url.md) | `var posterImageUrl: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
 | [state](state.md) | `var state: `[`State`](../-plugin/-state/index.md) |
 | [view](view.md) | `val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
 
