@@ -1,18 +1,23 @@
 package io.clappr.player.components
 
+import android.view.View
+import android.view.ViewManager
 import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
+import io.clappr.player.log.Logger
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 class Container(val loader: Loader, options: Options) : UIObject() {
+
+    private val TAG = "Container"
+
     val plugins: List<Plugin>
         get() = internalPlugins
-
     private val internalPlugins: MutableList<Plugin>
 
     var playback: Playback? = null
@@ -71,13 +76,22 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     override fun render(): Container {
         frameLayout.removeAllViews()
         playback?.let {
+            removeViewFromParent(it.view, it.name)
             frameLayout.addView(it.view)
             it.render()
         }
         internalPlugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
+            removeViewFromParent(it.view, it.name)
             frameLayout.addView(it.view)
             it.render()
         }
         return this
+    }
+
+    private fun removeViewFromParent(view: View?, name: String?) {
+        (view?.parent as? ViewManager)?.let {
+            Logger.error(TAG, "View on parent: ${name}")
+            it.removeView(view)
+        }
     }
 }

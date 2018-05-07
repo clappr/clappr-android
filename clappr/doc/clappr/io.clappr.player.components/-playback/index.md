@@ -28,7 +28,7 @@
 | [hasMediaOptionAvailable](has-media-option-available.md) | `open val hasMediaOptionAvailable: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [mediaType](media-type.md) | `open val mediaType: `[`MediaType`](-media-type/index.md) |
 | [mimeType](mime-type.md) | `var mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
-| [options](options.md) | `val options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
+| [options](options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [position](position.md) | `open val position: `[`Double`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html) |
 | [source](source.md) | `var source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [state](state.md) | `open val state: `[`State`](-state/index.md) |
