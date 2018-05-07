@@ -13,9 +13,11 @@ import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 class Container(val loader: Loader, options: Options) : UIObject() {
+
+    private val TAG = "Container"
+
     val plugins: List<Plugin>
         get() = internalPlugins
-
     private val internalPlugins: MutableList<Plugin>
 
     var playback: Playback? = null
@@ -88,7 +90,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
 
     private fun removeViewFromParent(view: View?, name: String?) {
         (view?.parent as? ViewManager)?.let {
-            Logger.error(this.javaClass.simpleName, "View on parent: ${name}")
+            Logger.error(TAG, "View on parent: ${name}")
             it.removeView(view)
         }
     }
