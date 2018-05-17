@@ -68,7 +68,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() {
             return options.options[ClapprOption.DRM_LICENSE_URL.value] as? String
         }
-    private val offLicenses: ByteArray?
+    private val drmLicenses: ByteArray?
         get() {
             return options.options[ClapprOption.DRM_LICENSES.value] as? ByteArray
         }
@@ -225,7 +225,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
 
         return DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null, mainHandler, drmEventsListeners)
-                .apply { offLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) } }
+                .apply { drmLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) } }
     }
 
     private fun checkPeriodicUpdates() {
