@@ -1,4 +1,4 @@
-[clappr](../index.md) / [io.clappr.player.plugin.core](.)
+[clappr](../index.md) / [io.clappr.player.plugin.core](./index.md)
 
 ## Package io.clappr.player.plugin.core
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [EventInterface](index.md) / [off](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [EventInterface](index.md) / [off](./off.md)
 
 # off
 

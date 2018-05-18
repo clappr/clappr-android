@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [Loader](index.md) / [registerPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [Loader](index.md) / [registerPlugin](./register-plugin.md)
 
 # registerPlugin
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](./index.md)
 
 # ErrorInfo
 
@@ -29,4 +29,4 @@
 
 | Name | Summary |
 |---|---|
-| [CREATOR](-c-r-e-a-t-o-r.md) | `val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<ErrorInfo>` |
+| [CREATOR](-c-r-e-a-t-o-r.md) | `val CREATOR: `[`Creator`](https://developer.android.com/reference/android/os/Parcelable/Creator.html)`<`[`ErrorInfo`](./index.md)`>` |

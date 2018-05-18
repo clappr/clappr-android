@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [configure](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [configure](./configure.md)
 
 # configure
 
@@ -11,10 +11,6 @@ Configure Player. This configuration must be performed before adding fragment to
 `options` -
 
 ```
-
-```
     a map of key-value options.
-```
-
 ```
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.log](../index.md) / [Logger](index.md) / [debug](.)
+[clappr](../../index.md) / [io.clappr.player.log](../index.md) / [Logger](index.md) / [debug](./debug.md)
 
 # debug
 

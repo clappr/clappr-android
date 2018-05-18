@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Audio](index.md) / [ORIGINAL](.)
+[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Audio](index.md) / [ORIGINAL](./-o-r-i-g-i-n-a-l.md)
 
 # ORIGINAL
 

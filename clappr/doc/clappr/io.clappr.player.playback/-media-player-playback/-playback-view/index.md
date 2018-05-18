@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [MediaPlayerPlayback](../index.md) / [PlaybackView](.)
+[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [MediaPlayerPlayback](../index.md) / [PlaybackView](./index.md)
 
 # PlaybackView
 

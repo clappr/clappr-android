@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Audio](index.md) / [value](.)
+[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Audio](index.md) / [value](./value.md)
 
 # value
 

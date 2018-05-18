@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerEventsListener](index.md) / [onPositionDiscontinuity](.)
+[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerEventsListener](index.md) / [onPositionDiscontinuity](./on-position-discontinuity.md)
 
 # onPositionDiscontinuity
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [seek](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [seek](./seek.md)
 
 # seek
 

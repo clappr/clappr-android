@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](./index.md)
 
 # BaseObject
 
@@ -48,5 +48,5 @@
 
 | Name | Summary |
 |---|---|
-| [Plugin](../../io.clappr.player.plugin/-plugin/index.md) | `abstract class Plugin : BaseObject, `[`NamedType`](../-named-type/index.md) |
-| [UIObject](../-u-i-object/index.md) | `open class UIObject : BaseObject` |
+| [Plugin](../../io.clappr.player.plugin/-plugin/index.md) | `abstract class Plugin : `[`BaseObject`](./index.md)`, `[`NamedType`](../-named-type/index.md) |
+| [UIObject](../-u-i-object/index.md) | `open class UIObject : `[`BaseObject`](./index.md) |

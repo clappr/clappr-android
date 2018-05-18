@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](index.md) / [render](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](index.md) / [render](./render.md)
 
 # render
 

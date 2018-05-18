@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [stopListening](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [stopListening](./stop-listening.md)
 
 # stopListening
 

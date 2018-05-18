@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [onPause](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [onPause](./on-pause.md)
 
 # onPause
 

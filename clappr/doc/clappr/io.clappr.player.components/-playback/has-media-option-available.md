@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [hasMediaOptionAvailable](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [hasMediaOptionAvailable](./has-media-option-available.md)
 
 # hasMediaOptionAvailable
 

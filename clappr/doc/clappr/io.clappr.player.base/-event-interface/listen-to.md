@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [EventInterface](index.md) / [listenTo](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [EventInterface](index.md) / [listenTo](./listen-to.md)
 
 # listenTo
 

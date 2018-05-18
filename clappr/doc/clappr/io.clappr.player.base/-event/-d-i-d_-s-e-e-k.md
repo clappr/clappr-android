@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_SEEK](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_SEEK](./-d-i-d_-s-e-e-k.md)
 
 # DID_SEEK
 

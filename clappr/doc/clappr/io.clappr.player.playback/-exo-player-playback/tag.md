@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [tag](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [tag](./tag.md)
 
 # tag
 

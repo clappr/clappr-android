@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerDrmEventsListeners](index.md) / [onDrmSessionManagerError](.)
+[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerDrmEventsListeners](index.md) / [onDrmSessionManagerError](./on-drm-session-manager-error.md)
 
 # onDrmSessionManagerError
 

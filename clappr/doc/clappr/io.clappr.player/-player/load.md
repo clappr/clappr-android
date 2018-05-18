@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [load](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [load](./load.md)
 
 # load
 
@@ -11,21 +11,13 @@ Load a new media
 `source` -
 
 ```
-
-```
     valid media url
-```
-
 ```
 
 `mimeType` -
 
 ```
-
-```
     (Optional) media mime type.
-```
-
 ```
 
 `fun load(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
