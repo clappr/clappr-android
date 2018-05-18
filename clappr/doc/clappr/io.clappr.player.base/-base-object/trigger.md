@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [trigger](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [trigger](./trigger.md)
 
 # trigger
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [MEDIA_OPTIONS_SELECTED](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [MEDIA_OPTIONS_SELECTED](./-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d.md)
 
 # MEDIA_OPTIONS_SELECTED
 

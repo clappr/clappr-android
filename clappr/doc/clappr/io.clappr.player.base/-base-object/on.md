@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [on](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [on](./on.md)
 
 # on
 

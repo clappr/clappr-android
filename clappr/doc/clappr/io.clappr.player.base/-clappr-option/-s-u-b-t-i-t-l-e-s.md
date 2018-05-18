@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](index.md) / [SUBTITLES](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](index.md) / [SUBTITLES](./-s-u-b-t-i-t-l-e-s.md)
 
 # SUBTITLES
 

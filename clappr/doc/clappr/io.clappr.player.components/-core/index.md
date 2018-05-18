@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Core](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Core](./index.md)
 
 # Core
 
@@ -42,7 +42,7 @@
 |---|---|
 | [destroy](destroy.md) | `fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [load](load.md) | `fun load(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [render](render.md) | `fun render(): Core` |
+| [render](render.md) | `fun render(): `[`Core`](./index.md) |
 
 ### Inherited Functions
 

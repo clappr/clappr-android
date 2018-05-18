@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [duration](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](index.md) / [duration](./duration.md)
 
 # duration
 

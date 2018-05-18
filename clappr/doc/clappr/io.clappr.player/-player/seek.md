@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [seek](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [seek](./seek.md)
 
 # seek
 
@@ -11,11 +11,7 @@ Move current playback position.
 `position` -
 
 ```
-
-```
     new media position in seconds
-```
-
 ```
 
 **Return**

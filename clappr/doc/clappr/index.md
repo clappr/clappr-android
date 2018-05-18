@@ -1,4 +1,4 @@
-[clappr](.)
+[clappr](./index.md)
 
 ### Packages
 

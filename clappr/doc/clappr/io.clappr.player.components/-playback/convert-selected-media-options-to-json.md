@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [convertSelectedMediaOptionsToJson](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [convertSelectedMediaOptionsToJson](./convert-selected-media-options-to-json.md)
 
 # convertSelectedMediaOptionsToJson
 

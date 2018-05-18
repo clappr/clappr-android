@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [picasso](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [picasso](./picasso.md)
 
 # picasso
 

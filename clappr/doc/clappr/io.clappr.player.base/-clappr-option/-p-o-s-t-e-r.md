@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](index.md) / [POSTER](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](index.md) / [POSTER](./-p-o-s-t-e-r.md)
 
 # POSTER
 

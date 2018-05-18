@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Language](.)
+[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [MediaOptionType](../index.md) / [Language](./index.md)
 
 # Language
 

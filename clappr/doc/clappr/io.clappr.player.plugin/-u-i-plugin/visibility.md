@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](index.md) / [visibility](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](index.md) / [visibility](./visibility.md)
 
 # visibility
 

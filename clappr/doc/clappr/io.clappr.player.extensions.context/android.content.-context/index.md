@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.extensions.context](../index.md) / [android.content.Context](.)
+[clappr](../../index.md) / [io.clappr.player.extensions.context](../index.md) / [android.content.Context](./index.md)
 
 ### Extensions for android.content.Context
 

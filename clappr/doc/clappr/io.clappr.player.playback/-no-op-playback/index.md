@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [NoOpPlayback](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [NoOpPlayback](./index.md)
 
 # NoOpPlayback
 
 `open class NoOpPlayback : `[`Playback`](../../io.clappr.player.components/-playback/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`PlaybackSupportInterface`](../../io.clappr.player.components/-playback-support-interface/index.md) |
 
 ### Constructors
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [ExoPlayerPlayback](./index.md)
 
 # ExoPlayerPlayback
 
@@ -8,6 +8,7 @@
 
 | Name | Summary |
 |---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`PlaybackSupportInterface`](../../io.clappr.player.components/-playback-support-interface/index.md) |
 | [ExoplayerDrmEventsListeners](-exoplayer-drm-events-listeners/index.md) | `inner class ExoplayerDrmEventsListeners : EventListener` |
 | [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener` |
 
@@ -45,7 +46,6 @@
 
 | Name | Summary |
 |---|---|
-| [buildDrmSessionManager](build-drm-session-manager.md) | `fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>?` |
 | [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [getSubtitleStyle](get-subtitle-style.md) | `open fun getSubtitleStyle(): CaptionStyleCompat` |
 | [handleError](handle-error.md) | `fun handleError(error: `[`Exception`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html)`?): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |

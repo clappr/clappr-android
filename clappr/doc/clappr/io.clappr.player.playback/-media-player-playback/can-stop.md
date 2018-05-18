@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [MediaPlayerPlayback](index.md) / [canStop](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [MediaPlayerPlayback](index.md) / [canStop](./can-stop.md)
 
 # canStop
 

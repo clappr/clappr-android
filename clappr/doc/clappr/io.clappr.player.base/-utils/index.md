@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Utils](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Utils](./index.md)
 
 # Utils
 

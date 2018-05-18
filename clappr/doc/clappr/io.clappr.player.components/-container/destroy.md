@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [destroy](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [destroy](./destroy.md)
 
 # destroy
 

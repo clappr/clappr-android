@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_CHANGE_SOURCE](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_CHANGE_SOURCE](./-d-i-d_-c-h-a-n-g-e_-s-o-u-r-c-e.md)
 
 # DID_CHANGE_SOURCE
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.extensions.context](../index.md) / [android.content.Context](index.md) / [isRunningInAndroidTvDevice](.)
+[clappr](../../index.md) / [io.clappr.player.extensions.context](../index.md) / [android.content.Context](index.md) / [isRunningInAndroidTvDevice](./is-running-in-android-tv-device.md)
 
 # isRunningInAndroidTvDevice
 

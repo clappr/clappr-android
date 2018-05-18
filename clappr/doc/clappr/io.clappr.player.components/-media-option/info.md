@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [MediaOption](index.md) / [info](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [MediaOption](index.md) / [info](./info.md)
 
 # info
 

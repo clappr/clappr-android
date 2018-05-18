@@ -1,4 +1,4 @@
-[clappr](../index.md) / [io.clappr.player.base](index.md) / [writeBundle](.)
+[clappr](../index.md) / [io.clappr.player.base](index.md) / [writeBundle](./write-bundle.md)
 
 # writeBundle
 

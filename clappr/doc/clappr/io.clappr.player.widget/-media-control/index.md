@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.widget](../index.md) / [MediaControl](.)
+[clappr](../../index.md) / [io.clappr.player.widget](../index.md) / [MediaControl](./index.md)
 
 # MediaControl
 

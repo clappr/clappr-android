@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [updatePoster](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [updatePoster](./update-poster.md)
 
 # updatePoster
 

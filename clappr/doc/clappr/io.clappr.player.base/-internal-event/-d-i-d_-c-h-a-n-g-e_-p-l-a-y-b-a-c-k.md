@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [InternalEvent](index.md) / [DID_CHANGE_PLAYBACK](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [InternalEvent](index.md) / [DID_CHANGE_PLAYBACK](./-d-i-d_-c-h-a-n-g-e_-p-l-a-y-b-a-c-k.md)
 
 # DID_CHANGE_PLAYBACK
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [playbackEventsToListen](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [playbackEventsToListen](./playback-events-to-listen.md)
 
 # playbackEventsToListen
 

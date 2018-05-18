@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [UIContainerPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [UIContainerPlugin](./index.md)
 
 # UIContainerPlugin
 
 `open class UIContainerPlugin : `[`UIPlugin`](../../io.clappr.player.plugin/-u-i-plugin/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
 
 ### Constructors
 
@@ -41,5 +47,5 @@
 
 | Name | Summary |
 |---|---|
-| [LoadingPlugin](../../io.clappr.player.plugin/-loading-plugin/index.md) | `open class LoadingPlugin : UIContainerPlugin` |
-| [PosterPlugin](../../io.clappr.player.plugin/-poster-plugin/index.md) | `class PosterPlugin : UIContainerPlugin` |
+| [LoadingPlugin](../../io.clappr.player.plugin/-loading-plugin/index.md) | `open class LoadingPlugin : `[`UIContainerPlugin`](./index.md) |
+| [PosterPlugin](../../io.clappr.player.plugin/-poster-plugin/index.md) | `class PosterPlugin : `[`UIContainerPlugin`](./index.md) |

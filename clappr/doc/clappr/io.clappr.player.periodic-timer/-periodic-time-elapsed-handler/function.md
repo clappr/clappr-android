@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.periodicTimer](../index.md) / [PeriodicTimeElapsedHandler](index.md) / [function](.)
+[clappr](../../index.md) / [io.clappr.player.periodicTimer](../index.md) / [PeriodicTimeElapsedHandler](index.md) / [function](./function.md)
 
 # function
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [pause](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [pause](./pause.md)
 
 # pause
 

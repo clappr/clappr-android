@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [MediaPlayerPlayback](.)
+[clappr](../../index.md) / [io.clappr.player.playback](../index.md) / [MediaPlayerPlayback](./index.md)
 
 # MediaPlayerPlayback
 
@@ -8,6 +8,7 @@
 
 | Name | Summary |
 |---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`PlaybackSupportInterface`](../../io.clappr.player.components/-playback-support-interface/index.md) |
 | [InternalState](-internal-state/index.md) | `enum class InternalState` |
 | [PlaybackView](-playback-view/index.md) | `class PlaybackView : `[`SurfaceView`](https://developer.android.com/reference/android/view/SurfaceView.html) |
 

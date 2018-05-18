@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ClapprOption](./index.md)
 
 # ClapprOption
 
@@ -13,6 +13,7 @@
 | [DRM_LICENSE_URL](-d-r-m_-l-i-c-e-n-s-e_-u-r-l.md) | Inform the URL license if DRM is necessary |
 | [SUBTITLES](-s-u-b-t-i-t-l-e-s.md) | Map from subtitles URL`s with name and URL to each one |
 | [SELECTED_MEDIA_OPTIONS](-s-e-l-e-c-t-e-d_-m-e-d-i-a_-o-p-t-i-o-n-s.md) | String List to selected MediaOptions |
+| [DRM_LICENSES](-d-r-m_-l-i-c-e-n-s-e-s.md) | Byte Array of drm licenses |
 
 ### Properties
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Callback](index.md) / [wrap](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Callback](index.md) / [wrap](./wrap.md)
 
 # wrap
 

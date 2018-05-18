@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [UIPlugin](./index.md)
 
 # UIPlugin
 
@@ -48,5 +48,5 @@
 
 | Name | Summary |
 |---|---|
-| [UIContainerPlugin](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) | `open class UIContainerPlugin : UIPlugin` |
-| [UICorePlugin](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) | `open class UICorePlugin : UIPlugin` |
+| [UIContainerPlugin](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) | `open class UIContainerPlugin : `[`UIPlugin`](./index.md) |
+| [UICorePlugin](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) | `open class UICorePlugin : `[`UIPlugin`](./index.md) |

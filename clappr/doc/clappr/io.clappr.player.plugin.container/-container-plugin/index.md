@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [ContainerPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [ContainerPlugin](./index.md)
 
 # ContainerPlugin
 
 `open class ContainerPlugin : `[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
 
 ### Constructors
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [canSeek](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [canSeek](./can-seek.md)
 
 # canSeek
 

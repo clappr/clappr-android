@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](./index.md)
 
 # PosterPlugin
 
 `class PosterPlugin : `[`UIContainerPlugin`](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
 
 ### Constructors
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](index.md) / [writeToParcel](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](index.md) / [writeToParcel](./write-to-parcel.md)
 
 # writeToParcel
 

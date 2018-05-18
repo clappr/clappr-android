@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [id](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [BaseObject](index.md) / [id](./id.md)
 
 # id
 

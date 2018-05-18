@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](./index.md)
 
 # Playback
 
@@ -8,6 +8,7 @@
 
 | Name | Summary |
 |---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`PlaybackSupportInterface`](../-playback-support-interface/index.md) |
 | [MediaType](-media-type/index.md) | `enum class MediaType` |
 | [State](-state/index.md) | `enum class State` |
 
@@ -84,6 +85,6 @@
 
 | Name | Summary |
 |---|---|
-| [ExoPlayerPlayback](../../io.clappr.player.playback/-exo-player-playback/index.md) | `open class ExoPlayerPlayback : Playback` |
-| [MediaPlayerPlayback](../../io.clappr.player.playback/-media-player-playback/index.md) | `class MediaPlayerPlayback : Playback` |
-| [NoOpPlayback](../../io.clappr.player.playback/-no-op-playback/index.md) | `open class NoOpPlayback : Playback` |
+| [ExoPlayerPlayback](../../io.clappr.player.playback/-exo-player-playback/index.md) | `open class ExoPlayerPlayback : `[`Playback`](./index.md) |
+| [MediaPlayerPlayback](../../io.clappr.player.playback/-media-player-playback/index.md) | `class MediaPlayerPlayback : `[`Playback`](./index.md) |
+| [NoOpPlayback](../../io.clappr.player.playback/-no-op-playback/index.md) | `open class NoOpPlayback : `[`Playback`](./index.md) |

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [UIObject](index.md) / [viewClass](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [UIObject](index.md) / [viewClass](./view-class.md)
 
 # viewClass
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [resetAvailableMediaOptions](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [resetAvailableMediaOptions](./reset-available-media-options.md)
 
 # resetAvailableMediaOptions
 
