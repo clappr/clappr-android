@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [posterImageUrl](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [PosterPlugin](index.md) / [posterImageUrl](./poster-image-url.md)
 
 # posterImageUrl
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [UIObject](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [UIObject](./index.md)
 
 # UIObject
 
@@ -28,8 +28,8 @@
 | Name | Summary |
 |---|---|
 | [ensureView](ensure-view.md) | `fun ensureView(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [remove](remove.md) | `fun remove(): UIObject` |
-| [render](render.md) | `open fun render(): UIObject` |
+| [remove](remove.md) | `fun remove(): `[`UIObject`](./index.md) |
+| [render](render.md) | `open fun render(): `[`UIObject`](./index.md) |
 
 ### Inherited Functions
 
@@ -46,6 +46,6 @@
 
 | Name | Summary |
 |---|---|
-| [Container](../../io.clappr.player.components/-container/index.md) | `class Container : UIObject` |
-| [Core](../../io.clappr.player.components/-core/index.md) | `class Core : UIObject` |
-| [Playback](../../io.clappr.player.components/-playback/index.md) | `abstract class Playback : UIObject, `[`NamedType`](../-named-type/index.md) |
+| [Container](../../io.clappr.player.components/-container/index.md) | `class Container : `[`UIObject`](./index.md) |
+| [Core](../../io.clappr.player.components/-core/index.md) | `class Core : `[`UIObject`](./index.md) |
+| [Playback](../../io.clappr.player.components/-playback/index.md) | `abstract class Playback : `[`UIObject`](./index.md)`, `[`NamedType`](../-named-type/index.md) |

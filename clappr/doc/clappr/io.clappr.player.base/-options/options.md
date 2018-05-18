@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Options](index.md) / [options](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Options](index.md) / [options](./options.md)
 
 # options
 

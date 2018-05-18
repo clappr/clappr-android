@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.15"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.16"
     }
 }
 
@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.1.2'
+version = '0.2.0'
 
 def publishAttrs = buildPublishAttrs(version)
 

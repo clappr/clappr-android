@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Callback](index.md) / [invoke](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Callback](index.md) / [invoke](./invoke.md)
 
 # invoke
 

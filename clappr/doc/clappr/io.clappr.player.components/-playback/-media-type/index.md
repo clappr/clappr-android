@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [Playback](../index.md) / [MediaType](.)
+[clappr](../../../index.md) / [io.clappr.player.components](../../index.md) / [Playback](../index.md) / [MediaType](./index.md)
 
 # MediaType
 

@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [PLAYING](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [PLAYING](./-p-l-a-y-i-n-g.md)
 
 # PLAYING
 

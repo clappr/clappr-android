@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.plugin.core](../index.md) / [UICorePlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin.core](../index.md) / [UICorePlugin](./index.md)
 
 # UICorePlugin
 
 `open class UICorePlugin : `[`UIPlugin`](../../io.clappr.player.plugin/-u-i-plugin/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
 
 ### Constructors
 

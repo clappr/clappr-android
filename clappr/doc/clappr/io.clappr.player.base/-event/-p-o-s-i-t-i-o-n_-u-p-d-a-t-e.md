@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [POSITION_UPDATE](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [POSITION_UPDATE](./-p-o-s-i-t-i-o-n_-u-p-d-a-t-e.md)
 
 # POSITION_UPDATE
 

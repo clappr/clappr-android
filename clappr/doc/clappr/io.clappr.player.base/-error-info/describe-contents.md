@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](index.md) / [describeContents](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [ErrorInfo](index.md) / [describeContents](./describe-contents.md)
 
 # describeContents
 

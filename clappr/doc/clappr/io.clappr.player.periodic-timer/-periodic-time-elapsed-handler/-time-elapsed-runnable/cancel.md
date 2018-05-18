@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.periodicTimer](../../index.md) / [PeriodicTimeElapsedHandler](../index.md) / [TimeElapsedRunnable](index.md) / [cancel](.)
+[clappr](../../../index.md) / [io.clappr.player.periodicTimer](../../index.md) / [PeriodicTimeElapsedHandler](../index.md) / [TimeElapsedRunnable](index.md) / [cancel](./cancel.md)
 
 # cancel
 

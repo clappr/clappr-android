@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [initialize](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [initialize](./initialize.md)
 
 # initialize
 

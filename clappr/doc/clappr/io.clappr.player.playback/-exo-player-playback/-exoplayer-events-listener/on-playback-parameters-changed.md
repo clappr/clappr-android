@@ -1,4 +1,4 @@
-[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerEventsListener](index.md) / [onPlaybackParametersChanged](.)
+[clappr](../../../index.md) / [io.clappr.player.playback](../../index.md) / [ExoPlayerPlayback](../index.md) / [ExoplayerEventsListener](index.md) / [onPlaybackParametersChanged](./on-playback-parameters-changed.md)
 
 # onPlaybackParametersChanged
 

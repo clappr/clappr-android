@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](./index.md)
 
 # Container
 
@@ -33,7 +33,7 @@
 |---|---|
 | [destroy](destroy.md) | `fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [load](load.md) | `fun load(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [render](render.md) | `fun render(): Container` |
+| [render](render.md) | `fun render(): `[`Container`](./index.md) |
 
 ### Inherited Functions
 

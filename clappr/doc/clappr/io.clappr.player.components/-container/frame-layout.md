@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [frameLayout](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [frameLayout](./frame-layout.md)
 
 # frameLayout
 

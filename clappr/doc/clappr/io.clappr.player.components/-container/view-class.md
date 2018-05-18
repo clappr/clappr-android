@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [viewClass](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [viewClass](./view-class.md)
 
 # viewClass
 

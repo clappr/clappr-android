@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Core](index.md) / [load](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Core](index.md) / [load](./load.md)
 
 # load
 

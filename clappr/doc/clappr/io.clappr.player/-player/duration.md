@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [duration](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [duration](./duration.md)
 
 # duration
 

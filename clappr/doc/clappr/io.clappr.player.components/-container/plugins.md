@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [plugins](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Container](index.md) / [plugins](./plugins.md)
 
 # plugins
 

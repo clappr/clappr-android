@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [ERROR](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [ERROR](./-e-r-r-o-r.md)
 
 # ERROR
 

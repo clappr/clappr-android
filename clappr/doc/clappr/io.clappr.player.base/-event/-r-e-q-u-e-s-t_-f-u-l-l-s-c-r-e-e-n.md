@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [REQUEST_FULLSCREEN](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [REQUEST_FULLSCREEN](./-r-e-q-u-e-s-t_-f-u-l-l-s-c-r-e-e-n.md)
 
 # REQUEST_FULLSCREEN
 

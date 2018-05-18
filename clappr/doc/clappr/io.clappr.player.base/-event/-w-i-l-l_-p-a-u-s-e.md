@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [WILL_PAUSE](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [WILL_PAUSE](./-w-i-l-l_-p-a-u-s-e.md)
 
 # WILL_PAUSE
 

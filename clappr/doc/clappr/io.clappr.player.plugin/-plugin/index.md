@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [Plugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [Plugin](./index.md)
 
 # Plugin
 
@@ -51,6 +51,6 @@
 
 | Name | Summary |
 |---|---|
-| [ContainerPlugin](../../io.clappr.player.plugin.container/-container-plugin/index.md) | `open class ContainerPlugin : Plugin` |
-| [CorePlugin](../../io.clappr.player.plugin.core/-core-plugin/index.md) | `open class CorePlugin : Plugin` |
-| [UIPlugin](../-u-i-plugin/index.md) | `abstract class UIPlugin : Plugin, `[`EventInterface`](../../io.clappr.player.base/-event-interface/index.md) |
+| [ContainerPlugin](../../io.clappr.player.plugin.container/-container-plugin/index.md) | `open class ContainerPlugin : `[`Plugin`](./index.md) |
+| [CorePlugin](../../io.clappr.player.plugin.core/-core-plugin/index.md) | `open class CorePlugin : `[`Plugin`](./index.md) |
+| [UIPlugin](../-u-i-plugin/index.md) | `abstract class UIPlugin : `[`Plugin`](./index.md)`, `[`EventInterface`](../../io.clappr.player.base/-event-interface/index.md) |

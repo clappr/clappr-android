@@ -1,4 +1,4 @@
-[clappr](../index.md) / [io.clappr.player.extensions.context](.)
+[clappr](../index.md) / [io.clappr.player.extensions.context](./index.md)
 
 ## Package io.clappr.player.extensions.context
 

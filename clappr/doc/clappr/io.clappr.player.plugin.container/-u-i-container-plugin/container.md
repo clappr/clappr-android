@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [UIContainerPlugin](index.md) / [container](.)
+[clappr](../../index.md) / [io.clappr.player.plugin.container](../index.md) / [UIContainerPlugin](index.md) / [container](./container.md)
 
 # container
 

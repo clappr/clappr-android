@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [InternalEvent](index.md) / [DID_EXIT_FULLSCREEN](.)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [InternalEvent](index.md) / [DID_EXIT_FULLSCREEN](./-d-i-d_-e-x-i-t_-f-u-l-l-s-c-r-e-e-n.md)
 
 # DID_EXIT_FULLSCREEN
 

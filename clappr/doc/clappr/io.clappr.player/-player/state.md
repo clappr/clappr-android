@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [state](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [state](./state.md)
 
 # state
 

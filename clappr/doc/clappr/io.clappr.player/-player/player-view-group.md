@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [playerViewGroup](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [playerViewGroup](./player-view-group.md)
 
 # playerViewGroup
 

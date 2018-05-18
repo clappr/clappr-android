@@ -1,8 +1,14 @@
-[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [LoadingPlugin](.)
+[clappr](../../index.md) / [io.clappr.player.plugin](../index.md) / [LoadingPlugin](./index.md)
 
 # LoadingPlugin
 
 `open class LoadingPlugin : `[`UIContainerPlugin`](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md)
+
+### Types
+
+| Name | Summary |
+|---|---|
+| [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
 
 ### Constructors
 

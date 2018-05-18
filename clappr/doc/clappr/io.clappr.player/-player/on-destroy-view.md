@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [onDestroyView](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [onDestroyView](./on-destroy-view.md)
 
 # onDestroyView
 

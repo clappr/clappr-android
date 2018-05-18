@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [containerEventsIds](.)
+[clappr](../../index.md) / [io.clappr.player](../index.md) / [Player](index.md) / [containerEventsIds](./container-events-ids.md)
 
 # containerEventsIds
 

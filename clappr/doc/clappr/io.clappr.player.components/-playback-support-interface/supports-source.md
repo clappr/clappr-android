@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [PlaybackSupportInterface](index.md) / [supportsSource](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [PlaybackSupportInterface](index.md) / [supportsSource](./supports-source.md)
 
 # supportsSource
 

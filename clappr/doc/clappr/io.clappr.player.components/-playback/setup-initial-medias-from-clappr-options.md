@@ -1,4 +1,4 @@
-[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [setupInitialMediasFromClapprOptions](.)
+[clappr](../../index.md) / [io.clappr.player.components](../index.md) / [Playback](index.md) / [setupInitialMediasFromClapprOptions](./setup-initial-medias-from-clappr-options.md)
 
 # setupInitialMediasFromClapprOptions
 
