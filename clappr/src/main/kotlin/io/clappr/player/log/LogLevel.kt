@@ -1,19 +1,19 @@
 package io.clappr.player.log
 
-enum class LogLevel(level: Int) {
-    OFF(0),
-    ERROR(1),
-    WARNING(2),
-    INFO(3),
-    DEBUG(4);
+enum class LogLevel {
+    OFF,
+    ERROR,
+    WARNING,
+    INFO,
+    DEBUG;
 
     fun description(): String {
-        when (this) {
-            DEBUG -> return "DEBUG"
-            INFO -> return "INFO"
-            WARNING -> return "WARNING"
-            ERROR -> return "ERROR"
-            else -> return ""
+        return when (this) {
+            DEBUG -> "DEBUG"
+            INFO -> "INFO"
+            WARNING -> "WARNING"
+            ERROR -> "ERROR"
+            else -> ""
         }
     }
 }
