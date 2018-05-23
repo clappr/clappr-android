@@ -40,3 +40,18 @@ data class ErrorInfo(val message: String, val code: Int, val extras: Bundle? = n
         return 0
     }
 }
+
+/**
+ * Event bundle data keys for error info
+ */
+enum class ErrorInfoData(val value: String) {
+
+    /**
+     * [ErrorInfo] data
+     *
+     * Type: String
+     *
+     * Exception data.
+     */
+    EXCEPTION("exception")
+}
