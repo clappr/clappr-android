@@ -5,9 +5,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import io.clappr.player.Player
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.log.Logger
 
 class  PlayerActivity : Activity() {
@@ -18,10 +16,16 @@ class  PlayerActivity : Activity() {
 
         val player = Player()
         player.configure(Options(source = "http://clappr.io/highline.mp4"))
-        player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("Will Play", "App") })
-        player.on(Event.PLAYING.value, Callback.wrap { Logger.info("Playing", "App") })
-        player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("Completed", "App") })
-        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Logger.info("Buffer update: " + bundle?.getDouble("percentage"), "App") })
+        player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
+        player.on(Event.PLAYING.value, Callback.wrap { Logger.info("App","Playing") })
+        player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("App", "Completed") })
+        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Logger.info("App","Buffer update: ${bundle?.getDouble("percentage")}") })
+        player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
+            bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
+                Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
+            }
+
+        })
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.container, player)
