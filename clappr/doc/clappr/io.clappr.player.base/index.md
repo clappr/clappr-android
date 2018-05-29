@@ -11,6 +11,7 @@
 | [ClapprOption](-clappr-option/index.md) | `enum class ClapprOption` |
 | [ErrorCode](-error-code/index.md) | `object ErrorCode` |
 | [ErrorInfo](-error-info/index.md) | `data class ErrorInfo : `[`Parcelable`](https://developer.android.com/reference/android/os/Parcelable.html) |
+| [ErrorInfoData](-error-info-data/index.md) | `enum class ErrorInfoData`<br>Event bundle data keys for error info |
 | [Event](-event/index.md) | `enum class Event` |
 | [EventData](-event-data/index.md) | `enum class EventData`<br>Event bundle data keys for selected Events |
 | [EventInterface](-event-interface/index.md) | `interface EventInterface` |

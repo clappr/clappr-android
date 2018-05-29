@@ -14,6 +14,7 @@
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |
 | [io.clappr.player.base.ErrorInfo](../io.clappr.player.base/-error-info/index.md) |  |
+| [io.clappr.player.base.ErrorInfoData](../io.clappr.player.base/-error-info-data/index.md) | Event bundle data keys for error info |
 | [io.clappr.player.base.Event](../io.clappr.player.base/-event/index.md) |  |
 | [io.clappr.player.base.EventData](../io.clappr.player.base/-event-data/index.md) | Event bundle data keys for selected Events |
 | [io.clappr.player.base.EventInterface](../io.clappr.player.base/-event-interface/index.md) |  |
