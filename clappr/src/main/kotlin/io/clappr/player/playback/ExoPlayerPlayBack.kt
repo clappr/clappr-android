@@ -50,10 +50,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
-    private var trackSelector: DefaultTrackSelector? = null
     private var currentState = State.NONE
     private var lastPositionSent = 0.0
     private var recoveredFromBehindLiveWindowException = false
+
+    protected var trackSelector: DefaultTrackSelector? = null
 
     private val trackIndexKey = "trackIndexKey"
     private val trackGroupIndexKey = "trackGroupIndexKey"
@@ -198,7 +199,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun setupPlayer() {
         val rendererFactory = setUpRendererFactory()
-        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+
+        configureTrackSelector()
 
         player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
@@ -206,6 +208,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         playerView.player = player
         mediaSource = mediaSource(Uri.parse(source))
         player?.prepare(mediaSource)
+    }
+
+    open protected fun configureTrackSelector() {
+        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
