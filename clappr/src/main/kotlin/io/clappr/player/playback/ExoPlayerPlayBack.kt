@@ -125,7 +125,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
-
     override fun destroy() {
         release()
         super.destroy()
@@ -159,9 +158,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun release() {
         timeElapsedHandler.cancel()
-        player?.removeListener(eventsListener)
+
+        removeListeners()
+
         player?.release()
         player = null
+    }
+
+    open protected fun removeListeners() {
+        player?.removeListener(eventsListener)
     }
 
     override fun seek(seconds: Int): Boolean {
@@ -204,7 +209,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
-        player?.addListener(eventsListener)
+
+        addListeners()
+
         playerView.player = player
         mediaSource = mediaSource(Uri.parse(source))
         player?.prepare(mediaSource)
@@ -212,6 +219,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     open protected fun configureTrackSelector() {
         trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+    }
+
+    open protected fun addListeners() {
+        player?.addListener(eventsListener)
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
