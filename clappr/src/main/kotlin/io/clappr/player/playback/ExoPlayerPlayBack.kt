@@ -50,10 +50,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
-    private var trackSelector: DefaultTrackSelector? = null
     private var currentState = State.NONE
     private var lastPositionSent = 0.0
     private var recoveredFromBehindLiveWindowException = false
+
+    protected var trackSelector: DefaultTrackSelector? = null
 
     private val trackIndexKey = "trackIndexKey"
     private val trackGroupIndexKey = "trackGroupIndexKey"
@@ -124,7 +125,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
-
     override fun destroy() {
         release()
         super.destroy()
@@ -158,9 +158,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun release() {
         timeElapsedHandler.cancel()
-        player?.removeListener(eventsListener)
+
+        removeListeners()
+
         player?.release()
         player = null
+    }
+
+    open protected fun removeListeners() {
+        player?.removeListener(eventsListener)
     }
 
     override fun seek(seconds: Int): Boolean {
@@ -198,14 +204,25 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun setupPlayer() {
         val rendererFactory = setUpRendererFactory()
-        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+
+        configureTrackSelector()
 
         player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
-        player?.addListener(eventsListener)
+
+        addListeners()
+
         playerView.player = player
         mediaSource = mediaSource(Uri.parse(source))
         player?.prepare(mediaSource)
+    }
+
+    open protected fun configureTrackSelector() {
+        trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
+    }
+
+    open protected fun addListeners() {
+        player?.addListener(eventsListener)
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
