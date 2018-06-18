@@ -3,7 +3,6 @@ apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId 'io.clappr.player.app'
         minSdkVersion 14
