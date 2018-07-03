@@ -186,7 +186,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     }
 
     /**
-     * Load a new media
+     * Load a new media. Always make sure that the stop() method was called before invoking this
      *
      * @param source
      *          valid media url
