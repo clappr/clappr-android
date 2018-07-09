@@ -4,7 +4,7 @@
 
 `fun load(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)
 
-Load a new media
+Load a new media. Always make sure that the stop() method was called before invoking this
 
 ### Parameters
 
