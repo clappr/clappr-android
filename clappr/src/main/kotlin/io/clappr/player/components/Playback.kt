@@ -181,17 +181,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     override fun render(): UIObject {
-        if (options.containsKey(ClapprOption.START_AT.value)) {
-            once(Event.READY.value, Callback.wrap {
-                (options[ClapprOption.START_AT.value] as? Number)?.let {
-                    seek(it.toInt())
-                }
-                options.remove(ClapprOption.START_AT.value)
-            })
-        }
+        if (options.containsKey(ClapprOption.START_AT.value))
+            configureStartAt()
         else {
-            if(mediaType == MediaType.LIVE)
-                playFromLiveEdge()
+            if (mediaType == MediaType.LIVE) seekToLiveEdge()
         }
 
         if (!play()) {
@@ -200,5 +193,14 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         return this
     }
 
-    open fun playFromLiveEdge(){}
+    private fun configureStartAt() {
+        once(Event.READY.value, Callback.wrap {
+            (options[ClapprOption.START_AT.value] as? Number)?.let {
+                seek(it.toInt())
+            }
+            options.remove(ClapprOption.START_AT.value)
+        })
+    }
+
+    open fun seekToLiveEdge() {}
 }
