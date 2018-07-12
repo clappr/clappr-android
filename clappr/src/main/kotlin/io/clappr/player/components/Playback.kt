@@ -189,10 +189,16 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
                 options.remove(ClapprOption.START_AT.value)
             })
         }
+        else {
+            if(mediaType == MediaType.LIVE)
+                playFromLiveEdge()
+        }
 
         if (!play()) {
             once(Event.READY.value, Callback.wrap { play() })
         }
         return this
     }
+
+    open fun playFromLiveEdge(){}
 }
