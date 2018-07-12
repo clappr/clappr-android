@@ -33,6 +33,11 @@ open class PlaybackTest {
         var playWasCalled = false
         var seekWasCalled = false
         var seekValueInSeconds: Int = 0
+        var seekToLiveEdgeWasCalled = false
+
+
+        override val mediaType: MediaType
+            get() = aMediaType
 
         override fun play(): Boolean {
             playWasCalled = true
@@ -43,6 +48,10 @@ open class PlaybackTest {
             seekWasCalled = true
             seekValueInSeconds = seconds
             return super.seek(seconds)
+        }
+
+        override fun seekToLiveEdge() {
+            seekToLiveEdgeWasCalled = true
         }
     }
 
@@ -95,13 +104,18 @@ open class PlaybackTest {
         testPlaybackSeek("fail", shouldAssertSeekValue = false)
     }
 
-    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean) {
+    @Test
+    fun shouldNotCallStartAtWhenVideoIsLive() {
+        testPlaybackSeek(70.0, shouldAssertSeekValue = false, mediaType = Playback.MediaType.LIVE)
+    }
+
+    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
         var option = Options()
         option.put(ClapprOption.START_AT.value, startAtValue)
 
         var willSeekBeCalled = false
 
-        val playback = SomePlayback("valid-source.mp4", option)
+        val playback = SomePlayback("valid-source.mp4", option, mediaType)
         playback.render()
         playback.once(Event.READY.value, Callback.wrap {
             willSeekBeCalled = shouldAssertSeekValue
@@ -111,7 +125,7 @@ open class PlaybackTest {
 
         assertEquals("seek should be called when start at is set", willSeekBeCalled, playback.seekWasCalled)
         if (shouldAssertSeekValue) {
-            assertEquals("seek value in seconds ", (startAtValue as Number).toInt() , playback.seekValueInSeconds)
+            assertEquals("seek value in seconds ", (startAtValue as Number).toInt(), playback.seekValueInSeconds)
         }
     }
 
@@ -131,7 +145,8 @@ open class PlaybackTest {
         assertEquals("trigger", 1, numberOfTriggers)
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     fun shouldTriggerEventsOnDestroy() {
         val listenObject = BaseObject()
         val playback = SomePlayback("valid-source.mp4", Options())
@@ -157,14 +172,14 @@ open class PlaybackTest {
         checkAvailableMedia(MediaOptionType.AUDIO)
     }
 
-    private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
+    private fun checkAvailableMedia(mediaOptionType: MediaOptionType) {
         val playback = SomePlayback("valid-source.mp4", Options())
         val quantity = 10
         val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
 
         val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
         assertEquals(mediaOptionList.size, addedMediaOptionList.size)
-        for (i in 0..quantity-1) {
+        for (i in 0..quantity - 1) {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
 
@@ -217,7 +232,7 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldReturnNoOneSelectedMediaOption(){
+    fun shouldReturnNoOneSelectedMediaOption() {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
@@ -315,4 +330,21 @@ open class PlaybackTest {
 
         assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
+
+    @Test
+    fun shouldGoToLiveEdgeWhenPlayingLiveVideo() {
+        val playback = SomePlayback("valid-source.mp4", aMediaType = Playback.MediaType.LIVE)
+        playback.render()
+
+        assertTrue("Should only call seekToLiveEdge() when video is LIVE", playback.seekToLiveEdgeWasCalled)
+    }
+
+    @Test
+    fun shouldNotGoToLiveEdgeWhenPlayingANoLiveVideo() {
+        val playback = SomePlayback("valid-source.mp4", aMediaType = Playback.MediaType.UNKNOWN)
+        playback.render()
+
+        assertFalse("Should only call seekToLiveEdge() when video is LIVE", playback.seekToLiveEdgeWasCalled)
+    }
+
 }
