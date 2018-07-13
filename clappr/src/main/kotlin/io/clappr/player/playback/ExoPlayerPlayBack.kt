@@ -42,6 +42,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
+    private val MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR = 60 * ONE_SECOND_IN_MILLIS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -117,6 +118,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.ERROR
+
+    override val dvrEnabled: Boolean
+        get() = mediaType == MediaType.LIVE && player?.duration?.let { it >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR } ?: false
+
 
     init {
         playerView.useController = false
