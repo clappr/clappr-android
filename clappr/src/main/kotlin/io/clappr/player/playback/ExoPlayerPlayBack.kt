@@ -42,8 +42,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
-    private val MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR = 60 * ONE_SECOND_IN_MILLIS
-    private val TEN_SECONDS = 10
+    private val CURRENT_CHUNK_TIME_IN_SECONDS = 5
+    private val FIVE_CHUNCKS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_CHUNK_TIME_IN_SECONDS
+    private val MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS = 60 + FIVE_CHUNCKS_OF_BUFFER_TIME_IN_SECONDS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -121,10 +122,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = duration != 0.0 && currentState != State.ERROR
 
     override val isDvrEnabled: Boolean
-        get() = mediaType == MediaType.LIVE && player?.duration?.let { it >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR } ?: false
+        get() {
+            val videoHasMinimumDurationToBeConsideredWithDvr = duration >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS
+            return mediaType == MediaType.LIVE && videoHasMinimumDurationToBeConsideredWithDvr
+        }
 
     override val isInDvr: Boolean
-        get() = isDvrEnabled && position <= (duration - TEN_SECONDS)
+        get() = isDvrEnabled && position <= duration - MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS
 
     private var lastDrvEnabledCheck = false
 
