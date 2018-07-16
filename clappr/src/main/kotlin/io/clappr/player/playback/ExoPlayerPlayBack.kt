@@ -43,6 +43,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR = 60 * ONE_SECOND_IN_MILLIS
+    private val TEN_SECONDS = 10
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -119,8 +120,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.ERROR
 
-    override var isDvrEnabled: Boolean = false
+    override val isDvrEnabled: Boolean
         get() = mediaType == MediaType.LIVE && player?.duration?.let { it >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR } ?: false
+
+    override val isInDvr: Boolean
+        get() = isDvrEnabled && position <= (duration - TEN_SECONDS)
 
     private var lastDrvEnabledCheck = false
 
@@ -182,6 +186,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.seekTo((seconds * 1000).toLong())
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
+
+        if (isInDvr) trigger(Event.DVR_SETTINGS_UPDATE)
+
         return true
     }
 
