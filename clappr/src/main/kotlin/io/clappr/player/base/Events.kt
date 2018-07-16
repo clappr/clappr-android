@@ -101,7 +101,12 @@ enum class Event(val value: String) {
     /**
      * Media Options Selected. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
      */
-    MEDIA_OPTIONS_SELECTED("mediaOptionsSelected")
+    MEDIA_OPTIONS_SELECTED("mediaOptionsSelected"),
+
+    /**
+     * There was a change in DVR settings
+     */
+    DVR_SETTINGS_UPDATE("dvrSettingsUpdate")
 }
 
 /**

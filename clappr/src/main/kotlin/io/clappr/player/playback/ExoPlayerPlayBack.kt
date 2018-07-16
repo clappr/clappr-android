@@ -119,9 +119,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val canSeek: Boolean
         get() = duration != 0.0 && currentState != State.ERROR
 
-    override val isDvrEnabled: Boolean
+    override var isDvrEnabled: Boolean = false
         get() = mediaType == MediaType.LIVE && player?.duration?.let { it >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR } ?: false
 
+    private var lastDrvEnabledCheck = false
 
     init {
         playerView.useController = false
@@ -253,6 +254,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
+        if (isDvrEnabled != lastDrvEnabledCheck) triggerDvrUpdateEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -273,6 +275,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         bundle.putDouble("time", currentPosition)
         trigger(Event.POSITION_UPDATE.value, bundle)
         lastPositionSent = currentPosition
+    }
+
+    private fun triggerDvrUpdateEvent() {
+        trigger(Event.DVR_SETTINGS_UPDATE.value)
+        Logger.info(tag, "DVR Settings updated")
+        lastDrvEnabledCheck = isDvrEnabled
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
