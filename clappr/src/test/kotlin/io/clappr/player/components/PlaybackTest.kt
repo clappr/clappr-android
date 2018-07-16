@@ -19,7 +19,7 @@ import kotlin.collections.HashMap
 open class PlaybackTest {
 
 
-    class SomePlayback(source: String, options: Options = Options()) : Playback(source, null, options) {
+    class SomePlayback(source: String, options: Options = Options(), val aMediaType: MediaType = MediaType.UNKNOWN) : Playback(source, null, options) {
         companion object : PlaybackSupportInterface {
             val validSource = "valid-source.mp4"
             override val name = ""
