@@ -119,7 +119,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
 
     override val canSeek: Boolean
-        get() = (duration != 0.0 || isDvrEnabled) && currentState != State.ERROR
+        get() = currentState != State.ERROR && when (mediaType) {
+            MediaType.LIVE -> isDvrEnabled
+            else -> duration != 0.0
+        }
 
     override val isDvrEnabled: Boolean
         get() {
