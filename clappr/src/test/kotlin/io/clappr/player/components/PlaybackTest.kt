@@ -50,7 +50,7 @@ open class PlaybackTest {
             return super.seek(seconds)
         }
 
-        override fun seekToLiveEdge() {
+        override fun seekToLivePosition() {
             seekToLiveEdgeWasCalled = true
         }
     }
@@ -336,7 +336,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", aMediaType = Playback.MediaType.LIVE)
         playback.render()
 
-        assertTrue("Should only call seekToLiveEdge() when video is LIVE", playback.seekToLiveEdgeWasCalled)
+        assertTrue("Should only call seekToLivePosition() when video is LIVE", playback.seekToLiveEdgeWasCalled)
     }
 
     @Test
@@ -344,7 +344,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", aMediaType = Playback.MediaType.UNKNOWN)
         playback.render()
 
-        assertFalse("Should only call seekToLiveEdge() when video is LIVE", playback.seekToLiveEdgeWasCalled)
+        assertFalse("Should only call seekToLivePosition() when video is LIVE", playback.seekToLiveEdgeWasCalled)
     }
 
 }

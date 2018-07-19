@@ -189,7 +189,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     override fun render(): UIObject {
 
         when (mediaType) {
-            MediaType.LIVE -> seekToLiveEdge()
+            MediaType.LIVE -> seekToLivePosition()
             else -> configureStartAt()
         }
 
@@ -200,14 +200,15 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     private fun configureStartAt() {
-        if (options.containsKey(ClapprOption.START_AT.value))
+        (options[ClapprOption.START_AT.value] as? Number)?.let { startAt ->
             once(Event.READY.value, Callback.wrap {
                 (options[ClapprOption.START_AT.value] as? Number)?.let {
-                    seek(it.toInt())
+                    seek(startAt.toInt())
                 }
                 options.remove(ClapprOption.START_AT.value)
             })
+        }
     }
 
-    open fun seekToLiveEdge() {}
+    open fun seekToLivePosition() {}
 }

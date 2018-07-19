@@ -42,9 +42,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
-    private val CURRENT_CHUNK_TIME_IN_SECONDS = 5
-    private val FIVE_CHUNCKS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_CHUNK_TIME_IN_SECONDS
-    private val MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS = 60 + FIVE_CHUNCKS_OF_BUFFER_TIME_IN_SECONDS
+    private val CURRENT_FRAGMENT_TIME_IN_SECONDS = 5
+    private val FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_FRAGMENT_TIME_IN_SECONDS
+    private val MINIMUM_DURATION_FOR_DVR = 60 + FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -126,12 +126,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val isDvrEnabled: Boolean
         get() {
-            val videoHasMinimumDurationToBeConsideredWithDvr = duration >= MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS
+            val videoHasMinimumDurationToBeConsideredWithDvr = duration >= MINIMUM_DURATION_FOR_DVR
             return mediaType == MediaType.LIVE && videoHasMinimumDurationToBeConsideredWithDvr
         }
 
     override val isInDvr: Boolean
-        get() = isDvrEnabled && position <= duration - MINIMUN_BUFFER_TO_BE_CONSIDERED_DVR_IN_SECONDS
+        get() = isDvrEnabled && position <= duration - MINIMUM_DURATION_FOR_DVR
 
     private var lastDrvEnabledCheck: Boolean? = null
     private var lastIsInDvrCheck: Boolean? = null
@@ -198,7 +198,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
 
-        if (lastIsInDvrCheck != isInDvr) triggerDvrUpdateEvent()
+        if (lastIsInDvrCheck != isInDvr) triggerDvrStateChangedEvent()
 
         return true
     }
@@ -272,7 +272,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
-        if (isDvrEnabled != lastDrvEnabledCheck) triggerDvrUpdateEvent()
+        if (isDvrEnabled != lastDrvEnabledCheck) triggerDvrStateChangedEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -295,8 +295,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         lastPositionSent = currentPosition
     }
 
-    private fun triggerDvrUpdateEvent() {
-        trigger(Event.DVR_SETTINGS_UPDATE.value)
+    private fun triggerDvrStateChangedEvent() {
+        trigger(Event.DID_DVR_STATE_CHANGED.value)
         Logger.info(tag, "DVR Settings updated")
         lastDrvEnabledCheck = isDvrEnabled
         lastIsInDvrCheck = isInDvr
