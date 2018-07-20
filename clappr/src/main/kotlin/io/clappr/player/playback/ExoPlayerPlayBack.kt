@@ -126,8 +126,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val isDvrEnabled: Boolean
         get() {
-            val videoHasMinimumDurationToBeConsideredWithDvr = duration >= MINIMUM_DURATION_FOR_DVR
-            return mediaType == MediaType.LIVE && videoHasMinimumDurationToBeConsideredWithDvr
+            val videoHasMinimumDurationForDvr = duration >= MINIMUM_DURATION_FOR_DVR
+            return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr
         }
 
     override val isInDvr: Boolean
