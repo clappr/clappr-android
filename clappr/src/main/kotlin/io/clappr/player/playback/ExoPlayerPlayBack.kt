@@ -120,20 +120,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val canSeek: Boolean
         get() = currentState != State.ERROR && when (mediaType) {
-            MediaType.LIVE -> isDvrEnabled
+            MediaType.LIVE -> isDvrAvailable
             else -> duration != 0.0
         }
 
-    override val isDvrEnabled: Boolean
+    override val isDvrAvailable: Boolean
         get() {
             val videoHasMinimumDurationForDvr = duration >= MINIMUM_DURATION_FOR_DVR
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrEnabled && position <= duration - MINIMUM_DURATION_FOR_DVR
+        get() = isDvrAvailable && position <= duration - MINIMUM_DURATION_FOR_DVR
 
-    private var lastDrvEnabledCheck: Boolean? = null
+    private var lastDrvAvailableCheck: Boolean? = null
     private var lastIsInDvrCheck: Boolean? = null
 
     init {
@@ -177,7 +177,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun release() {
         timeElapsedHandler.cancel()
 
-        lastDrvEnabledCheck = null
+        lastDrvAvailableCheck = null
         lastIsInDvrCheck = null
 
         removeListeners()
@@ -272,7 +272,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
-        if (isDvrEnabled != lastDrvEnabledCheck) triggerDvrStateChangedEvent()
+        if (isDvrAvailable != lastDrvAvailableCheck) triggerDvrStateChangedEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -298,7 +298,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun triggerDvrStateChangedEvent() {
         trigger(Event.DID_DVR_STATE_CHANGED.value)
         Logger.info(tag, "DVR Settings updated")
-        lastDrvEnabledCheck = isDvrEnabled
+        lastDrvAvailableCheck = isDvrAvailable
         lastIsInDvrCheck = isDvrInUse
     }
 

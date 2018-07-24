@@ -75,7 +75,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     open val hasMediaOptionAvailable: Boolean
         get() = mediaOptionList.isNotEmpty()
 
-    open val isDvrEnabled: Boolean
+    open val isDvrAvailable: Boolean
         get() = false
 
     open val isDvrInUse: Boolean
