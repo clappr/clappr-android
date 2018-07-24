@@ -134,7 +134,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = isDvrAvailable && position <= duration - MINIMUM_DURATION_FOR_DVR
 
     private var lastDrvAvailableCheck: Boolean? = null
-    private var lastIsInDvrCheck: Boolean? = null
+    private var lastDvrInUseCheck: Boolean? = null
 
     init {
         playerView.useController = false
@@ -178,7 +178,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         timeElapsedHandler.cancel()
 
         lastDrvAvailableCheck = null
-        lastIsInDvrCheck = null
+        lastDvrInUseCheck = null
 
         removeListeners()
 
@@ -198,7 +198,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
 
-        if (lastIsInDvrCheck != isDvrInUse) triggerDvrStateChangedEvent()
+        if (lastDvrInUseCheck != isDvrInUse) triggerDvrStateChangedEvent()
 
         return true
     }
@@ -299,7 +299,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_DVR_STATE_CHANGED.value)
         Logger.info(tag, "DVR Settings updated")
         lastDrvAvailableCheck = isDvrAvailable
-        lastIsInDvrCheck = isDvrInUse
+        lastDvrInUseCheck = isDvrInUse
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
