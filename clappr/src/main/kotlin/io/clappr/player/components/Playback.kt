@@ -78,7 +78,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     open val isDvrEnabled: Boolean
         get() = false
 
-    open val isInDvr: Boolean
+    open val isDvrInUse: Boolean
         get() = false
 
     open fun play(): Boolean {
