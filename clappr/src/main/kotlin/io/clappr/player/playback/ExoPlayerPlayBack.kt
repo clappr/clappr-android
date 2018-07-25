@@ -44,7 +44,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val CURRENT_FRAGMENT_TIME_IN_SECONDS = 5
     private val FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_FRAGMENT_TIME_IN_SECONDS
-    open val MINIMUM_DURATION_FOR_DVR = 60 + FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS
+    open val MINIMUM_DURATION_FOR_DVR_IN_SECONDS = 60 + FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -132,13 +132,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val isDvrAvailable: Boolean
         get() {
-            val videoHasMinimumDurationForDvr = currentDynamicWindowDurationInSeconds >= MINIMUM_DURATION_FOR_DVR
+            val videoHasMinimumDurationForDvr = currentDynamicWindowDurationInSeconds >= MINIMUM_DURATION_FOR_DVR_IN_SECONDS
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position <= currentDynamicWindowDurationInSeconds - MINIMUM_DURATION_FOR_DVR
+        get() = isDvrAvailable && position <= currentDynamicWindowDurationInSeconds - MINIMUM_DURATION_FOR_DVR_IN_SECONDS
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
