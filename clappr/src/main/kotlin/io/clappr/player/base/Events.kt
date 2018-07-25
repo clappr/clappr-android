@@ -104,7 +104,7 @@ enum class Event(val value: String) {
     MEDIA_OPTIONS_SELECTED("mediaOptionsSelected"),
 
     /**
-     * There was a change in DVR settings
+     * There was a change in DVR state
      */
     DID_DVR_STATE_CHANGED("didDvrStateChanged"),
 
