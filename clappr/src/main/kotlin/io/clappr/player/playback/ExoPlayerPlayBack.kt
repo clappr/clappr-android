@@ -113,13 +113,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 (currentState == State.STALLED && player?.playWhenReady == false)
 
     override val canPause: Boolean
-        get() = currentState == State.PLAYING ||
-                currentState == State.STALLED ||
-                currentState == State.IDLE &&
+        get() = canPause(currentState) &&
                 when (mediaType) {
                     MediaType.LIVE -> isDvrAvailable
                     else -> true
                 }
+
+    private fun canPause(state: State) =
+            state == State.PLAYING || state == State.STALLED || state == State.IDLE
 
 
     override val canSeek: Boolean
