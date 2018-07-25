@@ -277,7 +277,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
-        if (isDvrAvailable != lastDrvAvailableCheck) triggerDvrStateChangedEvent()
+        if (isDvrAvailable != lastDrvAvailableCheck) updateDvrAvailableState()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -300,9 +300,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         lastPositionSent = currentPosition
     }
 
-    private fun triggerDvrStateChangedEvent() {
-        Logger.info(tag, "DVR Settings updated")
+    private fun updateDvrAvailableState() {
         lastDrvAvailableCheck = isDvrAvailable
+        trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
+            putBoolean(Event.DID_CHANGE_DVR_AVAILABILITY.value, isDvrAvailable)
+        })
+        Logger.info(tag, "DVR Available: $isDvrAvailable")
     }
 
     private fun updateIsDvrInUseState() {
@@ -310,6 +313,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_DVR_STATE_CHANGED.value, Bundle().apply {
             putBoolean(Event.DID_DVR_STATE_CHANGED.value, isDvrInUse)
         })
+        Logger.info(tag, "DVR In Use: $isDvrInUse")
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
