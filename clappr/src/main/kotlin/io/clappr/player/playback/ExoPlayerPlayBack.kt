@@ -128,15 +128,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             else -> duration != 0.0
         }
 
+    private var currentDynamicWindowDurationInSeconds: Long = 0L
+
     override val isDvrAvailable: Boolean
         get() {
-            val videoHasMinimumDurationForDvr = duration >= MINIMUM_DURATION_FOR_DVR
+            val videoHasMinimumDurationForDvr = currentDynamicWindowDurationInSeconds >= MINIMUM_DURATION_FOR_DVR
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position <= duration - MINIMUM_DURATION_FOR_DVR
+        get() = isDvrAvailable && position <= currentDynamicWindowDurationInSeconds - MINIMUM_DURATION_FOR_DVR
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
@@ -598,6 +600,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
+            player?.currentWindowIndex?.let { currentWindowIndex ->
+                Timeline.Window().let {
+                    timeline?.getWindow(currentWindowIndex, it)
+                    currentDynamicWindowDurationInSeconds = it.durationMs / ONE_SECOND_IN_MILLIS
+                    Logger.info(tag, "Dvr window duration changed: ${currentDynamicWindowDurationInSeconds}s")
+                }
+            }
+
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
