@@ -44,7 +44,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val CURRENT_FRAGMENT_TIME_IN_SECONDS = 5
     private val FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_FRAGMENT_TIME_IN_SECONDS
-    private val MINIMUM_DURATION_FOR_DVR = 60 + FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS
+    open val MINIMUM_DURATION_FOR_DVR = 60 + FIVE_FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
