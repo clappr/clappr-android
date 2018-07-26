@@ -106,7 +106,7 @@ enum class Event(val value: String) {
     /**
      * There was a change in DVR status
      */
-    DID_CHANGE_DVR_STATUS("didDvrStateChanged"),
+    DID_CHANGE_DVR_STATUS("didChangeDvrStatus"),
 
     /**
      * There was a change in DVR availability
