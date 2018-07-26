@@ -44,7 +44,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val CURRENT_FRAGMENT_TIME_IN_SECONDS = 5
     private val FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS = 5 * CURRENT_FRAGMENT_TIME_IN_SECONDS
-    open val MINIMUM_DURATION_FOR_DVR_IN_SECONDS =
+    open val MINIMUM_DURATION_FOR_DVR_IN_SECONDS
+        get() =
             options[ClapprOption.MINIMUM_DVR_SIZE.value] as? Int
                     ?: (60 + FRAGMENTS_OF_BUFFER_TIME_IN_SECONDS)
 
