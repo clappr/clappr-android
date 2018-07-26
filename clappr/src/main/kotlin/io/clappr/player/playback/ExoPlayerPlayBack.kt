@@ -602,10 +602,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
             player?.currentWindowIndex?.let { currentWindowIndex ->
-                Timeline.Window().let {
-                    timeline?.getWindow(currentWindowIndex, it)
-                    currentDynamicWindowDurationInSeconds = it.durationMs / ONE_SECOND_IN_MILLIS
-                    Logger.info(tag, "Dvr window duration changed: ${currentDynamicWindowDurationInSeconds}s")
+                with(Timeline.Window()) {
+                    try {
+                        timeline?.getWindow(currentWindowIndex, this)
+                        currentDynamicWindowDurationInSeconds = durationMs / ONE_SECOND_IN_MILLIS
+                        Logger.info(tag, "Dvr window duration changed: ${currentDynamicWindowDurationInSeconds}s")
+                    } catch (e: IndexOutOfBoundsException) {
+                        Logger.info(tag, "No window in timeline")
+                    }
                 }
             }
 
