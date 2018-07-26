@@ -97,6 +97,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         return false
     }
 
+    open fun seekToLivePosition(): Boolean {
+        return false
+    }
+
     private var mediaOptionList = LinkedList<MediaOption>()
     private var selectedMediaOptionList = ArrayList<MediaOption>()
 

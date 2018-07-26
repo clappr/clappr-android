@@ -211,6 +211,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return true
     }
 
+    override fun seekToLivePosition(): Boolean {
+        if(!canSeek) return false
+
+        player?.seekToDefaultPosition()
+        return true
+    }
+
     override fun load(source: String, mimeType: String?): Boolean {
         trigger(Event.WILL_CHANGE_SOURCE)
         this.source = source
