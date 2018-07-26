@@ -313,15 +313,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun updateDvrAvailableState() {
         lastDrvAvailableCheck = isDvrAvailable
         trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
-            putBoolean(Event.DID_CHANGE_DVR_AVAILABILITY.value, isDvrAvailable)
+            putBoolean("available", isDvrAvailable)
         })
         Logger.info(tag, "DVR Available: $isDvrAvailable")
     }
 
     private fun updateIsDvrInUseState() {
         lastDvrInUseCheck = isDvrInUse
-        trigger(Event.DID_DVR_STATE_CHANGED.value, Bundle().apply {
-            putBoolean(Event.DID_DVR_STATE_CHANGED.value, isDvrInUse)
+        trigger(Event.DID_CHANGE_DVR_STATUS.value, Bundle().apply {
+            putBoolean("inUse", isDvrInUse)
         })
         Logger.info(tag, "DVR In Use: $isDvrInUse")
     }
