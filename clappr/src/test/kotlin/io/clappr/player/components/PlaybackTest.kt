@@ -315,4 +315,10 @@ open class PlaybackTest {
 
         assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
     }
+
+    @Test
+    fun shouldNotSeekToLivePositionByDefoult(){
+        val playback = SomePlayback("valid-source.mp4", Options())
+        assertFalse(playback.seekToLivePosition())
+    }
 }
