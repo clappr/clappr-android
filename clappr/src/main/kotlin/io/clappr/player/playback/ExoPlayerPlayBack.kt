@@ -287,7 +287,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
-        if (isDvrAvailable != lastDrvAvailableCheck) updateDvrAvailableState()
+        updateDvrAvailableState()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -311,6 +311,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun updateDvrAvailableState() {
+        if (isDvrAvailable == lastDrvAvailableCheck) return
+
         lastDrvAvailableCheck = isDvrAvailable
         trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
             putBoolean("available", isDvrAvailable)
