@@ -622,7 +622,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     try {
                         timeline?.getWindow(currentWindowIndex, this)
                         currentDynamicWindowDurationInSeconds = durationMs / ONE_SECOND_IN_MILLIS
-                        Logger.info(tag, "Dvr window duration changed: ${currentDynamicWindowDurationInSeconds}s")
+                        Logger.info(tag, "Timeline Changed")
                     } catch (e: IndexOutOfBoundsException) {
                         Logger.info(tag, "No window in timeline")
                     }
