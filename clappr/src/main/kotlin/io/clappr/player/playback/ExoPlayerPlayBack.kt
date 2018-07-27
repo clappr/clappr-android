@@ -132,17 +132,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             else -> duration != 0.0
         }
 
-    private var currentDynamicWindowDurationInSeconds: Long = 0L
-
     override val isDvrAvailable: Boolean
         get() {
-            val videoHasMinimumDurationForDvr = currentDynamicWindowDurationInSeconds >= MINIMUM_DURATION_FOR_DVR_IN_SECONDS
+            val videoHasMinimumDurationForDvr = duration >= MINIMUM_DURATION_FOR_DVR_IN_SECONDS
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position <= currentDynamicWindowDurationInSeconds - MINIMUM_DURATION_FOR_DVR_IN_SECONDS
+        get() = isDvrAvailable && position <= duration - MINIMUM_DURATION_FOR_DVR_IN_SECONDS
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
@@ -617,18 +615,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
-            player?.currentWindowIndex?.let { currentWindowIndex ->
-                with(Timeline.Window()) {
-                    try {
-                        timeline?.getWindow(currentWindowIndex, this)
-                        currentDynamicWindowDurationInSeconds = durationMs / ONE_SECOND_IN_MILLIS
-                        Logger.info(tag, "Timeline Changed")
-                    } catch (e: IndexOutOfBoundsException) {
-                        Logger.info(tag, "No window in timeline")
-                    }
-                }
-            }
-
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
