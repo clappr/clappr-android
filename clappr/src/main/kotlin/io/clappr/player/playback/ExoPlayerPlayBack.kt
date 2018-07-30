@@ -131,13 +131,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val isDvrAvailable: Boolean
         get() {
-            val videoHasMinimumDurationForDvr = duration >= MINIMUM_DURATION_FOR_DVR_IN_SECONDS
+            val videoHasMinimumDurationForDvr = duration >= MIN_DVR_SIZE
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position <= duration - MINIMUM_DURATION_FOR_DVR_IN_SECONDS
+        get() = isDvrAvailable && position <= duration - MIN_DVR_SIZE
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
