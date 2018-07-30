@@ -1,5 +1,6 @@
 package io.clappr.player.base
 
+import com.google.android.exoplayer2.util.MimeTypes
 import io.clappr.player.BuildConfig
 import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
@@ -19,7 +20,8 @@ import kotlin.collections.HashMap
 open class PlaybackTest {
 
 
-    class SomePlayback(source: String, options: Options = Options()) : Playback(source, null, options) {
+    class SomePlayback(source: String, options: Options = Options(),
+                       private val aMediaType: MediaType = MediaType.UNKNOWN) : Playback(source, null, options) {
         companion object : PlaybackSupportInterface {
             val validSource = "valid-source.mp4"
             override val name = ""
@@ -33,6 +35,9 @@ open class PlaybackTest {
         var playWasCalled = false
         var seekWasCalled = false
         var seekValueInSeconds: Int = 0
+
+        override val mediaType: MediaType
+            get() = aMediaType
 
         override fun play(): Boolean {
             playWasCalled = true
@@ -95,13 +100,26 @@ open class PlaybackTest {
         testPlaybackSeek("fail", shouldAssertSeekValue = false)
     }
 
-    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean) {
+    @Test
+    fun shouldNotCallStartAtWhenVideoIsLive(){
+        val option = Options().also {
+            it[ClapprOption.START_AT.value] = 30
+        }
+
+        val playback = SomePlayback("valid-source.mp4", option, Playback.MediaType.LIVE).also {
+            it.render()
+        }
+
+        assertFalse("Should not call start at for live videos", playback.seekWasCalled)
+    }
+
+    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
         var option = Options()
         option.put(ClapprOption.START_AT.value, startAtValue)
 
         var willSeekBeCalled = false
 
-        val playback = SomePlayback("valid-source.mp4", option)
+        val playback = SomePlayback("valid-source.mp4", option, mediaType)
         playback.render()
         playback.once(Event.READY.value, Callback.wrap {
             willSeekBeCalled = shouldAssertSeekValue

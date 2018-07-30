@@ -191,18 +191,20 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     override fun render(): UIObject {
-        if (options.containsKey(ClapprOption.START_AT.value)) {
+        if (mediaType != MediaType.LIVE) configureStartAt()
+
+        if (!play()) once(Event.READY.value, Callback.wrap { play() })
+
+        return this
+    }
+
+    private fun configureStartAt() {
+        if (options.containsKey(ClapprOption.START_AT.value))
             once(Event.READY.value, Callback.wrap {
                 (options[ClapprOption.START_AT.value] as? Number)?.let {
                     seek(it.toInt())
                 }
                 options.remove(ClapprOption.START_AT.value)
             })
-        }
-
-        if (!play()) {
-            once(Event.READY.value, Callback.wrap { play() })
-        }
-        return this
     }
 }
