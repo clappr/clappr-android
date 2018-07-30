@@ -42,8 +42,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
-    open val MIN_DVR_SIZE
-        get() = options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: 60
+    private val DEFAULT_MIN_DVR_SIZE = 60
+
+    open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -131,13 +132,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val isDvrAvailable: Boolean
         get() {
-            val videoHasMinimumDurationForDvr = duration >= MIN_DVR_SIZE
+            val videoHasMinimumDurationForDvr = duration >= minDvrSize
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
             return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position <= duration - MIN_DVR_SIZE
+        get() = isDvrAvailable && position <= duration - minDvrSize
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
