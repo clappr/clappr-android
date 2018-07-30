@@ -335,7 +335,7 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldNotSeekToLivePositionByDefoult(){
+    fun shouldNotSeekToLivePositionByDefault(){
         val playback = SomePlayback("valid-source.mp4", Options())
         assertFalse(playback.seekToLivePosition())
     }
