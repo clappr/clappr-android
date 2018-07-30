@@ -42,6 +42,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
+    private val DEFAULT_MIN_DVR_SIZE = 60
+
+    open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -110,13 +113,35 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 (currentState == State.STALLED && player?.playWhenReady == false)
 
     override val canPause: Boolean
-        get() = currentState == State.PLAYING ||
-                currentState == State.STALLED ||
-                currentState == State.IDLE
+        get() = canPause(currentState) &&
+                when (mediaType) {
+                    MediaType.LIVE -> isDvrAvailable
+                    else -> true
+                }
+
+    private fun canPause(state: State) =
+            state == State.PLAYING || state == State.STALLED || state == State.IDLE
 
 
     override val canSeek: Boolean
-        get() = duration != 0.0 && currentState != State.ERROR
+        get() = currentState != State.ERROR &&
+                when (mediaType) {
+                    MediaType.LIVE -> isDvrAvailable
+                    else -> duration != 0.0
+                }
+
+    override val isDvrAvailable: Boolean
+        get() {
+            val videoHasMinimumDurationForDvr = duration >= minDvrSize
+            val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
+            return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
+        }
+
+    override val isDvrInUse: Boolean
+        get() = isDvrAvailable && position <= duration - minDvrSize
+
+    private var lastDrvAvailableCheck: Boolean? = null
+    private var lastDvrInUseCheck: Boolean? = null
 
     init {
         playerView.useController = false
@@ -159,6 +184,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun release() {
         timeElapsedHandler.cancel()
 
+        lastDrvAvailableCheck = null
+        lastDvrInUseCheck = null
+
         removeListeners()
 
         player?.release()
@@ -173,9 +201,19 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (!canSeek) return false
 
         trigger(Event.WILL_SEEK)
-        player?.seekTo((seconds * 1000).toLong())
+        player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
+
+        updateIsDvrInUseState()
+
+        return true
+    }
+
+    override fun seekToLivePosition(): Boolean {
+        if(!canSeek) return false
+
+        player?.seekToDefaultPosition()
         return true
     }
 
@@ -248,6 +286,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
+        updateDvrAvailableState()
     }
 
     private fun triggerBufferUpdateEvent() {
@@ -268,6 +307,26 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         bundle.putDouble("time", currentPosition)
         trigger(Event.POSITION_UPDATE.value, bundle)
         lastPositionSent = currentPosition
+    }
+
+    private fun updateDvrAvailableState() {
+        if (isDvrAvailable == lastDrvAvailableCheck) return
+
+        lastDrvAvailableCheck = isDvrAvailable
+        trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
+            putBoolean("available", isDvrAvailable)
+        })
+        Logger.info(tag, "DVR Available: $isDvrAvailable")
+    }
+
+    private fun updateIsDvrInUseState() {
+        if (lastDvrInUseCheck == isDvrInUse) return
+        
+        lastDvrInUseCheck = isDvrInUse
+        trigger(Event.DID_CHANGE_DVR_STATUS.value, Bundle().apply {
+            putBoolean("inUse", isDvrInUse)
+        })
+        Logger.info(tag, "DVR In Use: $isDvrInUse")
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
@@ -300,6 +359,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             currentState = State.PAUSED
             trigger(Event.DID_PAUSE)
         }
+
+        updateIsDvrInUseState()
     }
 
     private fun handleExoplayerBufferingState() {
