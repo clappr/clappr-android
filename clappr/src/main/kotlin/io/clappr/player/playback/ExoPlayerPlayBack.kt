@@ -42,8 +42,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
-    open val MINIMUM_DURATION_FOR_DVR_IN_SECONDS
-        get() = options[ClapprOption.MINIMUM_DVR_SIZE.value] as? Int ?: 60
+    open val MIN_DVR_SIZE
+        get() = options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: 60 + DefaultLoadControl.DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()

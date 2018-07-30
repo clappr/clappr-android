@@ -35,5 +35,5 @@ enum class ClapprOption(val value: String) {
     /**
      * The minimum size in seconds to a video be considered with DVR
      */
-    MINIMUM_DVR_SIZE("minimumDvrSize")
+    MIN_DVR_SIZE("minDvrSize")
 }
