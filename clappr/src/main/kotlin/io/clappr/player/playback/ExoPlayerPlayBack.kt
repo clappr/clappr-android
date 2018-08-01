@@ -205,8 +205,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
 
-        updateIsDvrInUseState()
-
         return true
     }
 
@@ -287,6 +285,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
         updateDvrAvailableState()
+        updateIsDvrInUseState()
     }
 
     private fun triggerBufferUpdateEvent() {
