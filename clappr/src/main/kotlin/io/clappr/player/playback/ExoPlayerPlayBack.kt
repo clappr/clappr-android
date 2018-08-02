@@ -358,8 +358,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             currentState = State.PAUSED
             trigger(Event.DID_PAUSE)
         }
-
-        updateIsDvrInUseState()
     }
 
     private fun handleExoplayerBufferingState() {
