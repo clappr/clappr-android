@@ -44,8 +44,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val DEFAULT_MIN_DVR_SIZE = 60
-    private val MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS = 20
-    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = 30
+    private val MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS = DefaultLoadControl.DEFAULT_BUFFER_FOR_PLAYBACK_MS / ONE_SECOND_IN_MILLIS
+    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
 
     open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
 
