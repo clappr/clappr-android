@@ -287,10 +287,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun checkPeriodicUpdates() {
-        if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
-        if (position != lastPositionSent) triggerPositionUpdateEvent()
         updateDvrAvailableState()
         updateIsDvrInUseState()
+
+        if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
+        if (position != lastPositionSent) triggerPositionUpdateEvent()
     }
 
     private fun triggerBufferUpdateEvent() {
