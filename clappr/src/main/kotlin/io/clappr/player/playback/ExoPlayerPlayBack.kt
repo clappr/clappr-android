@@ -6,9 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
-import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.drm.*
-import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource
 import com.google.android.exoplayer2.source.hls.HlsMediaSource
@@ -27,6 +25,7 @@ import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.util.*
+import kotlin.math.min
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
@@ -43,6 +42,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val DEFAULT_MIN_DVR_SIZE = 60
+    private val MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS = 20
+    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = 30
 
     open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
 
@@ -98,13 +99,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return MediaType.UNKNOWN
         }
 
-    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) 30 else 0
+    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS else 0
 
     override val duration: Double
         get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
 
     override val position: Double
-        get() = player?.currentPosition?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
+        get() = player?.currentPosition?.let { min(it.toDouble() / ONE_SECOND_IN_MILLIS, duration) } ?: Double.NaN
 
     override val state: State
         get() = currentState
@@ -140,7 +141,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position < (duration - 20)
+        get() = isDvrAvailable && position < (duration - MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS)
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
