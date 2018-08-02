@@ -98,7 +98,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return MediaType.UNKNOWN
         }
 
-    private val syncBufferInSeconds = if (mediaType == MediaType.VOD) 0 else 30
+    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) 30 else 0
 
     override val duration: Double
         get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
@@ -140,7 +140,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
     override val isDvrInUse: Boolean
-        get() = isDvrAvailable && position < duration
+        get() = isDvrAvailable && position < (duration - 20)
 
     private var lastDrvAvailableCheck: Boolean? = null
     private var lastDvrInUseCheck: Boolean? = null
