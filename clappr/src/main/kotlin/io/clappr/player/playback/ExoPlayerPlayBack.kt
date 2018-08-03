@@ -101,7 +101,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return MediaType.UNKNOWN
         }
 
-    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS else 0
+    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS else 0
 
     override val duration: Double
         get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
@@ -338,7 +338,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun updateIsDvrInUse() {
         val forcedDvrValue = state != State.PLAYING
-        val isInDvr = position < (duration - MIN_TIME_TO_CONSIDER_IN_DVR_USE_IN_SECONDS)
+        val isInDvr = position < duration
         exoplayerIsDvrInUse = isDvrAvailable && (forcedDvrValue || isInDvr)
     }
 
