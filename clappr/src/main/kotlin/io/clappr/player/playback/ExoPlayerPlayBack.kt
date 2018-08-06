@@ -87,7 +87,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: PlayerView
         get() = view as PlayerView
 
-    private var dvrStartTimeinMilliseconds: Long? = null
+    private var dvrStartTimeinSeconds: Long? = null
 
     override val viewClass: Class<*>
         get() = PlayerView::class.java
@@ -146,7 +146,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastDvrInUseCheck: Boolean? = null
 
     override val currentDate: Long?
-        get() = dvrStartTimeinMilliseconds
+        get() = dvrStartTimeinSeconds
 
 
     init {
@@ -625,7 +625,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     if (it.windowCount > 0) {
                         var currentWindow = Timeline.Window()
                         currentWindow = it.getWindow(0, currentWindow)
-                        dvrStartTimeinMilliseconds = currentWindow.windowStartTimeMs
+                        dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
                     }
                 }
             }
