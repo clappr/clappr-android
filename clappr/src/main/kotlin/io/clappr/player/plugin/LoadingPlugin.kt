@@ -64,8 +64,8 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     private fun setupSpinnerLayout() {
         spinnerLayout?.let {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-            it.setGravity(Gravity.CENTER)
-            it.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
+            it.gravity = Gravity.CENTER
+            context?.run { it.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black)) }
             it.alpha = 0.7f
 
             it.addView(ProgressBar(context))
