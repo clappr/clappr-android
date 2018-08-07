@@ -584,9 +584,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             val formatIndexKey = it[formatIndexKey] as? Int
 
             if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
-                trackSelector?.setRendererDisabled(trackIndex, false)
-                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
-                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+                trackSelector?.setParameters(DefaultTrackSelector.ParametersBuilder().setRendererDisabled(trackIndex, false))
+                val selectionOverride = DefaultTrackSelector.SelectionOverride(trackGroupIndexKey, formatIndexKey)
+                trackSelector?.setParameters(DefaultTrackSelector.ParametersBuilder().setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride))
             }
         }
     }
