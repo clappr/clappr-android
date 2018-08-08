@@ -83,6 +83,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
 
     open val currentDate: Long? = null
 
+    open val currentTime: Long? = null
+
     open fun play(): Boolean {
         return false
     }

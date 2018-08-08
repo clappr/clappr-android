@@ -148,6 +148,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val currentDate: Long?
         get() = dvrStartTimeinSeconds
 
+    override val currentTime: Long?
+        get() = currentDate?.plus(duration.toLong())
 
     init {
         playerView.useController = false
