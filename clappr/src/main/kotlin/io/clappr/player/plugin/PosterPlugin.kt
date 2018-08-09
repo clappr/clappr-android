@@ -79,8 +79,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         posterLayout.let {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
-
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this , android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(context, android.R.color.black))
 
             it.addView(imageView)
 
