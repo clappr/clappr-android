@@ -13,7 +13,11 @@ open class BaseObject() : EventInterface {
         const val USERDATA_KEY = "clappr:baseobject:userdata"
 
         @JvmStatic
-        lateinit var context: Context
+        var context: Context? = null
+    }
+
+    init {
+        context ?: throw IllegalStateException("Context should be provided prior to creating an instance of BaseObject")
     }
 
     override val id =  Utils.uniqueId("o")
@@ -23,7 +27,7 @@ open class BaseObject() : EventInterface {
     override fun on(eventName: String, handler: Callback, obj: EventInterface): String {
         val listenId = createListenId(eventName, obj, handler)
 
-        val bm = LocalBroadcastManager.getInstance(context.applicationContext)
+        val bm = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
 
         if (receivers[listenId] == null) {
             val receiver = Utils.broadcastReceiver { _, intent: Intent? ->
@@ -33,8 +37,8 @@ open class BaseObject() : EventInterface {
                 }
             }
 
-            bm.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
-            receivers.put(listenId, receiver)
+            bm?.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
+            receivers[listenId] = receiver
         }
         return listenId
     }
@@ -52,8 +56,7 @@ open class BaseObject() : EventInterface {
     override fun off(listenId: String) {
         val receiver = receivers[listenId] as? BroadcastReceiver
         if (receiver != null) {
-            val bm = LocalBroadcastManager.getInstance(context.applicationContext)
-            bm.unregisterReceiver(receiver)
+            context?.run{ LocalBroadcastManager.getInstance(applicationContext) }?.also { it.unregisterReceiver(receiver) }
             receivers.remove(listenId)
         }
     }
@@ -66,21 +69,21 @@ open class BaseObject() : EventInterface {
         if (listenId != null) {
             off(listenId)
         } else {
-            val bm = LocalBroadcastManager.getInstance(context.applicationContext)
-            receivers.forEach { it -> bm.unregisterReceiver(it.value) }
+            val bm = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
+            receivers.forEach { it -> bm?.unregisterReceiver(it.value) }
             receivers.clear()
         }
     }
 
     override fun trigger(eventName: String, userData: Bundle?) {
-        val bm = LocalBroadcastManager.getInstance(context.applicationContext)
+        val bm = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
         val intent = Intent()
         intent.action = "clappr:" + eventName
         intent.putExtra(CONTEXT_KEY, this.id)
         if (userData != null) {
             intent.putExtra(USERDATA_KEY, userData)
         }
-        bm.sendBroadcastSync(intent)
+        bm?.sendBroadcastSync(intent)
     }
 
     private fun createListenId(eventName: String, baseObject: EventInterface, handler: Callback) : String {
