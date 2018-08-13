@@ -622,14 +622,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
-            if (isDvrAvailable) {
-                timeline?.let {
-                    if (it.windowCount > 0) {
-                        var currentWindow = Timeline.Window()
-                        currentWindow = it.getWindow(0, currentWindow)
-                        dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
-                    }
-                }
+            timeline?.takeIf { isDvrAvailable && it.windowCount > 0 }?.let {
+                var currentWindow = Timeline.Window()
+                currentWindow = it.getWindow(0, currentWindow)
+                dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
             }
         }
 
