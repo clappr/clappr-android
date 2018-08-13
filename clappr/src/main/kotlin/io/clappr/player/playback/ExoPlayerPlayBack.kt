@@ -90,6 +90,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: PlayerView
         get() = view as PlayerView
 
+    private var dvrStartTimeinSeconds: Long? = null
+
     override val viewClass: Class<*>
         get() = PlayerView::class.java
 
@@ -160,10 +162,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private var lastDrvAvailableCheck: Boolean? = null
 
+    override val currentDate: Long?
+        get() = dvrStartTimeinSeconds
+
+    override val currentTime: Long?
+        get() = currentDate?.plus(duration.toLong())
+
     init {
         playerView.useController = false
         playerView.subtitleView?.setStyle(getSubtitleStyle())
     }
+
 
     open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
@@ -624,6 +633,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
+            timeline?.takeIf { isDvrAvailable && it.windowCount > 0 }?.let {
+                var currentWindow = Timeline.Window()
+                currentWindow = it.getWindow(0, currentWindow)
+                dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
+            }
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
