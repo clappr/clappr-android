@@ -31,5 +31,9 @@ enum class ClapprOption(val value: String) {
     /**
      * Byte Array of drm licenses
      */
-    DRM_LICENSES("drmLicenses")
+    DRM_LICENSES("drmLicenses"),
+    /**
+     * The minimum size in seconds to a video be considered with DVR
+     */
+    MIN_DVR_SIZE("minDvrSize")
 }

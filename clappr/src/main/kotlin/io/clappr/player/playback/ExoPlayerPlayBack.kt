@@ -27,6 +27,7 @@ import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.util.*
+import kotlin.math.min
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
@@ -42,6 +43,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
+    private val DEFAULT_MIN_DVR_SIZE = 60
+    private val MIN_DVR_LIVE_DRIFT = 5
+    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
+
+    open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -84,6 +90,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: PlayerView
         get() = view as PlayerView
 
+    private var dvrStartTimeinSeconds: Long? = null
+
     override val viewClass: Class<*>
         get() = PlayerView::class.java
 
@@ -95,11 +103,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return MediaType.UNKNOWN
         }
 
+    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
+
     override val duration: Double
-        get() = player?.duration?.let { it.toDouble() / ONE_SECOND_IN_MILLIS } ?: Double.NaN
+        get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
 
     override val position: Double
-        get() = player?.currentPosition?.let { it.toDouble() / ONE_SECOND_IN_MILLIS } ?: Double.NaN
+        get() = player?.currentPosition?.let { min(it.toDouble() / ONE_SECOND_IN_MILLIS, duration) } ?: Double.NaN
 
     override val state: State
         get() = currentState
@@ -110,18 +120,59 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 (currentState == State.STALLED && player?.playWhenReady == false)
 
     override val canPause: Boolean
-        get() = currentState == State.PLAYING ||
-                currentState == State.STALLED ||
-                currentState == State.IDLE
+        get() = canPause(currentState) &&
+                when (mediaType) {
+                    MediaType.LIVE -> isDvrAvailable
+                    else -> true
+                }
+
+    private fun canPause(state: State) =
+            state == State.PLAYING || state == State.STALLED || state == State.IDLE
 
 
     override val canSeek: Boolean
-        get() = duration != 0.0 && currentState != State.ERROR
+        get() = currentState != State.ERROR &&
+                when (mediaType) {
+                    MediaType.LIVE -> isDvrAvailable
+                    else -> duration != 0.0
+                }
+
+    override val isDvrAvailable: Boolean
+        get() {
+            val videoHasMinimumDurationForDvr = duration >= minDvrSize
+            val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
+            return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
+        }
+
+    override val isDvrInUse: Boolean
+        get() = exoplayerIsDvrInUse ?: false
+
+    private var exoplayerIsDvrInUse: Boolean? = null
+        set(value) {
+            val oldValue = field
+
+            field = value
+
+            if (oldValue != field) {
+                trigger(Event.DID_CHANGE_DVR_STATUS.value, Bundle().apply {
+                    putBoolean("inUse", field ?: false)
+                })
+            }
+        }
+
+    private var lastDrvAvailableCheck: Boolean? = null
+
+    override val currentDate: Long?
+        get() = dvrStartTimeinSeconds
+
+    override val currentTime: Long?
+        get() = currentDate?.plus(position.toLong())
 
     init {
         playerView.useController = false
         playerView.subtitleView?.setStyle(getSubtitleStyle())
     }
+
 
     open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
 
@@ -159,6 +210,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun release() {
         timeElapsedHandler.cancel()
 
+        lastDrvAvailableCheck = null
+        exoplayerIsDvrInUse = null
+
         removeListeners()
 
         player?.release()
@@ -173,9 +227,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (!canSeek) return false
 
         trigger(Event.WILL_SEEK)
-        player?.seekTo((seconds * 1000).toLong())
+        player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         trigger(Event.DID_SEEK)
         triggerPositionUpdateEvent()
+
+        return true
+    }
+
+    override fun seekToLivePosition(): Boolean {
+        if(!canSeek) return false
+
+        player?.seekToDefaultPosition()
         return true
     }
 
@@ -246,6 +308,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun checkPeriodicUpdates() {
+        updateDvrAvailableState()
+        updateIsDvrInUse()
+
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
     }
@@ -268,6 +333,22 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         bundle.putDouble("time", currentPosition)
         trigger(Event.POSITION_UPDATE.value, bundle)
         lastPositionSent = currentPosition
+    }
+
+    private fun updateDvrAvailableState() {
+        if (isDvrAvailable == lastDrvAvailableCheck) return
+
+        lastDrvAvailableCheck = isDvrAvailable
+        trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
+            putBoolean("available", isDvrAvailable)
+        })
+        Logger.info(tag, "DVR Available: $isDvrAvailable")
+    }
+
+    private fun updateIsDvrInUse() {
+        val forcedDvrValue = state != State.PLAYING
+        val isInDvr = position < duration
+        exoplayerIsDvrInUse = isDvrAvailable && (forcedDvrValue || isInDvr)
     }
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
@@ -512,9 +593,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             val formatIndexKey = it[formatIndexKey] as? Int
 
             if (trackIndex != null && trackGroupIndexKey != null && formatIndexKey != null) {
-                trackSelector?.setRendererDisabled(trackIndex, false)
-                val selectionOverride = MappingTrackSelector.SelectionOverride(FixedTrackSelection.Factory(), trackGroupIndexKey, formatIndexKey)
-                trackSelector?.setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride)
+                trackSelector?.setParameters(DefaultTrackSelector.ParametersBuilder().setRendererDisabled(trackIndex, false))
+                val selectionOverride = DefaultTrackSelector.SelectionOverride(trackGroupIndexKey, formatIndexKey)
+                trackSelector?.setParameters(DefaultTrackSelector.ParametersBuilder().setSelectionOverride(trackIndex, mappedTrackInfo.getTrackGroups(trackIndex), selectionOverride))
             }
         }
     }
@@ -552,6 +633,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {
+            timeline?.takeIf { isDvrAvailable && it.windowCount > 0 }?.let {
+                var currentWindow = Timeline.Window()
+                currentWindow = it.getWindow(0, currentWindow)
+                dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
+            }
         }
 
         override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
