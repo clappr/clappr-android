@@ -27,7 +27,7 @@ open class BaseObject() : EventInterface {
     override fun on(eventName: String, handler: Callback, obj: EventInterface): String {
         val listenId = createListenId(eventName, obj, handler)
 
-        val bm = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
+        val broadcastManager = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
 
         if (receivers[listenId] == null) {
             val receiver = Utils.broadcastReceiver { _, intent: Intent? ->
@@ -37,7 +37,7 @@ open class BaseObject() : EventInterface {
                 }
             }
 
-            bm?.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
+            broadcastManager?.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
             receivers[listenId] = receiver
         }
         return listenId
@@ -76,14 +76,14 @@ open class BaseObject() : EventInterface {
     }
 
     override fun trigger(eventName: String, userData: Bundle?) {
-        val bm = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
+        val broadcastManager = context?.run { LocalBroadcastManager.getInstance(applicationContext) }
         val intent = Intent()
         intent.action = "clappr:" + eventName
         intent.putExtra(CONTEXT_KEY, this.id)
         if (userData != null) {
             intent.putExtra(USERDATA_KEY, userData)
         }
-        bm?.sendBroadcastSync(intent)
+        broadcastManager?.sendBroadcastSync(intent)
     }
 
     private fun createListenId(eventName: String, baseObject: EventInterface, handler: Callback) : String {
