@@ -30,6 +30,8 @@
 | [WILL_UPDATE_POSTER](-w-i-l-l_-u-p-d-a-t-e_-p-o-s-t-e-r.md) | Will update poster image |
 | [DID_UPDATE_POSTER](-d-i-d_-u-p-d-a-t-e_-p-o-s-t-e-r.md) | Poster image updated |
 | [MEDIA_OPTIONS_SELECTED](-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d.md) | Media Options Selected. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE](../-event-data/-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d_-r-e-s-p-o-n-s-e.md) key. |
+| [DID_CHANGE_DVR_STATUS](-d-i-d_-c-h-a-n-g-e_-d-v-r_-s-t-a-t-u-s.md) | There was a change in DVR status |
+| [DID_CHANGE_DVR_AVAILABILITY](-d-i-d_-c-h-a-n-g-e_-d-v-r_-a-v-a-i-l-a-b-i-l-i-t-y.md) | There was a change in DVR availability |
 
 ### Properties
 
