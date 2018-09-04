@@ -2,7 +2,8 @@
 
 buildscript {
     ext.kotlin_version = '1.2.50'
-    ext.android_support_version = '26.1.0'
+    ext.android_support_version = '27.1.1'
+
 
     repositories {
         mavenCentral()
