@@ -14,6 +14,7 @@
 | [SUBTITLES](-s-u-b-t-i-t-l-e-s.md) | Map from subtitles URL`s with name and URL to each one |
 | [SELECTED_MEDIA_OPTIONS](-s-e-l-e-c-t-e-d_-m-e-d-i-a_-o-p-t-i-o-n-s.md) | String List to selected MediaOptions |
 | [DRM_LICENSES](-d-r-m_-l-i-c-e-n-s-e-s.md) | Byte Array of drm licenses |
+| [MIN_DVR_SIZE](-m-i-n_-d-v-r_-s-i-z-e.md) | The minimum size in seconds to a video be considered with DVR |
 
 ### Properties
 
