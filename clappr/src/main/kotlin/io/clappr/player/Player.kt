@@ -155,7 +155,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
     override fun onPause() {
         super.onPause()
         activity?.takeUnless { it.isRunningInAndroidTvDevice() }?.let {
-            if (!pause()) stop()
+            val playerIsNotPaused = core?.activePlayback?.state != Playback.State.PAUSED
+            if (playerIsNotPaused && !pause())
+                stop()
         }
     }
 
