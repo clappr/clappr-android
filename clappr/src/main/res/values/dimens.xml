@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- MediaControl margins -->
+    <dimen name="media_control_top_margin">16dp</dimen>
+    <dimen name="media_control_bottom_margin">12dp</dimen>
+    <dimen name="media_control_left_margin">16dp</dimen>
+    <dimen name="media_control_right_margin">16dp</dimen>
+</resources>
