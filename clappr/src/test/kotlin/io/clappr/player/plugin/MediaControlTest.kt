@@ -15,13 +15,14 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
+import org.robolectric.shadows.ShadowSystemClock
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowSystemClock::class])
 class MediaControlTest {
 
     private lateinit var mediaControlPlugin: MediaControl
@@ -207,6 +208,28 @@ class MediaControlTest {
         newPlayback.trigger(Event.PLAYING.value)
         newPlayback.trigger(Event.DID_PAUSE.value)
         assertEquals(UIPlugin.Visibility.VISIBLE, mediaControlPlugin.visibility, "Media control should handle Playback event")
+    }
+
+    @Test
+    fun shouldUpdateInteractionTimeWhenDidUpdateInteractingEventIsCalled() {
+        val expectedTime = 1234L
+
+        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
+
+        core.trigger(InternalEvent.DID_UPDATE_INTERACTING.value)
+
+        assertEquals(expectedTime, mediaControlPlugin.lastInteractionTime)
+    }
+
+    @Test
+    fun shouldUpdateInteractionTimeWhenDidTouchMediaControlEventIsCalled() {
+        val expectedTime = 1234L
+
+        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
+
+        core.trigger(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value)
+
+        assertEquals(expectedTime, mediaControlPlugin.lastInteractionTime)
     }
 
     private fun triggerOpenModalPanelEvent() {
