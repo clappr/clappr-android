@@ -3,12 +3,15 @@ package io.clappr.player.plugin
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.plugin.MediaControlPlugin.Panel
+import io.clappr.player.plugin.MediaControlPlugin.Position
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -16,13 +19,14 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowSystemClock
+import org.robolectric.shadows.ShadowView
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowSystemClock::class])
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowSystemClock::class, ShadowView::class])
 class MediaControlTest {
 
     private lateinit var mediaControlPlugin: MediaControl
@@ -40,6 +44,74 @@ class MediaControlTest {
 
         core.activeContainer = container
         container.playback = FakePlayback()
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInCenterPanel() {
+        setupFakeMediaControlPlugin(Panel.CENTER, Position.NONE)
+        assertMediaControlPanel(mediaControlPlugin.centerPanel, Panel.CENTER, Position.NONE)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsLeft() {
+        setupFakeMediaControlPlugin(Panel.CENTER, Position.LEFT)
+        assertMediaControlPanel(mediaControlPlugin.centerPanel, Panel.CENTER, Position.LEFT)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsRight() {
+        setupFakeMediaControlPlugin(Panel.CENTER, Position.RIGHT)
+        assertMediaControlPanel(mediaControlPlugin.centerPanel, Panel.CENTER, Position.RIGHT)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInBottomPanel() {
+        setupFakeMediaControlPlugin(Panel.BOTTOM, Position.NONE)
+        assertMediaControlPanel(mediaControlPlugin.bottomPanel, Panel.BOTTOM, Position.NONE)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInBottomLeftPanel() {
+        setupFakeMediaControlPlugin(Panel.BOTTOM, Position.LEFT)
+        assertMediaControlPanel(mediaControlPlugin.bottomLeftPanel, Panel.BOTTOM, Position.LEFT)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInBottomRightPanel() {
+        setupFakeMediaControlPlugin(Panel.BOTTOM, Position.RIGHT)
+        assertMediaControlPanel(mediaControlPlugin.bottomRightPanel, Panel.BOTTOM, Position.RIGHT)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInTopPanel() {
+        setupFakeMediaControlPlugin(Panel.TOP, Position.NONE)
+        assertMediaControlPanel(mediaControlPlugin.topPanel, Panel.TOP, Position.NONE)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInTopLeftPanel() {
+        setupFakeMediaControlPlugin(Panel.TOP, Position.LEFT)
+        assertMediaControlPanel(mediaControlPlugin.topLeftPanel, Panel.TOP, Position.LEFT)
+    }
+
+    @Test
+    fun shouldAddMediaControlPluginInTopRightPanel() {
+        setupFakeMediaControlPlugin(Panel.TOP, Position.RIGHT)
+        assertMediaControlPanel(mediaControlPlugin.topRightPanel, Panel.TOP, Position.RIGHT)
+    }
+
+    @Test
+    fun shouldNotAddMediaControlPluginWhenPanelIsNone() {
+        setupFakeMediaControlPlugin(Panel.NONE, Position.NONE)
+
+        assertTrue(mediaControlPlugin.controlPlugins.size == 1, "Media Control Plugin should be added to Media Control")
+        assertTrue(mediaControlPlugin.centerPanel.childCount == 0, "Media Control Plugin should not be added to Center panel in Media Control")
+        assertTrue(mediaControlPlugin.topPanel.childCount == 0, "Media Control Plugin should not be added to Top panel in Media Control")
+        assertTrue(mediaControlPlugin.topRightPanel.childCount == 0, "Media Control Plugin should not be added to Top Right panel in Media Control")
+        assertTrue(mediaControlPlugin.topLeftPanel.childCount == 0, "Media Control Plugin should not be added to Top Left panel in Media Control")
+        assertTrue(mediaControlPlugin.bottomPanel.childCount == 0, "Media Control Plugin should not be added to Bottom panel in Media Control")
+        assertTrue(mediaControlPlugin.bottomRightPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Right panel in Media Control")
+        assertTrue(mediaControlPlugin.bottomLeftPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Left panel in Media Control")
     }
 
     @Test
@@ -232,6 +304,26 @@ class MediaControlTest {
         assertEquals(expectedTime, mediaControlPlugin.lastInteractionTime)
     }
 
+    private fun setupFakeMediaControlPlugin(panel: Panel, position: Position) {
+        FakeMediaControlPlugin.currentPanel = panel
+        FakeMediaControlPlugin.currentPosition = position
+
+        Loader.registerPlugin(FakeMediaControlPlugin::class)
+
+        core = Core(Loader(), Options())
+
+        mediaControlPlugin = MediaControl(core)
+        mediaControlPlugin.render()
+    }
+
+    private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
+        val plugin = core.plugins.filterIsInstance(FakeMediaControlPlugin::class.java).first()
+
+        assertTrue(mediaControlPlugin.controlPlugins.size == 1, "Media Control Plugin should be added to Media Control")
+        assertTrue(layoutPanel.childCount == 1, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
+        assertEquals(plugin.view, layoutPanel.getChildAt(0))
+    }
+
     private fun triggerOpenModalPanelEvent() {
         core.trigger(InternalEvent.OPEN_MODAL_PANEL.value)
     }
@@ -255,4 +347,15 @@ class MediaControlTest {
         }
     }
 
+    class FakeMediaControlPlugin(core: Core) : MediaControlPlugin(core) {
+        companion object : NamedType {
+            override val name = "fakeMediaControlPlugin"
+
+            var currentPanel: Panel = Panel.NONE
+            var currentPosition: Position = Position.NONE
+        }
+
+        override var panel: Panel = currentPanel
+        override var position: Position = currentPosition
+    }
 }
