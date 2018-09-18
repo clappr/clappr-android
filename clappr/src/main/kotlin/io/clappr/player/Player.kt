@@ -26,8 +26,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         val containerEventsToListen = mutableSetOf<String>()
 
         init {
-            // TODO - Add default plugins and playbacks
             PluginConfig.register()
+
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
 
