@@ -18,26 +18,26 @@ import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.core.UICorePlugin
 
-abstract class MediaControlPlugin(core: Core) : UICorePlugin(core) {
-    enum class Panel { TOP, BOTTOM, CENTER, NONE }
-    enum class Position { LEFT, RIGHT, NONE }
-
-    open var panel: Panel = Panel.NONE
-    open var position: Position = Position.NONE
-
-    open val isEnabled: Boolean
-        get() {
-            return state == State.ENABLED
-        }
-
-    open val isPlaybackIdle: Boolean
-        get() {
-            return core.activePlayback?.state == Playback.State.IDLE ||
-                    core.activePlayback?.state == Playback.State.NONE
-        }
-}
-
 open class MediaControl(core: Core) : UICorePlugin(core) {
+
+    abstract class Plugin(core: Core) : UICorePlugin(core) {
+        enum class Panel { TOP, BOTTOM, CENTER, NONE }
+        enum class Position { LEFT, RIGHT, NONE }
+
+        open var panel: Panel = Panel.NONE
+        open var position: Position = Position.NONE
+
+        open val isEnabled: Boolean
+            get() {
+                return state == State.ENABLED
+            }
+
+        open val isPlaybackIdle: Boolean
+            get() {
+                return core.activePlayback?.state == Playback.State.IDLE ||
+                        core.activePlayback?.state == Playback.State.NONE
+            }
+    }
 
     companion object : NamedType {
         override val name: String?
@@ -75,7 +75,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     open val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
-    open val controlPlugins = mutableListOf<MediaControlPlugin>()
+    open val controlPlugins = mutableListOf<MediaControl.Plugin>()
 
     override var state: State = State.ENABLED
         set(value) {
@@ -145,26 +145,26 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     open fun setupPlugins() {
         controlPlugins.clear()
-        controlPlugins.addAll(core.plugins.filterIsInstance(MediaControlPlugin::class.java))
+        controlPlugins.addAll(core.plugins.filterIsInstance(MediaControl.Plugin::class.java))
     }
 
     open fun layoutPlugins() {
         controlPlugins.forEach {
             (it.view?.parent as? ViewGroup)?.removeView(it.view)
             val parent = when (it.panel) {
-                MediaControlPlugin.Panel.TOP ->
+                MediaControl.Plugin.Panel.TOP ->
                     when (it.position) {
-                        MediaControlPlugin.Position.LEFT -> topLeftPanel
-                        MediaControlPlugin.Position.RIGHT -> topRightPanel
+                        MediaControl.Plugin.Position.LEFT -> topLeftPanel
+                        MediaControl.Plugin.Position.RIGHT -> topRightPanel
                         else -> topPanel
                     }
-                MediaControlPlugin.Panel.BOTTOM ->
+                MediaControl.Plugin.Panel.BOTTOM ->
                     when (it.position) {
-                        MediaControlPlugin.Position.LEFT -> bottomLeftPanel
-                        MediaControlPlugin.Position.RIGHT -> bottomRightPanel
+                        MediaControl.Plugin.Position.LEFT -> bottomLeftPanel
+                        MediaControl.Plugin.Position.RIGHT -> bottomRightPanel
                         else -> bottomPanel
                     }
-                MediaControlPlugin.Panel.CENTER ->
+                MediaControl.Plugin.Panel.CENTER ->
                     centerPanel
                 else -> null
             }
