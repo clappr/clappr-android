@@ -10,8 +10,10 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.MediaControlPlugin.Panel
-import io.clappr.player.plugin.MediaControlPlugin.Position
+import io.clappr.player.plugin.Control.MediaControl
+import io.clappr.player.plugin.Control.MediaControlPlugin
+import io.clappr.player.plugin.Control.MediaControlPlugin.Panel
+import io.clappr.player.plugin.Control.MediaControlPlugin.Position
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith

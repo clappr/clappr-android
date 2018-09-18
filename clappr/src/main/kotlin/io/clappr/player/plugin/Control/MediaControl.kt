@@ -1,4 +1,4 @@
-package io.clappr.player.plugin
+package io.clappr.player.plugin.Control
 
 import android.os.Bundle
 import android.os.Handler
