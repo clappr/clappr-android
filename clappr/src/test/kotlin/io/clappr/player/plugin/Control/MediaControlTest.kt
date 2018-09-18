@@ -1,4 +1,4 @@
-package io.clappr.player.plugin
+package io.clappr.player.plugin.Control
 
 import android.os.Bundle
 import android.view.View
@@ -10,9 +10,11 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.Control.MediaControl
 import io.clappr.player.plugin.Control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.Control.MediaControl.Plugin.Position
+import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.Plugin
+import io.clappr.player.plugin.UIPlugin
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
