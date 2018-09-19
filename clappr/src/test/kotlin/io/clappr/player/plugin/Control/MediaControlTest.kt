@@ -143,17 +143,6 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldSendDidCloseModalWhenModalPanelWasClosed() {
-        var didCloseModalPanelWasCalled = false
-
-        core.on(InternalEvent.DID_CLOSE_MODAL_PANEL.value, Callback.wrap { didCloseModalPanelWasCalled = true })
-
-        triggerCloseModalPanelEvent()
-
-        assertTrue(didCloseModalPanelWasCalled)
-    }
-
-    @Test
     fun shouldSendDidOpenModalPanelEventWhenModalPanelWasOpened() {
         var didOpenModalPanelEventWasSent = false
 
