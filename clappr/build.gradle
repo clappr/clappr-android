@@ -79,6 +79,9 @@ android {
         unitTests.all {
             jvmArgs '-XX:MaxPermSize=256m'
         }
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
 

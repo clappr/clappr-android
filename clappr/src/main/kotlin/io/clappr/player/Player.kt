@@ -13,8 +13,7 @@ import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
 import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.LoadingPlugin
-import io.clappr.player.plugin.PosterPlugin
+import io.clappr.player.plugin.PluginConfig
 
 /**
  *  Main Player class.
@@ -27,9 +26,8 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         val containerEventsToListen = mutableSetOf<String>()
 
         init {
-            // TODO - Add default plugins and playbacks
-            Loader.registerPlugin(PosterPlugin::class)
-            Loader.registerPlugin(LoadingPlugin::class)
+            PluginConfig.register()
+
             Loader.registerPlayback(NoOpPlayback::class)
             Loader.registerPlayback(ExoPlayerPlayback::class)
 
