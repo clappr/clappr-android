@@ -1,12 +1,10 @@
 package io.clappr.player.plugin
 
-import android.support.annotation.Keep
 import android.view.LayoutInflater
 import android.widget.ImageButton
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Control.MediaControl
 
-@Keep
 abstract class ButtonPlugin(core: Core) : MediaControl.Plugin(core) {
 
     abstract val resourceDrawable: Int
