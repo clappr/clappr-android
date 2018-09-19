@@ -1,4 +1,4 @@
-package io.clappr.player.plugin
+package io.clappr.player.plugin.Control
 
 import android.view.LayoutInflater
 import android.widget.ImageButton
