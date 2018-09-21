@@ -1,6 +1,5 @@
 package io.clappr.player.plugin.Control
 
-import android.support.annotation.Keep
 import io.clappr.player.R
 import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
@@ -8,10 +7,9 @@ import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 
-@Keep
+
 open class FullscreenButton(core: Core) : ButtonPlugin(core) {
 
-    @Keep
     companion object : NamedType {
         override val name = "fullscreenButton"
     }
@@ -84,8 +82,10 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
 
     //Because full screen button is the last button
     private fun removeDefaultRightPadding() {
-        val leftPadding = context?.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding) ?: 0
-        val verticalPadding = context?.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding) ?: 0
+        val leftPadding = context?.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding)
+                ?: 0
+        val verticalPadding = context?.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
+                ?: 0
         view.setPadding(leftPadding, verticalPadding, 0, verticalPadding)
     }
 }
