@@ -61,7 +61,6 @@ class FullscreenButtonTest {
         triggerRequestFullscreen()
         triggerDidEnterFullscreen()
 
-
         kotlin.test.assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
         kotlin.test.assertFalse(fullscreenButton.view.isSelected)
     }
