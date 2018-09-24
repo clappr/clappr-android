@@ -40,7 +40,7 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
             listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
         }
         core.activePlayback?.let {
-            listenTo(it, Event.PLAYING.value, Callback.wrap { updateState() })
+            listenTo(it, Event.PLAYING.value, updateCallback)
             listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() })
         }
     }

@@ -1,12 +1,12 @@
 package io.clappr.player.plugin.Control
 
 import android.view.View
+import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
-import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
 import org.junit.Before
@@ -17,6 +17,9 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowSystemClock
 import org.robolectric.shadows.ShadowView
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowSystemClock::class, ShadowView::class])
@@ -24,50 +27,31 @@ class FullscreenButtonTest {
 
     private lateinit var fullscreenButton: FullscreenButton
     private lateinit var core: Core
-    private lateinit var container: Container
+    private lateinit var mediaControl: MediaControl
 
     @Before
     fun setUp() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
-
-        container = Container(Loader(), Options())
-
         core = Core(Loader(), Options())
-
-        fullscreenButton = FullscreenButton(core)
-
-        core.activeContainer = container
-        container.playback = MediaControlTest.FakePlayback()
-    }
-
-    private fun setupFakeMediaControlPlugin(panel: MediaControl.Plugin.Panel, position: MediaControl.Plugin.Position) {
-        MediaControlTest.FakePlugin.currentPanel = panel
-        MediaControlTest.FakePlugin.currentPosition = position
-
-        Loader.registerPlugin(MediaControlTest.FakePlugin::class)
-
-        core = Core(Loader(), Options())
-
+        mediaControl = MediaControl(core)
         fullscreenButton = FullscreenButton(core)
         fullscreenButton.render()
     }
 
     @Test
     fun shouldEnterFullscreen() {
-        setupFakeMediaControlPlugin(MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.RIGHT)
         triggerPlaying()
 
         triggerDidTouchMediaControl()
         triggerRequestFullscreen()
         triggerDidEnterFullscreen()
 
-        kotlin.test.assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
-        kotlin.test.assertFalse(fullscreenButton.view.isSelected)
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
+        assertFalse(fullscreenButton.view.isSelected)
     }
 
     @Test
     fun shouldExitFullscreen() {
-        setupFakeMediaControlPlugin(MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.RIGHT)
         fullscreenButton.core.fullscreenState = Core.FullscreenState.FULLSCREEN
         fullscreenButton.render()
 
@@ -77,10 +61,66 @@ class FullscreenButtonTest {
         triggerExitFullscreen()
         triggerDidExitFullscreen()
 
-        kotlin.test.assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
-        kotlin.test.assertTrue(fullscreenButton.view.isSelected)
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
+        assertTrue(fullscreenButton.view.isSelected)
     }
 
+
+    @Test
+    fun shouldShowFullScreenButtonWhenTouchMediaControl() {
+        triggerDidTouchMediaControl()
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
+    fun shouldShowFullScreenButtonWhenPlay() {
+        triggerPlaying()
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
+    fun shouldShowFullScreenButtonWhenChangePlayback() {
+        triggerDidChangePlayback()
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
+    fun shouldHideFullScreenButtonWhenComplete() {
+        triggerPlaying()
+        triggerDidComplete()
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
+    fun shouldAddFullscreenButtonInRightPanel() {
+        setupFakeMediaControlPlugin(MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.RIGHT)
+        assertMediaControlPanel(mediaControl.bottomRightPanel, MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.RIGHT)
+    }
+
+    @Test
+    fun shouldAddFullscreenButtonInLeftPanel() {
+        setupFakeMediaControlPlugin(MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.LEFT)
+        assertMediaControlPanel(mediaControl.bottomRightPanel, MediaControl.Plugin.Panel.BOTTOM, MediaControl.Plugin.Position.LEFT)
+    }
+
+    private fun setupFakeMediaControlPlugin(panel: MediaControl.Plugin.Panel, position: MediaControl.Plugin.Position) {
+        MediaControlTest.FakePlugin.currentPanel = panel
+        MediaControlTest.FakePlugin.currentPosition = position
+
+        Loader.registerPlugin(FullscreenButton::class)
+
+        core = Core(Loader(), Options())
+
+        mediaControl = MediaControl(core)
+        mediaControl.render()
+    }
+
+    private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: MediaControl.Plugin.Panel, position: MediaControl.Plugin.Position) {
+        val plugin = core.plugins.filterIsInstance(FullscreenButton::class.java).first()
+        assertTrue(mediaControl.controlPlugins.size == 1, "Full Screen Plugin should be added to Media Control")
+        assertTrue(layoutPanel.childCount == 1, "Full Screen Plugin should be added to $panel panel and $position position in Media Control")
+        assertEquals(plugin.view, layoutPanel.getChildAt(0))
+    }
 
     private fun triggerDidEnterFullscreen() {
         core.trigger(InternalEvent.DID_ENTER_FULLSCREEN.value)
@@ -100,6 +140,14 @@ class FullscreenButtonTest {
 
     private fun triggerDidExitFullscreen() {
         core.trigger(InternalEvent.DID_EXIT_FULLSCREEN.value)
+    }
+
+    private fun triggerDidComplete() {
+        core.activePlayback?.trigger(Event.DID_COMPLETE.value)
+    }
+
+    private fun triggerDidChangePlayback() {
+        core.activePlayback?.trigger(InternalEvent.DID_CHANGE_PLAYBACK.value)
     }
 
     private fun triggerPlaying() {
