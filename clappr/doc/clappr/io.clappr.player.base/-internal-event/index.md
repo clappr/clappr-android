@@ -26,6 +26,14 @@
 | [MEDIA_OPTIONS_READY](-m-e-d-i-a_-o-p-t-i-o-n-s_-r-e-a-d-y.md) |  |
 | [MEDIA_OPTIONS_UPDATE](-m-e-d-i-a_-o-p-t-i-o-n-s_-u-p-d-a-t-e.md) |  |
 | [DID_UPDATE_OPTIONS](-d-i-d_-u-p-d-a-t-e_-o-p-t-i-o-n-s.md) |  |
+| [DID_TOUCH_MEDIA_CONTROL](-d-i-d_-t-o-u-c-h_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [ENABLE_MEDIA_CONTROL](-e-n-a-b-l-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [DISABLE_MEDIA_CONTROL](-d-i-s-a-b-l-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [DID_UPDATE_INTERACTING](-d-i-d_-u-p-d-a-t-e_-i-n-t-e-r-a-c-t-i-n-g.md) |  |
+| [OPEN_MODAL_PANEL](-o-p-e-n_-m-o-d-a-l_-p-a-n-e-l.md) |  |
+| [CLOSE_MODAL_PANEL](-c-l-o-s-e_-m-o-d-a-l_-p-a-n-e-l.md) |  |
+| [DID_OPEN_MODAL_PANEL](-d-i-d_-o-p-e-n_-m-o-d-a-l_-p-a-n-e-l.md) |  |
+| [DID_CLOSE_MODAL_PANEL](-d-i-d_-c-l-o-s-e_-m-o-d-a-l_-p-a-n-e-l.md) |  |
 
 ### Properties
 

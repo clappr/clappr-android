@@ -12,9 +12,9 @@
 | [io.clappr.player.periodicTimer](io.clappr.player.periodic-timer/index.md) |  |
 | [io.clappr.player.playback](io.clappr.player.playback/index.md) |  |
 | [io.clappr.player.plugin](io.clappr.player.plugin/index.md) |  |
+| [io.clappr.player.plugin.Control](io.clappr.player.plugin.-control/index.md) |  |
 | [io.clappr.player.plugin.container](io.clappr.player.plugin.container/index.md) |  |
 | [io.clappr.player.plugin.core](io.clappr.player.plugin.core/index.md) |  |
-| [io.clappr.player.widget](io.clappr.player.widget/index.md) |  |
 
 ### Index
 
