@@ -5,4 +5,9 @@
     <dimen name="media_control_bottom_margin">12dp</dimen>
     <dimen name="media_control_left_margin">16dp</dimen>
     <dimen name="media_control_right_margin">16dp</dimen>
+
+    <!-- Time Indicator -->
+    <dimen name="time_indicator_height">32dp</dimen>
+    <dimen name="time_indicator_font_size">14sp</dimen>
+
 </resources>
