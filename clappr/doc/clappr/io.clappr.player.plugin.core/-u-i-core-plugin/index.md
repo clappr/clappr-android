@@ -42,3 +42,10 @@
 | Name | Summary |
 |---|---|
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+
+### Inheritors
+
+| Name | Summary |
+|---|---|
+| [MediaControl](../../io.clappr.player.plugin.-control/-media-control/index.md) | `open class MediaControl : `[`UICorePlugin`](./index.md) |
+| [Plugin](../../io.clappr.player.plugin.-control/-media-control/-plugin/index.md) | `abstract class Plugin : `[`UICorePlugin`](./index.md) |

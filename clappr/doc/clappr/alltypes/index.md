@@ -5,6 +5,7 @@
 | Name | Summary |
 |---|---|
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
+| [io.clappr.player.plugin.Control.ButtonPlugin](../io.clappr.player.plugin.-control/-button-plugin/index.md) |  |
 | [io.clappr.player.base.Callback](../io.clappr.player.base/-callback/index.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
@@ -24,7 +25,7 @@
 | [io.clappr.player.plugin.LoadingPlugin](../io.clappr.player.plugin/-loading-plugin/index.md) |  |
 | [io.clappr.player.log.LogLevel](../io.clappr.player.log/-log-level/index.md) |  |
 | [io.clappr.player.log.Logger](../io.clappr.player.log/-logger/index.md) |  |
-| [io.clappr.player.widget.MediaControl](../io.clappr.player.widget/-media-control/index.md) |  |
+| [io.clappr.player.plugin.Control.MediaControl](../io.clappr.player.plugin.-control/-media-control/index.md) |  |
 | [io.clappr.player.components.MediaOption](../io.clappr.player.components/-media-option/index.md) |  |
 | [io.clappr.player.components.MediaOptionType](../io.clappr.player.components/-media-option-type/index.md) |  |
 | [io.clappr.player.playback.MediaPlayerPlayback](../io.clappr.player.playback/-media-player-playback/index.md) |  |
@@ -36,6 +37,7 @@
 | [io.clappr.player.components.PlaybackSupportInterface](../io.clappr.player.components/-playback-support-interface/index.md) |  |
 | [io.clappr.player.Player](../io.clappr.player/-player/index.md) | Main Player class. |
 | [io.clappr.player.plugin.Plugin](../io.clappr.player.plugin/-plugin/index.md) |  |
+| [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |
