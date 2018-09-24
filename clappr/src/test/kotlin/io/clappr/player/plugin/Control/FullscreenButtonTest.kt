@@ -3,11 +3,10 @@ package io.clappr.player.plugin.Control
 import android.view.View
 import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
 import org.junit.Before
 import org.junit.Test
@@ -104,8 +103,9 @@ class FullscreenButtonTest {
     }
 
     private fun setupFakeMediaControlPlugin(panel: MediaControl.Plugin.Panel, position: MediaControl.Plugin.Position) {
-        MediaControlTest.FakePlugin.currentPanel = panel
-        MediaControlTest.FakePlugin.currentPosition = position
+        FakePlugin.currentPanel = panel
+        FakePlugin.currentPosition = position
+
 
         Loader.registerPlugin(FullscreenButton::class)
 
@@ -117,7 +117,7 @@ class FullscreenButtonTest {
 
     private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: MediaControl.Plugin.Panel, position: MediaControl.Plugin.Position) {
         val plugin = core.plugins.filterIsInstance(FullscreenButton::class.java).first()
-        assertTrue(mediaControl.controlPlugins.size == 1, "Full Screen Plugin should be added to Media Control")
+        assertTrue(mediaControl.controlPlugins.any { p -> p is FullscreenButton }, "Full Screen Plugin should be added to Media Control")
         assertTrue(layoutPanel.childCount == 1, "Full Screen Plugin should be added to $panel panel and $position position in Media Control")
         assertEquals(plugin.view, layoutPanel.getChildAt(0))
     }
@@ -152,5 +152,24 @@ class FullscreenButtonTest {
 
     private fun triggerPlaying() {
         core.trigger(Event.PLAYING.value)
+    }
+
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
+        companion object : PlaybackSupportInterface {
+            override val name: String = "fakeFullScreenPlayback"
+            override fun supportsSource(source: String, mimeType: String?) = true
+        }
+    }
+
+    class FakePlugin(core: Core) : MediaControl.Plugin(core) {
+        companion object : NamedType {
+            override val name = "fakeFullScreenMediaControlPlugin"
+
+            var currentPanel: Panel = Panel.NONE
+            var currentPosition: Position = Position.NONE
+        }
+
+        override var panel: Panel = currentPanel
+        override var position: Position = currentPosition
     }
 }
