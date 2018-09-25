@@ -2,4 +2,5 @@
 <resources>
     <color name="player_background">#000</color>
     <color name="media_control_background">#9b000000</color>
+    <color name="video_info_text_color">#fff</color>
 </resources>
