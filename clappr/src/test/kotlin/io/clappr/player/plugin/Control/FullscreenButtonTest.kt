@@ -1,4 +1,4 @@
-package io.clappr.player.plugin.Control
+package io.clappr.player.plugin.control
 
 import android.view.View
 import io.clappr.player.BuildConfig

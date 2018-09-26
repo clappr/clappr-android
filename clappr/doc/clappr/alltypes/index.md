@@ -5,7 +5,7 @@
 | Name | Summary |
 |---|---|
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
-| [io.clappr.player.plugin.Control.ButtonPlugin](../io.clappr.player.plugin.-control/-button-plugin/index.md) |  |
+| [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
 | [io.clappr.player.base.Callback](../io.clappr.player.base/-callback/index.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
@@ -13,6 +13,7 @@
 | [android.content.Context](../io.clappr.player.extensions.context/android.content.-context/index.md) (extensions in package io.clappr.player.extensions.context) |  |
 | [io.clappr.player.components.Core](../io.clappr.player.components/-core/index.md) |  |
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
+| [kotlin.Double](../io.clappr.player.extensions/kotlin.-double/index.md) (extensions in package io.clappr.player.extensions) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |
 | [io.clappr.player.base.ErrorInfo](../io.clappr.player.base/-error-info/index.md) |  |
 | [io.clappr.player.base.ErrorInfoData](../io.clappr.player.base/-error-info-data/index.md) | Event bundle data keys for error info |
@@ -20,12 +21,13 @@
 | [io.clappr.player.base.EventData](../io.clappr.player.base/-event-data/index.md) | Event bundle data keys for selected Events |
 | [io.clappr.player.base.EventInterface](../io.clappr.player.base/-event-interface/index.md) |  |
 | [io.clappr.player.playback.ExoPlayerPlayback](../io.clappr.player.playback/-exo-player-playback/index.md) |  |
+| [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |
 | [io.clappr.player.plugin.Loader](../io.clappr.player.plugin/-loader/index.md) |  |
 | [io.clappr.player.plugin.LoadingPlugin](../io.clappr.player.plugin/-loading-plugin/index.md) |  |
 | [io.clappr.player.log.LogLevel](../io.clappr.player.log/-log-level/index.md) |  |
 | [io.clappr.player.log.Logger](../io.clappr.player.log/-logger/index.md) |  |
-| [io.clappr.player.plugin.Control.MediaControl](../io.clappr.player.plugin.-control/-media-control/index.md) |  |
+| [io.clappr.player.plugin.control.MediaControl](../io.clappr.player.plugin.control/-media-control/index.md) |  |
 | [io.clappr.player.components.MediaOption](../io.clappr.player.components/-media-option/index.md) |  |
 | [io.clappr.player.components.MediaOptionType](../io.clappr.player.components/-media-option-type/index.md) |  |
 | [io.clappr.player.playback.MediaPlayerPlayback](../io.clappr.player.playback/-media-player-playback/index.md) |  |
@@ -39,6 +41,7 @@
 | [io.clappr.player.plugin.Plugin](../io.clappr.player.plugin/-plugin/index.md) |  |
 | [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
+| [io.clappr.player.plugin.control.TimeIndicatorPlugin](../io.clappr.player.plugin.control/-time-indicator-plugin/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |
 | [io.clappr.player.base.UIObject](../io.clappr.player.base/-u-i-object/index.md) |  |

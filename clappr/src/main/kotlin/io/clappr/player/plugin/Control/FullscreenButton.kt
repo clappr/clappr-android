@@ -1,4 +1,4 @@
-package io.clappr.player.plugin.Control
+package io.clappr.player.plugin.control
 
 import io.clappr.player.R
 import io.clappr.player.base.Callback
