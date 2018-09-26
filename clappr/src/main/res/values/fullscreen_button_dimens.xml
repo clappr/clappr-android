@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bottom_panel_button_width">32dp</dimen>
+    <dimen name="bottom_panel_button_height">32dp</dimen>
+    <dimen name="bottom_panel_button_bottom_margin">-2dp</dimen>
+    <dimen name="bottom_panel_button_right_margin">16dp</dimen>
+    <dimen name="bottom_panel_button_right_padding">8dp</dimen>
+    <dimen name="bottom_panel_button_left_padding">8dp</dimen>
+    <dimen name="bottom_panel_button_vertical_padding">5dp</dimen>
+    <dimen name="fullscreen_button_vertical_padding">6dp</dimen>
+</resources>
