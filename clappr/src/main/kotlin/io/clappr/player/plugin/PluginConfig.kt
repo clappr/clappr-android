@@ -1,7 +1,7 @@
 package io.clappr.player.plugin
 
-import io.clappr.player.plugin.Control.MediaControl
-import io.clappr.player.plugin.Control.TimeIndicatorPlugin
+import io.clappr.player.plugin.control.MediaControl
+import io.clappr.player.plugin.control.TimeIndicatorPlugin
 
 object PluginConfig {
     fun register() {

@@ -1,9 +1,8 @@
-package io.clappr.player.plugin.Control
+package io.clappr.player.plugin.control
 
 import android.view.LayoutInflater
 import android.widget.ImageButton
 import io.clappr.player.components.Core
-import io.clappr.player.plugin.Control.MediaControl
 
 abstract class ButtonPlugin(core: Core) : MediaControl.Plugin(core) {
 
