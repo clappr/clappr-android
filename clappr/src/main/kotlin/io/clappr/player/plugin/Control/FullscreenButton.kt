@@ -45,7 +45,7 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
         }
     }
 
-    open fun updateState() {
+    private fun updateState() {
         if (isPlaybackIdle) {
             hide()
         } else {
@@ -56,12 +56,12 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
         }
     }
 
-    open fun showEnterFullscreenIcon() {
+    private fun showEnterFullscreenIcon() {
         show()
         view.isSelected = false
     }
 
-    open fun showExitFullscreenIcon() {
+    private fun showExitFullscreenIcon() {
         show()
         view.isSelected = true
     }
