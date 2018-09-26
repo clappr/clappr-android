@@ -260,8 +260,14 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     override fun destroy() {
         controlPlugins.clear()
+        stopListeners()
         view.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
         super.destroy()
+    }
+
+    private fun stopListeners() {
+        containerListenerIds.forEach(::stopListening)
+        playbackListenerIds.forEach(::stopListening)
     }
 }
