@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ImageButton xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/bottom_panel_button_width"
+    android:layout_height="@dimen/bottom_panel_button_height"
+    android:background="#00000000"
+    android:paddingLeft="@dimen/bottom_panel_button_left_padding"
+    android:paddingRight="@dimen/bottom_panel_button_right_padding"
+    android:paddingStart="@dimen/bottom_panel_button_left_padding"
+    android:paddingEnd="@dimen/bottom_panel_button_right_padding"
+    android:paddingTop="@dimen/bottom_panel_button_vertical_padding"
+    android:paddingBottom="@dimen/bottom_panel_button_vertical_padding" />

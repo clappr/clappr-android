@@ -310,8 +310,7 @@ class MediaControlTest {
 
     private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
         val plugin = core.plugins.filterIsInstance(FakePlugin::class.java).first()
-
-        assertTrue(mediaControl.controlPlugins.size == 1, "Media Control Plugin should be added to Media Control")
+        assertTrue(mediaControl.controlPlugins.any { p -> p is MediaControlTest.FakePlugin }, "Media Control Plugin should be added to Media Control")
         assertTrue(layoutPanel.childCount == 1, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
         assertEquals(plugin.view, layoutPanel.getChildAt(0))
     }
