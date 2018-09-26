@@ -44,7 +44,7 @@ class FullscreenButtonTest {
     fun shouldFullscreenButtonBeVisibleAndNotSelectedWhenEnterFullScreen() {
         triggerDidEnterFullscreen()
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
         assertFalse(fullscreenButton.view.isSelected)
     }
 
@@ -53,8 +53,8 @@ class FullscreenButtonTest {
         fullscreenButton.render()
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "")
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility, "")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
     }
 
     @Test
@@ -62,8 +62,8 @@ class FullscreenButtonTest {
         fullscreenButton.render()
         container.playback = FakePlayback(stateFake = Playback.State.NONE)
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "")
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility, "")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
     }
 
     @Test
@@ -79,8 +79,8 @@ class FullscreenButtonTest {
 
         triggerPlaying()
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "")
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility, "")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
     }
 
     @Test
@@ -89,25 +89,25 @@ class FullscreenButtonTest {
 
         triggerPlaying()
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "")
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility, "")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
     }
 
     @Test
     fun shouldFullscreenBeGoneWhenPlaybackIsIdle() {
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "Fullscreen button should be GONE")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
     }
 
     @Test
     fun shouldFullscreenBeGoneWhenPlaybackIsNone() {
         container.playback = FakePlayback(stateFake = Playback.State.NONE)
-        assertEquals(View.GONE, fullscreenButton.view.visibility, "Fullscreen button should be GONE")
+        assertEquals(View.GONE, fullscreenButton.view.visibility)
     }
 
     @Test
     fun shouldFullscreenBeVisibleWhenPlaybackIsNotIdle() {
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be GONE")
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
     }
 
     @Test
@@ -117,7 +117,7 @@ class FullscreenButtonTest {
 
         triggerDidExitFullscreen()
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility, "Fullscreen button should be VISIBLE")
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
         assertTrue(fullscreenButton.view.isSelected)
     }
 
