@@ -31,6 +31,7 @@
 | [Companion](../../io.clappr.player.plugin/-poster-plugin/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
 | [Companion](../../io.clappr.player.plugin.container/-container-plugin/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
 | [Companion](../../io.clappr.player.plugin.container/-u-i-container-plugin/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
+| [Companion](../../io.clappr.player.plugin.control/-fullscreen-button/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
 | [Companion](../../io.clappr.player.plugin.control/-media-control/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
 | [Companion](../../io.clappr.player.plugin.control/-time-indicator-plugin/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |
 | [Companion](../../io.clappr.player.plugin.core/-core-plugin/-companion/index.md) | `companion object Companion : `[`NamedType`](./index.md) |

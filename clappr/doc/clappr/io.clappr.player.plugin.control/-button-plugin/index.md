@@ -35,3 +35,9 @@
 | [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [onClick](on-click.md) | `open fun onClick(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+
+### Inheritors
+
+| Name | Summary |
+|---|---|
+| [FullscreenButton](../-fullscreen-button/index.md) | `open class FullscreenButton : `[`ButtonPlugin`](./index.md) |
