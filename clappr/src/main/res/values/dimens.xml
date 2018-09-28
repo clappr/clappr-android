@@ -10,4 +10,16 @@
     <dimen name="time_indicator_height">32dp</dimen>
     <dimen name="time_indicator_font_size">14sp</dimen>
 
+    <!-- Seekbar -->
+    <dimen name="seekbar_height">16dp</dimen>
+    <dimen name="seekbar_bottom_margin">4dp</dimen>
+    <dimen name="seekbar_padding">8dp</dimen>
+    <dimen name="seekbar_scrubber_height">8dp</dimen>
+    <dimen name="seekbar_scrubber_live_height">6dp</dimen>
+    <dimen name="seekbar_bars_height">2dp</dimen>
+    <dimen name="seekbar_scrubber_elevation">2dp</dimen>
+    <dimen name="seekbar_time_horiz_padding">4dp</dimen>
+    <dimen name="seekbar_time_vert_padding">2dp</dimen>
+    <dimen name="seekbar_time_bottom_margin">-20dp</dimen>
+
 </resources>

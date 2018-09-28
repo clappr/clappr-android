@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/seekbar_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/seekbar_height"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:layout_gravity="bottom">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/seekbar_height"
+        android:layout_marginBottom="@dimen/seekbar_bottom_margin"
+        android:layout_gravity="bottom">
+
+        <View
+            android:id="@+id/background_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/seekbar_bars_height"
+            android:layout_centerVertical="true"
+            android:background="@color/seekbar_background" />
+
+        <View
+            android:id="@+id/buffered_bar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/seekbar_bars_height"
+            android:layout_centerVertical="true"
+            android:background="@color/seekbar_buffered_background" />
+
+        <View
+            android:id="@+id/position_bar"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/seekbar_bars_height"
+            android:layout_centerVertical="true"
+            android:background="@android:color/holo_blue_dark" />
+
+        <ImageView
+            android:id="@+id/scrubber"
+            android:layout_width="@dimen/seekbar_scrubber_height"
+            android:layout_height="@dimen/seekbar_scrubber_height"
+            android:layout_centerVertical="true"
+            android:elevation="@dimen/seekbar_scrubber_elevation"
+            android:background="@drawable/scrubber_circle" />
+
+    </RelativeLayout>
+
+</LinearLayout>
