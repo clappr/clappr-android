@@ -117,8 +117,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     private fun setupMediaControlEvents() {
-        containerListenerIds.forEach(::stopListening)
-        containerListenerIds.clear()
+        stopContainerListeners()
 
         core.activeContainer?.let {
             containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.ENABLED }))
@@ -127,8 +126,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     private fun setupPlaybackEvents() {
-        playbackListenerIds.forEach(::stopListening)
-        playbackListenerIds.clear()
+        stopPlaybackListeners()
 
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap {
@@ -260,14 +258,20 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     override fun destroy() {
         controlPlugins.clear()
-        stopListeners()
+        stopContainerListeners()
+        stopPlaybackListeners()
         view.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
         super.destroy()
     }
 
-    private fun stopListeners() {
+    private fun stopContainerListeners() {
         containerListenerIds.forEach(::stopListening)
+        containerListenerIds.clear()
+    }
+
+    private fun stopPlaybackListeners() {
         playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 }
