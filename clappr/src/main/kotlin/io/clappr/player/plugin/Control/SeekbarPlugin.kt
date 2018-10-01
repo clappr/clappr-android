@@ -74,9 +74,9 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
             MotionEvent.ACTION_CANCEL -> {
                 isInteracting = false
                 stopDrag()
-
             }
         }
+
         return true
     }
 
@@ -129,7 +129,6 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         core.activePlayback?.let {
             val layoutParams = bufferedBar.layoutParams
             layoutParams.width = ((buffered / 100.0) * backgroundView.width).toInt()
-
             bufferedBar.layoutParams = layoutParams
         }
     }
@@ -163,7 +162,6 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
             core.activePlayback?.let {
                 val layoutParams = positionBar.layoutParams
                 layoutParams.width = recalculatePositionBarWidth(percentage)
-
                 positionBar.layoutParams = layoutParams
 
                 var scrubberPosition = (layoutParams.width - scrubberView.width / 2).toFloat()
