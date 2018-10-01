@@ -35,7 +35,7 @@
             android:layout_centerVertical="true"
             android:background="@android:color/holo_blue_dark" />
 
-        <ImageView
+        <View
             android:id="@+id/scrubber"
             android:layout_width="@dimen/seekbar_scrubber_height"
             android:layout_height="@dimen/seekbar_scrubber_height"
