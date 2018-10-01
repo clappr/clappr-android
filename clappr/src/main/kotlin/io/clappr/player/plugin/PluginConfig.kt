@@ -1,6 +1,6 @@
 package io.clappr.player.plugin
 
-import io.clappr.player.plugin.Control.SeekbarPlugin
+import io.clappr.player.plugin.control.SeekbarPlugin
 import io.clappr.player.plugin.control.MediaControl
 import io.clappr.player.plugin.control.TimeIndicatorPlugin
 import io.clappr.player.plugin.control.FullscreenButton
