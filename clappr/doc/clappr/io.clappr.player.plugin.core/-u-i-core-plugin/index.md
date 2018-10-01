@@ -47,5 +47,5 @@
 
 | Name | Summary |
 |---|---|
-| [MediaControl](../../io.clappr.player.plugin.-control/-media-control/index.md) | `open class MediaControl : `[`UICorePlugin`](./index.md) |
-| [Plugin](../../io.clappr.player.plugin.-control/-media-control/-plugin/index.md) | `abstract class Plugin : `[`UICorePlugin`](./index.md) |
+| [MediaControl](../../io.clappr.player.plugin.control/-media-control/index.md) | `open class MediaControl : `[`UICorePlugin`](./index.md) |
+| [Plugin](../../io.clappr.player.plugin.control/-media-control/-plugin/index.md) | `abstract class Plugin : `[`UICorePlugin`](./index.md) |
