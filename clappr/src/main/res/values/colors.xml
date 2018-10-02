@@ -3,4 +3,11 @@
     <color name="player_background">#000</color>
     <color name="media_control_background">#9b000000</color>
     <color name="video_info_text_color">#fff</color>
+
+    <!-- Seekbar -->
+    <color name="seekbar_background">#33ffffff</color>
+    <color name="seekbar_buffered_background">#4cffffff</color>
+    <color name="seekbar_position_background">#ffffff</color>
+    <color name="seekbar_timestamp_background">#80000000</color>
+
 </resources>
