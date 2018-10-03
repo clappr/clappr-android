@@ -2,9 +2,7 @@ package io.clappr.player.plugin.control
 
 import android.view.View
 import io.clappr.player.BuildConfig
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Event
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
@@ -44,8 +42,10 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayButtonBeHiddenWhenStalled() {
+    fun shouldPlayButtonBeHiddenWhenStalledOnRender() {
+        showPlayButton()
         setupFakePlayback(state = Playback.State.STALLED)
+
         playButton.render()
 
         assertEquals(View.GONE, playButton.view.visibility)
@@ -53,36 +53,22 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayButtonBeVisibleWhilePlayingAndCanPause() {
-        setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
-        playButton.render()
+    fun shouldPlayButtonBeHiddenWhileStallingWhenEventStalledIsTriggered() {
+        showPlayButton()
+        setupFakePlayback(state = Playback.State.STALLED)
 
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
-    }
-
-    @Test
-    fun shouldPlayButtonBeHideWhilePlayingAndCantPause() {
-        setupFakePlayback(state = Playback.State.PLAYING, canPause = false)
-        playButton.render()
+        core.activePlayback?.trigger(Event.STALLED.value)
 
         assertEquals(View.GONE, playButton.view.visibility)
         assertEquals(UIPlugin.Visibility.HIDDEN, playButton.visibility)
     }
 
     @Test
-    fun shouldPlayButtonBeVisibleWhileNotPlayingOrStalled() {
-        setupFakePlayback(state = Playback.State.PAUSED)
-        playButton.render()
-
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
-    }
-
-    @Test
-    fun shouldPlayButtonBeVisibleWhenClickAndStateIsPlaying() {
+    fun shouldPauseIconBeVisibleWhilePlayingAndCanPauseOnRender() {
+        hidePlayButton()
         setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
-        playButton.onClick()
+
+        playButton.render()
 
         assertEquals(View.VISIBLE, playButton.view.visibility)
         assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
@@ -90,45 +76,164 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayButtonBeVisibleWhenClickAndStateIsPaused() {
+    fun shouldPauseIconBeVisibleWhilePlayingAndCanPauseWhenEventPlayingIsTriggered() {
+        hidePlayButton()
+        setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
+
+        core.activePlayback?.trigger(Event.PLAYING.value)
+
+        assertEquals(View.VISIBLE, playButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
+        assertTrue(playButton.view.isSelected)
+    }
+
+    @Test
+    fun shouldHidePlayButtonWhilePlayingAndCanNotPauseOnRender() {
+        showPlayButton()
+        setupFakePlayback(state = Playback.State.PLAYING, canPause = false)
+
+        playButton.render()
+
+        assertEquals(View.GONE, playButton.view.visibility)
+        assertEquals(UIPlugin.Visibility.HIDDEN, playButton.visibility)
+    }
+
+    @Test
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledOnRender() {
+        hidePlayButton()
+        playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)
-        playButton.onClick()
+
+        playButton.render()
 
         assertEquals(View.VISIBLE, playButton.view.visibility)
         assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
         assertFalse(playButton.view.isSelected)
     }
 
+    @Test
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidPauseIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_PAUSE.value)
+    }
 
     @Test
-    fun shouldShowPlayWhenComplete() {
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidStopIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_STOP.value)
+    }
+
+    @Test
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidCompleteIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_COMPLETE.value)
+    }
+
+    @Test
+    fun shouldTriggerDidTouchMediaControlWhenPlayButtonIsClicked() {
+        var eventTriggered = false
+        core.on(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value, Callback.wrap { eventTriggered = true })
+
+        playButton.onClick()
+
+        assertTrue(eventTriggered)
+    }
+
+    @Test
+    fun shouldCallPlaybackPauseWhenPlayButtonIsClickedAndStateIsPlayingAndCanPause() {
+        setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
+
+        playButton.onClick()
+
+        val playbackWasPaused = (container.playback as FakePlayback).pauseWasCalled
+        assertTrue(playbackWasPaused)
+    }
+
+    @Test
+    fun shouldCallPlaybackStopWhenPlayButtonIsClickedAndStateIsPlayingAndCanNotPause() {
+        setupFakePlayback(state = Playback.State.PLAYING, canPause = false)
+
+        playButton.onClick()
+
+        val playbackWasStopped = (container.playback as FakePlayback).stopWasCalled
+        assertTrue(playbackWasStopped)
+    }
+
+    @Test
+    fun shouldCallPlaybackPlayWhenPlayButtonIsClickedAndStateIsNotPlayingAndCanPlay() {
+        setupFakePlayback(state = Playback.State.PAUSED, canPlay = true)
+
+        playButton.onClick()
+
+        val playbackWasPlayed = (container.playback as FakePlayback).playWasCalled
+        assertTrue(playbackWasPlayed)
+    }
+
+    private fun assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(event: String) {
+        hidePlayButton()
+        playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)
 
-        core.activePlayback?.trigger(Event.DID_COMPLETE.value)
+        core.activePlayback?.trigger(event)
 
         assertEquals(View.VISIBLE, playButton.view.visibility)
         assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
         assertFalse(playButton.view.isSelected)
+    }
+
+    private fun showPlayButton() {
+        playButton.view.visibility = View.VISIBLE
+        playButton.visibility = UIPlugin.Visibility.VISIBLE
+    }
+
+    private fun hidePlayButton() {
+        playButton.view.visibility = View.GONE
+        playButton.visibility = UIPlugin.Visibility.HIDDEN
     }
 
     private fun setupFakePlayback(state: Playback.State = Playback.State.PLAYING,
-                                  canPause: Boolean = false) {
-        container.playback = FakePlayback(playbackState = state, playbackCanPause = canPause)
+                                  canPause: Boolean = false,
+                                  canPlay: Boolean = false) {
+        (container.playback as FakePlayback).apply {
+            playbackState = state
+            playbackCanPause = canPause
+            playbackCanPlay = canPlay
+        }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options(),
-                       private val playbackState: Playback.State = State.PLAYING,
-                       private val playbackCanPause: Boolean = false) : Playback(source, mimeType, options) {
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
         companion object : PlaybackSupportInterface {
             override val name: String = "fakePlayback"
             override fun supportsSource(source: String, mimeType: String?) = true
         }
+
+        var playbackState = State.PLAYING
+        var playbackCanPause = false
+        var playbackCanPlay = false
+
+        var pauseWasCalled = false
+        var stopWasCalled = false
+        var playWasCalled = false
 
         override val state: State
             get() = playbackState
 
         override val canPause: Boolean
             get() = playbackCanPause
-    }
 
+        override val canPlay: Boolean
+            get() = playbackCanPlay
+
+        override fun pause(): Boolean {
+            pauseWasCalled = true
+            return super.pause()
+        }
+
+        override fun stop(): Boolean {
+            stopWasCalled = true
+            return super.stop()
+        }
+
+        override fun play(): Boolean {
+            playWasCalled = true
+            return super.play()
+        }
+    }
 }
