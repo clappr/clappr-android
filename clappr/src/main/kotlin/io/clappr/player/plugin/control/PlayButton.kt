@@ -21,7 +21,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         get() = R.drawable.play_button
 
     override val idResourceDrawable: Int
-        get() = R.id.play_pause_button_clappr
+        get() = R.id.play_pause_button
 
     override val resourceLayout: Int
         get() = R.layout.button_plugin
@@ -35,10 +35,10 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         bindCoreEvents()
         updateState()
         core.activeContainer?.let {
-            listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
+            listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { _ -> bindEventListeners() })
         }
         core.activePlayback?.let {
-            val updateStateCallback = Callback.wrap { updateState() }
+            val updateStateCallback = Callback.wrap { _ -> updateState() }
             listenTo(it, Event.DID_PAUSE.value, updateStateCallback)
             listenTo(it, Event.DID_STOP.value, updateStateCallback)
             listenTo(it, Event.DID_COMPLETE.value, updateStateCallback)
@@ -72,7 +72,6 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
     }
 
     open fun showStopIcon() {
-        // There's no stop icon for current Andy interface
         hide()
     }
 
