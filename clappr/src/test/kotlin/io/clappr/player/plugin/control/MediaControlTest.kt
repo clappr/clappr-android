@@ -13,6 +13,7 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.UIPlugin
+import org.junit.Assert
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
 import org.junit.After
@@ -301,6 +302,33 @@ class MediaControlTest {
         core.trigger(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value)
 
         assertEquals(expectedTime, mediaControl.lastInteractionTime)
+    }
+
+    @Test
+    fun shouldRegisterListenersOnRender() {
+        assertTrue(mediaControl.playbackListenerIds.size > 0, "Media control should have playback listeners ids")
+        assertTrue(mediaControl.containerListenerIds.size > 0, "Media control should have container listeners ids")
+    }
+
+    @Test
+    fun shouldClearListenersOnDestroy() {
+        mediaControl.destroy()
+        assertTrue(mediaControl.playbackListenerIds.size == 0, "Media control should not have playback listeners ids")
+        assertTrue(mediaControl.containerListenerIds.size == 0, "Media control should not have container listeners ids")
+    }
+
+    @Test
+    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
+        mediaControl.playbackListenerIds.clear()
+        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
+        assertTrue(mediaControl.playbackListenerIds.size > 0)
+    }
+
+    @Test
+    fun shouldSetupContainerListenersWhenDidChangePlaybackEventIsCalled() {
+        mediaControl.containerListenerIds.clear()
+        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
+        assertTrue(mediaControl.containerListenerIds.size > 0)
     }
 
     @Test

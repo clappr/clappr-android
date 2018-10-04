@@ -96,8 +96,8 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
                     core.activePlayback?.state == Playback.State.NONE
         }
 
-    private val containerListenerIds = mutableListOf<String>()
-    private val playbackListenerIds = mutableListOf<String>()
+    open val containerListenerIds = mutableListOf<String>()
+    open val playbackListenerIds = mutableListOf<String>()
 
     init {
         setupPanelsVisibility()
