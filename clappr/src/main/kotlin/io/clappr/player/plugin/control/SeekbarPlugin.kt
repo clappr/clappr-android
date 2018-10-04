@@ -33,15 +33,18 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     open var dragging = false
 
+    open val containerListenerIds = mutableListOf<String>()
+    open val playbackListenerIds = mutableListOf<String>()
+
     private val handler = Handler()
     private var isInteracting = false
     private val timeBetweenInteractionsEvents = 3500L
 
-    private val containerListenerIds = mutableListOf<String>()
-    private val playbackListenerIds = mutableListOf<String>()
 
     init {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindEventListeners() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
+        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
+        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
     }
 
     override fun render() {
@@ -51,15 +54,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
     }
 
     open fun bindEventListeners() {
-        stopListening()
         updateLiveStatus()
-        setupPlaybackListeners()
-        setupContainerListeners()
-        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
-        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
-    }
-
-    private fun setupPlaybackListeners() {
         stopPlaybackListeners()
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.DID_CHANGE_SOURCE.value, Callback.wrap { bindEventListeners() }))
@@ -67,18 +62,6 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
             playbackListenerIds.add(listenTo(it, Event.POSITION_UPDATE.value, Callback.wrap { updatePosition(it) }))
             playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
         }
-    }
-
-    private fun setupContainerListeners() {
-        stopContainerListeners()
-        core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindEventListeners() }))
-        }
-    }
-
-    private fun stopContainerListeners(){
-        containerListenerIds.forEach(::stopListening)
-        containerListenerIds.clear()
     }
 
     private fun stopPlaybackListeners(){
@@ -207,7 +190,6 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
     override fun destroy() {
         view.setOnTouchListener(null)
         handler.removeCallbacksAndMessages(null)
-        stopContainerListeners()
         stopPlaybackListeners()
         super.destroy()
     }
