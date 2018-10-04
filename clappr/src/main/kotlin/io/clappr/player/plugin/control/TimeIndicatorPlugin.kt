@@ -28,23 +28,27 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     override val view: View?
         get() = textView
 
+    open val playbackListenerIds = mutableListOf<String>()
+
     init {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindEventListeners() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { setupPlaybackListeners() })
         updateLiveStatus()
     }
 
-    open fun bindEventListeners() {
-        stopListening()
+    private fun setupPlaybackListeners() {
         updateLiveStatus()
-        core.activeContainer?.let {
-            listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
-        }
+        stopPlaybackListeners()
         core.activePlayback?.let {
             updateValue(null)
-            listenTo(it, Event.DID_CHANGE_SOURCE.value, Callback.wrap { bindEventListeners() })
-            listenTo(it, Event.POSITION_UPDATE.value, Callback.wrap { updateValue(it) })
-            listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() })
+            playbackListenerIds.add(listenTo(it, Event.DID_CHANGE_SOURCE.value, Callback.wrap { setupPlaybackListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.POSITION_UPDATE.value, Callback.wrap { updateValue(it) }))
+                    playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
         }
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 
     open fun updateLiveStatus() {
@@ -67,5 +71,10 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
         layoutParams.gravity = Gravity.CENTER_VERTICAL
         textView.layoutParams = layoutParams
         textView.text = "00:00 / 00:00"
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
     }
 }
