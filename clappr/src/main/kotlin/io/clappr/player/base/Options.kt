@@ -35,5 +35,9 @@ enum class ClapprOption(val value: String) {
     /**
      * The minimum size in seconds to a video be considered with DVR
      */
-    MIN_DVR_SIZE("minDvrSize")
+    MIN_DVR_SIZE("minDvrSize"),
+    /**
+     * The sequence in which the plugins will be displayed in the media control. Names are separated by commas and are case sensitive.
+     */
+    MEDIA_CONTROL_PLUGINS("mediaControlPlugins")
 }
