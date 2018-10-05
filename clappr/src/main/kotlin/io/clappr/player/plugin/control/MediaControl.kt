@@ -143,14 +143,16 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     open fun setupPlugins() {
         controlPlugins.clear()
 
-        var filteredList = core.plugins.filterIsInstance(MediaControl.Plugin::class.java)
-        core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
-            val order = it.toString().replace(" ","").split(",")
-
-            filteredList = filteredList.sortedWith(compareBy{ order.indexOf(it.name) })
+        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+            core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
+                controlPlugins.addAll(orderedPlugins(this, it.toString()))
+            } ?: controlPlugins.addAll(this)
         }
+    }
 
-        controlPlugins.addAll(filteredList)
+    private fun orderedPlugins(list: List<Plugin>, order: String): List<Plugin>{
+        val pluginsOrder = order.replace(" ", "").split(",")
+        return list.sortedWith(compareBy { pluginsOrder.indexOf(it.name) })
     }
 
     open fun layoutPlugins() {
