@@ -24,7 +24,7 @@ dependencies {
 
 Be sure Kotlin version is `1.2.51` or bigger, and Android Support version is `27.1.1` or bigger.
 
-The minimal API level supported is 16 (4.1).
+The minimal API level supported is `16` `(4.1)`.
 
 ### Initialization
 
