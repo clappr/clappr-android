@@ -1,16 +1,27 @@
 [![Build Status](https://travis-ci.org/clappr/clappr-android.svg?branch=master)](https://travis-ci.org/clappr/clappr-android)
 [![Coverage Status](https://coveralls.io/repos/clappr/clappr-android/badge.svg?branch=master)](https://coveralls.io/r/clappr/clappr-android?branch=master)
+[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)
+
+<div align=center>
+<img src="https://cloud.githubusercontent.com/assets/244265/6373134/a845eb50-bce7-11e4-80f2-592ba29972ab.png"><br><br>
+</div>
 
 # Clappr for Android
 
-## Documentation
+## Using de Player
 
-Package documentation in [doc](doc/clappr/index.md) folder
 
-## License
+## [API Documentation](doc/clappr/index.md)
 
-You can find it [here](LICENSE).
+## [FAQ & Troubleshooting](doc/TROUBLESHOOTING.md)
 
+## [Read this before open an issue](doc/BEFORE_OPEN_AN_ISSUE.md)
+
+## [Contributors](https://github.com/clappr/clappr-android/graphs/contributors)
+
+## [Contributing](doc/CONTRIBUTING.md)
+
+## [License](LICENSE.md).
 
 ## Sponsor
 
