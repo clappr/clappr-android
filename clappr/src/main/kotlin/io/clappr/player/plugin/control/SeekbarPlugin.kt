@@ -33,8 +33,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     open var dragging = false
 
-    open val containerListenerIds = mutableListOf<String>()
-    open val playbackListenerIds = mutableListOf<String>()
+    internal val playbackListenerIds = mutableListOf<String>()
 
     private val handler = Handler()
     private var isInteracting = false
