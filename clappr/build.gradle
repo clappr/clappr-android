@@ -120,7 +120,7 @@ artifacts {
     archives sourcesJar
 }
 
-task deleteDocsFolder(type: Delete) { delete 'doc/' }
+task deleteDocsFolder(type: Delete) { delete 'doc/clappr/' }
 
 dokka {
     dependsOn deleteDocsFolder
