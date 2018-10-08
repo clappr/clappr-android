@@ -59,7 +59,7 @@ player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
 
 #### Options
 
-[Options](doc/clappr/io.clappr.player.base/-options/index.md) class from Clappr presents the main options (source and mime-type) followed by a hashmap of optional parameters. An `Options` is the only parameter to `Player` `configure` method. Clappr *optional* parameters are described by [ClapprOption class](doc/clappr/io.clappr.player.base/-clappr-option/index.md).
+[Options](doc/clappr/io.clappr.player.base/-options/index.md) class presents the main options (source and mime-type) followed by a hashmap of optional parameters. An `Options` is the only parameter to `Player` `configure` method. Player *optional* parameters are described by [ClapprOption class](doc/clappr/io.clappr.player.base/-clappr-option/index.md).
 
 ``` java
 val optionMap = hashMapOf(ClapprOption.START_AT.value to 50)
@@ -88,7 +88,7 @@ player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
         })
 ```
 
-Generic error codes (`UNKNOWN_ERROR` and `PLAYBACK_ERROR`) are also provided in [ErrorCode](doc/clappr/io.clappr.player.base/-error-code/index.md):
+Generic error codes (`UNKNOWN_ERROR` and `PLAYBACK_ERROR`) are also provided in [ErrorCode class](doc/clappr/io.clappr.player.base/-error-code/index.md):
 
 The data returned by the errors are described on [ErrorInfoData](doc/clappr/io.clappr.player.base/-error-info-data/index.md).
 
