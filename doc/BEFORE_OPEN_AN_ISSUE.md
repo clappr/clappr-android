@@ -6,7 +6,7 @@ For the **issue title**: A **meaningful title** (like: Video doesn't work at And
 
 **Be sure to**:
 
-* Reproduce the bug with app on https://github.com/clappr/clappr-android/tree/dev/app
+* Reproduce the bug with [Clappr sample app](app/)
 * Search for similar open/closed issues on this matter before open a new one.
 
 For the **issue body**:
