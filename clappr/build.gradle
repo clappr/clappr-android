@@ -120,10 +120,13 @@ artifacts {
     archives sourcesJar
 }
 
+task deleteDocsFolder(type: Delete) { delete 'doc/' }
 
 dokka {
+    dependsOn deleteDocsFolder
+
     outputFormat = 'gfm'
-    outputDirectory = "$projectDir/doc"
+    outputDirectory = "doc"
     processConfigurations = []
 
     linkMapping {
