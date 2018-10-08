@@ -10,10 +10,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.core.UICorePlugin
@@ -145,7 +142,17 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     open fun setupPlugins() {
         controlPlugins.clear()
-        controlPlugins.addAll(core.plugins.filterIsInstance(MediaControl.Plugin::class.java))
+
+        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+            core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
+                controlPlugins.addAll(orderedPlugins(this, it.toString()))
+            } ?: controlPlugins.addAll(this)
+        }
+    }
+
+    private fun orderedPlugins(list: List<Plugin>, order: String): List<Plugin>{
+        val pluginsOrder = order.replace(" ", "").split(",")
+        return list.sortedWith(compareBy { pluginsOrder.indexOf(it.name) })
     }
 
     open fun layoutPlugins() {

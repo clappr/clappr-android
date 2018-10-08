@@ -28,6 +28,12 @@ class LoaderTest {
         }
     }
 
+    class SameNameTestPlugin : Plugin(BaseObject()) {
+        companion object: NamedType {
+            override val name = "testplugin"
+        }
+    }
+
     class NoNameTestPlugin : Plugin(BaseObject()) {
     }
 
@@ -110,6 +116,14 @@ class LoaderTest {
         val loaderExternal = Loader(externalPlugins)
         assertFalse("no external plugin replace", loader.availablePlugins["coreplugin"] == loaderExternal.availablePlugins["coreplugin"])
         assertTrue("invalid external plugin", TestCorePlugin::class == loaderExternal.availablePlugins["coreplugin"])
+    }
+
+    @Test
+    fun shouldOverwritePluginWithDuplicateNames() {
+        Loader.registerPlugin(TestPlugin::class)
+        Loader.registerPlugin(SameNameTestPlugin::class)
+        val loader = Loader()
+        assertTrue("should not have duplicate plugins", loader.availablePlugins.size == 1)
     }
 
     @Test
