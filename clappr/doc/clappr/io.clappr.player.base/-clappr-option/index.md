@@ -15,6 +15,7 @@
 | [SELECTED_MEDIA_OPTIONS](-s-e-l-e-c-t-e-d_-m-e-d-i-a_-o-p-t-i-o-n-s.md) | String List to selected MediaOptions |
 | [DRM_LICENSES](-d-r-m_-l-i-c-e-n-s-e-s.md) | Byte Array of drm licenses |
 | [MIN_DVR_SIZE](-m-i-n_-d-v-r_-s-i-z-e.md) | The minimum size in seconds to a video be considered with DVR |
+| [MEDIA_CONTROL_PLUGINS](-m-e-d-i-a_-c-o-n-t-r-o-l_-p-l-u-g-i-n-s.md) | The sequence in which the plugins will be displayed in the media control. Names are separated by commas and are case sensitive. |
 
 ### Properties
 

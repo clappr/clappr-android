@@ -21,6 +21,7 @@
 | Name | Summary |
 |---|---|
 | [panel](panel.md) | `open var panel: `[`Panel`](../-media-control/-plugin/-panel/index.md) |
+| [playbackListenerIds](playback-listener-ids.md) | `open val playbackListenerIds: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`>` |
 | [position](position.md) | `open var position: `[`Position`](../-media-control/-plugin/-position/index.md) |
 | [textView](text-view.md) | `open val textView: `[`TextView`](https://developer.android.com/reference/android/widget/TextView.html) |
 | [view](view.md) | `open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
@@ -36,7 +37,7 @@
 
 | Name | Summary |
 |---|---|
-| [bindEventListeners](bind-event-listeners.md) | `open fun bindEventListeners(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [updateLiveStatus](update-live-status.md) | `open fun updateLiveStatus(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [updateValue](update-value.md) | `open fun updateValue(bundle: `[`Bundle`](https://developer.android.com/reference/android/os/Bundle.html)`?): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |

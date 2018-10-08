@@ -35,12 +35,14 @@
 | [io.clappr.player.playback.NoOpPlayback](../io.clappr.player.playback/-no-op-playback/index.md) |  |
 | [io.clappr.player.base.Options](../io.clappr.player.base/-options/index.md) |  |
 | [io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler](../io.clappr.player.periodic-timer/-periodic-time-elapsed-handler/index.md) |  |
+| [io.clappr.player.plugin.control.PlayButton](../io.clappr.player.plugin.control/-play-button/index.md) |  |
 | [io.clappr.player.components.Playback](../io.clappr.player.components/-playback/index.md) |  |
 | [io.clappr.player.components.PlaybackSupportInterface](../io.clappr.player.components/-playback-support-interface/index.md) |  |
 | [io.clappr.player.Player](../io.clappr.player/-player/index.md) | Main Player class. |
 | [io.clappr.player.plugin.Plugin](../io.clappr.player.plugin/-plugin/index.md) |  |
 | [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
+| [io.clappr.player.plugin.control.SeekbarPlugin](../io.clappr.player.plugin.control/-seekbar-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.TimeIndicatorPlugin](../io.clappr.player.plugin.control/-time-indicator-plugin/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |

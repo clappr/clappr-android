@@ -37,4 +37,5 @@
 | Name | Summary |
 |---|---|
 | [ButtonPlugin](../../-button-plugin/index.md) | `abstract class ButtonPlugin : `[`Plugin`](./index.md) |
+| [SeekbarPlugin](../../-seekbar-plugin/index.md) | `open class SeekbarPlugin : `[`Plugin`](./index.md) |
 | [TimeIndicatorPlugin](../../-time-indicator-plugin/index.md) | `open class TimeIndicatorPlugin : `[`Plugin`](./index.md) |

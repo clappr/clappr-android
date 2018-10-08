@@ -41,3 +41,4 @@
 | Name | Summary |
 |---|---|
 | [FullscreenButton](../-fullscreen-button/index.md) | `open class FullscreenButton : `[`ButtonPlugin`](./index.md) |
+| [PlayButton](../-play-button/index.md) | `open class PlayButton : `[`ButtonPlugin`](./index.md) |
