@@ -61,8 +61,6 @@ player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
 
 [Options](doc/clappr/io.clappr.player.base/-options/index.md) class from Clappr presents the main options (source and mime-type) followed by a hashmap of optional parameters. An `Options` is the only parameter to `Player` `configure` method. Clappr *optional* parameters are described by [ClapprOption class](doc/clappr/io.clappr.player.base/-clappr-option/index.md).
 
-Details of [ClapprOption.SELECTED_MEDIA_OPTIONS](doc/clappr/io.clappr.player.base/-clappr-option/-s-e-l-e-c-t-e-d_-m-e-d-i-a_-o-p-t-i-o-n-s.md) are included on section [Media Options](#media-options).
-
 ``` java
 val optionMap = hashMapOf(ClapprOption.START_AT.value to 50)
 
@@ -91,16 +89,6 @@ player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
 ```
 
 Generic error codes (`UNKNOWN_ERROR` and `PLAYBACK_ERROR`) are also provided in [ErrorCode](doc/clappr/io.clappr.player.base/-error-code/index.md):
-
-| Code | Description |
-|---|---|
-| ErrorCode.AUTHENTICATION | User authentication required. <br/><br/>  `ErrorInfo` extras `Bundle` may include the following information: <br/> *ErrorInfoData.SERVICE_ID* - (Integer) media service id <br/> *ErrorInfoData.AUTHORIZED_RESPONSE* - (String) authorization error JSON response |
-| ErrorCode.DEVICE_UNAUTHORIZED | Device authorization required |
-| ErrorCode.GEOBLOCK | Media is blocked for this region |
-| ErrorCode.SIMULTANEOUS_ACCESS | Number of simultaneous media access exceeded |
-| ErrorCode.VIDEO_NOT_FOUND | Media not found |
-| ErrorCode.LOCATION_UNAVAILABLE | Media requires location information |
-| ErrorCode.GEOFENCING | Media is not available for this location |
 
 The data returned by the errors are described on [ErrorInfoData](doc/clappr/io.clappr.player.base/-error-info-data/index.md).
 
