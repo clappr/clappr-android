@@ -37,11 +37,12 @@ class SeekbarPluginTest {
 
         container = Container(Loader(), Options())
         core = Core(Loader(), Options())
-        container.playback = FakePlayback()
 
         seekbarPlugin = SeekbarPlugin(core)
 
         core.activeContainer = container
+
+        container.playback = FakePlayback()
     }
 
     @Test
@@ -295,6 +296,24 @@ class SeekbarPluginTest {
 
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
+    }
+
+    @Test
+    fun shouldHaveListenersWhenInit() {
+        assertTrue(seekbarPlugin.playbackListenerIds.size > 0, "Seekbar should have playback listeners initialized")
+    }
+
+    @Test
+    fun shouldRemoveAllListenersOnDestroy() {
+        seekbarPlugin.destroy()
+        assertTrue(seekbarPlugin.playbackListenerIds.size == 0, "Seekbar should have playback listeners initialized")
+    }
+
+    @Test
+    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
+        seekbarPlugin.playbackListenerIds.clear()
+        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
+        assertTrue(seekbarPlugin.playbackListenerIds.size > 0)
     }
 
     private fun assertViewVisibilityWhenTouchEventHappens(expectedViewVisibility: Int,
