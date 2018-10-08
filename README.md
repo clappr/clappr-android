@@ -21,7 +21,7 @@
 
 ## [Contributing](doc/CONTRIBUTING.md)
 
-## [License](LICENSE.md).
+## [License](LICENSE)
 
 ## Sponsor
 
