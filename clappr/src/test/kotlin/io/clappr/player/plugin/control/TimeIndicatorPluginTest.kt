@@ -23,6 +23,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
@@ -42,6 +43,8 @@ class TimeIndicatorPluginTest {
         timeIndicatorPlugin = TimeIndicatorPlugin(core)
 
         core.activeContainer = container
+
+        container.playback = FakePlayback()
     }
 
     @Test
@@ -161,7 +164,7 @@ class TimeIndicatorPluginTest {
             currentPlaybackState = Playback.State.PLAYING
         }
 
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
+        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
 
         assertEquals(View.GONE, timeIndicatorPlugin.view?.visibility)
     }
@@ -211,6 +214,24 @@ class TimeIndicatorPluginTest {
         timeIndicatorPlugin.render()
 
         assertEquals(expectedTimeIndicatorText, timeIndicatorPlugin.textView.text)
+    }
+
+    @Test
+    fun shouldHaveListenersWhenInit() {
+        assertTrue(timeIndicatorPlugin.playbackListenerIds.size > 0, "Seekbar should have playback listeners initialized")
+    }
+
+    @Test
+    fun shouldRemoveAllListenersOnDestroy() {
+        timeIndicatorPlugin.destroy()
+        assertTrue(timeIndicatorPlugin.playbackListenerIds.size == 0, "Seekbar should have playback listeners initialized")
+    }
+
+    @Test
+    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
+        timeIndicatorPlugin.playbackListenerIds.clear()
+        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
+        assertTrue(timeIndicatorPlugin.playbackListenerIds.size > 0)
     }
 
     private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,

@@ -10,10 +10,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.core.UICorePlugin
@@ -99,8 +96,8 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
                     core.activePlayback?.state == Playback.State.NONE
         }
 
-    private val containerListenerIds = mutableListOf<String>()
-    private val playbackListenerIds = mutableListOf<String>()
+    internal val containerListenerIds = mutableListOf<String>()
+    internal val playbackListenerIds = mutableListOf<String>()
 
     init {
         setupPanelsVisibility()
@@ -120,8 +117,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     private fun setupMediaControlEvents() {
-        containerListenerIds.forEach(::stopListening)
-        containerListenerIds.clear()
+        stopContainerListeners()
 
         core.activeContainer?.let {
             containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.ENABLED }))
@@ -130,8 +126,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     private fun setupPlaybackEvents() {
-        playbackListenerIds.forEach(::stopListening)
-        playbackListenerIds.clear()
+        stopPlaybackListeners()
 
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap {
@@ -145,7 +140,17 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     open fun setupPlugins() {
         controlPlugins.clear()
-        controlPlugins.addAll(core.plugins.filterIsInstance(MediaControl.Plugin::class.java))
+
+        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+            core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
+                controlPlugins.addAll(orderedPlugins(this, it.toString()))
+            } ?: controlPlugins.addAll(this)
+        }
+    }
+
+    private fun orderedPlugins(list: List<Plugin>, order: String): List<Plugin>{
+        val pluginsOrder = order.replace(" ", "").split(",")
+        return list.sortedWith(compareBy { pluginsOrder.indexOf(it.name) })
     }
 
     open fun layoutPlugins() {
@@ -253,8 +258,20 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     override fun destroy() {
         controlPlugins.clear()
+        stopContainerListeners()
+        stopPlaybackListeners()
         view.setOnClickListener(null)
         handler.removeCallbacksAndMessages(null)
         super.destroy()
+    }
+
+    private fun stopContainerListeners() {
+        containerListenerIds.forEach(::stopListening)
+        containerListenerIds.clear()
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 }
