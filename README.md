@@ -6,7 +6,7 @@
 <img src="https://cloud.githubusercontent.com/assets/244265/6373134/a845eb50-bce7-11e4-80f2-592ba29972ab.png"><br><br>
 </div>
 
-# Clappr for Android
+# Clappr for Android - Beta Version
 
 ## Using de Player
 
