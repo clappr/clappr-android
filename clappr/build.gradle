@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.6.0'
+version = '0.7.0'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -120,10 +120,13 @@ artifacts {
     archives sourcesJar
 }
 
+task deleteDocsFolder(type: Delete) { delete 'doc/clappr/' }
 
 dokka {
+    dependsOn deleteDocsFolder
+
     outputFormat = 'gfm'
-    outputDirectory = "$projectDir/doc"
+    outputDirectory = "doc"
     processConfigurations = []
 
     linkMapping {
