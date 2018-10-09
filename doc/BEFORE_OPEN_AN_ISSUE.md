@@ -16,7 +16,7 @@ For the **issue body**:
 
 **OS**: YOUR ANDROID VERSIONOS (ex: Android 7.1.1, Android 8)
 
-**Clappr Version**: 1.0.0
+**Clappr Version**: 0.7.0
 
 **Steps to reproduce**:
 
