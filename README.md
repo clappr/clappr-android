@@ -76,9 +76,31 @@ Before instantiating a `io.clappr.player.Player`, it needs to be initialized wit
 // Add to onCreate of the Application class
 Player.initialize(this)
 ```
+
+### Embed
+
+Player is a `Fragment` and must be embedded in a container view of the activity in order to start playing.
+
+First define a container frame to player on layout:
+```xml
+    <FrameLayout
+        android:id="@+id/player_container"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_portrait_height" />
+```
+
+Following, instanciate a Player and attach it to container:
+``` java
+val player = Player()
+
+val fragmentTransaction = fragmentManager.beginTransaction()
+fragmentTransaction.add(R.id.player_container, player)
+fragmentTransaction.commit()
+```
+
 ### Configuration
 
-After instantiating, Player needs to be configured before it can be used.
+After instantiating, Player needs to be configured before it can be used to play any video.
 
 :red_circle: **Attention: Remember to always call the `stop()` method before calling the `load()` again**
 
@@ -90,13 +112,10 @@ The `on` or `once` `Player` methods can be used for binding. The only difference
 
 The Player events are described by [Event class](doc/clappr/io.clappr.player.base/-event/index.md) and the data returned by [EventData class](doc/clappr/io.clappr.player.base/-event-data/index.md).
 
-For example, to listen Error events: 
+For example, to listen the event when the video starts playing, and the event when the video ends successfully: 
 ``` java
-player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
-            bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
-                Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
-            }
-        })
+player.on(Event.PLAYING.value, Callback.wrap { Logger.info("App","Playing") })
+player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("App", "Completed") })
 ```
 
 #### Options
@@ -107,16 +126,6 @@ player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
 val optionMap = hashMapOf(ClapprOption.START_AT.value to 50)
 
 player.configure(Options(source = "http://clappr.io/highline.mp4", options = optionMap))
-```
-
-### Embed
-
-Player is a `Fragment` and must be embedded in a container view of the activity in order to start playing:
-
-``` java
-val fragmentTransaction = fragmentManager.beginTransaction()
-fragmentTransaction.add(R.id.player_container, player)
-fragmentTransaction.commit()
 ```
 
 ### Error Handling
