@@ -68,6 +68,8 @@ dependencies {
 }
 ```
 
+For both local and remote reference, you can see how [Sample app](app/) works.
+
 ### Initialization
 
 Before instantiating a `io.clappr.player.Player`, it needs to be initialized with the Application context:
