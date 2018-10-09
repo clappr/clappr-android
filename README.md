@@ -8,23 +8,65 @@
 
 # Clappr for Android - Beta Version
 
-## Using de Player
+:exclamation: **Clappr 0.7.0 Beta is finally available! If you know the Alpha version, now we have a media control that allows interaction with the player. Come and play..** :exclamation:
+
+## Using the Player
 
 ### Dependencies
-After cloning Clappr project, add Kotlin dependency to our project gradle. Add following lines to `dependencies` in `project/build.gradle`:
+
+Clappr is a Kotlin library. If your app is too, be sure Kotlin version is `1.2.51` or bigger, and Android Support version is `27.1.1` or bigger.
+
+The minimal API level supported is `16` `(4.1)`.
+
+It is possible to incorporate clappr into your project in two ways:
+
+#### Local Reference
+
+After cloning Clappr project, add following lines to `dependencies` in `project/build.gradle`:
 ```
 dependencies {
     ...
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':clappr')
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
     ...
 }
 ```
 
-Be sure Kotlin version is `1.2.51` or bigger, and Android Support version is `27.1.1` or bigger.
+#### Remote Reference
 
-The minimal API level supported is `16` `(4.1)`.
+It is possible to reference any release from Clappr on JCenter. 
+Add following lines to `repositories` sections in `build.gradle`:
+```
+buildscript {
+    repositories {
+        jcenter()
+        ...
+    }
+    ...
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        ...
+    }
+}
+```
+
+Following, add following lines to `dependencies` section in `project/build.gradle`:
+```
+dependencies {
+    ...
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.2.51"
+    implementation "com.android.support:appcompat-v7:27.1.1"
+    implementation "com.android.support:support-v4:27.1.1"
+    implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
+
+    implementation "io.clappr.player:clappr:0.7.0"
+    ...
+}
+```
 
 ### Initialization
 
