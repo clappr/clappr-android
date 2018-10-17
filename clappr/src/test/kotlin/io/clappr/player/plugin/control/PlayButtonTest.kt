@@ -34,11 +34,46 @@ class PlayButtonTest {
 
         container = Container(Loader(), Options())
         core = Core(Loader(), Options())
-        container.playback = FakePlayback()
 
         playButton = PlayButton(core)
 
         core.activeContainer = container
+        container.playback = FakePlayback()
+    }
+
+    @Test
+    fun shouldNotHavePlaybackListenersWhenInit() {
+        playButton = PlayButton(core)
+
+        assertTrue(playButton.playbackListenerIds.size == 0,
+                "Playback listeners should not be registered")
+    }
+
+    @Test
+    fun shouldBindPlaybackListenersWhenDidChangeActivePlaybackEventIsTriggered() {
+        playButton.playbackListenerIds.clear()
+
+        container.playback = FakePlayback()
+
+        assertTrue(playButton.playbackListenerIds.size > 0,
+                "Playback listeners should be registered")
+    }
+
+    @Test
+    fun shouldRemoveAllPlaybackListenersBeforeBindNewOnesWhenDidChangeActivePlaybackEventIsTriggered() {
+        val expectedAmountOfListener = 5
+
+        container.playback = FakePlayback()
+
+        assertEquals(expectedAmountOfListener, playButton.playbackListenerIds.size)
+    }
+
+    @Test
+    fun shouldRemoveAllPlaybackListenersWhenPluginIsDestroyed() {
+        playButton.destroy()
+
+        assertTrue(playButton.playbackListenerIds.size == 0,
+                "Playback listeners should not be registered")
     }
 
     @Test
