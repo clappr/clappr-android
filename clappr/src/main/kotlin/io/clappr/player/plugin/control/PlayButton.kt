@@ -26,29 +26,36 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
     override val resourceLayout: Int
         get() = R.layout.button_plugin
 
-    init {
-        bindEventListeners()
-    }
+    internal val playbackListenerIds = mutableListOf<String>()
 
-    open fun bindEventListeners() {
-        stopListening()
+    init {
         bindCoreEvents()
-        updateState()
-        core.activeContainer?.let {
-            listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { _ -> bindEventListeners() })
-        }
-        core.activePlayback?.let {
-            val updateStateCallback = Callback.wrap { _ -> updateState() }
-            listenTo(it, Event.DID_PAUSE.value, updateStateCallback)
-            listenTo(it, Event.DID_STOP.value, updateStateCallback)
-            listenTo(it, Event.DID_COMPLETE.value, updateStateCallback)
-            listenTo(it, Event.PLAYING.value, updateStateCallback)
-            listenTo(it, Event.STALLED.value, updateStateCallback)
-        }
     }
 
     open fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindEventListeners() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+            bindPlaybackEvents()
+            updateState()
+        })
+    }
+
+    open fun bindPlaybackEvents() {
+        stopPlaybackListeners()
+
+        core.activePlayback?.let {
+            val updateStateCallback = Callback.wrap { _ -> updateState() }
+
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, updateStateCallback))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateStateCallback))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, updateStateCallback))
+            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, updateStateCallback))
+            playbackListenerIds.add(listenTo(it, Event.STALLED.value, updateStateCallback))
+        }
+    }
+
+    fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 
     open fun updateState() {
@@ -90,5 +97,10 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
     override fun render() {
         super.render()
         updateState()
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
     }
 }
