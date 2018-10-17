@@ -53,7 +53,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         }
     }
 
-    fun stopPlaybackListeners() {
+    private fun stopPlaybackListeners() {
         playbackListenerIds.forEach(::stopListening)
         playbackListenerIds.clear()
     }
