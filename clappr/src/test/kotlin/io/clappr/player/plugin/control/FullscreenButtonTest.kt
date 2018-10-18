@@ -41,38 +41,34 @@ class FullscreenButtonTest {
     }
 
     @Test
-    fun shouldNotHavePlaybackListenersWhenInit() {
-        fullscreenButton = FullscreenButton(core)
+    fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
 
-        assertTrue(fullscreenButton.playbackListenerIds.size == 0,
-                "Playback listeners should not be registered")
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+
+        val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
+        container.playback = newPlayback
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
     }
 
     @Test
-    fun shouldBindPlaybackListenersWhenDidChangeActivePlaybackEventIsTriggered() {
-        fullscreenButton.playbackListenerIds.clear()
+    fun shouldStopListeningOldPlaybackWhenDidChangeContainerEventIsTriggered() {
+        val oldContainer = container
 
-        container.playback = FakePlayback()
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
 
-        assertTrue(fullscreenButton.playbackListenerIds.size > 0,
-                "Playback listeners should be registered")
-    }
+        val newContainer = Container(Loader(), Options())
+        val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
 
-    @Test
-    fun shouldRemoveAllPlaybackListenersBeforeBindNewOnesWhenDidChangeActivePlaybackEventIsTriggered() {
-        val expectedAmountOfListener = 2
+        newContainer.playback = newPlayback
+        core.activeContainer = newContainer
 
-        container.playback = FakePlayback()
+        oldContainer.playback?.trigger(Event.DID_COMPLETE.value)
 
-        assertEquals(expectedAmountOfListener, fullscreenButton.playbackListenerIds.size)
-    }
-
-    @Test
-    fun shouldRemoveAllPlaybackListenersWhenPluginIsDestroyed() {
-        fullscreenButton.destroy()
-
-        assertTrue(fullscreenButton.playbackListenerIds.size == 0,
-                "Playback listeners should not be registered")
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
     }
 
     @Test
