@@ -41,6 +41,41 @@ class FullscreenButtonTest {
     }
 
     @Test
+    fun shouldNotHavePlaybackListenersWhenInit() {
+        fullscreenButton = FullscreenButton(core)
+
+        assertTrue(fullscreenButton.playbackListenerIds.size == 0,
+                "Playback listeners should not be registered")
+    }
+
+    @Test
+    fun shouldBindPlaybackListenersWhenDidChangeActivePlaybackEventIsTriggered() {
+        fullscreenButton.playbackListenerIds.clear()
+
+        container.playback = FakePlayback()
+
+        assertTrue(fullscreenButton.playbackListenerIds.size > 0,
+                "Playback listeners should be registered")
+    }
+
+    @Test
+    fun shouldRemoveAllPlaybackListenersBeforeBindNewOnesWhenDidChangeActivePlaybackEventIsTriggered() {
+        val expectedAmountOfListener = 2
+
+        container.playback = FakePlayback()
+
+        assertEquals(expectedAmountOfListener, fullscreenButton.playbackListenerIds.size)
+    }
+
+    @Test
+    fun shouldRemoveAllPlaybackListenersWhenPluginIsDestroyed() {
+        fullscreenButton.destroy()
+
+        assertTrue(fullscreenButton.playbackListenerIds.size == 0,
+                "Playback listeners should not be registered")
+    }
+
+    @Test
     fun shouldFullscreenButtonBeVisibleAndNotSelectedWhenEnterFullScreen() {
         triggerDidEnterFullscreen()
 
