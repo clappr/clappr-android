@@ -26,23 +26,33 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
     override val resourceLayout: Int
         get() = R.layout.bottom_panel_button_plugin
 
+    internal val playbackListenerIds = mutableListOf<String>()
+
     init {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindEventListeners() })
+        bindCoreEvents()
     }
 
-    open fun bindEventListeners() {
-        stopListening()
-        updateState()
-        val updateCallback = Callback.wrap { updateState() }
-        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, updateCallback)
-        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, updateCallback)
-        core.activeContainer?.let {
-            listenTo(it, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
-        }
+    open fun bindCoreEvents() {
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ ->
+            bindPlaybackEvents()
+            updateState()
+        })
+        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updateState() })
+        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, Callback.wrap { updateState() })
+    }
+
+    open fun bindPlaybackEvents() {
+        stopPlaybackListeners()
+
         core.activePlayback?.let {
-            listenTo(it, Event.PLAYING.value, updateCallback)
-            listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() })
+            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, Callback.wrap { _ -> updateState() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
         }
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 
     private fun updateState() {
@@ -87,5 +97,10 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
         val verticalPadding = context?.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
                 ?: 0
         view.setPadding(leftPadding, verticalPadding, 0, verticalPadding)
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
     }
 }
