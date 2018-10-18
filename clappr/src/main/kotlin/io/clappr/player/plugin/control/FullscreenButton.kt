@@ -26,7 +26,7 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
     override val resourceLayout: Int
         get() = R.layout.bottom_panel_button_plugin
 
-    internal val playbackListenerIds = mutableListOf<String>()
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         bindCoreEvents()
