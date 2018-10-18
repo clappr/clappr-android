@@ -33,12 +33,16 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
     }
 
     open fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ ->
+        val bindEventsCallback = Callback.wrap {
             bindPlaybackEvents()
             updateState()
-        })
-        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updateState() })
-        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, Callback.wrap { updateState() })
+        }
+        val updateStateCallback = Callback.wrap { updateState() }
+
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bindEventsCallback)
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, bindEventsCallback)
+        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, updateStateCallback)
+        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, updateStateCallback)
     }
 
     open fun bindPlaybackEvents() {
