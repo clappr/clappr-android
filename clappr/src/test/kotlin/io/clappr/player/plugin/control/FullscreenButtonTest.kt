@@ -41,6 +41,37 @@ class FullscreenButtonTest {
     }
 
     @Test
+    fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
+
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+
+        val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
+        container.playback = newPlayback
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackWhenDidChangeContainerEventIsTriggered() {
+        val oldContainer = container
+
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+
+        val newContainer = Container(Loader(), Options())
+        val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
+
+        newContainer.playback = newPlayback
+        core.activeContainer = newContainer
+
+        oldContainer.playback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+    }
+
+    @Test
     fun shouldFullscreenButtonBeVisibleAndNotSelectedWhenEnterFullScreen() {
         triggerDidEnterFullscreen()
 
