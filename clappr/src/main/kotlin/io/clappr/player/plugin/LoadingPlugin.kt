@@ -22,36 +22,38 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     }
 
     override var state: State = State.ENABLED
-        set(value) {
-            if (value == State.ENABLED)
-                bindEventListeners()
-            else
-                stopListening()
-            field = value
-        }
 
     override val view: View?
         get() = spinnerLayout
+
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         setupSpinnerLayout()
         bindEventListeners()
     }
 
-    fun bindEventListeners() {
+    private fun bindEventListeners() {
         listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
     }
 
     private fun bindLoadingVisibilityCallBacks() {
+        stopPlaybackListeners()
+
         container.playback?.let {
-            listenTo(it, Event.STALLED.value, startAnimating())
-            listenTo(it, Event.WILL_PLAY.value, startAnimating())
-            listenTo(it, Event.PLAYING.value, stopAnimating())
-            listenTo(it, Event.DID_STOP.value, stopAnimating())
-            listenTo(it, Event.DID_PAUSE.value, stopAnimating())
-            listenTo(it, Event.DID_COMPLETE.value, stopAnimating())
-            listenTo(it, Event.ERROR.value, stopAnimating())
+            playbackListenerIds.add(listenTo(it, Event.STALLED.value, startAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, startAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, stopAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, stopAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, stopAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, stopAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.ERROR.value, stopAnimating()))
         }
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 
     private fun startAnimating(): Callback {
@@ -77,5 +79,10 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
             spinnerLayout?.visibility = View.INVISIBLE
             visibility = Visibility.HIDDEN
         }
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
     }
 }
