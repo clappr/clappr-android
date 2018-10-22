@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import io.clappr.player.Player
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
@@ -14,10 +15,22 @@ class  PlayerActivity : Activity() {
 
     private lateinit var player: Player
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
+    private val changeVideo by lazy { findViewById<Button>(R.id.change_video) }
+
+    private var selectedVideo = 0
+    private val videoList = listOf(
+            "http://clappr.io/highline.mp4",
+            "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8",
+            "https://storage.googleapis.com/coverr-main/mp4/Pool-games.mp4",
+            "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
+
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        changeVideo.setOnClickListener { changeVideo() }
 
         player = Player()
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
@@ -31,22 +44,30 @@ class  PlayerActivity : Activity() {
             bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
                 Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
             }
-
         })
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.player_container, player)
         fragmentTransaction.commit()
 
-        player.configure(Options(source = "http://clappr.io/highline.mp4"))
+        loadVideo()
+    }
+
+    private fun loadVideo() {
+        player.configure(Options(source = videoList[selectedVideo]))
         player.play()
     }
 
-    fun enterFullscreen() {
+    private fun changeVideo() {
+        selectedVideo = (selectedVideo + 1) % videoList.size
+        loadVideo()
+    }
+
+    private fun enterFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
     }
 
-    fun exitFullscreen() {
+    private fun exitFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
     }
 
@@ -55,7 +76,7 @@ class  PlayerActivity : Activity() {
         checkScreenOrientation(newConfig.orientation)
     }
 
-    fun checkScreenOrientation(orientation: Int) {
+    private fun checkScreenOrientation(orientation: Int) {
         when (orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 hideSystemUi()

@@ -4,5 +4,6 @@
     <string name="app_name">Clappr</string>
     <string name="title_activity_player">Clappr</string>
     <string name="action_settings">Settings</string>
+    <string name="change_video">Change Video</string>
 
 </resources>
