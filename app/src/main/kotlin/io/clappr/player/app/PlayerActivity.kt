@@ -17,7 +17,7 @@ class  PlayerActivity : Activity() {
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
     private val changeVideo by lazy { findViewById<Button>(R.id.change_video) }
 
-    private var selectedVideo = 0
+    private var currentVideo = 0
     private val videoList = listOf(
             "http://clappr.io/highline.mp4",
             "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8",
@@ -54,14 +54,16 @@ class  PlayerActivity : Activity() {
     }
 
     private fun loadVideo() {
-        player.configure(Options(source = videoList[selectedVideo]))
+        player.configure(Options(source = videoList[currentVideo]))
         player.play()
     }
 
     private fun changeVideo() {
-        selectedVideo = (selectedVideo + 1) % videoList.size
+        currentVideo = getNextVideoIndex()
         loadVideo()
     }
+
+    private fun getNextVideoIndex() = (currentVideo + 1) % videoList.size
 
     private fun enterFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
