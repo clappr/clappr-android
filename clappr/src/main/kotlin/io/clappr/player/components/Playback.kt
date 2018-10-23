@@ -105,8 +105,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         return false
     }
 
-    private var mediaOptionList = LinkedList<MediaOption>()
-    private var selectedMediaOptionList = ArrayList<MediaOption>()
+    protected var mediaOptionList = LinkedList<MediaOption>()
+    protected var selectedMediaOptionList = ArrayList<MediaOption>()
 
     private val mediaOptionsArrayJson = "media_option"
     private val mediaOptionsNameJson = "name"

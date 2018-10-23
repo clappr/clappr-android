@@ -10,4 +10,20 @@
         android:id="@+id/player_container"
         android:layout_width="match_parent"
         android:layout_height="@dimen/player_portrait_height" />
+
+    <EditText
+        android:id="@+id/video_url"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textWebEmailAddress"
+        android:textColor="@color/primary_text_default_material_light"
+        android:hint="@string/hint_video_url"
+        android:singleLine="true" />
+
+    <Button
+        android:id="@+id/change_video"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/change_video"/>
+
 </LinearLayout>

@@ -6,6 +6,9 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import io.clappr.player.Player
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
@@ -14,10 +17,15 @@ class  PlayerActivity : Activity() {
 
     private lateinit var player: Player
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
+    private val changeVideo by lazy { findViewById<Button>(R.id.change_video) }
+    private val videoUrl by lazy { findViewById<EditText>(R.id.video_url) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
+
+        videoUrl.setText("http://clappr.io/highline.mp4", TextView.BufferType.EDITABLE)
+        changeVideo.setOnClickListener { changeVideo() }
 
         player = Player()
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
@@ -31,22 +39,29 @@ class  PlayerActivity : Activity() {
             bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
                 Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
             }
-
         })
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.player_container, player)
         fragmentTransaction.commit()
 
-        player.configure(Options(source = "http://clappr.io/highline.mp4"))
+        loadVideo()
+    }
+
+    private fun loadVideo() {
+        player.configure(Options(source = videoUrl.text.toString()))
         player.play()
     }
 
-    fun enterFullscreen() {
+    private fun changeVideo() {
+        loadVideo()
+    }
+
+    private fun enterFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
     }
 
-    fun exitFullscreen() {
+    private fun exitFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
     }
 
@@ -55,7 +70,7 @@ class  PlayerActivity : Activity() {
         checkScreenOrientation(newConfig.orientation)
     }
 
-    fun checkScreenOrientation(orientation: Int) {
+    private fun checkScreenOrientation(orientation: Int) {
         when (orientation) {
             Configuration.ORIENTATION_LANDSCAPE -> {
                 hideSystemUi()

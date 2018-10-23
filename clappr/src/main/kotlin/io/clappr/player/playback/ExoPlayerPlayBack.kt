@@ -213,6 +213,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         lastDrvAvailableCheck = null
         exoplayerIsDvrInUse = null
 
+        needSetupMediaOptions = true
+        mediaOptionList.clear()
+        selectedMediaOptionList.clear()
+
         removeListeners()
 
         player?.release()
