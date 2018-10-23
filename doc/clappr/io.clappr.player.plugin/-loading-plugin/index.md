@@ -33,7 +33,7 @@
 
 | Name | Summary |
 |---|---|
-| [bindEventListeners](bind-event-listeners.md) | `fun bindEventListeners(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 
