@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import io.clappr.player.Player
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
@@ -16,20 +18,13 @@ class  PlayerActivity : Activity() {
     private lateinit var player: Player
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
     private val changeVideo by lazy { findViewById<Button>(R.id.change_video) }
-
-    private var currentVideo = 0
-    private val videoList = listOf(
-            "http://clappr.io/highline.mp4",
-            "https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8",
-            "https://storage.googleapis.com/coverr-main/mp4/Pool-games.mp4",
-            "https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8"
-
-    )
+    private val videoUrl by lazy { findViewById<EditText>(R.id.video_url) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
+        videoUrl.setText("http://clappr.io/highline.mp4", TextView.BufferType.EDITABLE)
         changeVideo.setOnClickListener { changeVideo() }
 
         player = Player()
@@ -54,16 +49,13 @@ class  PlayerActivity : Activity() {
     }
 
     private fun loadVideo() {
-        player.configure(Options(source = videoList[currentVideo]))
+        player.configure(Options(source = videoUrl.text.toString()))
         player.play()
     }
 
     private fun changeVideo() {
-        currentVideo = getNextVideoIndex()
         loadVideo()
     }
-
-    private fun getNextVideoIndex() = (currentVideo + 1) % videoList.size
 
     private fun enterFullscreen() {
         this.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
