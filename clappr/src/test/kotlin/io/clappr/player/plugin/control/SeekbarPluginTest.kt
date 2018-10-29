@@ -7,7 +7,6 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
-import io.clappr.player.plugin.Loader
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -17,6 +16,7 @@ import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertTrue
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.plugin.*
 import io.clappr.player.shadows.ClapprShadowView
 import org.robolectric.internal.ShadowExtractor
 import kotlin.test.assertEquals
@@ -128,11 +128,11 @@ class SeekbarPluginTest {
 
     @Test
     fun shouldHideSeekbarWhenDidCompleteEventHappens() {
-        assertEquals(View.VISIBLE, seekbarPlugin.view.visibility)
+        setupViewVisible(seekbarPlugin)
 
         core.activePlayback?.trigger(Event.DID_COMPLETE.value)
 
-        assertEquals(View.GONE, seekbarPlugin.view.visibility)
+        assertHiddenView(seekbarPlugin)
     }
 
     @Test
@@ -186,6 +186,18 @@ class SeekbarPluginTest {
     @Test
     fun shouldUpdateViewVisibilityToVisibleWhenUserTouchSeekbarAndVideoIsVOD() {
         assertViewVisibilityWhenTouchEventHappens(View.VISIBLE, Playback.MediaType.VOD, Playback.State.PLAYING, View.GONE)
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        setupViewVisible(seekbarPlugin)
+        val oldPlayback = container.playback
+
+        seekbarPlugin.destroy()
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertVisibleView(seekbarPlugin)
     }
 
     @Test
