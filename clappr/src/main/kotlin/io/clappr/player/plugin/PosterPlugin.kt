@@ -64,8 +64,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
     }
 
     private fun bindPlaybackListeners() {
-        stopListening()
-        bindEventListeners()
+        stopPlaybackListeners()
 
         container.playback?.let {
             playbackListenerIds.addAll(listOf(
