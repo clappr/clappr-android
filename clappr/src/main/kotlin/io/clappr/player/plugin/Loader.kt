@@ -5,6 +5,7 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.log.Logger
 import kotlin.reflect.KClass
 import kotlin.reflect.full.companionObjectInstance
 import kotlin.reflect.full.primaryConstructor
@@ -131,7 +132,10 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         val constructor = pluginClass.primaryConstructor
         try {
             plugin = constructor?.call(component) as? Plugin
-        } catch (e: Exception) {
+        } catch (error: Exception) {
+            Logger.error(Loader::class.simpleName,
+                    "Plugin ${pluginClass.simpleName} crashed during initialization",
+                    error)
         }
 
         return plugin
