@@ -51,7 +51,8 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         trigger(InternalEvent.WILL_DESTROY.value)
         playback?.destroy()
         playback = null
-        internalPlugins.forEach { it.destroy() }
+        internalPlugins.forEach { handlePluginAction({ it.destroy() },
+                "Plugin ${it.javaClass.simpleName} crashed during destroy") }
         internalPlugins.clear()
         stopListening()
         trigger(InternalEvent.DID_DESTROY.value)
@@ -83,7 +84,8 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         internalPlugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
             removeViewFromParent(it.view, it.name)
             frameLayout.addView(it.view)
-            it.render()
+            handlePluginAction({ it.render() },
+                    "Plugin ${it.javaClass.simpleName} crashed during render")
         }
         return this
     }
@@ -92,6 +94,14 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         (view?.parent as? ViewManager)?.let {
             Logger.error(TAG, "View on parent: ${name}")
             it.removeView(view)
+        }
+    }
+
+    private fun handlePluginAction(action: () -> Unit, errorMessage: String) {
+        try {
+            action.invoke()
+        } catch (error: Exception) {
+            Logger.error(Container::class.simpleName, errorMessage, error)
         }
     }
 }

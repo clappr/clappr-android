@@ -7,6 +7,7 @@ import io.clappr.player.base.InternalEvent
 import io.clappr.player.plugin.Loader
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
+import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -94,7 +95,8 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         trigger(InternalEvent.WILL_DESTROY.value)
         containers.forEach { it.destroy() }
         containers.clear()
-        internalPlugins.forEach { it.destroy() }
+        internalPlugins.forEach { handlePluginAction({ it.destroy() },
+                "Plugin ${it.javaClass.simpleName} crashed during destroy") }
         internalPlugins.clear()
         stopListening()
         trigger(InternalEvent.DID_DESTROY.value)
@@ -108,8 +110,17 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         }
         internalPlugins.filterIsInstance(UICorePlugin::class.java).forEach {
             frameLayout.addView(it.view)
-            it.render()
+            handlePluginAction({ it.render() },
+                    "Plugin ${it.javaClass.simpleName} crashed during render")
         }
         return this
+    }
+
+    private fun handlePluginAction(action: () -> Unit, errorMessage: String) {
+        try {
+            action.invoke()
+        } catch (error: Exception) {
+            Logger.error(Core::class.simpleName, errorMessage, error)
+        }
     }
 }

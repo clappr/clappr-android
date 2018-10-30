@@ -6,15 +6,17 @@ import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.core.CorePlugin
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.core.UICorePlugin
 import org.junit.*
 import org.junit.Assert.*
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class CoreTest {
     class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
         companion object : PlaybackSupportInterface {
@@ -24,6 +26,19 @@ open class CoreTest {
                 return source.isNotEmpty()
             }
         }
+    }
+
+    class TestCorePlugin(core: Core) : UICorePlugin(core) {
+        companion object : NamedType {
+            override val name: String?
+                get() = "testCorePlugin"
+        }
+
+        var destroyMethod: (() -> Unit)? = null
+        var renderMethod: (() -> Unit)? = null
+
+        override fun destroy() { destroyMethod?.invoke() }
+        override fun render() { renderMethod?.invoke() }
     }
 
     @Before
@@ -162,19 +177,30 @@ open class CoreTest {
         assertTrue("Valid container", core.containers.isEmpty())
     }
 
-    @Test @Ignore
+    @Test
     fun shouldDestroyPluginsOnDestroy() {
-        Loader.registerPlugin(CorePlugin::class)
-        val core = Core(Loader(), Options())
+        val (core, testPlugin) = setupTestCorePlugin()
 
-        assertTrue("No plugins", core.plugins.size > 0)
-
-        var didDestroyCalled = false
-        core.listenTo(core.plugins.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        var pluginDestroyCalled = false
+        testPlugin.destroyMethod = { pluginDestroyCalled = true }
 
         core.destroy()
 
-        assertTrue("Plugin did destroy not called", didDestroyCalled)
+        assertTrue("Plugin was not destroyed", pluginDestroyCalled)
+    }
+
+    @Test
+    fun shouldHandlePluginDestroyExceptionOnDestroy() {
+        val (core, testPlugin) = setupTestCorePlugin()
+
+        val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
+                "crashed during destroy"
+
+        testPlugin.destroyMethod = { throw NullPointerException() }
+
+        core.destroy()
+
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
 
     @Test
@@ -224,5 +250,40 @@ open class CoreTest {
         core.options = Options(source = "new_source")
 
         assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
+    }
+
+    @Test
+    fun shouldRenderPluginsOnRender() {
+        val (core, testPlugin) = setupTestCorePlugin()
+
+        var pluginRenderCalled = false
+        testPlugin.renderMethod = { pluginRenderCalled = true }
+
+        core.render()
+
+        assertTrue("Plugin was not rendered", pluginRenderCalled)
+    }
+
+    @Test
+    fun shouldHandlePluginRenderExceptionOnDestroy() {
+        val (core, testPlugin) = setupTestCorePlugin()
+
+        val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
+                "crashed during render"
+
+        testPlugin.renderMethod = { throw NullPointerException() }
+
+        core.render()
+
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
+        Loader.registerPlugin(TestCorePlugin::class)
+
+        val core = Core(Loader(), Options())
+        val testPlugin = core.plugins[0] as TestCorePlugin
+
+        return Pair(core, testPlugin)
     }
 }
