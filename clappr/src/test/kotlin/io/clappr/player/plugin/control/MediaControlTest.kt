@@ -10,10 +10,7 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.Plugin
-import io.clappr.player.plugin.UIPlugin
-import org.junit.Assert
+import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
 import org.junit.After
@@ -308,6 +305,18 @@ class MediaControlTest {
     fun shouldRegisterListenersOnRender() {
         assertTrue(mediaControl.playbackListenerIds.size > 0, "Media control should have playback listeners ids")
         assertTrue(mediaControl.containerListenerIds.size > 0, "Media control should have container listeners ids")
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        setupViewHidden(mediaControl)
+        val oldPlayback = container.playback
+
+        mediaControl.destroy()
+
+        oldPlayback?.trigger(InternalEvent.ENABLE_MEDIA_CONTROL.value)
+
+        assertHiddenView(mediaControl)
     }
 
     @Test

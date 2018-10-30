@@ -1,6 +1,5 @@
 package io.clappr.player.plugin
 
-import android.view.View
 import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
@@ -70,74 +69,54 @@ class PosterPluginTest {
 
     @Test
     fun shouldShowPosterWhenStopIsTriggered() {
-        setupViewHidden()
+        setupViewHidden(posterPlugin)
 
         container.playback?.trigger(Event.DID_STOP.value)
 
-        assertVisibleView()
+        assertVisibleView(posterPlugin)
     }
 
     @Test
     fun shouldShowPosterWhenCompleteIsTriggered() {
-        setupViewHidden()
+        setupViewHidden(posterPlugin)
 
         container.playback?.trigger(Event.DID_COMPLETE.value)
 
-        assertVisibleView()
+        assertVisibleView(posterPlugin)
     }
 
     @Test
     fun shouldHidePosterWhenCompleteIsTriggered() {
-        setupViewVisible()
+        setupViewVisible(posterPlugin)
 
         container.playback?.trigger(Event.PLAYING.value)
 
-        assertHiddenView()
+        assertHiddenView(posterPlugin)
     }
 
     @Test
     fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
         val oldPlayback = container.playback
-        setupViewHidden()
+        setupViewHidden(posterPlugin)
 
         val newPlayback = PosterPluginTest.FakePlayback()
         container.playback = newPlayback
 
         oldPlayback?.trigger(Event.DID_COMPLETE.value)
 
-        assertHiddenView()
+        assertHiddenView(posterPlugin)
     }
 
     @Test
     fun shouldStopListeningOldPlaybackAfterDestroy() {
         val oldPlayback = container.playback
-        setupViewHidden()
+        setupViewHidden(posterPlugin)
 
         posterPlugin.destroy()
 
         oldPlayback?.trigger(Event.DID_COMPLETE.value)
 
-        assertHiddenView()
-    }
-
-    private fun setupViewVisible() {
-        posterPlugin.view?.visibility = View.VISIBLE
-        posterPlugin.visibility = UIPlugin.Visibility.VISIBLE
-    }
-
-    private fun assertVisibleView() {
-        kotlin.test.assertEquals(View.VISIBLE, posterPlugin.view?.visibility)
-        kotlin.test.assertEquals(UIPlugin.Visibility.VISIBLE, posterPlugin.visibility)
-    }
-
-    private fun setupViewHidden() {
-        posterPlugin.view?.visibility = View.GONE
-        posterPlugin.visibility = UIPlugin.Visibility.HIDDEN
-    }
-
-    private fun assertHiddenView() {
-        kotlin.test.assertEquals(View.GONE, posterPlugin.view?.visibility)
-        kotlin.test.assertEquals(UIPlugin.Visibility.HIDDEN, posterPlugin.visibility)
+        assertHiddenView(posterPlugin)
     }
     
     class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
