@@ -128,14 +128,11 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     private fun loadPlugin(component: BaseObject, pluginClass: KClass<out Plugin>) : Plugin? {
         var plugin: Plugin? = null
-
         val constructor = pluginClass.primaryConstructor
+
         try {
             plugin = constructor?.call(component) as? Plugin
         } catch (error: Exception) {
-            Logger.error(Loader::class.simpleName,
-                    "Plugin ${pluginClass.simpleName} crashed during initialization",
-                    error)
         }
 
         return plugin
