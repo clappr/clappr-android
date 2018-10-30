@@ -7,6 +7,7 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.container.ContainerPlugin
+import io.clappr.player.plugin.container.UIContainerPlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -15,9 +16,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class ContainerTest {
 
     class MP4Playback(source: String, mimeType: String?, options: Options) : Playback(source, mimeType, options) {
@@ -29,6 +31,19 @@ open class ContainerTest {
             override val name: String?
                 get() = "mp4"
         }
+    }
+
+    class TestContainerPlugin(container: Container) : UIContainerPlugin(container) {
+        companion object : NamedType {
+            override val name: String?
+                get() = "testContainerPlugin"
+        }
+
+        var destroyMethod: (() -> Unit)? = null
+        var renderMethod: (() -> Unit)? = null
+
+        override fun destroy() { destroyMethod?.invoke() }
+        override fun render() { renderMethod?.invoke() }
     }
 
     @Before
@@ -192,19 +207,30 @@ open class ContainerTest {
         assertNull("Valid playback", container.playback)
     }
 
-    @Test @Ignore
+    @Test
     fun shouldDestroyPluginsOnDestroy() {
-        Loader.registerPlugin(ContainerPlugin::class)
-        val container = Container(Loader(), Options())
+        val (container, testPlugin) = setupTestContainerPlugin()
 
-        assertTrue("No plugins", container.plugins.size > 0)
-
-        var didDestroyCalled = false
-        container.listenTo(container.plugins.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        var pluginDestroyCalled = false
+        testPlugin.destroyMethod = { pluginDestroyCalled = true }
 
         container.destroy()
 
-        assertTrue("Plugin did destroy not called", didDestroyCalled)
+        assertTrue("Plugin was not destroyed", pluginDestroyCalled)
+    }
+
+    @Test
+    fun shouldHandlePluginDestroyExceptionOnDestroy() {
+        val (container, testPlugin) = setupTestContainerPlugin()
+
+        val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
+                "crashed during destroy"
+
+        testPlugin.destroyMethod = { throw NullPointerException() }
+
+        container.destroy()
+
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
 
     @Test
@@ -261,5 +287,40 @@ open class ContainerTest {
         container.options = Options(source = "new_source")
 
         assertTrue("should trigger DID_UPDATE_OPTIONS on set options", callbackWasCalled)
+    }
+
+    @Test
+    fun shouldRenderPluginsOnRender() {
+        val (container, testPlugin) = setupTestContainerPlugin()
+
+        var pluginRenderCalled = false
+        testPlugin.renderMethod = { pluginRenderCalled = true }
+
+        container.render()
+
+        assertTrue("Plugin was not rendered", pluginRenderCalled)
+    }
+
+    @Test
+    fun shouldHandlePluginRenderExceptionOnDestroy() {
+        val (container, testPlugin) = setupTestContainerPlugin()
+
+        val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
+                "crashed during render"
+
+        testPlugin.renderMethod = { throw NullPointerException() }
+
+        container.render()
+
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    private fun setupTestContainerPlugin(): Pair<Container, TestContainerPlugin> {
+        Loader.registerPlugin(TestContainerPlugin::class)
+
+        val container = Container(Loader(), Options())
+        val testPlugin = container.plugins[0] as TestContainerPlugin
+
+        return Pair(container, testPlugin)
     }
 }
