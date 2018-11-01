@@ -8,6 +8,4 @@
 
 | Name | Summary |
 |---|---|
-| [httpClient](http-client.md) | `val httpClient: OkHttpClient` |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [picasso](picasso.md) | `val picasso: Picasso` |

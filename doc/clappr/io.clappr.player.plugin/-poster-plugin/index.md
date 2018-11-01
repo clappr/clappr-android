@@ -34,14 +34,10 @@
 
 | Name | Summary |
 |---|---|
-| [bindEventListeners](bind-event-listeners.md) | `fun bindEventListeners(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [bindPlaybackListeners](bind-playback-listeners.md) | `fun bindPlaybackListeners(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [updatePoster](update-poster.md) | `fun updatePoster(bundle: `[`Bundle`](https://developer.android.com/reference/android/os/Bundle.html)`? = null): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [destroy](destroy.md) | `fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 
 | Name | Summary |
 |---|---|
-| [httpClient](http-client.md) | `val httpClient: OkHttpClient` |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [picasso](picasso.md) | `val picasso: Picasso` |
