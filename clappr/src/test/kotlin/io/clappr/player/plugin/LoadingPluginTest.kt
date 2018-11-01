@@ -75,7 +75,7 @@ class LoadingPluginTest {
 
         container.playback?.trigger(Event.STALLED.value)
 
-        assertVisibleView()
+        assertVisibleView(loadingPlugin)
     }
 
     @Test
@@ -84,12 +84,12 @@ class LoadingPluginTest {
 
         container.playback?.trigger(Event.WILL_PLAY.value)
 
-        assertVisibleView()
+        assertVisibleView(loadingPlugin)
     }
 
     @Test
     fun shouldStopAnimationWhenPlayingIsTriggered() {
-        setupViewVisible()
+        setupViewVisible(loadingPlugin)
 
         container.playback?.trigger(Event.PLAYING.value)
 
@@ -98,7 +98,7 @@ class LoadingPluginTest {
 
     @Test
     fun shouldStopAnimationWhenDidStopIsTriggered() {
-        setupViewVisible()
+        setupViewVisible(loadingPlugin)
 
         container.playback?.trigger(Event.DID_STOP.value)
 
@@ -107,7 +107,7 @@ class LoadingPluginTest {
 
     @Test
     fun shouldStopAnimationWhenDidPauseIsTriggered() {
-        setupViewVisible()
+        setupViewVisible(loadingPlugin)
 
         container.playback?.trigger(Event.DID_PAUSE.value)
 
@@ -116,7 +116,7 @@ class LoadingPluginTest {
 
     @Test
     fun shouldStopAnimationWhenDidCompleteIsTriggered() {
-        setupViewVisible()
+        setupViewVisible(loadingPlugin)
 
         container.playback?.trigger(Event.DID_COMPLETE.value)
 
@@ -125,21 +125,23 @@ class LoadingPluginTest {
 
     @Test
     fun shouldStopAnimationWhenErrorTriggered() {
-        setupViewVisible()
+        setupViewVisible(loadingPlugin)
 
         container.playback?.trigger(Event.ERROR.value)
 
         assertHiddenView()
     }
 
-    private fun setupViewVisible() {
-        loadingPlugin.view?.visibility = View.VISIBLE
-        loadingPlugin.visibility = UIPlugin.Visibility.VISIBLE
-    }
+    @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        val oldPlayback = container.playback
+        setupViewHidden()
 
-    private fun assertVisibleView() {
-        assertEquals(View.VISIBLE, loadingPlugin.view?.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, loadingPlugin.visibility)
+        loadingPlugin.destroy()
+
+        oldPlayback?.trigger(Event.WILL_PLAY.value)
+
+        assertHiddenView()
     }
 
     private fun setupViewHidden() {

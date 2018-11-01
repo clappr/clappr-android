@@ -8,9 +8,10 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
+import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class])
 open class BaseObjectTest {
     var baseObject: BaseObject? = null
     var callbackWasCalled = false
@@ -126,6 +127,20 @@ open class BaseObjectTest {
         contextObject.trigger(eventName)
 
         assertTrue("event not triggered", callbackWasCalled)
+    }
+
+    @Test
+    fun listenToShouldHandleCallbackException() {
+        val brokenCallback = Callback.wrap { throw NullPointerException() }
+        val expectedLogMessage = "[BaseObject] Plugin ${brokenCallback.javaClass.name} " +
+                "crashed during invocation of event $eventName"
+
+        val contextObject = BaseObject()
+
+        baseObject?.listenTo(contextObject, eventName, brokenCallback)
+        contextObject.trigger(eventName)
+
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
 
     @Test

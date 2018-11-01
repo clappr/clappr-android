@@ -7,8 +7,7 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.UIPlugin
+import io.clappr.player.plugin.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -60,6 +59,19 @@ class PlayButtonTest {
     }
 
     @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        setupViewHidden(playButton)
+
+        val oldPlayback = container.playback
+
+        playButton.destroy()
+
+        oldPlayback?.trigger(Event.PLAYING.value)
+
+        assertHiddenView(playButton)
+    }
+
+    @Test
     fun shouldRemoveAllPlaybackListenersBeforeBindNewOnesWhenDidChangeActivePlaybackEventIsTriggered() {
         val expectedAmountOfListener = 5
 
@@ -78,71 +90,65 @@ class PlayButtonTest {
 
     @Test
     fun shouldPlayButtonBeHiddenWhenStalledOnRender() {
-        showPlayButton()
+        setupViewVisible(playButton)
         setupFakePlayback(state = Playback.State.STALLED)
 
         playButton.render()
 
-        assertEquals(View.GONE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, playButton.visibility)
+        assertHiddenView(playButton)
     }
 
     @Test
     fun shouldPlayButtonBeHiddenWhileStallingWhenEventStalledIsTriggered() {
-        showPlayButton()
+        setupViewVisible(playButton)
         setupFakePlayback(state = Playback.State.STALLED)
 
         core.activePlayback?.trigger(Event.STALLED.value)
 
-        assertEquals(View.GONE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, playButton.visibility)
+        assertHiddenView(playButton)
     }
 
     @Test
     fun shouldPauseIconBeVisibleWhilePlayingAndCanPauseOnRender() {
-        hidePlayButton()
+        setupViewHidden(playButton)
         setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
 
         playButton.render()
 
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
+        assertVisibleView(playButton)
         assertTrue(playButton.view.isSelected)
     }
 
     @Test
     fun shouldPauseIconBeVisibleWhilePlayingAndCanPauseWhenEventPlayingIsTriggered() {
-        hidePlayButton()
+        setupViewHidden(playButton)
         setupFakePlayback(state = Playback.State.PLAYING, canPause = true)
 
         core.activePlayback?.trigger(Event.PLAYING.value)
 
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
+        assertVisibleView(playButton)
         assertTrue(playButton.view.isSelected)
     }
 
     @Test
     fun shouldHidePlayButtonWhilePlayingAndCanNotPauseOnRender() {
-        showPlayButton()
+        setupViewVisible(playButton)
         setupFakePlayback(state = Playback.State.PLAYING, canPause = false)
 
         playButton.render()
 
-        assertEquals(View.GONE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, playButton.visibility)
+        assertHiddenView(playButton)
     }
 
     @Test
     fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledOnRender() {
-        hidePlayButton()
+        setupViewHidden(playButton)
         playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)
 
         playButton.render()
 
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
+        assertVisibleView(playButton)
         assertFalse(playButton.view.isSelected)
     }
 
@@ -202,25 +208,14 @@ class PlayButtonTest {
     }
 
     private fun assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(event: String) {
-        hidePlayButton()
+        setupViewHidden(playButton)
         playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)
 
         core.activePlayback?.trigger(event)
 
-        assertEquals(View.VISIBLE, playButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.VISIBLE, playButton.visibility)
+        assertVisibleView(playButton)
         assertFalse(playButton.view.isSelected)
-    }
-
-    private fun showPlayButton() {
-        playButton.view.visibility = View.VISIBLE
-        playButton.visibility = UIPlugin.Visibility.VISIBLE
-    }
-
-    private fun hidePlayButton() {
-        playButton.view.visibility = View.GONE
-        playButton.visibility = UIPlugin.Visibility.HIDDEN
     }
 
     private fun setupFakePlayback(state: Playback.State = Playback.State.PLAYING,

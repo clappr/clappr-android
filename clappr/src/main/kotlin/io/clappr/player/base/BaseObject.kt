@@ -6,8 +6,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.support.v4.content.LocalBroadcastManager
+import io.clappr.player.log.Logger
 
-open class BaseObject() : EventInterface {
+open class BaseObject : EventInterface {
     companion object {
         const val CONTEXT_KEY  = "clappr:baseobject:context"
         const val USERDATA_KEY = "clappr:baseobject:userdata"
@@ -33,7 +34,13 @@ open class BaseObject() : EventInterface {
             val receiver = Utils.broadcastReceiver { _, intent: Intent? ->
                 val objContext = intent?.getStringExtra(CONTEXT_KEY)
                 if (objContext == obj.id) {
-                    handler.invoke(intent.getBundleExtra(USERDATA_KEY))
+                    try {
+                        handler.invoke(intent.getBundleExtra(USERDATA_KEY))
+                    } catch (error: Exception) {
+                        Logger.error(BaseObject::class.simpleName,
+                                "Plugin ${handler.javaClass.name} crashed during invocation of event $eventName",
+                                error)
+                    }
                 }
             }
 

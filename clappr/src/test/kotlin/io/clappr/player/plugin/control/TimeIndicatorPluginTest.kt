@@ -15,6 +15,8 @@ import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.UIPlugin
+import io.clappr.player.plugin.assertVisibleView
+import io.clappr.player.plugin.setupViewVisible
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -219,6 +221,18 @@ class TimeIndicatorPluginTest {
     @Test
     fun shouldHaveListenersWhenInit() {
         assertTrue(timeIndicatorPlugin.playbackListenerIds.size > 0, "Seekbar should have playback listeners initialized")
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        setupViewVisible(timeIndicatorPlugin)
+        val oldPlayback = container.playback
+
+        timeIndicatorPlugin.destroy()
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertVisibleView(timeIndicatorPlugin)
     }
 
     @Test

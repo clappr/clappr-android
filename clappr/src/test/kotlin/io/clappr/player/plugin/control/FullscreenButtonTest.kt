@@ -7,8 +7,7 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.UIPlugin
+import io.clappr.player.plugin.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -51,7 +50,7 @@ class FullscreenButtonTest {
 
         oldPlayback?.trigger(Event.DID_COMPLETE.value)
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
     }
 
     @Test
@@ -68,14 +67,26 @@ class FullscreenButtonTest {
 
         oldContainer.playback?.trigger(Event.DID_COMPLETE.value)
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackAfterDestroy() {
+        setupViewHidden(fullscreenButton)
+        val oldPlayback = container.playback
+
+        fullscreenButton.destroy()
+
+        oldPlayback?.trigger(Event.PLAYING.value)
+
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
     fun shouldFullscreenButtonBeVisibleAndNotSelectedWhenEnterFullScreen() {
         triggerDidEnterFullscreen()
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
         assertFalse(fullscreenButton.view.isSelected)
     }
 
@@ -84,8 +95,7 @@ class FullscreenButtonTest {
         fullscreenButton.render()
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -93,8 +103,7 @@ class FullscreenButtonTest {
         fullscreenButton.render()
         container.playback = FakePlayback(stateFake = Playback.State.NONE)
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -110,8 +119,7 @@ class FullscreenButtonTest {
 
         triggerPlaying()
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -120,25 +128,24 @@ class FullscreenButtonTest {
 
         triggerPlaying()
 
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
-        assertEquals(UIPlugin.Visibility.HIDDEN, fullscreenButton.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
     fun shouldFullscreenBeGoneWhenPlaybackIsIdle() {
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
     fun shouldFullscreenBeGoneWhenPlaybackIsNone() {
         container.playback = FakePlayback(stateFake = Playback.State.NONE)
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
     fun shouldFullscreenBeVisibleWhenPlaybackIsNotIdle() {
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
     }
 
     @Test
@@ -148,7 +155,7 @@ class FullscreenButtonTest {
 
         triggerDidExitFullscreen()
 
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
         assertTrue(fullscreenButton.view.isSelected)
     }
 
@@ -177,25 +184,25 @@ class FullscreenButtonTest {
     @Test
     fun shouldShowFullScreenButtonWhenTriggerDidTouchMediaControlAndPlaybackIsNotIdle() {
         triggerDidTouchMediaControl()
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
     }
 
     @Test
     fun shouldShowFullScreenButtonWhenTriggerPlayingAndPlaybackIsNotIdle() {
         triggerPlaying()
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
     }
 
     @Test
     fun shouldShowFullScreenButtonWhenTriggerChangePlaybackAndPlaybackIsNotIdle() {
         triggerDidChangePlayback()
-        assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
+        assertVisibleView(fullscreenButton)
     }
 
     @Test
     fun shouldHideFullScreenButtonWhenDidCompleteAndPlaybackIsNotIdle() {
         triggerDidComplete()
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -203,7 +210,7 @@ class FullscreenButtonTest {
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
 
         triggerDidTouchMediaControl()
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -211,7 +218,7 @@ class FullscreenButtonTest {
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
 
         triggerPlaying()
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
     @Test
@@ -219,7 +226,7 @@ class FullscreenButtonTest {
         container.playback = FakePlayback(stateFake = Playback.State.IDLE)
 
         triggerDidChangePlayback()
-        assertEquals(View.GONE, fullscreenButton.view.visibility)
+        assertHiddenView(fullscreenButton)
     }
 
 

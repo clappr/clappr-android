@@ -28,10 +28,10 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
     companion object : NamedType {
         override val name = "poster"
 
-        val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
-        val picasso: Picasso by lazy {
+        private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
+        private val picasso: Picasso by lazy {
             Picasso.Builder(context).downloader(OkHttp3Downloader(httpClient))
-                .listener({ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") })
+                .listener{ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") }
                 .build()
         }
     }
@@ -48,26 +48,31 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
     override val view: View?
         get() = posterLayout
 
+    private val playbackListenerIds = mutableListOf<String>()
+
     init {
         updateImageUrlFromOptions()
         setupPosterLayout()
         bindEventListeners()
     }
 
-    fun bindEventListeners() {
+    private fun bindEventListeners() {
         updatePoster()
         listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindPlaybackListeners() })
         listenTo(container, Event.REQUEST_POSTER_UPDATE.value, Callback.wrap { it -> updatePoster(it) })
         listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
     }
 
-    fun bindPlaybackListeners() {
-        stopListening()
-        bindEventListeners()
+    private fun bindPlaybackListeners() {
+        stopPlaybackListeners()
+        updatePoster()
+
         container.playback?.let {
-            listenTo(it, Event.PLAYING.value, Callback.wrap { hide() })
-            listenTo(it, Event.DID_STOP.value, Callback.wrap { show() })
-            listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { show() })
+            playbackListenerIds.addAll(listOf(
+                listenTo(it, Event.PLAYING.value, Callback.wrap { hide() }),
+                listenTo(it, Event.DID_STOP.value, Callback.wrap { show() }),
+                listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { show() })
+            ))
         }
     }
 
@@ -88,7 +93,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
         }
     }
 
-    fun updatePoster(bundle: Bundle? = null) {
+    private fun updatePoster(bundle: Bundle? = null) {
         if (bundle != null) {
             val url = bundle.getString("url")
             if (url != null) {
@@ -110,5 +115,15 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
             picasso.load(uri).fit().centerCrop().into(imageView)
             container.trigger(Event.DID_UPDATE_POSTER.value)
         }
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
     }
 }
