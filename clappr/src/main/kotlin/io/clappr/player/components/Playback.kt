@@ -150,8 +150,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
 
     fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
         return subtitleKeys.map { it }.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
-            MediaOption(it.key, MediaOptionType.AUDIO, raw, null)
-        } ?: MediaOption(language, MediaOptionType.AUDIO, raw, null)
+            MediaOption(it.key, MediaOptionType.SUBTITLE, raw, null)
+        } ?: MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
     }
 
     open fun setSelectedMediaOption(mediaOption: MediaOption) {
