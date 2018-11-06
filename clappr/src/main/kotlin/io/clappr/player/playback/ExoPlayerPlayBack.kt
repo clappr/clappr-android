@@ -515,8 +515,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, createMediaOption: (format: Format, raw: Any?) -> MediaOption?) {
         trackGroup.forEachFormatIndexed { index, format ->
-            val raw = createMediaRaw(renderedIndex, trackGroupIndex, index)
-            val mediaOption = createMediaOption(format, raw)
+            val rawInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
+            val mediaOption = createMediaOption(format, rawInfo)
 
             mediaOption?.let {
                 addAvailableMediaOption(mediaOption)
@@ -540,13 +540,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) } ?: SUBTITLE_OFF
     }
 
-    private fun createMediaRaw(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int): Options {
-        val mediaInfo = Options()
-        mediaInfo.put(trackIndexKey, renderedTextIndex)
-        mediaInfo.put(trackGroupIndexKey, trackGroupIndex)
-        mediaInfo.put(formatIndexKey, formatIndex)
-        return mediaInfo
-    }
+    private fun createMediaInfo(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int) =
+            Options().apply {
+                put(trackIndexKey, renderedTextIndex)
+                put(trackGroupIndexKey, trackGroupIndex)
+                put(formatIndexKey, formatIndex)
+            }
 
     override fun setSelectedMediaOption(mediaOption: MediaOption) {
         playerView.subtitleView.visibility = if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE

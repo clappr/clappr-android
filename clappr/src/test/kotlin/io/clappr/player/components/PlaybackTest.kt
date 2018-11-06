@@ -262,42 +262,42 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldWorkWithEmptySelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithEmptySelectedMediaOptions() {
         setupPlaybackWithMediaOptions("").run {
             assertNoSelectedMediaOption(this)
         }
     }
 
     @Test
-    fun shouldWorkWithInvalidSelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithInvalidSelectedMediaOptions() {
         setupPlaybackWithMediaOptions("error").run {
             assertNoSelectedMediaOption(this)
         }
     }
 
     @Test
-    fun shouldWorkWithInvalidArraySelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithInvalidArraySelectedMediaOptions() {
         setupPlaybackWithMediaOptions("{\"invalid_array_name\":[{\"name\":\"por\",\"type\":\"AUDIO\"}]}").run {
             assertNoSelectedMediaOption(this)
         }
     }
 
     @Test
-    fun shouldWorkWithInvalidNameInSelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithInvalidNameInSelectedMediaOptions() {
         setupPlaybackWithMediaOptions(convertMediaOptionsToJson(MediaOptionType.AUDIO.name, "invalid_name")).run {
             assertNoSelectedMediaOption(this)
         }
     }
 
     @Test
-    fun shouldWorkWithEmptyNameInSelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithEmptyNameInSelectedMediaOptions() {
         setupPlaybackWithMediaOptions(convertMediaOptionsToJson(MediaOptionType.AUDIO.name, "")).run {
             assertNoSelectedMediaOption(this)
         }
     }
 
     @Test
-    fun shouldWorkWithInvalidTypeInSelectedMediaOptions() {
+    fun shouldNotSelectedMediaOptionWithInvalidTypeInSelectedMediaOptions() {
         setupPlaybackWithMediaOptions(convertMediaOptionsToJson("invalid_type", "por")).run {
             assertNoSelectedMediaOption(this)
         }

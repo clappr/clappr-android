@@ -141,7 +141,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     fun createAudioMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
-        return audioKeys.map { it }.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
+        return audioKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
             MediaOption(it.key, MediaOptionType.AUDIO, raw, null)
         } ?: MediaOption(language, MediaOptionType.AUDIO, raw, null)
     }
@@ -149,7 +149,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     fun createOriginalOption(raw: Any?) = MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
 
     fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
-        return subtitleKeys.map { it }.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
+        return subtitleKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
             MediaOption(it.key, MediaOptionType.SUBTITLE, raw, null)
         } ?: MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
     }
