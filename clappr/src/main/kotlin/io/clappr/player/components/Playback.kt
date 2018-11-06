@@ -169,7 +169,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         mediaOptionList.clear()
     }
 
-    internal fun convertSelectedMediaOptionsToJson(): String {
+    private fun convertSelectedMediaOptionsToJson(): String {
         val result = JSONObject()
         val jsonArray = JSONArray()
         selectedMediaOptionList.forEach {

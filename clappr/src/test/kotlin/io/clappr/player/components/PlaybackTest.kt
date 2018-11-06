@@ -50,6 +50,7 @@ open class PlaybackTest {
             return super.seek(seconds)
         }
 
+        var selectedMediaOptionsJson: String? = null
         val hasSelectedMediaOption = selectedMediaOptionList.isNotEmpty()
     }
 
@@ -310,7 +311,7 @@ open class PlaybackTest {
         val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, MediaOptionType.AUDIO, jsonMediaOptionName)
+            assertSelectedMediaOption(this, MediaOptionType.AUDIO, jsonMediaOptionName, validJson)
         }
     }
 
@@ -318,10 +319,11 @@ open class PlaybackTest {
     fun shouldSelectUpperCasePortugueseAudioFromSelectedMediaOptions() {
         val jsonMediaOptionName = AudioLanguage.PORTUGUESE.value
         val jsonMediaOptionType = MediaOptionType.AUDIO
-        val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val validJsonWithUpperCase = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val expectedJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
-        setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+        setupPlaybackWithMediaOptions(validJsonWithUpperCase).run {
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, expectedJson)
         }
     }
 
@@ -332,7 +334,7 @@ open class PlaybackTest {
         val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, validJson)
         }
     }
 
@@ -343,7 +345,7 @@ open class PlaybackTest {
         val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, validJson)
         }
     }
 
@@ -354,7 +356,7 @@ open class PlaybackTest {
         val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, validJson)
         }
     }
 
@@ -362,10 +364,11 @@ open class PlaybackTest {
     fun shouldSelectUpperCaseSubtitleFromSelectedMediaOptions() {
         val jsonMediaOptionName = SubtitleLanguage.PORTUGUESE.value
         val jsonMediaOptionType = MediaOptionType.SUBTITLE
-        val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val validJsonWithUpperCase = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val expectedJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
-        setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+        setupPlaybackWithMediaOptions(validJsonWithUpperCase).run {
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, expectedJson)
         }
     }
 
@@ -376,7 +379,7 @@ open class PlaybackTest {
         val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
+            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName, validJson)
         }
     }
 
@@ -390,14 +393,18 @@ open class PlaybackTest {
                 jsonMediaOptionTypeSubtitle.name, jsonMediaOptionNameSubtitle)
 
         setupPlaybackWithMediaOptions(validJson).run {
-            assertSelectedMediaOption(this, jsonMediaOptionTypeAudio, jsonMediaOptionNameAudio)
-            assertSelectedMediaOption(this, jsonMediaOptionTypeSubtitle, jsonMediaOptionNameSubtitle)
+            assertSelectedMediaOption(this, jsonMediaOptionTypeAudio, jsonMediaOptionNameAudio, validJson)
+            assertSelectedMediaOption(this, jsonMediaOptionTypeSubtitle, jsonMediaOptionNameSubtitle, validJson)
         }
     }
 
     private fun setupPlaybackWithMediaOptions(mediaOptionJson: String): SomePlayback {
         val options = Options(options = hashMapOf(ClapprOption.SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
         val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.on(Event.MEDIA_OPTIONS_SELECTED.value, Callback.wrap {
+            playback.selectedMediaOptionsJson = it?.getString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value) ?: ""
+        })
 
         playback.addAvailableMediaOption(MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, null, null))
         playback.addAvailableMediaOption(MediaOption(AudioLanguage.PORTUGUESE.value, MediaOptionType.AUDIO, null, null))
@@ -411,17 +418,19 @@ open class PlaybackTest {
         return playback
     }
 
-    private fun assertSelectedMediaOption(playback: Playback, expectedType: MediaOptionType, expectedValue: String) {
+    private fun assertSelectedMediaOption(playback: SomePlayback, expectedType: MediaOptionType, expectedValue: String,
+                                          expectedJson: String) {
         val optionSelected = playback.selectedMediaOption(expectedType)
         assertEquals(expectedValue, optionSelected?.name)
         assertEquals(expectedType.name, optionSelected?.type?.name)
+        assertEquals(expectedJson, playback.selectedMediaOptionsJson)
     }
 
     private fun assertNoSelectedMediaOption(playback: SomePlayback) {
         assertFalse(playback.hasSelectedMediaOption)
         assertNull(playback.selectedMediaOption(MediaOptionType.AUDIO))
         assertNull(playback.selectedMediaOption(MediaOptionType.SUBTITLE))
-        assertEquals(convertMediaOptionsToJson(), playback.convertSelectedMediaOptionsToJson())
+        assertNull(playback.selectedMediaOptionsJson)
     }
 
     private fun convertMediaOptionsToJson(jsonMediaOptionTypeAudio:String? = null, jsonMediaOptionNameAudio: String? = null,
