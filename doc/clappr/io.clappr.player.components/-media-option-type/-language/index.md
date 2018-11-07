@@ -2,7 +2,8 @@
 
 # Language
 
-`enum class Language`
+`enum class ~~Language~~`
+**Deprecated:** This option is deprecated and can be changed in the near future.
 
 ### Enum Values
 

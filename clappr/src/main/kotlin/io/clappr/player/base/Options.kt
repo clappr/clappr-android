@@ -25,8 +25,9 @@ enum class ClapprOption(val value: String) {
      */
     SUBTITLES("subtitles"),
     /**
-     * String List to selected MediaOptions
+     * String List to selected MediaOptions.
      */
+    @Deprecated("This option is deprecated and can be changed in the near future.", level = DeprecationLevel.WARNING)
     SELECTED_MEDIA_OPTIONS("selectedMediaOptions"),
     /**
      * Byte Array of drm licenses

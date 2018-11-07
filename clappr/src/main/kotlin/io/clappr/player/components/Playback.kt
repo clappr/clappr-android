@@ -51,6 +51,17 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
 
+    private val audioKeys = mapOf(
+            AudioLanguage.ORIGINAL.value to listOf("original", "und"),
+            AudioLanguage.PORTUGUESE.value to listOf("pt", "por"),
+            AudioLanguage.ENGLISH.value to listOf("en", "eng")
+    )
+
+    private val subtitleKeys = mapOf(
+            SubtitleLanguage.OFF.value to listOf("", "off"),
+            SubtitleLanguage.PORTUGUESE.value to listOf("pt", "por")
+    )
+
     open val mediaType: MediaType
         get() = MediaType.UNKNOWN
 
@@ -129,6 +140,20 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         return if (!selectedList.isEmpty()) selectedList.first() else null
     }
 
+    fun createAudioMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
+        return audioKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
+            MediaOption(it.key, MediaOptionType.AUDIO, raw, null)
+        } ?: MediaOption(language, MediaOptionType.AUDIO, raw, null)
+    }
+
+    fun createOriginalOption(raw: Any?) = MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
+
+    fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
+        return subtitleKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
+            MediaOption(it.key, MediaOptionType.SUBTITLE, raw, null)
+        } ?: MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
+    }
+
     open fun setSelectedMediaOption(mediaOption: MediaOption) {
         selectedMediaOptionList.removeAll { it.type == mediaOption.type }
         selectedMediaOptionList.add(mediaOption)
@@ -144,7 +169,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         mediaOptionList.clear()
     }
 
-    fun convertSelectedMediaOptionsToJson(): String {
+    private fun convertSelectedMediaOptionsToJson(): String {
         val result = JSONObject()
         val jsonArray = JSONArray()
         selectedMediaOptionList.forEach {
@@ -172,11 +197,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
-        mediaOptionList.forEach {
-            if (it.name.toUpperCase() == mediaOptionName.toUpperCase()
-                    && it.type.name.toUpperCase() == mediaOptionType.toUpperCase()) {
-                setSelectedMediaOption(it)
-            }
+        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }?.let {
+            setSelectedMediaOption(it)
         }
     }
 

@@ -3,8 +3,9 @@
 # SELECTED_MEDIA_OPTIONS
 
 `SELECTED_MEDIA_OPTIONS`
+**Deprecated:** This option is deprecated and can be changed in the near future.
 
-String List to selected MediaOptions
+String List to selected MediaOptions.
 
 ### Inherited Properties
 
