@@ -6,7 +6,7 @@ buildscript {
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
-        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.16"
+        classpath "org.jetbrains.dokka:dokka-android-gradle-plugin:0.9.17"
     }
 }
 
@@ -106,7 +106,7 @@ dependencies {
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.1.2"
+    testImplementation "org.robolectric:robolectric:3.7.1"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
