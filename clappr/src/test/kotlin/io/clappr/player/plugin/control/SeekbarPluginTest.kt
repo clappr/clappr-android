@@ -18,7 +18,7 @@ import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.*
 import io.clappr.player.shadows.ClapprShadowView
-import org.robolectric.internal.ShadowExtractor
+import org.robolectric.shadow.api.Shadow
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
@@ -362,8 +362,8 @@ class SeekbarPluginTest {
     }
 
     private fun setupViewWidth(backgroundViewWidth: Int, scrubberViewWidth: Int) {
-        (ShadowExtractor.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
-        (ShadowExtractor.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
+        (Shadow.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
+        (Shadow.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
     }
 
     private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,
