@@ -4,6 +4,7 @@
 
 | Name | Summary |
 |---|---|
+| [io.clappr.player.components.AudioLanguage](../io.clappr.player.components/-audio-language/index.md) |  |
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
 | [io.clappr.player.base.Callback](../io.clappr.player.base/-callback/index.md) |  |
@@ -43,6 +44,7 @@
 | [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.SeekbarPlugin](../io.clappr.player.plugin.control/-seekbar-plugin/index.md) |  |
+| [io.clappr.player.components.SubtitleLanguage](../io.clappr.player.components/-subtitle-language/index.md) |  |
 | [io.clappr.player.plugin.control.TimeIndicatorPlugin](../io.clappr.player.plugin.control/-time-indicator-plugin/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |

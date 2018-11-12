@@ -6,12 +6,14 @@
 
 | Name | Summary |
 |---|---|
+| [AudioLanguage](-audio-language/index.md) | `enum class AudioLanguage` |
 | [Container](-container/index.md) | `class Container : `[`UIObject`](../io.clappr.player.base/-u-i-object/index.md) |
 | [Core](-core/index.md) | `class Core : `[`UIObject`](../io.clappr.player.base/-u-i-object/index.md) |
 | [MediaOption](-media-option/index.md) | `data class MediaOption` |
 | [MediaOptionType](-media-option-type/index.md) | `enum class MediaOptionType` |
 | [Playback](-playback/index.md) | `abstract class Playback : `[`UIObject`](../io.clappr.player.base/-u-i-object/index.md)`, `[`NamedType`](../io.clappr.player.base/-named-type/index.md) |
 | [PlaybackSupportInterface](-playback-support-interface/index.md) | `interface PlaybackSupportInterface : `[`NamedType`](../io.clappr.player.base/-named-type/index.md) |
+| [SubtitleLanguage](-subtitle-language/index.md) | `enum class SubtitleLanguage` |
 
 ### Properties
 

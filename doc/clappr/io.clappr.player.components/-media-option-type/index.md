@@ -8,8 +8,8 @@
 
 | Name | Summary |
 |---|---|
-| [Audio](-audio/index.md) | `enum class Audio` |
-| [Language](-language/index.md) | `enum class Language` |
+| [Audio](-audio/index.md) | `enum class ~~Audio~~` |
+| [Language](-language/index.md) | `enum class ~~Language~~` |
 
 ### Enum Values
 

@@ -2,7 +2,8 @@
 
 # Audio
 
-`enum class Audio`
+`enum class ~~Audio~~`
+**Deprecated:** This option is deprecated and can be changed in the near future.
 
 ### Enum Values
 

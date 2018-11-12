@@ -13,6 +13,7 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
+import kotlinx.android.synthetic.main.media_control.view.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -34,6 +35,7 @@ class MediaControlTest {
     private lateinit var mediaControl: MediaControl
     private lateinit var core: Core
     private lateinit var container: Container
+    private lateinit var fakePlayback: FakePlayback
 
     @Before
     fun setUp() {
@@ -45,7 +47,8 @@ class MediaControlTest {
         mediaControl = MediaControl(core)
 
         core.activeContainer = container
-        container.playback = FakePlayback()
+        fakePlayback = FakePlayback()
+        container.playback = fakePlayback
     }
 
     @After
@@ -418,6 +421,19 @@ class MediaControlTest {
         assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
+    @Test
+    fun shouldHideMediaControlWhenWillLoadSource(){
+        fakePlayback.fakeState = Playback.State.PAUSED
+        core.activePlayback?.trigger(Event.DID_PAUSE.value)
+
+        container.trigger(InternalEvent.WILL_LOAD_SOURCE.value)
+
+        assertEquals(mediaControl.visibility, UIPlugin.Visibility.HIDDEN)
+        assertEquals(View.INVISIBLE, mediaControl.backgroundView.visibility)
+        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
+        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+    }
+
     private fun setupFakeMediaControlPlugins(panel: Panel, position: Position, sequenceOption: String? = null) {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
@@ -485,6 +501,11 @@ class MediaControlTest {
             override val name: String = "fakePlayback"
             override fun supportsSource(source: String, mimeType: String?) = true
         }
+
+        override val state: State
+            get() = fakeState
+
+        var fakeState: State = State.IDLE
     }
 
     class FakePlugin(core: Core) : MediaControl.Plugin(core) {
