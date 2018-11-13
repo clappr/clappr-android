@@ -256,8 +256,8 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     override fun render() {
         setupPlugins()
-        Handler().post {layoutPlugins()}
-        show()
+        Handler().post { layoutPlugins() }
+        hide()
         hideModalPanel()
     }
 
