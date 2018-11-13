@@ -117,7 +117,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val canPlay: Boolean
         get() = currentState == State.PAUSED ||
                 currentState == State.IDLE ||
-                (currentState == State.STALLED && player?.playWhenReady == false)
+                (currentState == State.STALLING && player?.playWhenReady == false)
 
     override val canPause: Boolean
         get() = canPause(currentState) &&
@@ -127,7 +127,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 }
 
     private fun canPause(state: State) =
-            state == State.PLAYING || state == State.STALLED || state == State.IDLE
+            state == State.PLAYING || state == State.STALLING || state == State.IDLE
 
 
     override val canSeek: Boolean
@@ -246,12 +246,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun load(source: String, mimeType: String?): Boolean {
-        trigger(Event.WILL_CHANGE_SOURCE)
+        trigger(Event.WILL_LOAD_SOURCE)
         this.source = source
         this.mimeType = mimeType
         stop()
         setupPlayer()
-        trigger(Event.DID_CHANGE_SOURCE)
+        trigger(Event.DID_LOAD_SOURCE)
         return true
     }
 
@@ -389,8 +389,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun handleExoplayerBufferingState() {
         if (currentState != State.NONE) {
-            currentState = State.STALLED
-            trigger(Event.STALLED)
+            currentState = State.STALLING
+            trigger(Event.STALLING)
         }
     }
 

@@ -56,7 +56,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         updateLiveStatus()
         stopPlaybackListeners()
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_CHANGE_SOURCE.value, Callback.wrap { bindEventListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { bindEventListeners() }))
             playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_BUFFER.value, Callback.wrap { updateBuffered(it) }))
             playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { updatePosition(it) }))
             playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))

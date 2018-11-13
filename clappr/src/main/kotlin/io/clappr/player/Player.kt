@@ -64,9 +64,9 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
          */
         PAUSED,
         /**
-         * Media playback is stalled.
+         * Media playback is stalling.
          */
-        STALLED,
+        STALLING,
         /**
          * Player or Media error
          */
@@ -134,7 +134,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Playback.State.IDLE -> State.IDLE
             Playback.State.PLAYING -> State.PLAYING
             Playback.State.PAUSED -> State.PAUSED
-            Playback.State.STALLED -> State.STALLED
+            Playback.State.STALLING -> State.STALLING
             Playback.State.ERROR -> State.ERROR
         }
 

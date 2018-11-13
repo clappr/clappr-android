@@ -23,7 +23,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     enum class State {
-        NONE, IDLE, PLAYING, PAUSED, STALLED, ERROR
+        NONE, IDLE, PLAYING, PAUSED, STALLING, ERROR
     }
 
     companion object : PlaybackSupportInterface {

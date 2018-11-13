@@ -197,23 +197,23 @@ open class MediaPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerStalledEvents() {
-        var stalledCallbackCalled = false
-        mediaPlayerPlayback.on(Event.STALLED.value, Callback.wrap { _ : Bundle? -> stalledCallbackCalled = true })
+    fun shouldTriggerStallingEvents() {
+        var stallingCallbackCalled = false
+        mediaPlayerPlayback.on(Event.STALLING.value, Callback.wrap { _ : Bundle? -> stallingCallbackCalled = true })
         var playingCallbackCalled : Boolean
         mediaPlayerPlayback.on(Event.PLAYING.value, Callback.wrap { _ : Bundle? -> playingCallbackCalled = true })
 
         validMedia.scheduleBufferUnderrunAtOffset(150, 100)
 
         mediaPlayerPlayback.play()
-        assertFalse("stalled callback called", stalledCallbackCalled)
+        assertFalse("stalling callback called", stallingCallbackCalled)
 
         scheduler.advanceBy(100)
-        assertFalse("stalled callback called", stalledCallbackCalled)
+        assertFalse("stalling callback called", stallingCallbackCalled)
 
         playingCallbackCalled = false
         scheduler.advanceBy(50)
-        assertTrue("stalled callback not called", stalledCallbackCalled)
+        assertTrue("stalling callback not called", stallingCallbackCalled)
         assertFalse("playing callback called", playingCallbackCalled)
 
         scheduler.advanceBy(100)

@@ -40,7 +40,7 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
         stopPlaybackListeners()
         core.activePlayback?.let {
             updateValue(null)
-            playbackListenerIds.add(listenTo(it, Event.DID_CHANGE_SOURCE.value, Callback.wrap { setupPlaybackListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { setupPlaybackListeners() }))
             playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { updateValue(it) }))
                     playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
         }

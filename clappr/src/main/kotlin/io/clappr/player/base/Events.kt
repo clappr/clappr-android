@@ -27,9 +27,9 @@ enum class Event(val value: String) {
      */
     DID_PAUSE("didPause"),
     /**
-     * Changed to STALLED state
+     * Changed to STALLING state
      */
-    STALLED("stalled"),
+    STALLING("stalling"),
     /**
      * Media playback stopped
      */
@@ -39,9 +39,9 @@ enum class Event(val value: String) {
      */
     DID_SEEK("didSeek"),
     /**
-     * Media source changed
+     * Media source load
      */
-    DID_CHANGE_SOURCE("didChangeSource"),
+    DID_LOAD_SOURCE("didLoadSource"),
 
 
     /**
@@ -71,9 +71,9 @@ enum class Event(val value: String) {
      */
     WILL_STOP("willStop"),
     /**
-     * Will change media source
+     * Will load media source
      */
-    WILL_CHANGE_SOURCE("willChangeSource"),
+    WILL_LOAD_SOURCE("willLoadSource"),
 
     /**
      * Player is requesting to enter fullscreen
