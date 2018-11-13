@@ -151,6 +151,46 @@ class MediaControlTest {
     }
 
     @Test
+    fun shouldShowControlsPanelWhenModalWasVisibleAndClosed(){
+        triggerOpenModalPanelEvent()
+
+        triggerCloseModalPanelEvent()
+
+        assertEquals(View.VISIBLE, mediaControl.controlsPanel.visibility)
+    }
+
+    @Test
+    fun shouldKeepControlsPanelVisibilityWhenCloseModalEventWasTriggeredWithHiddenModalPanel(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.hide()
+
+        triggerCloseModalPanelEvent()
+
+        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
+    }
+
+    @Test
+    fun shouldShowForegroundControlsPanelWhenModalWasVisibleAndClosed(){
+        triggerOpenModalPanelEvent()
+
+        triggerCloseModalPanelEvent()
+
+        assertEquals(View.VISIBLE, mediaControl.foregroundControlsPanel.visibility)
+    }
+
+
+    @Test
+    fun shouldKeepForegroundControlsPanelVisibilityWhenCloseModalEventWasTriggeredWithHiddenModalPanel(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.hide()
+
+        triggerCloseModalPanelEvent()
+
+        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+    }
+
+
+    @Test
     fun shouldSendDidOpenModalPanelEventWhenModalPanelWasOpened() {
         var didOpenModalPanelEventWasSent = false
 
