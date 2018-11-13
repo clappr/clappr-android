@@ -474,6 +474,18 @@ class MediaControlTest {
         assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
     }
 
+    @Test
+    fun shouldRenderWithHiddenMediaControl(){
+        fakePlayback.fakeState = Playback.State.PAUSED
+
+        mediaControl.render()
+
+        assertEquals(mediaControl.visibility, UIPlugin.Visibility.HIDDEN)
+        assertEquals(View.INVISIBLE, mediaControl.backgroundView.visibility)
+        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
+        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+    }
+
     private fun setupFakeMediaControlPlugins(panel: Panel, position: Position, sequenceOption: String? = null) {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
