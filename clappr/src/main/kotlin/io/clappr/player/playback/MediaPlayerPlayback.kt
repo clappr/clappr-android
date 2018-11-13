@@ -96,7 +96,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             val bundle = Bundle()
 
             bundle.putDouble("percentage", percent.toDouble())
-            trigger(Event.BUFFER_UPDATE.value, bundle)
+            trigger(Event.DID_UPDATE_BUFFER.value, bundle)
         }
 
         mediaPlayer.setOnCompletionListener {

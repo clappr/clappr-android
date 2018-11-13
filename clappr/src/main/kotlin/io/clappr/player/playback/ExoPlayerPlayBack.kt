@@ -324,7 +324,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val currentBufferPercentage = bufferPercentage
 
         bundle.putDouble("percentage", currentBufferPercentage)
-        trigger(Event.BUFFER_UPDATE.value, bundle)
+        trigger(Event.DID_UPDATE_BUFFER.value, bundle)
         lastBufferPercentageSent = currentBufferPercentage
     }
 
@@ -335,7 +335,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition)
-        trigger(Event.POSITION_UPDATE.value, bundle)
+        trigger(Event.DID_UPDATE_POSITION.value, bundle)
         lastPositionSent = currentPosition
     }
 

@@ -47,11 +47,11 @@ enum class Event(val value: String) {
     /**
      * Media buffer percentage updated
      */
-    BUFFER_UPDATE("bufferUpdate"),
+    DID_UPDATE_BUFFER("bufferUpdate"),
     /**
      * Media position updated
      */
-    POSITION_UPDATE("positionUpdate"),
+    DID_UPDATE_POSITION("positionUpdate"),
 
 
     /**

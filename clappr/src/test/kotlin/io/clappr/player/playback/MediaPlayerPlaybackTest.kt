@@ -264,7 +264,7 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldHandleBufferingUpdate() {
         var bufferPercentage = Double.NaN
-        mediaPlayerPlayback.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> bufferPercentage = bundle!!.getDouble("percentage") })
+        mediaPlayerPlayback.on(Event.DID_UPDATE_BUFFER.value, Callback.wrap { bundle: Bundle? -> bufferPercentage = bundle!!.getDouble("percentage") })
 
         validMedia.scheduleEventAtOffset(100, { mp, smp -> (smp as MediaPlayerTestShadow).invokeBufferingUpdateListener(mp, 10)})
 

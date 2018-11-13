@@ -91,7 +91,7 @@ class TimeIndicatorPluginTest {
 
         val bundle = Bundle().apply { putDouble("time", expectedPosition) }
 
-        container.playback?.trigger(Event.POSITION_UPDATE.value, bundle)
+        container.playback?.trigger(Event.DID_UPDATE_POSITION.value, bundle)
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
         assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
@@ -104,7 +104,7 @@ class TimeIndicatorPluginTest {
 
         setupFakePlayback(duration = expectedDuration)
 
-        container.playback?.trigger(Event.POSITION_UPDATE.value, Bundle())
+        container.playback?.trigger(Event.DID_UPDATE_POSITION.value, Bundle())
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
         assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
@@ -117,7 +117,7 @@ class TimeIndicatorPluginTest {
 
         setupFakePlayback(duration = expectedDuration)
 
-        container.playback?.trigger(Event.POSITION_UPDATE.value, null)
+        container.playback?.trigger(Event.DID_UPDATE_POSITION.value, null)
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
         assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
@@ -148,7 +148,7 @@ class TimeIndicatorPluginTest {
             currentPlaybackState = Playback.State.PLAYING
         }
 
-        container.playback?.trigger(Event.POSITION_UPDATE.value)
+        container.playback?.trigger(Event.DID_UPDATE_POSITION.value)
 
         assertEquals(View.GONE, timeIndicatorPlugin.view?.visibility)
     }
