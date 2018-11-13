@@ -10,8 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import io.clappr.player.Player
+import io.clappr.player.app.plugin.LabelPlugin
+import io.clappr.player.app.plugin.NextVideoPlugin
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
+import io.clappr.player.plugin.Loader
 
 class  PlayerActivity : Activity() {
 
@@ -26,6 +29,9 @@ class  PlayerActivity : Activity() {
 
         videoUrl.setText("http://clappr.io/highline.mp4", TextView.BufferType.EDITABLE)
         changeVideo.setOnClickListener { changeVideo() }
+
+        Loader.registerPlugin(LabelPlugin::class)
+        Loader.registerPlugin(NextVideoPlugin::class)
 
         player = Player()
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
