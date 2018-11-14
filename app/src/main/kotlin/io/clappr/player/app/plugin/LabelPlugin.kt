@@ -16,10 +16,8 @@ import io.clappr.player.plugin.container.UIContainerPlugin
 open class LabelPlugin(container: Container) : UIContainerPlugin(container) {
 
     companion object : NamedType {
-        override val name = "mycontainer"
+        override val name = "label"
     }
-
-    override var state: State = State.ENABLED
 
     override val view: View = LinearLayout(context)
 

@@ -1,8 +1,9 @@
 package io.clappr.player.app.plugin
 
+import android.graphics.Color
+import android.view.Gravity
 import android.view.View
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
@@ -17,16 +18,16 @@ import io.clappr.player.plugin.core.UICorePlugin
 open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     companion object : NamedType {
-        override val name = "mycore"
+        override val name = "nextVideo"
     }
 
     override var state: State = State.ENABLED
 
-    override val view: View = LinearLayout(context)
+    override val view: View = RelativeLayout(context)
 
-    private val videoList = mapOf(
-            "http://clappr.io/poster.png" to "http://clappr.io/highline.mp4",
-            "http://clappr.io/poster.png" to "http://clappr.io/highline.mp4"
+    private val videoList = listOf(
+            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),
+            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4")
     )
 
     private val playbackListenerIds = mutableListOf<String>()
@@ -36,37 +37,56 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         bindCoreEvents()
     }
 
+    private fun bindCoreEvents() {
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+            bindPlaybackEvents()
+        })
+    }
+
+    private fun bindPlaybackEvents() {
+        stopPlaybackListeners()
+
+        core.activePlayback?.let {
+            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hideNextVideo()))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showNextVideo()))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showNextVideo()))
+        }
+    }
+
     private fun setupLayout() {
-        (view as LinearLayout).apply {
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT)
-            orientation = LinearLayout.HORIZONTAL
+        (view as RelativeLayout).apply {
+            layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT).apply {
+                gravity = Gravity.BOTTOM
+            }
 
-            videoList.entries.forEach { entry ->
-                val positionedRelativeLayoutPoster = getPositionedPosterRelativeLayout().apply {
-                    addView(getPoster(entry.key))
-                    addView(getPosterPlayIcon())
-                }
+            var rightOf: Int? = null
+            videoList.forEachIndexed { index, entry ->
+                val positionedRelativeLayoutPoster = getPositionedPosterRelativeLayout(entry, rightOf)
+                positionedRelativeLayoutPoster.id = index+1
 
-                val relativeLayout = RelativeLayout(context).apply {
-                    layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                            RelativeLayout.LayoutParams.MATCH_PARENT)
-                    setOnClickListener { onClick(entry.value) }
-                    addView(positionedRelativeLayoutPoster)
-                }
-
-                addView(relativeLayout)
+                addView(positionedRelativeLayoutPoster)
+                rightOf = positionedRelativeLayoutPoster.id
             }
         }
     }
 
-    private fun getPositionedPosterRelativeLayout(): RelativeLayout {
+    private fun getPositionedPosterRelativeLayout(entry: Pair<String, String>, rightOf: Int?): RelativeLayout {
         val paramsPoster = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
                 .apply {
-                    addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
-                    addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                    setMargins(10,10, 10, 10)
+                    rightOf?.let { addRule(RelativeLayout.RIGHT_OF, it) }
                 }
 
-        return RelativeLayout(context).apply { layoutParams = paramsPoster }
+        return RelativeLayout(context).apply {
+            layoutParams = paramsPoster
+            setPadding(1, 1, 1, 1)
+            setBackgroundColor(Color.RED)
+
+            addView(getPoster(entry.first))
+            addView(getPosterPlayIcon())
+
+            setOnClickListener { onClick(entry.second) }
+        }
     }
 
     private fun getPoster(url: String): ImageView {
@@ -82,28 +102,12 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         }
     }
 
-    private fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
-            bindPlaybackEvents()
-        })
-    }
-
-    open fun bindPlaybackEvents() {
-        stopPlaybackListeners()
-
-        core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hidePlayList()))
-            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showPlayList()))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showPlayList()))
-        }
-    }
-
-    private fun hidePlayList() = Callback.wrap {
+    private fun hideNextVideo() = Callback.wrap {
         hide()
     }
 
 
-    private fun showPlayList() = Callback.wrap {
+    private fun showNextVideo() = Callback.wrap {
         show()
     }
 
