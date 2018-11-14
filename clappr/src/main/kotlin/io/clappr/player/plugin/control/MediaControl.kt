@@ -207,8 +207,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     open fun show(timeout: Long) {
         visibility = Visibility.VISIBLE
         backgroundView.visibility = View.VISIBLE
-        controlsPanel.visibility = View.VISIBLE
-        foregroundControlsPanel.visibility = View.VISIBLE
+        showDefaultMediaControlPanels()
 
         lastInteractionTime = SystemClock.elapsedRealtime()
 
@@ -239,11 +238,16 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     private fun closeModal() {
-        controlsPanel.visibility = View.VISIBLE
-        foregroundControlsPanel.visibility = View.VISIBLE
+        if(modalPanel.visibility == View.VISIBLE)
+            showDefaultMediaControlPanels()
 
         hideModalPanel()
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
+    }
+
+    private fun showDefaultMediaControlPanels() {
+        controlsPanel.visibility = View.VISIBLE
+        foregroundControlsPanel.visibility = View.VISIBLE
     }
 
     private fun hideModalPanel() {
@@ -252,8 +256,8 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     override fun render() {
         setupPlugins()
-        Handler().post {layoutPlugins()}
-        show()
+        Handler().post { layoutPlugins() }
+        hide()
         hideModalPanel()
     }
 
