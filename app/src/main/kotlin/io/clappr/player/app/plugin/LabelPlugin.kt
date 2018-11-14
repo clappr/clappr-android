@@ -62,7 +62,7 @@ open class LabelPlugin(container: Container) : UIContainerPlugin(container) {
 
     private fun updateLabel(text: String): Callback {
         return Callback.wrap {
-            label.text = text
+            label.text = "Status: $text"
 
             view.bringToFront()
             show()
@@ -74,7 +74,7 @@ open class LabelPlugin(container: Container) : UIContainerPlugin(container) {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.END
 
-            label.setTextColor(Color.RED)
+            label.setTextColor(Color.BLACK)
             label.setBackgroundColor(Color.WHITE)
             label.setPadding(5,2,5,2)
 
