@@ -1,9 +1,11 @@
 package io.clappr.player.app.plugin
 
-import android.graphics.Color
 import android.view.View
+import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.RelativeLayout
+import com.squareup.picasso.Picasso
+import io.clappr.player.app.R
 import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
@@ -27,7 +29,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
             "http://clappr.io/poster.png" to "http://clappr.io/highline.mp4"
     )
 
-    internal val playbackListenerIds = mutableListOf<String>()
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         setupLayout()
@@ -40,20 +42,47 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
             orientation = LinearLayout.HORIZONTAL
 
             videoList.entries.forEach { entry ->
-                val poster = TextView(context)
-                poster.text = entry.key
-                poster.setTextColor(Color.RED)
-                poster.setBackgroundColor(Color.WHITE)
-                poster.setPadding(15,12,15,12)
+                val positionedRelativeLayoutPoster = getPositionedPosterRelativeLayout().apply {
+                    addView(getPoster(entry.key))
+                    addView(getPosterPlayIcon())
+                }
 
-                poster.setOnClickListener { onClick(entry.value) }
+                val relativeLayout = RelativeLayout(context).apply {
+                    layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
+                            RelativeLayout.LayoutParams.MATCH_PARENT)
+                    setOnClickListener { onClick(entry.value) }
+                    addView(positionedRelativeLayoutPoster)
+                }
 
-                addView(poster)
+                addView(relativeLayout)
             }
         }
     }
 
-    open fun bindCoreEvents() {
+    private fun getPositionedPosterRelativeLayout(): RelativeLayout {
+        val paramsPoster = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
+                .apply {
+                    addRule(RelativeLayout.ALIGN_PARENT_BOTTOM)
+                    addRule(RelativeLayout.ALIGN_PARENT_RIGHT)
+                }
+
+        return RelativeLayout(context).apply { layoutParams = paramsPoster }
+    }
+
+    private fun getPoster(url: String): ImageView {
+        val poster = ImageView(context)
+        Picasso.get().load(url).resize(400, 200).into(poster)
+        return poster
+    }
+
+    private fun getPosterPlayIcon(): ImageView {
+        return ImageView(context).apply {
+            setBackgroundResource(R.drawable.ic_play)
+            layoutParams = RelativeLayout.LayoutParams(50, 50).apply { addRule(RelativeLayout.CENTER_IN_PARENT) }
+        }
+    }
+
+    private fun bindCoreEvents() {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
             bindPlaybackEvents()
         })
@@ -70,13 +99,13 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun hidePlayList() = Callback.wrap {
-            hide()
-        }
+        hide()
+    }
 
 
     private fun showPlayList() = Callback.wrap {
-            show()
-        }
+        show()
+    }
 
 
     private fun stopPlaybackListeners() {
