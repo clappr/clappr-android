@@ -97,7 +97,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     private fun getPosterPlayIcon(): ImageView {
         return ImageView(context).apply {
-            setBackgroundResource(R.drawable.ic_play)
+            setBackgroundResource(R.drawable.icon_play)
             layoutParams = RelativeLayout.LayoutParams(50, 50).apply { addRule(RelativeLayout.CENTER_IN_PARENT) }
         }
     }
