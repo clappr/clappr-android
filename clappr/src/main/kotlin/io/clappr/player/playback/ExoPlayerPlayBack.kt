@@ -2,6 +2,7 @@ package io.clappr.player.playback
 
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.media.UnsupportedSchemeException
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -307,11 +308,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context?.packageName), bandwidthMeter)
-
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
+        var drmSessionManager : DrmSessionManager<FrameworkMediaCrypto>? = null
 
-        return DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null, mainHandler, drmEventsListeners)
-                .apply { drmLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) } }
+        try {
+            drmSessionManager = DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null)
+                    .apply {
+                        addListener(mainHandler, drmEventsListeners)
+                        drmLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) }
+                    }
+        }
+        catch (schemeException: UnsupportedSchemeException) { handleError(schemeException) }
+        catch (drmException: UnsupportedDrmException) { handleError(drmException) }
+
+        return drmSessionManager
     }
 
     private fun checkPeriodicUpdates() {
