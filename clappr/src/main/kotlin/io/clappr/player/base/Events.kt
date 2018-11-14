@@ -39,7 +39,7 @@ enum class Event(val value: String) {
      */
     DID_SEEK("didSeek"),
     /**
-     * Media source load
+     * Media source loaded
      */
     DID_LOAD_SOURCE("didLoadSource"),
 
