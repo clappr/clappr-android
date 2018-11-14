@@ -41,7 +41,7 @@ open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         stopPlaybackListeners()
 
         container.playback?.let {
-            playbackListenerIds.add(listenTo(it, Event.STALLED.value, startAnimating()))
+            playbackListenerIds.add(listenTo(it, Event.STALLING.value, startAnimating()))
             playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, startAnimating()))
             playbackListenerIds.add(listenTo(it, Event.PLAYING.value, stopAnimating()))
             playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, stopAnimating()))

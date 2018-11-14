@@ -1,6 +1,5 @@
 package io.clappr.player
 
-import android.os.Bundle
 import io.clappr.player.base.*
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
@@ -133,8 +132,8 @@ open class PlayerTest {
         assertEquals("invalid state (not PAUSED)", Player.State.PAUSED, player.state)
         testPlayback.internalState = Playback.State.PLAYING
         assertEquals("invalid state (not PLAYING)", Player.State.PLAYING, player.state)
-        testPlayback.internalState = Playback.State.STALLED
-        assertEquals("invalid state (not STALLED)", Player.State.STALLED, player.state)
+        testPlayback.internalState = Playback.State.STALLING
+        assertEquals("invalid state (not STALLING)", Player.State.STALLING, player.state)
     }
 
     @Test

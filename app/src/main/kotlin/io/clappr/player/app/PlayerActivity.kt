@@ -31,7 +31,7 @@ class  PlayerActivity : Activity() {
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
         player.on(Event.PLAYING.value, Callback.wrap { Logger.info("App","Playing") })
         player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("App", "Completed") })
-        player.on(Event.BUFFER_UPDATE.value, Callback.wrap { bundle: Bundle? -> Logger.info("App","Buffer update: ${bundle?.getDouble("percentage")}") })
+        player.on(Event.DID_UPDATE_BUFFER.value, Callback.wrap { bundle: Bundle? -> Logger.info("App","Buffer update: ${bundle?.getDouble("percentage")}") })
         player.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { Logger.info("App","Enter full screen"); enterFullscreen() })
         player.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { Logger.info("App","Exit full screen"); exitFullscreen() })
 
