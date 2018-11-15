@@ -220,7 +220,7 @@ class SeekbarPluginTest {
 
         setupViewWidth(500, 8)
 
-        core.activePlayback?.trigger(Event.BUFFER_UPDATE.value, bundle)
+        core.activePlayback?.trigger(Event.DID_UPDATE_BUFFER.value, bundle)
 
         assertEquals(expectedBufferedBarWidth, seekbarPlugin.bufferedBar.layoutParams.width)
     }
@@ -232,7 +232,7 @@ class SeekbarPluginTest {
         setupViewWidth(500, 8)
         seekbarPlugin.bufferedBar.layoutParams.apply { width = 100 }
 
-        core.activePlayback?.trigger(Event.BUFFER_UPDATE.value)
+        core.activePlayback?.trigger(Event.DID_UPDATE_BUFFER.value)
 
         assertEquals(expectedBufferedBarWidth, seekbarPlugin.bufferedBar.layoutParams.width)
     }
@@ -271,7 +271,7 @@ class SeekbarPluginTest {
 
         setupViewWidth(500, 8)
 
-        core.activePlayback?.trigger(Event.POSITION_UPDATE.value, bundle)
+        core.activePlayback?.trigger(Event.DID_UPDATE_POSITION.value, bundle)
 
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
@@ -287,7 +287,7 @@ class SeekbarPluginTest {
         seekbarPlugin.positionBar.layoutParams.width = 100
         seekbarPlugin.scrubberView.x = 100f
 
-        core.activePlayback?.trigger(Event.POSITION_UPDATE.value)
+        core.activePlayback?.trigger(Event.DID_UPDATE_POSITION.value)
 
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
@@ -304,7 +304,7 @@ class SeekbarPluginTest {
         setupViewWidth(500, 8)
 
         seekbarPlugin.dragging = true
-        core.activePlayback?.trigger(Event.POSITION_UPDATE.value, bundle)
+        core.activePlayback?.trigger(Event.DID_UPDATE_POSITION.value, bundle)
 
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)

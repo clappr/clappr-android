@@ -52,7 +52,7 @@ class LoadingPluginTest {
         val newPlayback = FakePlayback()
         container.playback = newPlayback
 
-        oldPlayback?.trigger(Event.STALLED.value)
+        oldPlayback?.trigger(Event.STALLING.value)
 
         assertEquals(UIPlugin.Visibility.HIDDEN, loadingPlugin.visibility)
     }
@@ -70,10 +70,10 @@ class LoadingPluginTest {
     }
 
     @Test
-    fun shouldStartAnimationWhenStalledIsTriggered() {
+    fun shouldStartAnimationWhenStallingIsTriggered() {
         setupViewHidden()
 
-        container.playback?.trigger(Event.STALLED.value)
+        container.playback?.trigger(Event.STALLING.value)
 
         assertVisibleView(loadingPlugin)
     }
