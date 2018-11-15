@@ -38,7 +38,7 @@ open class LabelPlugin(container: Container) : UIContainerPlugin(container) {
         stopPlaybackListeners()
 
         container.playback?.let {
-            playbackListenerIds.add(listenTo(it, Event.STALLED.value, updateLabel("loading")))
+            playbackListenerIds.add(listenTo(it, Event.STALLING.value, updateLabel("loading")))
             playbackListenerIds.add(listenTo(it, Event.PLAYING.value, hideLabel()))
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, updateLabel("paused")))
             playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateLabel("stopped")))
