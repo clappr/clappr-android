@@ -1,6 +1,5 @@
 package io.clappr.player.plugin.control
 
-import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
@@ -89,9 +88,9 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayButtonBeHiddenWhenStalledOnRender() {
+    fun shouldPlayButtonBeHiddenWhenStallingOnRender() {
         setupViewVisible(playButton)
-        setupFakePlayback(state = Playback.State.STALLED)
+        setupFakePlayback(state = Playback.State.STALLING)
 
         playButton.render()
 
@@ -99,11 +98,11 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayButtonBeHiddenWhileStallingWhenEventStalledIsTriggered() {
+    fun shouldPlayButtonBeHiddenWhileStallingWhenEventStallingIsTriggered() {
         setupViewVisible(playButton)
-        setupFakePlayback(state = Playback.State.STALLED)
+        setupFakePlayback(state = Playback.State.STALLING)
 
-        core.activePlayback?.trigger(Event.STALLED.value)
+        core.activePlayback?.trigger(Event.STALLING.value)
 
         assertHiddenView(playButton)
     }
@@ -141,7 +140,7 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledOnRender() {
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStallingOnRender() {
         setupViewHidden(playButton)
         playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)
@@ -153,18 +152,18 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidPauseIsTriggered() {
-        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_PAUSE.value)
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStallingWhenEventDidPauseIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStallingAndEventIsTriggered(Event.DID_PAUSE.value)
     }
 
     @Test
-    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidStopIsTriggered() {
-        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_STOP.value)
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStallingWhenEventDidStopIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStallingAndEventIsTriggered(Event.DID_STOP.value)
     }
 
     @Test
-    fun shouldPlayIconBeVisibleWhileNotPlayingOrStalledWhenEventDidCompleteIsTriggered() {
-        assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(Event.DID_COMPLETE.value)
+    fun shouldPlayIconBeVisibleWhileNotPlayingOrStallingWhenEventDidCompleteIsTriggered() {
+        assertPlayIconWhenPlaybackIsNotPlayingOrStallingAndEventIsTriggered(Event.DID_COMPLETE.value)
     }
 
     @Test
@@ -207,7 +206,7 @@ class PlayButtonTest {
         assertTrue(playbackWasPlayed)
     }
 
-    private fun assertPlayIconWhenPlaybackIsNotPlayingOrStalledAndEventIsTriggered(event: String) {
+    private fun assertPlayIconWhenPlaybackIsNotPlayingOrStallingAndEventIsTriggered(event: String) {
         setupViewHidden(playButton)
         playButton.view.isSelected = true
         setupFakePlayback(state = Playback.State.PAUSED)

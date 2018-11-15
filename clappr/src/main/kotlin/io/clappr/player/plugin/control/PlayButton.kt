@@ -49,7 +49,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
             playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateStateCallback))
             playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, updateStateCallback))
             playbackListenerIds.add(listenTo(it, Event.PLAYING.value, updateStateCallback))
-            playbackListenerIds.add(listenTo(it, Event.STALLED.value, updateStateCallback))
+            playbackListenerIds.add(listenTo(it, Event.STALLING.value, updateStateCallback))
         }
     }
 
@@ -61,7 +61,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
     open fun updateState() {
         core.activePlayback?.let {
             when (it.state) {
-                Playback.State.STALLED -> hide()
+                Playback.State.STALLING -> hide()
                 Playback.State.PLAYING -> if (it.canPause) showPauseIcon() else showStopIcon()
                 else -> showPlayIcon()
             }
