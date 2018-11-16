@@ -96,7 +96,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             val bundle = Bundle()
 
             bundle.putDouble("percentage", percent.toDouble())
-            trigger(Event.BUFFER_UPDATE.value, bundle)
+            trigger(Event.DID_UPDATE_BUFFER.value, bundle)
         }
 
         mediaPlayer.setOnCompletionListener {
@@ -197,7 +197,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             InternalState.ATTACHED, InternalState.PREPARED, InternalState.STOPPED -> { State.IDLE }
             InternalState.STARTED -> { State.PLAYING }
             InternalState.PAUSED -> { State.PAUSED }
-            InternalState.BUFFERING -> { State.STALLED }
+            InternalState.BUFFERING -> { State.STALLING }
             InternalState.ERROR -> { State.ERROR}
         }
     }
@@ -238,7 +238,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     override val canSeek: Boolean
         get() = ( (state != State.NONE) && (state != State.ERROR) && (mediaType == MediaType.VOD) )
     val canStop: Boolean
-        get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLED) )
+        get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLING) )
 
 
     override fun play(): Boolean {
@@ -262,7 +262,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override fun pause(): Boolean {
         return if (canPause) {
-            if ( (state == State.PLAYING) || (state == State.STALLED) ) {
+            if ( (state == State.PLAYING) || (state == State.STALLING) ) {
                 trigger(Event.WILL_PAUSE.value)
                 mediaPlayer.pause()
             }
@@ -321,8 +321,8 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
                 State.ERROR -> {
                     trigger(Event.ERROR.value)
                 }
-                State.STALLED -> {
-                    trigger(Event.STALLED.value)
+                State.STALLING -> {
+                    trigger(Event.STALLING.value)
                 }
                 State.NONE -> { }
             }

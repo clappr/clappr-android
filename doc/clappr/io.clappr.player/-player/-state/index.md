@@ -14,5 +14,5 @@ Player state
 | [IDLE](-i-d-l-e.md) | Player is ready but no media is loaded. |
 | [PLAYING](-p-l-a-y-i-n-g.md) | Playing media. |
 | [PAUSED](-p-a-u-s-e-d.md) | Media playback is paused. |
-| [STALLED](-s-t-a-l-l-e-d.md) | Media playback is stalled. |
+| [STALLING](-s-t-a-l-l-i-n-g.md) | Media playback is stalling. |
 | [ERROR](-e-r-r-o-r.md) | Player or Media error |
