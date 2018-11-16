@@ -8,7 +8,15 @@
 
 # Clappr for Android - Beta Version
 
-:exclamation: **Clappr 0.7.0 Beta is finally available! If you know the Alpha version, now we have a media control that allows interaction with the player. Come and play..** :exclamation:
+:exclamation: **Following events was changed to be compatible with clappr for WEB and iOS.** :exclamation:
+
+| Name before 0.10.0 version | New Name |
+|--------------------|-----------|
+|` Event.STALLED` | `Event.STALLING`|
+|` InternalEvent.WILL_CHANGE_SOURCE` | `InternalEvent.WILL_LOAD_SOURCE`|
+|` InternalEvent.DID_CHANGE_SOURCE` | `InternalEvent.DID_LOAD_SOURCE`|
+|` InternalEvent.BUFFER_UPDATE` | `InternalEvent.DID_UPDATE_BUFFER`|
+|` InternalEvent.POSITION_UPDATE` | `InternalEvent.DID_UPDATE_POSITION`|
 
 ## Using the Player
 
@@ -63,7 +71,7 @@ dependencies {
     implementation "com.android.support:support-v4:27.1.1"
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 
-    implementation "io.clappr.player:clappr:0.7.0"
+    implementation "io.clappr.player:clappr:0.10.0"
     ...
 }
 ```
