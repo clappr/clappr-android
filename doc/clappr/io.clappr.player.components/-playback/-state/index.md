@@ -12,5 +12,5 @@
 | [IDLE](-i-d-l-e.md) |  |
 | [PLAYING](-p-l-a-y-i-n-g.md) |  |
 | [PAUSED](-p-a-u-s-e-d.md) |  |
-| [STALLED](-s-t-a-l-l-e-d.md) |  |
+| [STALLING](-s-t-a-l-l-i-n-g.md) |  |
 | [ERROR](-e-r-r-o-r.md) |  |
