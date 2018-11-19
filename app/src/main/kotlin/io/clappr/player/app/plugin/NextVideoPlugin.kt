@@ -1,9 +1,8 @@
 package io.clappr.player.app.plugin
 
-import android.graphics.Color
-import android.view.Gravity
-import android.view.View
+import android.view.LayoutInflater
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
@@ -23,9 +22,14 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     override var state: State = State.ENABLED
 
-    override val view: View = RelativeLayout(context)
+    override val view by lazy {
+        LayoutInflater.from(context).inflate(R.layout.next_video_plugin, null) as RelativeLayout
+    }
+
+    open val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
 
     private val videoList = listOf(
+            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),
             Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),
             Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4")
     )
@@ -54,53 +58,18 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun setupLayout() {
-        (view as RelativeLayout).apply {
-            layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT).apply {
-                gravity = Gravity.BOTTOM
+        videoList.forEach { entry ->
+            videoListView.addView(getNextVideoView(entry))
+        }
+    }
+
+    private fun getNextVideoView(entry: Pair<String, String>) =
+            (LayoutInflater.from(context).inflate(R.layout.next_video_item, null) as RelativeLayout).apply {
+                val videoPoster = findViewById<ImageView>(R.id.video_poster)
+                Picasso.get().load(entry.first).resize(300, 150).into(videoPoster)
+
+                setOnClickListener { onClick(entry.second) }
             }
-
-            var rightOf: Int? = null
-            videoList.forEachIndexed { index, entry ->
-                val positionedRelativeLayoutPoster = getPositionedPosterRelativeLayout(entry, rightOf)
-                positionedRelativeLayoutPoster.id = index+1
-
-                addView(positionedRelativeLayoutPoster)
-                rightOf = positionedRelativeLayoutPoster.id
-            }
-        }
-    }
-
-    private fun getPositionedPosterRelativeLayout(entry: Pair<String, String>, rightOf: Int?): RelativeLayout {
-        val paramsPoster = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT)
-                .apply {
-                    setMargins(10,10, 10, 10)
-                    rightOf?.let { addRule(RelativeLayout.RIGHT_OF, it) }
-                }
-
-        return RelativeLayout(context).apply {
-            layoutParams = paramsPoster
-            setPadding(1, 1, 1, 1)
-            setBackgroundColor(Color.RED)
-
-            addView(getPoster(entry.first))
-            addView(getPosterPlayIcon())
-
-            setOnClickListener { onClick(entry.second) }
-        }
-    }
-
-    private fun getPoster(url: String): ImageView {
-        val poster = ImageView(context)
-        Picasso.get().load(url).resize(400, 200).into(poster)
-        return poster
-    }
-
-    private fun getPosterPlayIcon(): ImageView {
-        return ImageView(context).apply {
-            setBackgroundResource(R.drawable.icon_play)
-            layoutParams = RelativeLayout.LayoutParams(50, 50).apply { addRule(RelativeLayout.CENTER_IN_PARENT) }
-        }
-    }
 
     private fun hideNextVideo() = Callback.wrap {
         hide()
