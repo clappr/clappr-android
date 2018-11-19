@@ -102,7 +102,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             }
         }
 
-    internal val loader = Loader()
+    private val loader = Loader()
 
     /**
      * Media current position in seconds.
@@ -138,11 +138,11 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Playback.State.ERROR -> State.ERROR
         }
 
-    val playbackEventsIds = mutableSetOf<String>()
+    private val playbackEventsIds = mutableSetOf<String>()
 
-    val containerEventsIds = mutableSetOf<String>()
+    private val containerEventsIds = mutableSetOf<String>()
 
-    var playerViewGroup: ViewGroup? = null
+    private var playerViewGroup: ViewGroup? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
@@ -180,7 +180,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         load()
     }
 
-    private fun createCore(options: Options){
+    private fun createCore(options: Options) {
         core = Core(loader, options)
     }
 
@@ -209,7 +209,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         return load(source, null)
     }
 
-    fun load(){
+    private fun load() {
         core?.load()
     }
 
