@@ -1,8 +1,8 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [BUFFER_UPDATE](./-b-u-f-f-e-r_-u-p-d-a-t-e.md)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_UPDATE_BUFFER](./-d-i-d_-u-p-d-a-t-e_-b-u-f-f-e-r.md)
 
-# BUFFER_UPDATE
+# DID_UPDATE_BUFFER
 
-`BUFFER_UPDATE`
+`DID_UPDATE_BUFFER`
 
 Media buffer percentage updated
 

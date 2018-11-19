@@ -1,8 +1,8 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [POSITION_UPDATE](./-p-o-s-i-t-i-o-n_-u-p-d-a-t-e.md)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [DID_UPDATE_POSITION](./-d-i-d_-u-p-d-a-t-e_-p-o-s-i-t-i-o-n.md)
 
-# POSITION_UPDATE
+# DID_UPDATE_POSITION
 
-`POSITION_UPDATE`
+`DID_UPDATE_POSITION`
 
 Media position updated
 

@@ -1,10 +1,10 @@
-[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [STALLED](./-s-t-a-l-l-e-d.md)
+[clappr](../../index.md) / [io.clappr.player.base](../index.md) / [Event](index.md) / [STALLING](./-s-t-a-l-l-i-n-g.md)
 
-# STALLED
+# STALLING
 
-`STALLED`
+`STALLING`
 
-Changed to STALLED state
+Changed to STALLING state
 
 ### Inherited Properties
 
