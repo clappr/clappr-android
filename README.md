@@ -8,15 +8,16 @@
 
 # Clappr for Android - Beta Version
 
-:exclamation: **Following events was changed to be compatible with clappr for WEB and iOS.** :exclamation:
+:exclamation: **Following events were changed to be compatible with clappr for WEB and iOS.** :exclamation:
 
 | Name before 0.10.0 version | New Name |
 |--------------------|-----------|
 |` Event.STALLED` | `Event.STALLING`|
-|` InternalEvent.WILL_CHANGE_SOURCE` | `InternalEvent.WILL_LOAD_SOURCE`|
-|` InternalEvent.DID_CHANGE_SOURCE` | `InternalEvent.DID_LOAD_SOURCE`|
-|` InternalEvent.BUFFER_UPDATE` | `InternalEvent.DID_UPDATE_BUFFER`|
-|` InternalEvent.POSITION_UPDATE` | `InternalEvent.DID_UPDATE_POSITION`|
+|` Event.WILL_CHANGE_SOURCE` | `Event.WILL_LOAD_SOURCE`|
+|` Event.DID_CHANGE_SOURCE` | `Event.DID_LOAD_SOURCE`|
+|` Event.BUFFER_UPDATE` | `Event.DID_UPDATE_BUFFER`|
+|` Event.POSITION_UPDATE` | `Event.DID_UPDATE_POSITION`|
+
 
 ## Using the Player
 
