@@ -34,15 +34,25 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
             Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4")
     )
 
-    private val playbackListenerIds = mutableListOf<String>()
+    internal val playbackListenerIds = mutableListOf<String>()
 
     init {
-        setupLayout()
         bindCoreEvents()
+    }
+
+    override fun destroy() {
+        stopPlaybackListeners()
+        super.destroy()
+    }
+
+    override fun render() {
+        super.render()
+        setupLayout()
     }
 
     private fun bindCoreEvents() {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+            hide()
             bindPlaybackEvents()
         })
     }
@@ -66,7 +76,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     private fun getNextVideoView(entry: Pair<String, String>) =
             (LayoutInflater.from(context).inflate(R.layout.next_video_item, null) as RelativeLayout).apply {
                 val videoPoster = findViewById<ImageView>(R.id.video_poster)
-                Picasso.get().load(entry.first).resize(300, 150).into(videoPoster)
+                Picasso.get().load(entry.first).fit().centerCrop().into(videoPoster)
 
                 setOnClickListener { onClick(entry.second) }
             }
@@ -75,11 +85,9 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         hide()
     }
 
-
     private fun showNextVideo() = Callback.wrap {
         show()
     }
-
 
     private fun stopPlaybackListeners() {
         playbackListenerIds.forEach(::stopListening)
@@ -87,13 +95,8 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun onClick(url: String) {
+        core.activePlayback?.stop()
         core.options.source = url
         core.load()
     }
-
-    override fun destroy() {
-        stopPlaybackListeners()
-        super.destroy()
-    }
-
 }
