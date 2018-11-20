@@ -6,10 +6,7 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -96,7 +93,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     private fun onClick(url: String) {
         core.activePlayback?.stop()
-        core.options.source = url
+        Options(source = url).also { core.options = it }
         core.load()
     }
 }
