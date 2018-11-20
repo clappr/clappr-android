@@ -26,7 +26,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         LayoutInflater.from(context).inflate(R.layout.next_video_plugin, null) as RelativeLayout
     }
 
-    open val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
+    private val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
 
     private val videoList = listOf(
             Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),

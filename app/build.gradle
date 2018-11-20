@@ -27,13 +27,24 @@ android {
     }
     productFlavors {
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
+        test.java.srcDirs += 'src/test/kotlin'
     }
 
     // ignore lint temporarily until gocd can handle the report correctly
     lintOptions {
         abortOnError false
+    }
+
+    testOptions {
+        unitTests.all {
+            jvmArgs '-XX:MaxPermSize=256m'
+        }
+        unitTests {
+            includeAndroidResources = true
+        }
     }
 }
 
@@ -42,4 +53,11 @@ dependencies {
     implementation project(':clappr')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.squareup.picasso:picasso:2.71828'
+
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.robolectric:robolectric:3.8"
+    testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
+    testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+    testImplementation "com.android.support:support-v4:$android_support_version"
 }
