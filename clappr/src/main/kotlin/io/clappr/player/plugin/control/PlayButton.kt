@@ -39,7 +39,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         })
     }
 
-    open fun bindPlaybackEvents() {
+    private fun bindPlaybackEvents() {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
@@ -58,7 +58,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         playbackListenerIds.clear()
     }
 
-    open fun updateState() {
+    private fun updateState() {
         core.activePlayback?.let {
             when (it.state) {
                 Playback.State.STALLING -> hide()
@@ -78,7 +78,7 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
         view.isSelected = false
     }
 
-    open fun showStopIcon() {
+    private fun showStopIcon() {
         hide()
     }
 
