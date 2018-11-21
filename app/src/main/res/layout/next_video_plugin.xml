@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/next_video_plugin_container_padding"
+    android:gravity="end|bottom">
+
+        <TextView
+            android:id="@+id/label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/next_video_plugin_label_padding"
+            android:textColor="@color/next_video_plugin_text_color"
+            android:textSize="@dimen/next_video_plugin_font_size"
+            android:text="@string/play_next_video"/>
+
+        <HorizontalScrollView
+            android:layout_below="@+id/label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:id="@+id/video_list"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+        </HorizontalScrollView>
+
+</RelativeLayout>
