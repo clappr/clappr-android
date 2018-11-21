@@ -11,6 +11,7 @@ import android.widget.EditText
 import android.widget.TextView
 import io.clappr.player.Player
 import io.clappr.player.app.plugin.NextVideoPlugin
+import io.clappr.player.app.plugin.VideoInfoPlugin
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
@@ -21,15 +22,21 @@ class  PlayerActivity : Activity() {
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
     private val changeVideo by lazy { findViewById<Button>(R.id.change_video) }
     private val videoUrl by lazy { findViewById<EditText>(R.id.video_url) }
+    private val videoTitle by lazy { findViewById<EditText>(R.id.video_title) }
+    private val videoSubtitle by lazy { findViewById<EditText>(R.id.video_subtitle) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
         videoUrl.setText("http://clappr.io/highline.mp4", TextView.BufferType.EDITABLE)
+        videoTitle.setText("Highline", TextView.BufferType.EDITABLE)
+        videoSubtitle.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", TextView.BufferType.EDITABLE)
+
         changeVideo.setOnClickListener { changeVideo() }
 
         Loader.registerPlugin(NextVideoPlugin::class)
+        Loader.registerPlugin(VideoInfoPlugin::class)
 
         player = Player()
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
@@ -53,7 +60,15 @@ class  PlayerActivity : Activity() {
     }
 
     private fun loadVideo() {
-        player.configure(Options(source = videoUrl.text.toString()))
+        val url = videoUrl.text.toString()
+        val title = videoTitle.text.toString()
+        val subtitle = videoSubtitle.text.toString()
+
+        val options = java.util.HashMap<String, Any>()
+        options.put(VideoInfoPlugin.Option.TITLE.value, title)
+        options.put(VideoInfoPlugin.Option.SUBTITLE.value, subtitle)
+
+        player.configure(Options(source = url, options = options))
         player.play()
     }
 

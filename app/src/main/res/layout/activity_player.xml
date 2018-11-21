@@ -20,6 +20,22 @@
         android:hint="@string/hint_video_url"
         android:singleLine="true" />
 
+    <EditText
+        android:id="@+id/video_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text_default_material_light"
+        android:hint="@string/hint_video_title"
+        android:singleLine="true" />
+
+    <EditText
+        android:id="@+id/video_subtitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/primary_text_default_material_light"
+        android:hint="@string/hint_video_subtitle"
+        android:inputType="textMultiLine" />
+
     <Button
         android:id="@+id/change_video"
         android:layout_width="wrap_content"
