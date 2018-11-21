@@ -99,11 +99,14 @@ class NextVideoPluginTest {
     }
 
     @Test
-    fun shouldRemoveAllPlaybackListenersWhenPluginIsDestroyed() {
+    fun shouldStopListeningOldPlaybackWhenPluginIsDestroyed() {
+        val oldPlayback = core.activePlayback
+
         nextVideoPlugin.destroy()
 
-        assertTrue(nextVideoPlugin.playbackListenerIds.size == 0,
-                "Playback listeners should not be registered")
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, nextVideoPlugin.visibility)
     }
 
     @Test

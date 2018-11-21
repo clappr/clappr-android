@@ -33,7 +33,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
             Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4")
     )
 
-    internal val playbackListenerIds = mutableListOf<String>()
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         bindCoreEvents()
