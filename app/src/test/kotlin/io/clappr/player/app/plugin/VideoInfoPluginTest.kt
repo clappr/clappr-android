@@ -97,32 +97,32 @@ class VideoInfoPluginTest {
     }
 
     @Test
-    fun shouldShowViewAfterDidChangePlaybackEventIsTriggered() {
+    fun shouldHideViewAfterDidChangePlaybackEventIsTriggered() {
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
-        assertShown(videoInfoPlugin)
+        assertHidden(videoInfoPlugin)
     }
 
     @Test
-    fun shouldHideViewWhenDidCompleteEventIsTriggered() {
-        core.activeContainer?.playback?.trigger(Event.DID_COMPLETE.value)
+    fun shouldShowViewWhenWillPlayEventIsTriggered() {
+        core.activeContainer?.playback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(videoInfoPlugin)
+        assertShown(videoInfoPlugin)
     }
 
     @Test
     fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
         val oldPlayback = core.activePlayback
 
-        assertEquals(UIPlugin.Visibility.VISIBLE, videoInfoPlugin.visibility)
+        assertHidden(videoInfoPlugin)
 
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
-        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+        oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertEquals(UIPlugin.Visibility.VISIBLE, videoInfoPlugin.visibility)
+        assertHidden(videoInfoPlugin)
     }
 
     @Test
@@ -131,8 +131,8 @@ class VideoInfoPluginTest {
 
         videoInfoPlugin.destroy()
 
-        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+        oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertEquals(UIPlugin.Visibility.VISIBLE, videoInfoPlugin.visibility)
+        assertHidden(videoInfoPlugin)
     }
 }

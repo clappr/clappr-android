@@ -51,11 +51,6 @@ open class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
         bindCoreEvents()
     }
 
-    override fun render() {
-        super.render()
-        show()
-    }
-
     private fun bindCoreEvents() {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindPlaybackEvents() })
         listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updateVideoInfo() })
@@ -63,10 +58,11 @@ open class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
     }
 
     private fun bindPlaybackEvents() {
+        hide()
         stopPlaybackListeners()
         updateVideoInfo()
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
+            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, Callback.wrap { show() }))
         }
     }
 
