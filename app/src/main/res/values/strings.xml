@@ -5,5 +5,7 @@
     <string name="action_settings">Settings</string>
     <string name="change_video">Change Video</string>
     <string name="hint_video_url">Enter a video URL</string>
+    <string name="hint_video_title">Enter a video title</string>
+    <string name="hint_video_subtitle">Enter a video subtitle</string>
     <string name="play_next_video">Play Next Video:</string>
 </resources>
