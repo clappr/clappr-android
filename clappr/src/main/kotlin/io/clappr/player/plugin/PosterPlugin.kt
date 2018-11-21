@@ -69,9 +69,9 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
         container.playback?.let {
             playbackListenerIds.addAll(listOf(
-                listenTo(it, Event.PLAYING.value, Callback.wrap { hide() }),
-                listenTo(it, Event.DID_STOP.value, Callback.wrap { show() }),
-                listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { show() })
+                listenTo(it, Event.PLAYING.value, Callback.wrap { _ -> hide() }),
+                listenTo(it, Event.DID_STOP.value, Callback.wrap { _ -> show() }),
+                listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> show() })
             ))
         }
     }
