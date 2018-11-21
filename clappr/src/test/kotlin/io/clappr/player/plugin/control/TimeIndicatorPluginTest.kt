@@ -224,7 +224,7 @@ class TimeIndicatorPluginTest {
     @Test
     fun shouldRemoveAllListenersOnDestroy() {
         timeIndicatorPlugin.destroy()
-        assertTrue(timeIndicatorPlugin.playbackListenerIds.size == 0, "Seekbar should have playback listeners initialized")
+        assertEquals(0, timeIndicatorPlugin.playbackListenerIds.size, "Seekbar should have playback listeners initialized")
     }
 
     @Test
