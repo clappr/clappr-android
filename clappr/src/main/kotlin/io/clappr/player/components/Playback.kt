@@ -1,6 +1,7 @@
 package io.clappr.player.components
 
 import android.os.Bundle
+import android.util.Log
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
 import org.json.JSONArray
