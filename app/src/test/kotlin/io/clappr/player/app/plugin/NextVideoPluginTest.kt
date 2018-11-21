@@ -1,11 +1,12 @@
 package io.clappr.player.app.plugin
 
 import android.app.Application
-import android.view.View
 import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
 import io.clappr.player.app.plugin.util.FakePlayback
+import io.clappr.player.app.plugin.util.assertHidden
+import io.clappr.player.app.plugin.util.assertShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -47,7 +48,7 @@ class NextVideoPluginTest {
 
     @Test
     fun shouldHideAfterDidChangePlaybackEventIsTriggered() {
-        assertHidden()
+        assertHidden(nextVideoPlugin)
     }
 
     @Test
@@ -56,21 +57,21 @@ class NextVideoPluginTest {
 
         core.activeContainer?.playback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden()
+        assertHidden(nextVideoPlugin)
     }
 
     @Test
     fun shouldShowViewWhenDidCompleteEventIsTriggered() {
         core.activeContainer?.playback?.trigger(Event.DID_COMPLETE.value)
 
-        assertShown()
+        assertShown(nextVideoPlugin)
     }
 
     @Test
     fun shouldShowViewWhenDidStopEventIsTriggered() {
         core.activeContainer?.playback?.trigger(Event.DID_STOP.value)
 
-        assertShown()
+        assertShown(nextVideoPlugin)
     }
 
     @Test
@@ -80,7 +81,7 @@ class NextVideoPluginTest {
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
-        assertHidden()
+        assertHidden(nextVideoPlugin)
     }
 
     @Test
@@ -112,15 +113,5 @@ class NextVideoPluginTest {
     fun shouldContainVideoItemsAfterRender() {
         nextVideoPlugin.render()
         assertTrue(nextVideoPlugin.view.findViewById<LinearLayout>(R.id.video_list).childCount > 0)
-    }
-
-    private fun assertHidden() {
-        assertEquals(UIPlugin.Visibility.HIDDEN, nextVideoPlugin.visibility)
-        assertEquals(View.GONE, nextVideoPlugin.view.visibility)
-    }
-
-    private fun assertShown() {
-        assertEquals(UIPlugin.Visibility.VISIBLE, nextVideoPlugin.visibility)
-        assertEquals(View.VISIBLE, nextVideoPlugin.view.visibility)
     }
 }
