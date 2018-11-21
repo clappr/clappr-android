@@ -39,11 +39,6 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         bindCoreEvents()
     }
 
-    override fun destroy() {
-        stopPlaybackListeners()
-        super.destroy()
-    }
-
     override fun render() {
         super.render()
         setupLayout()
