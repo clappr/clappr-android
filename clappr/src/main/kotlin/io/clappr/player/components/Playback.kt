@@ -233,4 +233,46 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
                 options.remove(ClapprOption.START_AT.value)
             })
     }
+
+    private val stateLogTag = "@Playback[$name] State"
+    private val eventLogTag = "@Playback[$name] Event"
+
+    fun trigger(event: InternalEvent){
+        trigger(event.value)
+    }
+
+    fun trigger(event: InternalEvent, bundle: Bundle? = null) {
+        bundle?.let {
+            logEvent(event, bundle)
+            trigger(event.value, bundle)
+        } ?: trigger(event)
+    }
+
+    private fun logEvent(event: InternalEvent, bundle: Bundle?) {
+        Log.d(eventLogTag, "Event: $event, Bundle: $bundle")
+    }
+
+    fun trigger(event: Event) {
+        logEvent(event)
+        trigger(event.value)
+    }
+
+    private fun logEvent(event: Event) {
+        Log.d(eventLogTag, "Event: $event")
+    }
+
+    fun trigger(event: Event, bundle: Bundle? = null) {
+        bundle?.let {
+           logEvent(event, bundle)
+            trigger(event.value, bundle)
+        } ?: trigger(event)
+    }
+
+    private fun logEvent(event: Event, bundle: Bundle?) {
+        Log.d(eventLogTag, "Event: $event, Bundle: $bundle")
+    }
+
+    fun logStateChange(oldState: State, newState: State){
+        Log.d(stateLogTag, "Old State: $oldState -> New State: $newState")
+    }
 }

@@ -60,7 +60,15 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val eventsListener = ExoplayerEventsListener()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
+
     private var currentState = State.NONE
+        set(value) {
+
+            if (value != state) logStateChange(field, value)
+
+            field = value
+        }
+
     private var lastPositionSent = 0.0
     private var recoveredFromBehindLiveWindowException = false
 
@@ -158,7 +166,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             field = value
 
             if (oldValue != field) {
-                trigger(Event.DID_CHANGE_DVR_STATUS.value, Bundle().apply {
+                trigger(Event.DID_CHANGE_DVR_STATUS, Bundle().apply {
                     putBoolean("inUse", field ?: false)
                 })
             }
@@ -337,7 +345,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val currentBufferPercentage = bufferPercentage
 
         bundle.putDouble("percentage", currentBufferPercentage)
-        trigger(Event.DID_UPDATE_BUFFER.value, bundle)
+        trigger(Event.DID_UPDATE_BUFFER, bundle)
         lastBufferPercentageSent = currentBufferPercentage
     }
 
@@ -348,7 +356,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition)
-        trigger(Event.DID_UPDATE_POSITION.value, bundle)
+        trigger(Event.DID_UPDATE_POSITION, bundle)
         lastPositionSent = currentPosition
     }
 
@@ -356,7 +364,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (isDvrAvailable == lastDrvAvailableCheck) return
 
         lastDrvAvailableCheck = isDvrAvailable
-        trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
+        trigger(Event.DID_CHANGE_DVR_AVAILABILITY, Bundle().apply {
             putBoolean("available", isDvrAvailable)
         })
         Logger.info(tag, "DVR Available: $isDvrAvailable")
@@ -422,10 +430,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun trigger(event: Event) {
-        trigger(event.value)
-    }
-
     protected fun handleError(error: Exception?) {
         if (error?.cause is BehindLiveWindowException) {
             Logger.info(tag, "BehindLiveWindowException")
@@ -446,7 +450,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         error?.let { errorExtra.putSerializable(ErrorInfoData.EXCEPTION.value, it) }
 
         bundle.putParcelable(Event.ERROR.value, ErrorInfo(message, ErrorCode.PLAYBACK_ERROR, errorExtra))
-        trigger(Event.ERROR.value, bundle)
+        trigger(Event.ERROR, bundle)
     }
 
     private fun setUpMediaOptions() {
@@ -459,7 +463,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         setDefaultMedias()
         checkInitialMedias()
-        trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        trigger(InternalEvent.MEDIA_OPTIONS_READY)
         Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
@@ -623,7 +627,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         override fun onLoadingChanged(isLoading: Boolean) {
             if (isLoading && currentState == State.NONE) {
                 currentState = State.IDLE
-                trigger(Event.READY.value)
+                trigger(Event.READY)
             }
         }
 
