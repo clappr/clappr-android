@@ -41,9 +41,16 @@ class NextVideoPluginTest {
 
         core = Core(Loader(), Options(source = source))
 
-        nextVideoPlugin = NextVideoPlugin(core)
+        nextVideoPlugin = NextVideoPlugin(core).apply {
+            render()
+        }
 
         core.load()
+    }
+
+    @Test
+    fun shouldContainVideoItemsAfterRendering() {
+        assertTrue(nextVideoPlugin.view.findViewById<LinearLayout>(R.id.video_list).childCount > 0)
     }
 
     @Test
@@ -107,11 +114,5 @@ class NextVideoPluginTest {
         oldPlayback?.trigger(Event.DID_COMPLETE.value)
 
         assertEquals(UIPlugin.Visibility.HIDDEN, nextVideoPlugin.visibility)
-    }
-
-    @Test
-    fun shouldContainVideoItemsAfterRender() {
-        nextVideoPlugin.render()
-        assertTrue(nextVideoPlugin.view.findViewById<LinearLayout>(R.id.video_list).childCount > 0)
     }
 }
