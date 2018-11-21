@@ -1,9 +1,9 @@
 package io.clappr.player.app.plugin
 
+import android.app.Application
 import android.view.View
 import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
-import io.clappr.player.app.PlayerTestApp
 import io.clappr.player.app.R
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], application = PlayerTestApp::class)
+@Config(constants = BuildConfig::class, sdk = [23], application = Application::class)
 class NextVideoPluginTest {
 
     private lateinit var core: Core
