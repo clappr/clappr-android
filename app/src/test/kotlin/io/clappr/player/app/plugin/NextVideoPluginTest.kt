@@ -5,12 +5,11 @@ import android.view.View
 import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
+import io.clappr.player.app.plugin.util.FakePlayback
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.UIPlugin
 import org.junit.Before
@@ -123,12 +122,5 @@ class NextVideoPluginTest {
     private fun assertShown() {
         assertEquals(UIPlugin.Visibility.VISIBLE, nextVideoPlugin.visibility)
         assertEquals(View.VISIBLE, nextVideoPlugin.view.visibility)
-    }
-
-    internal class FakePlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
-        }
     }
 }
