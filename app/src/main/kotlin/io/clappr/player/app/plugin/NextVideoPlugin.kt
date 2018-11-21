@@ -17,7 +17,9 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
         override val name = "nextVideo"
     }
 
-    override var state: State = State.ENABLED
+    private val picasso: Picasso by lazy {
+        Picasso.Builder(context!!).build()
+    }
 
     override val view by lazy {
         LayoutInflater.from(context).inflate(R.layout.next_video_plugin, null) as RelativeLayout
@@ -73,7 +75,7 @@ open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     private fun getNextVideoView(entry: Pair<String, String>) =
             (LayoutInflater.from(context).inflate(R.layout.next_video_item, null) as RelativeLayout).apply {
                 val videoPoster = findViewById<ImageView>(R.id.video_poster)
-                Picasso.get().load(entry.first).fit().centerCrop().into(videoPoster)
+                picasso.load(entry.first).fit().centerCrop().into(videoPoster)
 
                 setOnClickListener { onClick(entry.second) }
             }

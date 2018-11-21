@@ -1,8 +1,10 @@
 package io.clappr.player.app.plugin
 
 import android.view.View
+import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.PlayerTestApp
+import io.clappr.player.app.R
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -102,6 +104,12 @@ class NextVideoPluginTest {
 
         assertTrue(nextVideoPlugin.playbackListenerIds.size == 0,
                 "Playback listeners should not be registered")
+    }
+
+    @Test
+    fun shouldContainVideoItemsAfterRender() {
+        nextVideoPlugin.render()
+        assertTrue(nextVideoPlugin.view.findViewById<LinearLayout>(R.id.video_list).childCount > 0)
     }
 
     private fun assertHidden() {
