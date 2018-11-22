@@ -31,7 +31,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
             }
         }
 
-    val frameLayout: FrameLayout
+    private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
     var options : Options = options
@@ -65,7 +65,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         if (playback?.name == NoOpPlayback.name) {
             playback = null
         }
-        var supported = playback != null
+        val supported = playback != null
         render()
 
         val eventToTrigger = if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
