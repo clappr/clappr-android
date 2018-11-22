@@ -43,12 +43,12 @@ open class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(contai
         stopPlaybackListeners()
 
         container.playback?.let {
-            playbackListenerIds.add(listenTo(it, Event.STALLING.value, updateLabel("loading")))
-            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, updateLabel("playing")))
-            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, updateLabel("paused")))
-            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateLabel("stopped")))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, updateLabel("completed")))
-            playbackListenerIds.add(listenTo(it, Event.ERROR.value, updateLabel("failed")))
+            playbackListenerIds.add(listenTo(it, Event.STALLING.value, updateLabel(Event.STALLING.value)))
+            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, updateLabel(Event.PLAYING.value)))
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, updateLabel(Event.DID_PAUSE.value)))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateLabel(Event.DID_STOP.value)))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, updateLabel(Event.DID_COMPLETE.value)))
+            playbackListenerIds.add(listenTo(it, Event.ERROR.value, updateLabel(Event.ERROR.value)))
         }
     }
 
