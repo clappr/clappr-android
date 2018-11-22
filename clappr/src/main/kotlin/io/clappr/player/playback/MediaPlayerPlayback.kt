@@ -31,7 +31,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     }
 
     companion object: PlaybackSupportInterface {
-        const val TAG: String = "MediaPlayerPlayback"
+        private const val TAG: String = "MediaPlayerPlayback"
 
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             return true
@@ -154,7 +154,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         return "$log ($what / $extra)"
     }
 
-    class PlaybackView(context: Context?) : SurfaceView(context) {
+    protected class PlaybackView(context: Context?) : SurfaceView(context) {
         var videoHeight = 0
         var videoWidth = 0
 
