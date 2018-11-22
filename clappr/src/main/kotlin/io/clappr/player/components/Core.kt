@@ -60,7 +60,7 @@ class Core(val loader: Loader, options: Options) : UIObject() {
     val activePlayback: Playback?
         get() = activeContainer?.playback
 
-    val frameLayout: FrameLayout
+    private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
     var options : Options = options
