@@ -35,7 +35,7 @@ import kotlin.math.min
 
 open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object : PlaybackSupportInterface {
-        val tag: String = "ExoPlayerPlayback"
+        private val tag: String = "ExoPlayerPlayback"
 
         override fun supportsSource(source: String, mimeType: String?): Boolean {
             val uri = Uri.parse(source)
@@ -227,7 +227,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player = null
     }
 
-    open protected fun removeListeners() {
+    protected open fun removeListeners() {
         player?.removeListener(eventsListener)
     }
 
@@ -287,11 +287,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.prepare(mediaSource)
     }
 
-    open protected fun configureTrackSelector() {
+    protected open fun configureTrackSelector() {
         trackSelector = DefaultTrackSelector(AdaptiveTrackSelection.Factory(bandwidthMeter))
     }
 
-    open protected fun addListeners() {
+    protected open fun addListeners() {
         player?.addListener(eventsListener)
     }
 
