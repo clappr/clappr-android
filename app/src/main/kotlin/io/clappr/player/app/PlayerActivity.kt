@@ -10,6 +10,7 @@ import android.widget.Button
 import android.widget.EditText
 import io.clappr.player.Player
 import io.clappr.player.app.plugin.NextVideoPlugin
+import io.clappr.player.app.plugin.PlaybackStatusPlugin
 import io.clappr.player.app.plugin.VideoInfoPlugin
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
@@ -34,8 +35,7 @@ class  PlayerActivity : Activity() {
 
         changeVideo.setOnClickListener { changeVideo() }
 
-        Loader.registerPlugin(NextVideoPlugin::class)
-        Loader.registerPlugin(VideoInfoPlugin::class)
+        registerExternalPlugins()
 
         player = Player()
         player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
@@ -56,6 +56,12 @@ class  PlayerActivity : Activity() {
         fragmentTransaction.commit()
 
         loadVideo()
+    }
+
+    private fun registerExternalPlugins() {
+        Loader.registerPlugin(NextVideoPlugin::class)
+        Loader.registerPlugin(VideoInfoPlugin::class)
+        Loader.registerPlugin(PlaybackStatusPlugin::class)
     }
 
     private fun loadVideo() {

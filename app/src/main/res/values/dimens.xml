@@ -18,4 +18,8 @@
     <dimen name="video_info_subtitle_font_size">14sp</dimen>
     <dimen name="video_info_subtitle_top_margin">6dp</dimen>
     <dimen name="video_info_title_right_margin">10dp</dimen>
+
+    <dimen name="playback_status_plugin_font_size">10sp</dimen>
+    <dimen name="playback_status_plugin_text_padding">1dp</dimen>
+    <dimen name="playback_status_plugin_panel_padding">3dp</dimen>
 </resources>
