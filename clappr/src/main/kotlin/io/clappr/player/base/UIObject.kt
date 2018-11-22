@@ -4,7 +4,7 @@ import android.content.Context
 import android.view.View
 import android.view.ViewManager
 
-open class UIObject(): BaseObject() {
+open class UIObject: BaseObject() {
     var view : View? = null
 
     open val viewClass: Class<*> = View::class.java
@@ -22,7 +22,7 @@ open class UIObject(): BaseObject() {
         return this
     }
 
-    fun ensureView() {
+    private fun ensureView() {
         if (view == null) {
             val constructor = viewClass.getConstructor(Context::class.java) ?: throw IllegalStateException("No constructor was found for parameters (Context)")
             view = constructor.newInstance(context) as? View
