@@ -24,7 +24,7 @@ open class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(contai
         LayoutInflater.from(context).inflate(R.layout.playback_status_plugin, null) as RelativeLayout
     }
 
-    open val status by lazy { view.findViewById(R.id.status) as TextView }
+    private val status by lazy { view.findViewById(R.id.status) as TextView }
 
     private val playbackListenerIds = mutableListOf<String>()
 
