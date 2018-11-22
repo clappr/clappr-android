@@ -10,6 +10,7 @@ import io.clappr.player.app.plugin.util.assertShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
+import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.UIPlugin
@@ -36,16 +37,18 @@ class NextVideoPluginTest {
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
 
-        Loader.registerPlayback(FakePlayback::class)
-        Loader.registerPlugin(NextVideoPlugin::class)
-
         core = Core(Loader(), Options(source = source))
 
-        nextVideoPlugin = NextVideoPlugin(core).apply {
-            render()
-        }
+        nextVideoPlugin = NextVideoPlugin(core)
 
-        core.load()
+        //Trigger Container change events
+        val container = Container(core.loader, core.options)
+        core.activeContainer  = container
+
+        //Trigger Playback change events
+        container.playback = FakePlayback("")
+
+        nextVideoPlugin.render()
     }
 
     @Test

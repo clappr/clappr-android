@@ -8,4 +8,6 @@
     <string name="hint_video_title">Enter a video title</string>
     <string name="hint_video_subtitle">Enter a video subtitle</string>
     <string name="play_next_video">Play Next Video:</string>
+    <string name="video_title">Video Title</string>
+    <string name="video_subtitle">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</string>
 </resources>

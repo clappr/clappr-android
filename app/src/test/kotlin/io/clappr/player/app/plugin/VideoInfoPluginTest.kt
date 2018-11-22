@@ -2,7 +2,6 @@ package io.clappr.player.app.plugin
 
 import android.app.Application
 import android.view.View
-import android.widget.LinearLayout
 import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
@@ -12,9 +11,9 @@ import io.clappr.player.app.plugin.util.assertShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
+import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.UIPlugin
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +22,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], application = Application::class)
@@ -41,20 +39,22 @@ class VideoInfoPluginTest {
     fun setup() {
         BaseObject.context = ShadowApplication.getInstance().applicationContext
 
-        Loader.registerPlayback(FakePlayback::class)
-        Loader.registerPlugin(VideoInfoPlugin::class)
-
         val options = HashMap<String, Any>()
         options[VideoInfoPlugin.Option.TITLE.value] = title
         options[VideoInfoPlugin.Option.SUBTITLE.value] = subtitle
 
         core = Core(Loader(), Options(source = source, options = options))
 
-        videoInfoPlugin = VideoInfoPlugin(core).apply {
-            render()
-        }
+        videoInfoPlugin = VideoInfoPlugin(core)
 
-        core.load()
+        //Trigger Container change events
+        val container = Container(core.loader, core.options)
+        core.activeContainer  = container
+
+        //Trigger Playback change events
+        container.playback = FakePlayback("")
+
+        videoInfoPlugin.render()
     }
 
     @Test

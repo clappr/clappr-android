@@ -60,21 +60,25 @@ open class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
     private fun bindPlaybackEvents() {
         hide()
         stopPlaybackListeners()
-        updateVideoInfo()
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, Callback.wrap { show() }))
         }
+    }
+
+    override fun render() {
+        updateVideoInfo()
+        super.render()
     }
 
     private fun updateVideoInfo() {
         titleLabel.text = title
         subtitleLabel.text = subtitle
 
-        if (core.fullscreenState == Core.FullscreenState.FULLSCREEN) {
-            subtitleLabel.visibility = View.VISIBLE
-        } else {
-            subtitleLabel.visibility = View.GONE
-        }
+        subtitleLabel.visibility =
+                if (core.fullscreenState == Core.FullscreenState.FULLSCREEN)
+                    View.VISIBLE
+                else
+                    View.GONE
     }
 
     private fun stopPlaybackListeners() {

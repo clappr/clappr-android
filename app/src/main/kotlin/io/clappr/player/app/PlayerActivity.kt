@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
-import android.widget.TextView
 import io.clappr.player.Player
 import io.clappr.player.app.plugin.NextVideoPlugin
 import io.clappr.player.app.plugin.VideoInfoPlugin
@@ -29,9 +28,9 @@ class  PlayerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        videoUrl.setText("http://clappr.io/highline.mp4", TextView.BufferType.EDITABLE)
-        videoTitle.setText("Highline", TextView.BufferType.EDITABLE)
-        videoSubtitle.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.", TextView.BufferType.EDITABLE)
+        videoUrl.setText("http://clappr.io/highline.mp4")
+        videoTitle.setText(getString(R.string.video_title))
+        videoSubtitle.setText(getString(R.string.video_subtitle))
 
         changeVideo.setOnClickListener { changeVideo() }
 
