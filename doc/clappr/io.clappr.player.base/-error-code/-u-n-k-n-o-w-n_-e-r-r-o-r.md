@@ -2,4 +2,4 @@
 
 # UNKNOWN_ERROR
 
-`val UNKNOWN_ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+`const val UNKNOWN_ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)

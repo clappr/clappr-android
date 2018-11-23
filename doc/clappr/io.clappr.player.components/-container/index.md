@@ -14,7 +14,6 @@
 
 | Name | Summary |
 |---|---|
-| [frameLayout](frame-layout.md) | `val frameLayout: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 | [loader](loader.md) | `val loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md) |
 | [options](options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [playback](playback.md) | `var playback: `[`Playback`](../-playback/index.md)`?` |
@@ -39,5 +38,4 @@
 
 | Name | Summary |
 |---|---|
-| [ensureView](../../io.clappr.player.base/-u-i-object/ensure-view.md) | `fun ensureView(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [remove](../../io.clappr.player.base/-u-i-object/remove.md) | `fun remove(): `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |

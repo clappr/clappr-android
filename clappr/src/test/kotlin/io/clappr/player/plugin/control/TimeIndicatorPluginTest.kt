@@ -124,20 +124,6 @@ class TimeIndicatorPluginTest {
     }
 
     @Test
-    fun shouldUseDefaultDurationValueWhenPlaybackIsNull() {
-        val expectedTime = "10:00 / 00:00"
-        val expectedPosition = 600.0
-
-        container.playback = null
-
-        val bundle = Bundle().apply { putDouble("time", expectedPosition) }
-        timeIndicatorPlugin.updateValue(bundle)
-
-        assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
-        assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
-    }
-
-    @Test
     fun shouldUpdateTextVisibilityWhenPositionUpdateEventHappens() {
         setupFakePlayback(Playback.MediaType.VOD, Playback.State.PLAYING)
 
@@ -238,7 +224,7 @@ class TimeIndicatorPluginTest {
     @Test
     fun shouldRemoveAllListenersOnDestroy() {
         timeIndicatorPlugin.destroy()
-        assertTrue(timeIndicatorPlugin.playbackListenerIds.size == 0, "Seekbar should have playback listeners initialized")
+        assertEquals(0, timeIndicatorPlugin.playbackListenerIds.size, "Seekbar should have playback listeners initialized")
     }
 
     @Test

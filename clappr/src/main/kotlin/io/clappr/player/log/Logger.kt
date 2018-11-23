@@ -1,12 +1,11 @@
 package io.clappr.player.log
 
 import android.util.Log
-import io.clappr.player.BuildConfig
 
 object Logger {
     var tag = "Clappr"
 
-    fun log(level: LogLevel, scope: String? = null, message: String) {
+    private fun log(level: LogLevel, scope: String? = null, message: String) {
         val formatted = formattedMessage(scope, message)
 
         when (level) {

@@ -27,7 +27,6 @@
 
 | Name | Summary |
 |---|---|
-| [ensureView](ensure-view.md) | `fun ensureView(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [remove](remove.md) | `fun remove(): `[`UIObject`](./index.md) |
 | [render](render.md) | `open fun render(): `[`UIObject`](./index.md) |
 

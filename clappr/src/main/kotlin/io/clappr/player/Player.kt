@@ -83,10 +83,10 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             field = value
             updateCoreFullScreenStatus()
             core?.let {
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { unbindPlaybackEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindPlaybackEvents() })
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { unbindContainerEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { bindContainerEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> unbindPlaybackEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> bindPlaybackEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> unbindContainerEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> bindContainerEvents() })
                 it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
                 it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
 
@@ -102,7 +102,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             }
         }
 
-    internal val loader = Loader()
+    private val loader = Loader()
 
     /**
      * Media current position in seconds.
@@ -138,11 +138,11 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
             Playback.State.ERROR -> State.ERROR
         }
 
-    val playbackEventsIds = mutableSetOf<String>()
+    private val playbackEventsIds = mutableSetOf<String>()
 
-    val containerEventsIds = mutableSetOf<String>()
+    private val containerEventsIds = mutableSetOf<String>()
 
-    var playerViewGroup: ViewGroup? = null
+    private var playerViewGroup: ViewGroup? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
@@ -180,7 +180,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         load()
     }
 
-    private fun createCore(options: Options){
+    private fun createCore(options: Options) {
         core = Core(loader, options)
     }
 
@@ -209,7 +209,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
         return load(source, null)
     }
 
-    fun load(){
+    private fun load() {
         core?.load()
     }
 

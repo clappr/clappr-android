@@ -43,10 +43,10 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         const val modalPanelViewKey = "modalPanelView"
     }
 
-    open val defaultShowTimeout = 300L
-    open val longShowTimeout = 4000L
+    private val defaultShowTimeout = 300L
+    private val longShowTimeout = 4000L
 
-    open val handler = Handler()
+    private val handler = Handler()
 
     open var lastInteractionTime = 0L
 
@@ -90,7 +90,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
             return state == State.ENABLED
         }
 
-    val isPlaybackIdle: Boolean
+    private val isPlaybackIdle: Boolean
         get() {
             return core.activePlayback?.state == Playback.State.IDLE ||
                     core.activePlayback?.state == Playback.State.NONE
@@ -139,7 +139,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     private fun modalPanelIsOpen() = modalPanel.visibility == View.VISIBLE
 
-    open fun setupPlugins() {
+    private fun setupPlugins() {
         controlPlugins.clear()
 
         with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
@@ -154,7 +154,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         return list.sortedWith(compareBy { pluginsOrder.indexOf(it.name) })
     }
 
-    open fun layoutPlugins() {
+    private fun layoutPlugins() {
         controlPlugins.forEach {
             (it.view?.parent as? ViewGroup)?.removeView(it.view)
             val parent = when (it.panel) {
@@ -187,7 +187,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         hideModalPanel()
     }
 
-    open fun hideDelayed(timeout: Long) {
+    private fun hideDelayed(timeout: Long) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
             val elapsedTime = currentTime - lastInteractionTime
@@ -204,7 +204,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         show(defaultShowTimeout)
     }
 
-    open fun show(timeout: Long) {
+    private fun show(timeout: Long) {
         visibility = Visibility.VISIBLE
         backgroundView.visibility = View.VISIBLE
         showDefaultMediaControlPanels()
@@ -216,11 +216,11 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         }
     }
 
-    open fun updateInteractionTime() {
+    private fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
-    open fun toggleVisibility() {
+    private fun toggleVisibility() {
         if (isEnabled) {
             if (visibility == Visibility.VISIBLE) hide() else show(longShowTimeout)
         }

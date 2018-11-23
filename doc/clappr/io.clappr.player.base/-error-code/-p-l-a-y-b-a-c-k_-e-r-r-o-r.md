@@ -2,4 +2,4 @@
 
 # PLAYBACK_ERROR
 
-`val PLAYBACK_ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)
+`const val PLAYBACK_ERROR: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)

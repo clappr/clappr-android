@@ -75,7 +75,6 @@
 
 | Name | Summary |
 |---|---|
-| [ensureView](../../io.clappr.player.base/-u-i-object/ensure-view.md) | `fun ensureView(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [remove](../../io.clappr.player.base/-u-i-object/remove.md) | `fun remove(): `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
 
 ### Companion Object Properties

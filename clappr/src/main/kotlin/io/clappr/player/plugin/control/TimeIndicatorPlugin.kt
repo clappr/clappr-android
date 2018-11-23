@@ -40,9 +40,9 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
         stopPlaybackListeners()
         core.activePlayback?.let {
             updateValue(null)
-            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { setupPlaybackListeners() }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { updateValue(it) }))
-                    playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { _ -> setupPlaybackListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { bundle -> updateValue(bundle) }))
+                    playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
         }
     }
 
@@ -51,12 +51,12 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
         playbackListenerIds.clear()
     }
 
-    open fun updateLiveStatus() {
+    private fun updateLiveStatus() {
         val isVOD = core.activePlayback?.mediaType == Playback.MediaType.VOD
         view?.visibility = if (!isVOD || isPlaybackIdle) View.GONE else View.VISIBLE
     }
 
-    open fun updateValue(bundle: Bundle?) {
+    private fun updateValue(bundle: Bundle?) {
         (bundle ?: Bundle()).let {
             val position = it.getDouble("time", 0.0)
             val duration = core.activePlayback?.duration ?: 0.0

@@ -113,7 +113,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         updatePosition(percentage, dragging)
     }
 
-    open fun handleStopDrag(position: Float) {
+    private fun handleStopDrag(position: Float) {
         stopDrag()
 
         core.activePlayback?.let {
@@ -129,7 +129,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         dragging = false
     }
 
-    open fun updateBuffered(bundle: Bundle?) {
+    private fun updateBuffered(bundle: Bundle?) {
         val buffered = bundle?.getDouble("percentage") ?: 0.0
         core.activePlayback?.let {
             val layoutParams = bufferedBar.layoutParams
@@ -138,7 +138,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         }
     }
 
-    open fun updatePositionOnResize() {
+    private fun updatePositionOnResize() {
         core.activePlayback?.let {
             view.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
                 override fun onGlobalLayout() {
@@ -157,7 +157,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         }
     }
 
-    open fun updatePosition(bundle: Bundle?) {
+    private fun updatePosition(bundle: Bundle?) {
         val percentage = bundle?.getDouble("percentage") ?: 0.0
         updatePosition(percentage)
     }

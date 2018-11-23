@@ -4,12 +4,6 @@
 
 `object Utils`
 
-### Properties
-
-| Name | Summary |
-|---|---|
-| [count](count.md) | `var count: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html) |
-
 ### Functions
 
 | Name | Summary |
