@@ -2,7 +2,7 @@
 
 # PlaybackView
 
-`class PlaybackView : `[`SurfaceView`](https://developer.android.com/reference/android/view/SurfaceView.html)
+`protected class PlaybackView : `[`SurfaceView`](https://developer.android.com/reference/android/view/SurfaceView.html)
 
 ### Constructors
 

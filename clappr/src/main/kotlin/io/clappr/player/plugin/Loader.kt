@@ -12,7 +12,7 @@ import kotlin.reflect.full.primaryConstructor
 class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlaybacks: List<KClass<out Playback>> = emptyList()) {
     companion object {
         @JvmStatic val registeredPlugins = mutableMapOf<String, KClass<out Plugin>>()
-        @JvmStatic val registeredPlaybacks= mutableListOf<KClass<out Playback>>()
+        @JvmStatic private val registeredPlaybacks= mutableListOf<KClass<out Playback>>()
 
         @JvmStatic
         fun clearPlaybacks() {
@@ -59,9 +59,9 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
     }
 
-    val externalPlugins = mutableListOf<KClass<out Plugin>>()
+    private val externalPlugins = mutableListOf<KClass<out Plugin>>()
 
-    val externalPlaybacks = mutableListOf<KClass<out Playback>>()
+    private val externalPlaybacks = mutableListOf<KClass<out Playback>>()
 
     val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
 

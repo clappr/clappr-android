@@ -6,5 +6,3 @@
 
 Overrides [UIPlugin.show](../../io.clappr.player.plugin/-u-i-plugin/show.md)
 
-
-`open fun show(timeout: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)

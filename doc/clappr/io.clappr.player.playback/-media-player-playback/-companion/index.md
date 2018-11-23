@@ -8,7 +8,6 @@
 
 | Name | Summary |
 |---|---|
-| [TAG](-t-a-g.md) | `const val TAG: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
 
 ### Companion Object Functions
