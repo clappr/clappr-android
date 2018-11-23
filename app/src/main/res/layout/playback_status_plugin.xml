@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="end"
+    android:paddingHorizontal="@dimen/playback_status_plugin_panel_padding"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/playback_status_plugin_text_color"
+        android:textSize="@dimen/playback_status_plugin_font_size"
+        android:text="@string/playback_status_label"
+        android:layout_toLeftOf="@id/status"
+        android:padding="@dimen/playback_status_plugin_text_padding"
+        android:lines="1"/>
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/playback_status_plugin_text_color"
+        android:textSize="@dimen/playback_status_plugin_font_size"
+        android:ellipsize="end"
+        android:padding="@dimen/playback_status_plugin_text_padding"
+        android:layout_alignParentRight="true"
+        android:lines="1"/>
+
+</RelativeLayout>

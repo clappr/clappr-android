@@ -2,4 +2,5 @@
 <resources>
     <color name="next_video_plugin_text_color">#FFF</color>
     <color name="next_video_plugin_border_color">#85969494</color>
+    <color name="playback_status_plugin_text_color">#FFF</color>
 </resources>

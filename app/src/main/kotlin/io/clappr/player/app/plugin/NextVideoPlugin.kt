@@ -10,8 +10,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.core.UICorePlugin
 
-
-open class NextVideoPlugin(core: Core) : UICorePlugin(core) {
+class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     companion object : NamedType {
         override val name = "nextVideo"
