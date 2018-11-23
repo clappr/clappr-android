@@ -1,20 +1,18 @@
 package io.clappr.player.app.plugin
 
 import android.view.LayoutInflater
-import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
-import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
-import io.clappr.player.base.*
+import io.clappr.player.base.Callback
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
-import io.clappr.player.components.Core
 import io.clappr.player.plugin.container.UIContainerPlugin
-import io.clappr.player.plugin.core.UICorePlugin
 
 
-open class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) {
+class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) {
 
     companion object : NamedType {
         override val name = "playbackStatus"

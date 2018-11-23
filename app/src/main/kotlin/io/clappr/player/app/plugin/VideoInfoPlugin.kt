@@ -13,7 +13,7 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.control.MediaControl
 
-open class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
+class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
 
     enum class Option(val value: String) {
         TITLE("$name:title"),
