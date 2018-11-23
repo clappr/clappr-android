@@ -16,8 +16,6 @@
 |---|---|
 | [availablePlaybacks](available-playbacks.md) | `val availablePlaybacks: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Playback`](../../io.clappr.player.components/-playback/index.md)`>>` |
 | [availablePlugins](available-plugins.md) | `val availablePlugins: `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Plugin`](../-plugin/index.md)`>>` |
-| [externalPlaybacks](external-playbacks.md) | `val externalPlaybacks: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Playback`](../../io.clappr.player.components/-playback/index.md)`>>` |
-| [externalPlugins](external-plugins.md) | `val externalPlugins: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Plugin`](../-plugin/index.md)`>>` |
 
 ### Functions
 
@@ -30,7 +28,6 @@
 
 | Name | Summary |
 |---|---|
-| [registeredPlaybacks](registered-playbacks.md) | `val registeredPlaybacks: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Playback`](../../io.clappr.player.components/-playback/index.md)`>>` |
 | [registeredPlugins](registered-plugins.md) | `val registeredPlugins: `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`KClass`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html)`<out `[`Plugin`](../-plugin/index.md)`>>` |
 
 ### Companion Object Functions

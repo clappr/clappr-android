@@ -28,13 +28,9 @@
 | [centerPanel](center-panel.md) | `open val centerPanel: `[`LinearLayout`](https://developer.android.com/reference/android/widget/LinearLayout.html) |
 | [controlPlugins](control-plugins.md) | `open val controlPlugins: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`Plugin`](-plugin/index.md)`>` |
 | [controlsPanel](controls-panel.md) | `open val controlsPanel: `[`RelativeLayout`](https://developer.android.com/reference/android/widget/RelativeLayout.html) |
-| [defaultShowTimeout](default-show-timeout.md) | `open val defaultShowTimeout: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [foregroundControlsPanel](foreground-controls-panel.md) | `open val foregroundControlsPanel: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
-| [handler](handler.md) | `open val handler: `[`Handler`](https://developer.android.com/reference/android/os/Handler.html) |
 | [isEnabled](is-enabled.md) | `val isEnabled: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [isPlaybackIdle](is-playback-idle.md) | `val isPlaybackIdle: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [lastInteractionTime](last-interaction-time.md) | `open var lastInteractionTime: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
-| [longShowTimeout](long-show-timeout.md) | `open val longShowTimeout: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [modalPanel](modal-panel.md) | `open val modalPanel: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 | [state](state.md) | `open var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md) |
 | [topLeftPanel](top-left-panel.md) | `open val topLeftPanel: `[`LinearLayout`](https://developer.android.com/reference/android/widget/LinearLayout.html) |
@@ -54,13 +50,8 @@
 |---|---|
 | [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [hide](hide.md) | `open fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [hideDelayed](hide-delayed.md) | `open fun hideDelayed(timeout: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [layoutPlugins](layout-plugins.md) | `open fun layoutPlugins(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [setupPlugins](setup-plugins.md) | `open fun setupPlugins(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [show](show.md) | `open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>`open fun show(timeout: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [toggleVisibility](toggle-visibility.md) | `open fun toggleVisibility(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [updateInteractionTime](update-interaction-time.md) | `open fun updateInteractionTime(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [show](show.md) | `open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 
