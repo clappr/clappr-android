@@ -20,11 +20,11 @@ import io.clappr.player.plugin.PluginConfig
  *
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
-open class Player(private val base: BaseObject = BaseObject(), val playbackEventsToListen : MutableSet<String> = mutableSetOf<String>()) : Fragment(), EventInterface by base {
+open class Player(private val base: BaseObject = BaseObject(),
+                  private val playbackEventsToListen : MutableSet<String> = mutableSetOf<String>(),
+                  private val containerEventsToListen : MutableSet<String> = mutableSetOf<String>()) : Fragment(), EventInterface by base {
 
     companion object {
-        val containerEventsToListen = mutableSetOf<String>()
-
         init {
             PluginConfig.register()
 
