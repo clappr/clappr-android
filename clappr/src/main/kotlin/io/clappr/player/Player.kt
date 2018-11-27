@@ -3,6 +3,7 @@ package io.clappr.player
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.support.annotation.Keep
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import io.clappr.player.plugin.PluginConfig
  *
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
+@Keep
 open class Player(private val base: BaseObject = BaseObject()) : Fragment(), EventInterface by base {
     companion object {
         val playbackEventsToListen = mutableSetOf<String>()
