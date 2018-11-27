@@ -142,7 +142,7 @@ open class Player(private val base: BaseObject = BaseObject()) : Fragment(), Eve
 
     private val containerEventsIds = mutableSetOf<String>()
 
-    private var playerViewGroup: ViewGroup? = null
+    var playerViewGroup: ViewGroup? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
