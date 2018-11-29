@@ -29,15 +29,13 @@ open class PlayerTest {
     fun setup() {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
 
-        Player.playbackEventsToListen.add(playerTestEvent)
-
         Loader.clearPlaybacks()
         Loader.registerPlugin(CoreTestPlugin::class)
         Loader.registerPlayback(PlayerTestPlayback::class)
 
         PlayerTestPlayback.internalState = Playback.State.NONE
 
-        player = Player()
+        player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
     }
 
     @Test(expected = IllegalStateException::class)
