@@ -29,8 +29,19 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
             val pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
             pluginName?.let {
                 if (pluginName.isNotEmpty()) {
-                    registeredPlugins.put(pluginName, pluginClass)
+                    registeredPlugins[pluginName] = pluginClass
                     return true
+                }
+            }
+            return false
+        }
+
+        @JvmStatic
+        fun unregisterPlugin(pluginClass: KClass<out Plugin>): Boolean {
+            val pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
+            pluginName?.let {
+                if (it.isNotEmpty() && registeredPlugins.containsKey(it)) {
+                    return registeredPlugins.remove(it) != null
                 }
             }
             return false
@@ -98,12 +109,13 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
+
         try {
             val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
             val constructor = playbackClass.primaryConstructor
             playback = constructor?.call(source, mimeType, options) as? Playback
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
+
         return playback
     }
 
@@ -120,19 +132,18 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         val name : String? = (pluginClass.companionObjectInstance as? NamedType)?.name
         name?.let {
             if (name.isNotEmpty()) {
-                availablePlugins.put(name, pluginClass)
+                availablePlugins[name] = pluginClass
             }
         }
     }
 
     private fun loadPlugin(component: BaseObject, pluginClass: KClass<out Plugin>) : Plugin? {
         var plugin: Plugin? = null
-
         val constructor = pluginClass.primaryConstructor
+
         try {
             plugin = constructor?.call(component) as? Plugin
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
 
         return plugin
     }
