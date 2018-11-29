@@ -18,7 +18,7 @@ Once instantiated it should be [configured](configure.md) and added to a view hi
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject())`<br>Main Player class. |
+| [&lt;init&gt;](-init-.md) | `Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf<String>(), containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf<String>())`<br>Main Player class. |
 
 ### Properties
 
@@ -43,13 +43,6 @@ Once instantiated it should be [configured](configure.md) and added to a view hi
 | [play](play.md) | `fun play(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)<br>Start or resume media playing. |
 | [seek](seek.md) | `fun seek(position: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)<br>Move current playback position. |
 | [stop](stop.md) | `fun stop(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)<br>Stop media playing. Media playback is ended. |
-
-### Companion Object Properties
-
-| Name | Summary |
-|---|---|
-| [containerEventsToListen](container-events-to-listen.md) | `val containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`>` |
-| [playbackEventsToListen](playback-events-to-listen.md) | `val playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`>` |
 
 ### Companion Object Functions
 
