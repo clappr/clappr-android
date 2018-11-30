@@ -2,4 +2,4 @@
 
 # core
 
-`var core: `[`Core`](../../io.clappr.player.components/-core/index.md)`?`
+`protected var core: `[`Core`](../../io.clappr.player.components/-core/index.md)`?`
