@@ -75,7 +75,7 @@ open class Player(private val base: BaseObject = BaseObject(),
         ERROR
     }
 
-    var core: Core? = null
+    protected var core: Core? = null
         private set(value) {
             playerViewGroup?.removeView(core?.view)
             unbindPlaybackEvents()
@@ -179,7 +179,8 @@ open class Player(private val base: BaseObject = BaseObject(),
         core?.let {
             it.options = options
         } ?: createCore(options)
-        load()
+
+        core?.load()
     }
 
     private fun createCore(options: Options) {
@@ -209,10 +210,6 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     fun load(source: String): Boolean {
         return load(source, null)
-    }
-
-    private fun load() {
-        core?.load()
     }
 
     /**

@@ -1,9 +1,12 @@
 package io.clappr.player
 
+import android.os.Bundle
 import io.clappr.player.base.*
+import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -15,47 +18,28 @@ import org.junit.Assert.*
 import org.junit.Ignore
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(constants = BuildConfig::class, sdk = [23])
 open class PlayerTest {
-    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface {
-            override val name: String = "player_test"
 
-            override fun supportsSource(source: String, mimeType: String?): Boolean {
-                return source.isNotEmpty()
-            }
-        }
-
-        var internalState = State.NONE
-        override val state: State
-            get() = internalState
-
-        override val duration: Double = 1.0
-        override val position: Double = 0.0
-
-        override fun play(): Boolean { return true }
-        override fun stop(): Boolean { return true }
-        override fun seek(seconds: Int): Boolean { return true }
-
-        override fun pause(): Boolean {
-            trigger(Event.WILL_PAUSE.value)
-            trigger(Event.DID_PAUSE.value)
-            return true
-        }
-    }
+    private val playerTestEvent = "playerTestEvent"
 
     lateinit var player: Player
 
     @Before
     fun setup() {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
+
         Loader.clearPlaybacks()
-        player = Player()
+        Loader.registerPlugin(CoreTestPlugin::class)
         Loader.registerPlayback(PlayerTestPlayback::class)
+
+        PlayerTestPlayback.internalState = Playback.State.NONE
+
+        player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
     }
 
     @Test(expected = IllegalStateException::class)
-    fun instatiateWithoutContext() {
+    fun instantiateWithoutContext() {
         BaseObject.context = null
         val invalidPlayer = Player()
     }
@@ -122,17 +106,15 @@ open class PlayerTest {
         player.configure(Options(source = "valid"))
         assertEquals("invalid state (not NONE)", Player.State.NONE, player.state)
 
-        val testPlayback = player.core?.activePlayback as PlayerTestPlayback
-
-        testPlayback.internalState = Playback.State.ERROR
+        PlayerTestPlayback.internalState = Playback.State.ERROR
         assertEquals("invalid state (not ERROR)", Player.State.ERROR, player.state)
-        testPlayback.internalState = Playback.State.IDLE
+        PlayerTestPlayback.internalState = Playback.State.IDLE
         assertEquals("invalid state (not IDLE)", Player.State.IDLE, player.state)
-        testPlayback.internalState = Playback.State.PAUSED
+        PlayerTestPlayback.internalState = Playback.State.PAUSED
         assertEquals("invalid state (not PAUSED)", Player.State.PAUSED, player.state)
-        testPlayback.internalState = Playback.State.PLAYING
+        PlayerTestPlayback.internalState = Playback.State.PLAYING
         assertEquals("invalid state (not PLAYING)", Player.State.PLAYING, player.state)
-        testPlayback.internalState = Playback.State.STALLING
+        PlayerTestPlayback.internalState = Playback.State.STALLING
         assertEquals("invalid state (not STALLING)", Player.State.STALLING, player.state)
     }
 
@@ -140,45 +122,250 @@ open class PlayerTest {
     fun shouldUnbindOnConfigure() {
         var willPauseCalled = false
         var didPauseCalled = false
+
         player.on(Event.WILL_PAUSE.value, Callback.wrap { willPauseCalled = true })
         player.on(Event.DID_PAUSE.value, Callback.wrap { didPauseCalled = true })
 
         player.configure(Options(source = "valid"))
+        player.pause()
 
-        val oldCore = player.core
+        assertTrue("WILL_PAUSE not triggered", willPauseCalled)
+        assertTrue("DID_PAUSE not triggered", didPauseCalled)
+
+        willPauseCalled = false
+        didPauseCalled = false
 
         player.configure(Options(source = ""))
-
-        oldCore!!.activePlayback?.pause()
+        player.pause()
 
         assertFalse("WILL_PAUSE triggered", willPauseCalled)
         assertFalse("DID_PAUSE triggered", didPauseCalled)
     }
 
-    @Test
-    fun shouldCoreHaveSameInstanceOnPlayerConfigure() {
-        player.configure(Options(source = "valid"))
-        val expectedCore = player.core
-        player.configure(Options(source = ""))
+    /************************************* DISCLAIMER ***********************************************
+     * The following tests use unconventional methods to test core related behaviours in the Player
+     * class. Since now the core is protected in Player we can no longer use it to test some
+     * behaviours. To ensure testability we should inject core in the Player and not create it
+     * there. Until we change our architecture, to maintain the same tests we use some plugins and
+     * send some events with data that will normally not be sent. To be easier to understand each
+     * test we tried to explain it and add some comments.
+     ***********************************************************************************************/
 
-        assertSame(expectedCore, player.core)
-    }
-
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the current option passed by
+     * options. That way we ensure that we are changing the options when we call a load before a
+     * configure.
+     */
     @Test
     fun shouldCoreChangeOptionsOnPlayerConfigure() {
-        player.configure(Options(source = "valid"))
-        val expectedSource = "new source"
-        player.configure(Options(expectedSource))
+        val expectedFirstOption = "first option"
+        val expectedSecondOption = "second option"
 
-        assertSame(expectedSource, player.core?.options?.source)
+        var option = ""
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let { option = it.getString("option") }
+        })
+
+        player.configure(Options(source="123", options=hashMapOf("test_option" to expectedFirstOption)))
+        player.play()
+
+        assertEquals(expectedFirstOption, option)
+
+        player.configure(Options(source="321", options=hashMapOf("test_option" to expectedSecondOption)))
+        player.play()
+
+        assertEquals(expectedSecondOption, option)
     }
 
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the current mime type passed by
+     * options. That way we ensure that we are changing the options when we call a load before a
+     * configure.
+     */
     @Test
-    fun shouldCoreChangeOptionsOnPlayerLoad() {
-        player.configure(Options(source = "valid"))
-        val expectedSource = "new source"
-        player.load(expectedSource)
+    fun shouldCoreChangeMimeTypeOnPlayerConfigure() {
+        val expectedFirstMimeType = "mimeType"
+        val expectedSecondMimeType = "other-mimeType"
 
-        assertSame(expectedSource, player.core?.options?.source)
+        var mimeType = ""
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let {
+                mimeType = it.getString("mimeType")
+            }
+        })
+
+        player.configure(Options(source = "123", mimeType = expectedFirstMimeType))
+        player.play()
+
+        assertEquals(expectedFirstMimeType, mimeType)
+
+        player.configure(Options(source = "321", mimeType = expectedSecondMimeType))
+        player.play()
+
+        assertEquals(expectedSecondMimeType, mimeType)
+    }
+
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the current mime type passed by
+     * options. That way we ensure that we are changing the options when we call a load before a
+     * configure.
+     */
+    @Test
+    fun shouldCoreChangeMimeTypeOnPlayerLoad() {
+        val expectedFirstMimeType = "mimeType"
+        val expectedSecondMimeType = "other-mimeType"
+
+        var mimeType = ""
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let {
+                mimeType = it.getString("mimeType")
+            }
+        })
+
+        player.configure(Options(source = "123", mimeType = expectedFirstMimeType))
+        player.play()
+
+        assertEquals(expectedFirstMimeType, mimeType)
+
+        player.load(source = "321", mimeType = expectedSecondMimeType)
+        player.play()
+
+        assertEquals(expectedSecondMimeType, mimeType)
+    }
+
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the current source passed by
+     * options. That way we ensure that we are changing the options when we call a load before a
+     * configure.
+     */
+    @Test
+    fun shouldCoreChangeSourceOnPlayerConfigure() {
+        val expectedFirstSource = "source"
+        val expectedSecondSource = "other-source"
+
+        var sourceToPlay = ""
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let {
+                sourceToPlay = it.getString("source")
+            }
+        })
+
+        player.configure(Options(source=expectedFirstSource))
+        player.play()
+
+        assertEquals(expectedFirstSource, sourceToPlay)
+
+        player.configure(Options(source=expectedSecondSource))
+        player.play()
+
+        assertEquals(expectedSecondSource, sourceToPlay)
+    }
+
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the current source passed by
+     * options. That way we ensure that we are changing the options when we call a load before a
+     * configure.
+     */
+    @Test
+    fun shouldCoreChangeSourceOnPlayerLoad() {
+        val expectedFirstSource = "source"
+        val expectedSecondSource = "other-source"
+
+        var sourceToPlay = ""
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let {
+                sourceToPlay = it.getString("source")
+            }
+        })
+
+        player.configure(Options(source=expectedFirstSource))
+        player.play()
+
+        assertEquals(expectedFirstSource, sourceToPlay)
+
+        player.load(source=expectedSecondSource)
+        player.play()
+
+        assertEquals(expectedSecondSource, sourceToPlay)
+    }
+
+    /**
+     * This test use the CoreTestPlugin to send by PlayerTest event the core id. That way we can
+     * compare the hash between two configures performed in Player, ensuring that the same core
+     * instance is used between configures. To force the CoreTestPlugin to send the test event we
+     * trigger a WILL_PLAY event when the Playback play is called using the PlayerTestPlayback.
+     */
+    @Test
+    fun shouldCoreHaveSameInstanceOnPlayerConfigure() {
+        val expectedDistinctCoreId = 1
+
+        val coreIdList = mutableSetOf<String>()
+        player.on(playerTestEvent, Callback.wrap { bundle ->
+            bundle?.let { coreIdList.add(it.getString("coreId")) }
+        })
+
+        player.configure(Options(source = "123"))
+        player.play()
+
+        player.configure(Options(source = "321"))
+        player.play()
+
+        assertEquals(expectedDistinctCoreId, coreIdList.size)
+    }
+
+    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
+        companion object: PlaybackSupportInterface {
+            override val name: String = "player_test"
+            var internalState = State.NONE
+
+            override fun supportsSource(source: String, mimeType: String?): Boolean {
+                return source.isNotEmpty()
+            }
+        }
+
+        override val state: State
+            get() = internalState
+
+        override val duration: Double = 1.0
+        override val position: Double = 0.0
+
+        override fun stop(): Boolean { return true }
+        override fun seek(seconds: Int): Boolean { return true }
+
+        override fun play(): Boolean {
+            trigger(Event.WILL_PLAY.value)
+            return true
+        }
+        override fun pause(): Boolean {
+            trigger(Event.WILL_PAUSE.value)
+            trigger(Event.DID_PAUSE.value)
+            return true
+        }
+    }
+
+    class CoreTestPlugin(core: Core) : CorePlugin(core) {
+        companion object : NamedType {
+            override val name: String?
+                get() = "coreTestPlugin"
+        }
+
+        init {
+            listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindPlaybackEvents() })
+        }
+
+        private fun bindPlaybackEvents() {
+            core.activePlayback?.let {
+                listenTo(it, Event.WILL_PLAY.value, Callback.wrap { _ ->
+                    it.trigger("playerTestEvent", Bundle().apply {
+                        putString("source", core.options.source)
+                        putString("mimeType", core.options.mimeType)
+                        putString("coreId", core.id)
+                        core.options.options["test_option"]?.let { testOption ->
+                            putString("option", testOption as String)
+                        }
+                    })
+                })
+            }
+        }
     }
 }
