@@ -13,8 +13,8 @@ object PluginConfig {
         Loader.registerPlugin(LoadingPlugin::class)
         Loader.registerPlugin(MediaControl::class)
         Loader.registerPlugin(FullscreenButton::class)
-        Loader.registerPlugin(TimeIndicatorPlugin::class)
+        //Loader.registerPlugin(TimeIndicatorPlugin::class)
         Loader.registerPlugin(PlayButton::class)
-        Loader.registerPlugin(SeekbarPlugin::class)
+        //Loader.registerPlugin(SeekbarPlugin::class)
     }
 }
