@@ -11,7 +11,7 @@ import kotlin.reflect.full.primaryConstructor
 
 class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlaybacks: List<KClass<out Playback>> = emptyList()) {
     companion object {
-        @JvmStatic val registeredPlugins = mutableMapOf<String, KClass<out Plugin>>()
+        @JvmStatic private val registeredPlugins = mutableMapOf<String, KClass<out Plugin>>()
         @JvmStatic private val registeredPlaybacks= mutableListOf<KClass<out Playback>>()
 
         @JvmStatic
@@ -29,12 +29,20 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
             val pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
             pluginName?.let {
                 if (pluginName.isNotEmpty()) {
-                    registeredPlugins.put(pluginName, pluginClass)
+                    registeredPlugins[pluginName] = pluginClass
                     return true
                 }
             }
             return false
         }
+
+        @JvmStatic
+        fun unregisterPlugin(pluginClass: KClass<out Plugin>) =
+            (pluginClass.companionObjectInstance as? NamedType)?.run {
+                name?.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
+                    registeredPlugins.remove(it) != null
+                }
+            } ?: false
 
         @JvmStatic
         fun registerPlayback(playbackClass: KClass<out Playback>): Boolean {
@@ -63,9 +71,9 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     private val externalPlaybacks = mutableListOf<KClass<out Playback>>()
 
-    val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
+    private val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
 
-    val availablePlaybacks = mutableListOf<KClass<out Playback>>()
+    private val availablePlaybacks = mutableListOf<KClass<out Playback>>()
 
     init {
         for (pluginClass in registeredPlugins.values) {
@@ -98,12 +106,13 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
+
         try {
             val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
             val constructor = playbackClass.primaryConstructor
             playback = constructor?.call(source, mimeType, options) as? Playback
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
+
         return playback
     }
 
@@ -120,19 +129,18 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         val name : String? = (pluginClass.companionObjectInstance as? NamedType)?.name
         name?.let {
             if (name.isNotEmpty()) {
-                availablePlugins.put(name, pluginClass)
+                availablePlugins[name] = pluginClass
             }
         }
     }
 
     private fun loadPlugin(component: BaseObject, pluginClass: KClass<out Plugin>) : Plugin? {
         var plugin: Plugin? = null
-
         val constructor = pluginClass.primaryConstructor
+
         try {
             plugin = constructor?.call(component) as? Plugin
-        } catch (e: Exception) {
-        }
+        } catch (e: Exception) { }
 
         return plugin
     }
