@@ -37,15 +37,12 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
 
         @JvmStatic
-        fun unregisterPlugin(pluginClass: KClass<out Plugin>): Boolean {
-            val pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
-            pluginName?.let {
-                if (it.isNotEmpty() && registeredPlugins.containsKey(it)) {
-                    return registeredPlugins.remove(it) != null
+        fun unregisterPlugin(pluginClass: KClass<out Plugin>) =
+            (pluginClass.companionObjectInstance as? NamedType)?.run {
+                name?.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
+                    registeredPlugins.remove(it) != null
                 }
-            }
-            return false
-        }
+            } ?: false
 
         @JvmStatic
         fun registerPlayback(playbackClass: KClass<out Playback>): Boolean {
