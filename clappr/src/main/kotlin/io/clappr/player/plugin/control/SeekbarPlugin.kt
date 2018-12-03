@@ -1,5 +1,6 @@
 package io.clappr.player.plugin.control
 
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -21,7 +22,9 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     override var panel = Panel.BOTTOM
 
-    override val view by lazy { LayoutInflater.from(context).inflate(R.layout.seekbar_plugin, null) as ViewGroup }
+
+    val layoutInflater by lazy { context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
+    override val view by lazy { layoutInflater.inflate(R.layout.seekbar_plugin, null) as ViewGroup }
 
     open val backgroundView by lazy { view.findViewById(R.id.background_view) as View }
 

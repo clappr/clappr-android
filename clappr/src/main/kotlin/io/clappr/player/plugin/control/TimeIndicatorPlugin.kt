@@ -1,5 +1,6 @@
 package io.clappr.player.plugin.control
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -23,7 +24,8 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     override var panel: Panel = Panel.BOTTOM
     override var position: Position = Position.LEFT
 
-    open val textView by lazy { LayoutInflater.from(context).inflate(R.layout.time_indicator, null) as TextView }
+    val layoutInflater by lazy { context?.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater }
+    open val textView by lazy { layoutInflater.inflate(R.layout.time_indicator, null) as TextView }
 
     override val view: View?
         get() = textView
