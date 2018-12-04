@@ -13,7 +13,7 @@ import io.clappr.player.components.Container
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-open class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
+class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
     private var spinnerLayout: LinearLayout? = LinearLayout(context)
 
