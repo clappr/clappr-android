@@ -4,7 +4,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 
-open class NoOpPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
+class NoOpPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
     companion object: PlaybackSupportInterface {
         override val name: String = "no_op"
 
