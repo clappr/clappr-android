@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 
-fun writeBundle(dest: Parcel, value: Bundle?) {
+private fun writeBundle(dest: Parcel, value: Bundle?) {
     if (value != null) {
         dest.writeInt(1)
         dest.writeBundle(value)
@@ -13,7 +13,7 @@ fun writeBundle(dest: Parcel, value: Bundle?) {
     }
 }
 
-fun readBundle(source: Parcel): Bundle? = if (source.readInt() == 1) source.readBundle() else null
+private fun readBundle(source: Parcel): Bundle? = if (source.readInt() == 1) source.readBundle() else null
 
 data class ErrorInfo(val message: String, val code: Int, val extras: Bundle? = null) : Parcelable {
     private constructor(source: Parcel) : this(source.readString(), source.readInt(), readBundle(source) as? Bundle)
