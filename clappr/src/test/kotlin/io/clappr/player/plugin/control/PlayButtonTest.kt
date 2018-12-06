@@ -1,5 +1,6 @@
 package io.clappr.player.plugin.control
 
+import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
@@ -40,21 +41,18 @@ class PlayButtonTest {
     }
 
     @Test
-    fun shouldNotHavePlaybackListenersWhenInit() {
-        playButton = PlayButton(core)
+    fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
 
-        assertTrue(playButton.playbackListenerIds.size == 0,
-                "Playback listeners should not be registered")
-    }
+        assertEquals(View.GONE, playButton.view.visibility)
 
-    @Test
-    fun shouldBindPlaybackListenersWhenDidChangeActivePlaybackEventIsTriggered() {
-        playButton.playbackListenerIds.clear()
+        val newPlayback = FakePlayback()
+        container.playback = newPlayback
 
-        container.playback = FakePlayback()
+        newPlayback.playbackState = Playback.State.IDLE
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
 
-        assertTrue(playButton.playbackListenerIds.size > 0,
-                "Playback listeners should be registered")
+        assertEquals(View.GONE, playButton.view.visibility)
     }
 
     @Test
@@ -68,23 +66,6 @@ class PlayButtonTest {
         oldPlayback?.trigger(Event.PLAYING.value)
 
         assertHiddenView(playButton)
-    }
-
-    @Test
-    fun shouldRemoveAllPlaybackListenersBeforeBindNewOnesWhenDidChangeActivePlaybackEventIsTriggered() {
-        val expectedAmountOfListener = 5
-
-        container.playback = FakePlayback()
-
-        assertEquals(expectedAmountOfListener, playButton.playbackListenerIds.size)
-    }
-
-    @Test
-    fun shouldRemoveAllPlaybackListenersWhenPluginIsDestroyed() {
-        playButton.destroy()
-
-        assertTrue(playButton.playbackListenerIds.size == 0,
-                "Playback listeners should not be registered")
     }
 
     @Test
