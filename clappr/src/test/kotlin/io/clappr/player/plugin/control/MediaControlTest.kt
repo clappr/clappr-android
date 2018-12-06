@@ -13,7 +13,6 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
-import kotlinx.android.synthetic.main.media_control.view.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +51,7 @@ class MediaControlTest {
     }
 
     @After
-    fun tearDwon() {
+    fun tearDown() {
         Loader.clearPlugins()
         Loader.clearPlaybacks()
     }
@@ -115,14 +114,14 @@ class MediaControlTest {
     fun shouldNotAddMediaControlPluginWhenPanelIsNone() {
         setupFakeMediaControlPlugin(Panel.NONE, Position.NONE)
 
-        assertTrue(mediaControl.controlPlugins.size == 1, "Media Control Plugin should be added to Media Control")
-        assertTrue(mediaControl.centerPanel.childCount == 0, "Media Control Plugin should not be added to Center panel in Media Control")
-        assertTrue(mediaControl.topPanel.childCount == 0, "Media Control Plugin should not be added to Top panel in Media Control")
-        assertTrue(mediaControl.topRightPanel.childCount == 0, "Media Control Plugin should not be added to Top Right panel in Media Control")
-        assertTrue(mediaControl.topLeftPanel.childCount == 0, "Media Control Plugin should not be added to Top Left panel in Media Control")
-        assertTrue(mediaControl.bottomPanel.childCount == 0, "Media Control Plugin should not be added to Bottom panel in Media Control")
-        assertTrue(mediaControl.bottomRightPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Right panel in Media Control")
-        assertTrue(mediaControl.bottomLeftPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Left panel in Media Control")
+        assertEquals(1, mediaControl.controlPlugins.size, "Media Control Plugin should be added to Media Control")
+        assertEquals(0, mediaControl.centerPanel.childCount, "Media Control Plugin should not be added to Center panel in Media Control")
+        assertEquals(0, mediaControl.topPanel.childCount,"Media Control Plugin should not be added to Top panel in Media Control")
+        assertEquals(0, mediaControl.topRightPanel.childCount,"Media Control Plugin should not be added to Top Right panel in Media Control")
+        assertEquals(0, mediaControl.topLeftPanel.childCount,"Media Control Plugin should not be added to Top Left panel in Media Control")
+        assertEquals(0, mediaControl.bottomPanel.childCount,"Media Control Plugin should not be added to Bottom panel in Media Control")
+        assertEquals(0, mediaControl.bottomRightPanel.childCount,"Media Control Plugin should not be added to Bottom Right panel in Media Control")
+        assertEquals(0, mediaControl.bottomLeftPanel.childCount,"Media Control Plugin should not be added to Bottom Left panel in Media Control")
     }
 
     @Test
@@ -345,9 +344,29 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldRegisterListenersOnRender() {
-        assertTrue(mediaControl.playbackListenerIds.size > 0, "Media control should have playback listeners ids")
-        assertTrue(mediaControl.containerListenerIds.size > 0, "Media control should have container listeners ids")
+    fun shouldStopListeningOldContainerWhenDidChangeActiveContainerEventIsTriggered() {
+        val oldContainer = container
+
+        assertEquals(Plugin.State.ENABLED, mediaControl.state)
+
+        core.activeContainer = Container(Loader(), Options())
+
+        oldContainer.trigger(InternalEvent.DISABLE_MEDIA_CONTROL.value)
+
+        assertEquals(Plugin.State.ENABLED, mediaControl.state)
+    }
+
+    @Test
+    fun shouldStopListeningOldPlaybackWhenDidChangeActivePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+
+        container.playback = FakePlayback()
+
+        oldPlayback?.trigger(Event.DID_PAUSE.value)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
 
     @Test
@@ -360,27 +379,6 @@ class MediaControlTest {
         oldPlayback?.trigger(InternalEvent.ENABLE_MEDIA_CONTROL.value)
 
         assertHiddenView(mediaControl)
-    }
-
-    @Test
-    fun shouldClearListenersOnDestroy() {
-        mediaControl.destroy()
-        assertTrue(mediaControl.playbackListenerIds.size == 0, "Media control should not have playback listeners ids")
-        assertTrue(mediaControl.containerListenerIds.size == 0, "Media control should not have container listeners ids")
-    }
-
-    @Test
-    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
-        mediaControl.playbackListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
-        assertTrue(mediaControl.playbackListenerIds.size > 0)
-    }
-
-    @Test
-    fun shouldSetupContainerListenersWhenDidChangePlaybackEventIsCalled() {
-        mediaControl.containerListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
-        assertTrue(mediaControl.containerListenerIds.size > 0)
     }
 
     @Test
@@ -508,7 +506,7 @@ class MediaControlTest {
     }
 
     private fun assertOrderOfMediaControlPlugins(layoutPanel: LinearLayout, className: Class<out MediaControl.Plugin>, name: String, index: Int) {
-        val plugin = core.plugins.filterIsInstance(className).first()
+        val plugin = core.plugins.asSequence().filterIsInstance(className).first()
         assertEquals(name, plugin.name)
         assertEquals(plugin.view, layoutPanel.getChildAt(index))
     }
@@ -526,9 +524,9 @@ class MediaControlTest {
     }
 
     private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
-        val plugin = core.plugins.filterIsInstance(FakePlugin::class.java).first()
+        val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
         assertTrue(mediaControl.controlPlugins.any { p -> p is MediaControlTest.FakePlugin }, "Media Control Plugin should be added to Media Control")
-        assertTrue(layoutPanel.childCount == 1, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
+        assertEquals(1, layoutPanel.childCount, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
         assertEquals(plugin.view, layoutPanel.getChildAt(0))
     }
 
