@@ -165,7 +165,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
     }
 
-    open fun resetAvailableMediaOptions() {
+    fun resetAvailableMediaOptions() {
         mediaOptionList.clear()
     }
 
