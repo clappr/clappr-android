@@ -120,9 +120,9 @@ class MediaControl(core: Core) : UICorePlugin(core) {
         stopContainerListeners()
 
         core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.ENABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.DISABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { hide() }))
+            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.ENABLED }))
+            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.DISABLED }))
+            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { _ -> hide() }))
         }
     }
 
@@ -130,7 +130,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap {
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap { _ ->
                 if (!modalPanelIsOpen())
                     show()
             }))
