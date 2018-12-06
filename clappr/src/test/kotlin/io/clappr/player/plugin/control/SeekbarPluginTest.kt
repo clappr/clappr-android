@@ -311,21 +311,16 @@ class SeekbarPluginTest {
     }
 
     @Test
-    fun shouldHaveListenersWhenInit() {
-        assertTrue(seekbarPlugin.playbackListenerIds.size > 0, "Seekbar should have playback listeners initialized")
-    }
+    fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
 
-    @Test
-    fun shouldRemoveAllListenersOnDestroy() {
-        seekbarPlugin.destroy()
-        assertTrue(seekbarPlugin.playbackListenerIds.size == 0, "Seekbar should have playback listeners initialized")
-    }
+        assertEquals(View.VISIBLE, seekbarPlugin.view.visibility)
 
-    @Test
-    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
-        seekbarPlugin.playbackListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
-        assertTrue(seekbarPlugin.playbackListenerIds.size > 0)
+        container.playback = FakePlayback()
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(View.VISIBLE, seekbarPlugin.view.visibility)
     }
 
     private fun assertViewVisibilityWhenTouchEventHappens(expectedViewVisibility: Int,
