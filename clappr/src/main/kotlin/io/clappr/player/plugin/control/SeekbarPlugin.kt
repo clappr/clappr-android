@@ -31,10 +31,9 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     open val scrubberView by lazy { view.findViewById(R.id.scrubber) as View }
 
-    open var dragging = false
+    var dragging = false
 
-    internal val playbackListenerIds = mutableListOf<String>()
-
+    private val playbackListenerIds = mutableListOf<String>()
     private val handler = Handler()
     private var isInteracting = false
     private val timeBetweenInteractionsEvents = 3500L
@@ -150,7 +149,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         }
     }
 
-    fun removeGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener?) {
+    protected fun removeGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener?) {
         listener?.let {
             if (Build.VERSION.SDK_INT < 16) view.viewTreeObserver.removeGlobalOnLayoutListener(listener)
             else view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
