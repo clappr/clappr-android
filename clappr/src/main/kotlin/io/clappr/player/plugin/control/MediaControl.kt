@@ -48,7 +48,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
 
     private val handler = Handler()
 
-    internal var lastInteractionTime = 0L
+    private var lastInteractionTime = 0L
 
     override val view by lazy {
         LayoutInflater.from(context).inflate(R.layout.media_control, null) as FrameLayout
@@ -72,7 +72,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
 
     private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
-    internal val controlPlugins = mutableListOf<MediaControl.Plugin>()
+    private val controlPlugins = mutableListOf<MediaControl.Plugin>()
 
     override var state: State = State.ENABLED
         set(value) {
