@@ -31,7 +31,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     open val scrubberView by lazy { view.findViewById(R.id.scrubber) as View }
 
-    var dragging = false
+    protected var dragging = false
 
     private val playbackListenerIds = mutableListOf<String>()
     private val handler = Handler()
