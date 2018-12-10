@@ -224,20 +224,6 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldResetAvailableMediaOptions() {
-        val playback = SomePlayback("valid-source.mp4", Options())
-        val random = Random()
-        val randomNumber = random.nextInt(10)
-        insertMedia(playback, MediaOptionType.SUBTITLE, randomNumber)
-        insertMedia(playback, MediaOptionType.AUDIO, random.nextInt(10))
-        playback.resetAvailableMediaOptions()
-
-        assertTrue(playback.availableMediaOptions(MediaOptionType.SUBTITLE).isEmpty())
-        assertTrue(playback.availableMediaOptions(MediaOptionType.AUDIO).isEmpty())
-        assertFalse(playback.hasMediaOptionAvailable)
-    }
-
-    @Test
     fun shouldReturnNoOneSelectedMediaOption(){
         val playback = SomePlayback("valid-source.mp4", Options())
 

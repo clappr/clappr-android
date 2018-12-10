@@ -2,7 +2,7 @@
 
 # state
 
-`open var state: `[`State`](../-plugin/-state/index.md)
+`var state: `[`State`](../-plugin/-state/index.md)
 
 Overrides [Plugin.state](../-plugin/state.md)
 
