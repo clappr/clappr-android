@@ -10,6 +10,7 @@ import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.shadows.ShadowUri
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -20,7 +21,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowUri::class])
 class PosterPluginTest {
 
     private lateinit var posterPlugin: PosterPlugin
@@ -44,17 +45,19 @@ class PosterPluginTest {
     @After
     fun tearDown() {
         Loader.clearPlugins()
+        ShadowUri.urlToParse = ""
     }
 
     @Test
     fun shouldUpdateImageUrlWhenUpdateOptionsIsTriggered() {
         val expectedImageUrl = "image_url"
 
-        val option = Options()
-        option[ClapprOption.POSTER.value] = expectedImageUrl
-        container.options = option
+        container.options = Options().apply {
+            options[ClapprOption.POSTER.value] = expectedImageUrl
+        }
+        container.trigger(Event.REQUEST_POSTER_UPDATE.value)
 
-        assertEquals(expectedImageUrl, posterPlugin.posterImageUrl)
+        assertEquals(expectedImageUrl, ShadowUri.urlToParse)
     }
 
     @Test
