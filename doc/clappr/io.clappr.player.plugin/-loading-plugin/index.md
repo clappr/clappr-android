@@ -2,7 +2,7 @@
 
 # LoadingPlugin
 
-`open class LoadingPlugin : `[`UIContainerPlugin`](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md)
+`class LoadingPlugin : `[`UIContainerPlugin`](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md)
 
 ### Types
 
@@ -20,8 +20,8 @@
 
 | Name | Summary |
 |---|---|
-| [state](state.md) | `open var state: `[`State`](../-plugin/-state/index.md) |
-| [view](view.md) | `open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
+| [state](state.md) | `var state: `[`State`](../-plugin/-state/index.md) |
+| [view](view.md) | `val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
 
 ### Inherited Properties
 
@@ -33,7 +33,7 @@
 
 | Name | Summary |
 |---|---|
-| [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [destroy](destroy.md) | `fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 

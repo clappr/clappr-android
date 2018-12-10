@@ -47,5 +47,5 @@
 
 | Name | Summary |
 |---|---|
-| [LoadingPlugin](../../io.clappr.player.plugin/-loading-plugin/index.md) | `open class LoadingPlugin : `[`UIContainerPlugin`](./index.md) |
+| [LoadingPlugin](../../io.clappr.player.plugin/-loading-plugin/index.md) | `class LoadingPlugin : `[`UIContainerPlugin`](./index.md) |
 | [PosterPlugin](../../io.clappr.player.plugin/-poster-plugin/index.md) | `class PosterPlugin : `[`UIContainerPlugin`](./index.md) |
