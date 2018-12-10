@@ -91,42 +91,6 @@ class SeekbarPluginTest {
     }
 
     @Test
-    fun shouldStartDragWhenTouchActionDownHappens() {
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
-
-        assertTrue(didTouchSeekbar)
-        assertTrue(seekbarPlugin.dragging)
-    }
-
-    @Test
-    fun shouldStartDragWhenTouchActionMoveHappens() {
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_MOVE)
-
-        assertTrue(didTouchSeekbar)
-        assertTrue(seekbarPlugin.dragging)
-    }
-
-    @Test
-    fun shouldStopDragWhenTouchActionUpHappens() {
-        seekbarPlugin.dragging = true
-
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_UP)
-
-        assertTrue(didTouchSeekbar)
-        assertFalse(seekbarPlugin.dragging)
-    }
-
-    @Test
-    fun shouldStopDragWhenTouchActionCancelHappens() {
-        seekbarPlugin.dragging = true
-
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_CANCEL)
-
-        assertTrue(didTouchSeekbar)
-        assertFalse(seekbarPlugin.dragging)
-    }
-
-    @Test
     fun shouldHideSeekbarWhenDidCompleteEventHappens() {
         setupViewVisible(seekbarPlugin)
 
@@ -161,6 +125,16 @@ class SeekbarPluginTest {
         assertTrue(didTouchSeekbar)
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
+    }
+
+    @Test
+    fun shouldNotUpdatePositionBarViewAndScrubberViewWhenTouchActionCancelHappens() {
+        assertActionNotUpdateView(MotionEvent.ACTION_CANCEL)
+    }
+
+    @Test
+    fun shouldNotUpdatePositionBarViewAndScrubberViewWhenTouchActionUpHappens() {
+        assertActionNotUpdateView(MotionEvent.ACTION_UP)
     }
 
     @Test
@@ -303,7 +277,7 @@ class SeekbarPluginTest {
 
         setupViewWidth(500, 8)
 
-        seekbarPlugin.dragging = true
+        seekbarPlugin.updateDrag(0.0f)
         core.activePlayback?.trigger(Event.DID_UPDATE_POSITION.value, bundle)
 
         assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
@@ -359,6 +333,23 @@ class SeekbarPluginTest {
     private fun setupViewWidth(backgroundViewWidth: Int, scrubberViewWidth: Int) {
         (ShadowExtractor.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
         (ShadowExtractor.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
+    }
+
+    private fun assertActionNotUpdateView(event: Int) {
+        val expectedPositionBarWidth = 100
+        val expectedScrubberViewX = 96.0f
+
+        setupViewWidth(500, 8)
+        seekbarPlugin.updatePosition(20.0, false)
+
+        assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
+        assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
+
+        val didTouchSeekbar = performTouchActionOnSeekbar(event, 200F)
+
+        assertTrue(didTouchSeekbar)
+        assertEquals(expectedPositionBarWidth, seekbarPlugin.positionBar.layoutParams.width)
+        assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
     }
 
     private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,
