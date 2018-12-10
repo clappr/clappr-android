@@ -117,7 +117,6 @@ class MediaControlTest {
     fun shouldNotAddMediaControlPluginWhenPanelIsNone() {
         setupFakeMediaControlPlugin(Panel.NONE, Position.NONE)
 
-        assertEquals(1, mediaControl.controlPlugins.size, "Media Control Plugin should be added to Media Control")
         assertEquals(0, getCenterPanel().childCount, "Media Control Plugin should not be added to Center panel in Media Control")
         assertEquals(0, getTopPanel().childCount,"Media Control Plugin should not be added to Top panel in Media Control")
         assertEquals(0, getTopRightPanel().childCount,"Media Control Plugin should not be added to Top Right panel in Media Control")
@@ -325,28 +324,6 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldUpdateInteractionTimeWhenDidUpdateInteractingEventIsCalled() {
-        val expectedTime = 1234L
-
-        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
-
-        core.trigger(InternalEvent.DID_UPDATE_INTERACTING.value)
-
-        assertEquals(expectedTime, mediaControl.lastInteractionTime)
-    }
-
-    @Test
-    fun shouldUpdateInteractionTimeWhenDidTouchMediaControlEventIsCalled() {
-        val expectedTime = 1234L
-
-        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
-
-        core.trigger(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value)
-
-        assertEquals(expectedTime, mediaControl.lastInteractionTime)
-    }
-
-    @Test
     fun shouldStopListeningOldContainerWhenDidChangeActiveContainerEventIsTriggered() {
         val oldContainer = container
 
@@ -540,8 +517,9 @@ class MediaControlTest {
 
     private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
-        assertTrue(mediaControl.controlPlugins.any { p -> p is MediaControlTest.FakePlugin }, "Media Control Plugin should be added to Media Control")
+
         assertEquals(1, layoutPanel.childCount, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
+        assertEquals(FakePlugin.viewId, layoutPanel.getChildAt(0).id, "Media Control Plugin should be added to Media Control")
         assertEquals(plugin.view, layoutPanel.getChildAt(0))
     }
 
@@ -579,10 +557,15 @@ class MediaControlTest {
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
+            val viewId = 12345
         }
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
+
+        init {
+            view?.id = viewId
+        }
     }
 
     class FakePlugin2(core: Core) : MediaControl.Plugin(core) {
