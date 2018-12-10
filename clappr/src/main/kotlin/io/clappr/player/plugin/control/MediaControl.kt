@@ -54,23 +54,23 @@ class MediaControl(core: Core) : UICorePlugin(core) {
         LayoutInflater.from(context).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    internal val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
+    private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
-    internal val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
+    private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
-    internal val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
-    internal val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
-    internal val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
+    private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
+    private val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
+    private val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
 
-    internal val bottomPanel by lazy { view.findViewById(R.id.bottom_panel) as LinearLayout }
-    internal val bottomLeftPanel by lazy { view.findViewById(R.id.bottom_left_panel) as LinearLayout }
-    internal val bottomRightPanel by lazy { view.findViewById(R.id.bottom_right_panel) as LinearLayout }
+    private val bottomPanel by lazy { view.findViewById(R.id.bottom_panel) as LinearLayout }
+    private val bottomLeftPanel by lazy { view.findViewById(R.id.bottom_left_panel) as LinearLayout }
+    private val bottomRightPanel by lazy { view.findViewById(R.id.bottom_right_panel) as LinearLayout }
 
-    internal val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as FrameLayout }
+    private val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as FrameLayout }
 
-    internal val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
+    private val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
 
-    internal val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
+    private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
     internal val controlPlugins = mutableListOf<MediaControl.Plugin>()
 
