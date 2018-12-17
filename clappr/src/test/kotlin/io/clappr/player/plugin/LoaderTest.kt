@@ -22,19 +22,19 @@ import kotlin.reflect.KClass
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
 class LoaderTest {
-    class TestPlugin(baseObject: BaseObject) : Plugin(baseObject) {
-        companion object: NamedType {
+    class TestPlugin(core: Core) : CorePlugin(core) {
+        companion object : NamedType {
             override val name = "testplugin"
         }
     }
 
-    class SameNameTestPlugin(baseObject: BaseObject) : Plugin(baseObject) {
-        companion object: NamedType {
+    class SameNameTestPlugin(core: Core) : CorePlugin(core) {
+        companion object : NamedType {
             override val name = "testplugin"
         }
     }
 
-    class NoNameTestPlugin(baseObject: BaseObject) : Plugin(baseObject)
+    class NoNameTestPlugin(core: Core) : CorePlugin(core)
 
     class TestCorePlugin(core: Core) : CorePlugin(core) {
         companion object: NamedType {
@@ -131,7 +131,7 @@ class LoaderTest {
         val expectedLoadedPluginName = "testplugin"
 
         val loaderExternal = Loader(listOf<KClass<out Plugin>>(TestPlugin::class))
-        val loadedPlugins = loaderExternal.loadPlugins(BaseObject())
+        val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
@@ -143,7 +143,7 @@ class LoaderTest {
         val externalPlugins = listOf<KClass<out Plugin>>(NoNameTestPlugin::class)
 
         val loaderExternal = Loader(externalPlugins)
-        val loadedPlugins = loaderExternal.loadPlugins(BaseObject())
+        val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
     }
@@ -178,7 +178,7 @@ class LoaderTest {
         Loader.registerPlugin(SameNameTestPlugin::class)
 
         val loader = Loader()
-        val loadedPlugins = loader.loadPlugins(BaseObject())
+        val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)

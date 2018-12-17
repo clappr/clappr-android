@@ -10,6 +10,8 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 

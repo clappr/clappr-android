@@ -13,6 +13,8 @@ import io.clappr.player.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
 class MediaControl(core: Core) : UICorePlugin(core) {

@@ -15,16 +15,6 @@ import kotlin.test.assertNotNull
 open class UIObjectCreationTest {
     var context: Context? = null
 
-    @Before
-    fun setup() {
-        BaseObject.applicationContext = null
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun uiObjectWithoutContext() {
-        var uo = UIObject()
-    }
-
     @Test
     fun uiObjectCreation() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
