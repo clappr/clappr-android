@@ -3,6 +3,8 @@ package io.clappr.player.base;
 import android.os.Bundle;
 
 import io.clappr.player.BuildConfig;
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
@@ -24,11 +26,12 @@ public class BaseObjectJavaTest {
 
     static int callbackCalls = 0;
 
-    static final Callback callback = new Callback() {
+    static final Function1<Bundle, Unit> callback = new Function1<Bundle, Unit>() {
         @Override
-        public void invoke(@Nullable Bundle bundle) {
+        public Unit invoke(@Nullable Bundle bundle) {
             callbackWasCalled = true;
             ++callbackCalls;
+            return null;
         }
     };
 

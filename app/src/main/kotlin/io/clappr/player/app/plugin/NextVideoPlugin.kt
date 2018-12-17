@@ -16,7 +16,7 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
     companion object : NamedType {
         override val name = "nextVideo"
 
-        val entry = PluginEntry.Core(name = name, factory = { core ->  NextVideoPlugin(core) })
+        val entry = PluginEntry.Core(name = name, factory = { core -> NextVideoPlugin(core) })
     }
 
     private val picasso: Picasso by lazy {
@@ -37,6 +37,15 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
 
     private val playbackListenerIds = mutableListOf<String>()
 
+    private val hideNextVideo: EventHandler = {
+        hide()
+    }
+
+    private val showNextVideo: EventHandler = {
+        view.bringToFront()
+        show()
+    }
+
     init {
         bindCoreEvents()
     }
@@ -47,19 +56,19 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
     }
 
     private fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) {
             hide()
             bindPlaybackEvents()
-        })
+        }
     }
 
     private fun bindPlaybackEvents() {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hideNextVideo()))
-            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showNextVideo()))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showNextVideo()))
+            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hideNextVideo))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showNextVideo))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showNextVideo))
         }
     }
 
@@ -76,15 +85,6 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
 
                 setOnClickListener { onClick(entry.second) }
             }
-
-    private fun hideNextVideo() = Callback.wrap {
-        hide()
-    }
-
-    private fun showNextVideo() = Callback.wrap {
-        view.bringToFront()
-        show()
-    }
 
     private fun stopPlaybackListeners() {
         playbackListenerIds.forEach(::stopListening)

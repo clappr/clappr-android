@@ -4,8 +4,8 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.TextView
 import io.clappr.player.app.R
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
+import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
@@ -34,10 +34,10 @@ class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container, 
     }
 
     private fun bindContainerEvents() {
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap {
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) {
             hide()
             bindPlaybackEvents()
-        })
+        }
     }
 
     private fun bindPlaybackEvents() {
@@ -53,8 +53,8 @@ class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container, 
         }
     }
 
-    private fun updateLabel(text: String): Callback {
-        return Callback.wrap {
+    private fun updateLabel(text: String): EventHandler {
+        return {
             status.text = text
             show()
         }

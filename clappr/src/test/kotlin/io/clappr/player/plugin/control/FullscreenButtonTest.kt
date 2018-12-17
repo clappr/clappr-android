@@ -160,7 +160,7 @@ class FullscreenButtonTest {
     fun shouldEnterFullscreenOnClick() {
         var enterFullScreenWasCalled = false
 
-        core.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { enterFullScreenWasCalled = true })
+        core.on(Event.REQUEST_FULLSCREEN.value) { enterFullScreenWasCalled = true }
         core.fullscreenState = Core.FullscreenState.EMBEDDED
         fullscreenButton.onClick()
 
@@ -171,7 +171,7 @@ class FullscreenButtonTest {
     fun shouldExitFullscreenOnClick() {
         var exitFullScreenWasCalled = false
 
-        core.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { exitFullScreenWasCalled = true })
+        core.on(Event.EXIT_FULLSCREEN.value) { exitFullScreenWasCalled = true }
         core.fullscreenState = Core.FullscreenState.FULLSCREEN
         fullscreenButton.onClick()
 

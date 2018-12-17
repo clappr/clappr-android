@@ -1,10 +1,7 @@
 package io.clappr.player.plugin.control
 
 import io.clappr.player.R
-import io.clappr.player.base.Callback
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.PluginEntry
 
@@ -36,11 +33,11 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core, name) {
     }
 
     private fun bindCoreEvents() {
-        val bindEventsCallback = Callback.wrap {
+        val bindEventsCallback: EventHandler = {
             bindPlaybackEvents()
             updateState()
         }
-        val updateStateCallback = Callback.wrap { updateState() }
+        val updateStateCallback: EventHandler = { updateState() }
 
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bindEventsCallback)
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, bindEventsCallback)
@@ -52,8 +49,8 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core, name) {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.PLAYING.value, Callback.wrap { _ -> updateState() }))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
+            playbackListenerIds.add(listenTo(it, Event.PLAYING.value) { updateState() })
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value) { hide() })
         }
     }
 

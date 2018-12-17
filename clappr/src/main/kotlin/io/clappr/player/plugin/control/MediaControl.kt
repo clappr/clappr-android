@@ -10,7 +10,10 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
-import io.clappr.player.base.*
+import io.clappr.player.base.ClapprOption
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.Plugin.State
@@ -106,14 +109,14 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     init {
         setupPanelsVisibility()
         view.setOnClickListener { toggleVisibility() }
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { setupMediaControlEvents() })
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { setupPlaybackEvents() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
 
-        listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value, Callback.wrap { updateInteractionTime() })
-        listenTo(core, InternalEvent.DID_TOUCH_MEDIA_CONTROL.value, Callback.wrap { updateInteractionTime() })
+        listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { updateInteractionTime() }
+        listenTo(core, InternalEvent.DID_TOUCH_MEDIA_CONTROL.value) { updateInteractionTime() }
 
-        listenTo(core, InternalEvent.OPEN_MODAL_PANEL.value, Callback.wrap { openModal() })
-        listenTo(core, InternalEvent.CLOSE_MODAL_PANEL.value, Callback.wrap { closeModal() })
+        listenTo(core, InternalEvent.OPEN_MODAL_PANEL.value) { openModal() }
+        listenTo(core, InternalEvent.CLOSE_MODAL_PANEL.value) { closeModal() }
     }
 
     private fun setupPanelsVisibility() {
@@ -124,9 +127,9 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         stopContainerListeners()
 
         core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.ENABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.DISABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { _ -> hide() }))
+            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value) { state = State.ENABLED })
+            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value) { state = State.DISABLED })
+            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) { hide() })
         }
     }
 
@@ -134,10 +137,10 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap { _ ->
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value) {
                 if (!modalPanelIsOpen())
                     show()
-            }))
+            })
         }
     }
 

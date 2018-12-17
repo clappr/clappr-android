@@ -147,7 +147,7 @@ class PlayButtonTest {
     @Test
     fun shouldTriggerDidTouchMediaControlWhenPlayButtonIsClicked() {
         var eventTriggered = false
-        core.on(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value, Callback.wrap { eventTriggered = true })
+        core.on(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value) { eventTriggered = true }
 
         playButton.onClick()
 

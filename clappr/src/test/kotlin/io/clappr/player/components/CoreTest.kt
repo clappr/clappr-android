@@ -18,7 +18,8 @@ import org.robolectric.shadows.ShadowLog
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class CoreTest {
-    class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+    class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) :
+            Playback(source, mimeType, options, name, supportsSource) {
         companion object {
             const val name = "core_test"
             val supportsSource: PlaybackSupportCheck = { source, _ -> source.isNotEmpty() }
@@ -76,8 +77,8 @@ open class CoreTest {
         val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) { callbackWasCalled = true }
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { callbackWasCalled = true }
 
         assertNotNull("invalid container", core.activeContainer)
 
@@ -91,11 +92,11 @@ open class CoreTest {
 
         var callbackWasCalled = false
         val previousActiveContainer: Container? = core.activeContainer
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap {
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) {
             assertFalse("DID_CHANGE_ACTIVE_CONTAINER triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActiveContainer, core.activeContainer)
-        })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
+        }
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { callbackWasCalled = true }
 
         assertNotNull("invalid container", core.activeContainer)
 
@@ -109,8 +110,8 @@ open class CoreTest {
         val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value) { callbackWasCalled = true }
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { callbackWasCalled = true }
 
         assertNull("valid playback for no source", core.activePlayback)
         core.activeContainer?.playback = null
@@ -130,11 +131,11 @@ open class CoreTest {
 
         var callbackWasCalled = false
         var previousActivePlayback: Playback? = core.activePlayback
-        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap {
+        core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) {
             assertFalse("DID_CHANGE_ACTIVE_PLAYBACK triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActivePlayback, core.activePlayback)
-        })
-        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
+        }
+        core.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { callbackWasCalled = true }
 
         assertNull("valid playback for no source", core.activePlayback)
 
@@ -150,8 +151,8 @@ open class CoreTest {
         var willDestroyCalled = false
         var didDestroyCalled = false
 
-        listenObject.listenTo(core, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
-        listenObject.listenTo(core, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        listenObject.listenTo(core, InternalEvent.WILL_DESTROY.value) { willDestroyCalled = true }
+        listenObject.listenTo(core, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         core.destroy()
 
@@ -166,7 +167,7 @@ open class CoreTest {
         assertFalse("No container", core.containers.isEmpty())
 
         var didDestroyCalled = false
-        core.listenTo(core.containers.first(), InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        core.listenTo(core.containers.first(), InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         core.destroy()
 
@@ -201,7 +202,7 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin()
 
         val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
-                "crashed during destroy"
+                                 "crashed during destroy"
 
         testPlugin.destroyMethod = { throw NullPointerException() }
 
@@ -228,7 +229,7 @@ open class CoreTest {
         val core = Core(Options())
 
         var numberOfTriggers = 0
-        core.listenTo(triggerObject, "coreTest", Callback.wrap { numberOfTriggers++ })
+        core.listenTo(triggerObject, "coreTest") { numberOfTriggers++ }
 
         triggerObject.trigger("coreTest")
         assertEquals("no trigger", 1, numberOfTriggers)
@@ -252,7 +253,7 @@ open class CoreTest {
         val core = Core(options = Options(source = "some_source")).apply { load() }
 
         var callbackWasCalled = false
-        core.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+        core.on(InternalEvent.DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
 
         core.options = Options(source = "new_source")
 
@@ -276,7 +277,7 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin()
 
         val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
-                "crashed during render"
+                                 "crashed during render"
 
         testPlugin.renderMethod = { throw NullPointerException() }
 
