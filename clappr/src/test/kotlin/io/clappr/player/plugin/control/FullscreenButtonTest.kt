@@ -30,7 +30,7 @@ class FullscreenButtonTest {
 
     @Before
     fun setUp() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         container = Container(Loader(), Options())
         core = Core(Loader(), Options())
         fullscreenButton = FullscreenButton(core)

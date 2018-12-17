@@ -35,7 +35,7 @@ class NextVideoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         core = Core(Loader(), Options(source = source))
 

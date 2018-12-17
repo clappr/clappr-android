@@ -40,7 +40,7 @@ open class PlayerTest {
 
     @Test(expected = IllegalStateException::class)
     fun instantiateWithoutContext() {
-        BaseObject.context = null
+        BaseObject.applicationContext = null
         val invalidPlayer = Player()
     }
 

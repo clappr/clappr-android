@@ -72,7 +72,7 @@ class LoaderTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         Loader.clearPlaybacks()
         Loader.clearPlugins()

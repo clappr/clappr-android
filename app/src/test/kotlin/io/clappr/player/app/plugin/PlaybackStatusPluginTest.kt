@@ -1,7 +1,6 @@
 package io.clappr.player.app.plugin
 
 import android.app.Application
-import android.view.View
 import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
@@ -12,7 +11,6 @@ import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Container
-import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +33,7 @@ class PlaybackStatusPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         container = Container(Loader(), Options(source = source))
 

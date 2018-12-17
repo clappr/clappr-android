@@ -51,7 +51,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
     private var lastInteractionTime = 0L
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.media_control, null) as FrameLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }

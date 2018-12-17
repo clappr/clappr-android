@@ -32,7 +32,7 @@ class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
     override var position: Position = Position.LEFT
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.video_info_plugin, null) as LinearLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.video_info_plugin, null) as LinearLayout
     }
 
     open val titleLabel by lazy { view.findViewById(R.id.title_label) as TextView }

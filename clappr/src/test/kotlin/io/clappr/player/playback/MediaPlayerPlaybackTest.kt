@@ -49,7 +49,7 @@ open class MediaPlayerPlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         ShadowMediaPlayer.setCreateListener { _, shadowMediaPlayer ->
             // Disabling invalid state emulation as it is not compatible with releases newer than KitKat (MediaTimeProvider)

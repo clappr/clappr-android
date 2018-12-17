@@ -16,7 +16,7 @@ open class BaseObjectCreationTest {
 
     @Before
     fun setup() {
-        BaseObject.context = null
+        BaseObject.applicationContext = null
     }
 
     @Test(expected = IllegalStateException::class)
@@ -26,7 +26,7 @@ open class BaseObjectCreationTest {
 
     @Test
     fun baseObjectCreation() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         val bo = BaseObject()
     }
 }

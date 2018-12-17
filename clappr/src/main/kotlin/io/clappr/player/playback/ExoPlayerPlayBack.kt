@@ -71,7 +71,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val formatIndexKey = "formatIndexKey"
     private var needSetupMediaOptions = true
 
-    private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+    private val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
     private val drmScheme = C.WIDEVINE_UUID
@@ -261,7 +261,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun mediaSource(uri: Uri): MediaSource {
         val mediaType = Util.inferContentType(uri.lastPathSegment)
-        val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+        val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
 
         when (mediaType) {
             C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
@@ -296,7 +296,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
-        val rendererFactory = DefaultRenderersFactory(context,
+        val rendererFactory = DefaultRenderersFactory(applicationContext,
                 buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         return rendererFactory
     }
@@ -307,7 +307,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return null
         }
 
-        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context?.packageName), bandwidthMeter)
+        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(applicationContext, applicationContext.packageName), bandwidthMeter)
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
         var drmSessionManager : DrmSessionManager<FrameworkMediaCrypto>? = null
 

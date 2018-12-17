@@ -21,7 +21,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     override var panel = Panel.BOTTOM
 
-    override val view by lazy { LayoutInflater.from(context).inflate(R.layout.seekbar_plugin, null) as ViewGroup }
+    override val view by lazy { LayoutInflater.from(applicationContext).inflate(R.layout.seekbar_plugin, null) as ViewGroup }
 
     open val backgroundView by lazy { view.findViewById(R.id.background_view) as View }
 

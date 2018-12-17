@@ -37,7 +37,7 @@ class VideoInfoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         val options = HashMap<String, Any>()
         options[VideoInfoPlugin.Option.TITLE.value] = title

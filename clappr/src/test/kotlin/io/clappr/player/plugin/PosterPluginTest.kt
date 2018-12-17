@@ -30,7 +30,7 @@ class PosterPluginTest {
 
     @Before
     fun setUp() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         Loader.registerPlugin(PosterPlugin::class)
 

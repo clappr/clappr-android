@@ -34,7 +34,7 @@ public class BaseObjectJavaTest {
 
     @Before
     public void setup() {
-        BaseObject.setContext(null);
+        BaseObject.setApplicationContext(null);
         callbackWasCalled = false;
         callbackCalls = 0;
     }
@@ -46,14 +46,14 @@ public class BaseObjectJavaTest {
 
     @Test
     public void baseObjectCreation() {
-        BaseObject.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
         BaseObject bo = new BaseObject();
         assertNotNull("should not throw exception on creation", bo);
     }
 
     @Test
     public void baseObjectShouldAllowRegisteringJavaCallbacks() {
-        BaseObject.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
         BaseObject bo = new BaseObject();
         String listenId = bo.on(EVENT, callback);
         assertNotNull("listenId should not be null", listenId);
@@ -61,7 +61,7 @@ public class BaseObjectJavaTest {
 
     @Test
     public void baseObjectShouldTriggerEvents() {
-        BaseObject.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
         BaseObject bo = new BaseObject();
         bo.on(EVENT, callback);
 
@@ -71,7 +71,7 @@ public class BaseObjectJavaTest {
 
     @Test
     public void baseObjectShouldTriggerOnceCallback() {
-        BaseObject.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
         BaseObject bo = new BaseObject();
         bo.once(EVENT, callback);
 

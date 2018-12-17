@@ -20,7 +20,7 @@ public class UIObjectJavaTest {
 
     @Before
     public void setup() {
-        BaseObject.Companion.setContext(null);
+        BaseObject.Companion.setApplicationContext(null);
     }
 
     @Test(expected=IllegalStateException.class)
@@ -30,7 +30,7 @@ public class UIObjectJavaTest {
 
     @Test
     public void uiObjectCreation() {
-        BaseObject.Companion.setContext(ShadowApplication.getInstance().getApplicationContext());
+        BaseObject.Companion.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
         UIObject uo = new UIObject();
         assertTrue("invalid view", uo.getView() != null);
     }
