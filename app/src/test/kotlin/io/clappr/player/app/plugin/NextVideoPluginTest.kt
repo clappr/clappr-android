@@ -39,7 +39,7 @@ class NextVideoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         Loader.registerPlugin(NextVideoPlugin::class)
         Loader.registerPlugin(FooUICorePlugin::class)

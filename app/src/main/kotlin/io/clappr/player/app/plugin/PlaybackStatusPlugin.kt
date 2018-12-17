@@ -19,7 +19,7 @@ class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) 
     }
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.playback_status_plugin, null) as RelativeLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.playback_status_plugin, null) as RelativeLayout
     }
 
     private val status by lazy { view.findViewById(R.id.status) as TextView }

@@ -23,7 +23,7 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     override var panel: Panel = Panel.BOTTOM
     override var position: Position = Position.LEFT
 
-    protected val textView by lazy { LayoutInflater.from(context).inflate(R.layout.time_indicator, null) as TextView }
+    protected val textView by lazy { LayoutInflater.from(applicationContext).inflate(R.layout.time_indicator, null) as TextView }
 
     override val view: View?
         get() = textView
@@ -66,7 +66,7 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     }
 
     override fun render() {
-        val height = context?.resources?.getDimensionPixelSize(R.dimen.time_indicator_height) ?: 0
+        val height = applicationContext.resources?.getDimensionPixelSize(R.dimen.time_indicator_height) ?: 0
         val layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, height)
         layoutParams.gravity = Gravity.CENTER_VERTICAL
         textView.layoutParams = layoutParams

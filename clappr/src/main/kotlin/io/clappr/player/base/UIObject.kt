@@ -25,7 +25,7 @@ open class UIObject: BaseObject() {
     private fun ensureView() {
         if (view == null) {
             val constructor = viewClass.getConstructor(Context::class.java) ?: throw IllegalStateException("No constructor was found for parameters (Context)")
-            view = constructor.newInstance(context) as? View
+            view = constructor.newInstance(applicationContext) as? View
         }
     }
 }

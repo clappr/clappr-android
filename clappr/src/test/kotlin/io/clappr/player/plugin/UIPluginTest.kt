@@ -16,7 +16,7 @@ import org.robolectric.shadows.ShadowApplication
 class UIPluginTest {
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
     }
 
     @Test

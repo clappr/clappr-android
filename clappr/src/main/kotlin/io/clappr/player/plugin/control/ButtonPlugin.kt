@@ -12,7 +12,7 @@ abstract class ButtonPlugin(core: Core) : MediaControl.Plugin(core) {
     abstract val resourceLayout: Int
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(resourceLayout, null) as ImageButton
+        LayoutInflater.from(applicationContext).inflate(resourceLayout, null) as ImageButton
     }
 
     init {

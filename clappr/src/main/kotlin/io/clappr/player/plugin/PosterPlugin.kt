@@ -18,9 +18,9 @@ import okhttp3.OkHttpClient
 
 class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
-    private val posterLayout = LinearLayout(context)
+    private val posterLayout = LinearLayout(applicationContext)
 
-    private val imageView = ImageView(context)
+    private val imageView = ImageView(applicationContext)
 
     private var posterImageUrl: String? = null
 
@@ -29,7 +29,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
         private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         private val picasso: Picasso by lazy {
-            Picasso.Builder(context).downloader(OkHttp3Downloader(httpClient))
+            Picasso.Builder(applicationContext).downloader(OkHttp3Downloader(httpClient))
                 .listener{ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") }
                 .build()
         }
@@ -84,7 +84,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
 
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this , android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(applicationContext, android.R.color.black))
 
             it.addView(imageView)
 

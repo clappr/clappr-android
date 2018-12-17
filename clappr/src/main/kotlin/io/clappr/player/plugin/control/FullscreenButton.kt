@@ -96,9 +96,9 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
 
     //Because full screen button is the last button
     private fun removeDefaultRightPadding() {
-        val leftPadding = context?.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding)
+        val leftPadding = applicationContext.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding)
                 ?: 0
-        val verticalPadding = context?.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
+        val verticalPadding = applicationContext.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
                 ?: 0
         view.setPadding(leftPadding, verticalPadding, 0, verticalPadding)
     }

@@ -17,7 +17,7 @@ open class UIObjectCreationTest {
 
     @Before
     fun setup() {
-        BaseObject.context = null
+        BaseObject.applicationContext = null
     }
 
     @Test(expected = IllegalStateException::class)
@@ -27,7 +27,7 @@ open class UIObjectCreationTest {
 
     @Test
     fun uiObjectCreation() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         val uo = UIObject()
         assertNotNull(uo.view, "invalid view")
     }

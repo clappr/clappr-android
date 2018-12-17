@@ -15,7 +15,7 @@ import io.clappr.player.plugin.container.UIContainerPlugin
 
 class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
 
-    private var spinnerLayout: LinearLayout? = LinearLayout(context)
+    private var spinnerLayout: LinearLayout? = LinearLayout(applicationContext)
 
     companion object : NamedType {
         override val name = "spinner"
@@ -67,10 +67,10 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         spinnerLayout?.let {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(applicationContext, android.R.color.black))
             it.alpha = 0.7f
 
-            it.addView(ProgressBar(context))
+            it.addView(ProgressBar(applicationContext))
         }
     }
 
