@@ -13,6 +13,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Playback
 import io.clappr.player.log.Logger
+import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.container.UIContainerPlugin
 import okhttp3.OkHttpClient
 
@@ -29,7 +30,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
         private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         private val picasso: Picasso by lazy {
-            Picasso.Builder(applicationContext).downloader(OkHttp3Downloader(httpClient))
+            Picasso.Builder(BaseObject.applicationContext).downloader(OkHttp3Downloader(httpClient))
                 .listener{ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") }
                 .build()
         }

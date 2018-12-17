@@ -3,6 +3,7 @@ package io.clappr.player.plugin
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
+import io.clappr.player.base.UIObject
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackSupportInterface
 import kotlin.reflect.KClass
@@ -95,7 +96,7 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
     }
 
-    fun loadPlugins(context: BaseObject) : List<Plugin> {
+    fun <C: BaseObject> loadPlugins(context: C) : List<Plugin> {
         val loadedPlugins = mutableListOf<Plugin>()
         availablePlugins.values.forEach {
             val plugin = loadPlugin(context, it)
@@ -134,12 +135,18 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
     }
 
-    private fun loadPlugin(component: BaseObject, pluginClass: KClass<out Plugin>) : Plugin? {
+    private fun <C: BaseObject> loadPlugin(component: C, pluginClass: KClass<out Plugin>) : Plugin? {
         var plugin: Plugin? = null
         val constructor = pluginClass.primaryConstructor
 
         try {
-            plugin = constructor?.call(component) as? Plugin
+            constructor?.run {
+                plugin = if (parameters.count() > 1) {
+                    call(component, UIObject())
+                } else {
+                    call(component)
+                }
+            }
         } catch (e: Exception) { }
 
         return plugin

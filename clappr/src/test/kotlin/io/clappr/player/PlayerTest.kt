@@ -38,12 +38,6 @@ open class PlayerTest {
         player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun instantiateWithoutContext() {
-        BaseObject.applicationContext = null
-        val invalidPlayer = Player()
-    }
-
     @Test
     fun shouldHaveInvalidStatesBeforeConfigure() {
         assertEquals("valid duration", Double.NaN, player.duration, 0.0)
