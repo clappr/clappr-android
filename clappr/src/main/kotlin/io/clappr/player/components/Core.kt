@@ -120,7 +120,7 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         try {
             action.invoke()
         } catch (error: Exception) {
-            Logger.error(Core::class.simpleName, errorMessage, error)
+            Logger.error(Core::class.java.simpleName, errorMessage, error)
         }
     }
 }

@@ -549,6 +549,8 @@ class MediaControlTest {
             get() = fakeState
 
         var fakeState: State = State.IDLE
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class FakePlugin(core: Core) : MediaControl.Plugin(core) {
@@ -559,6 +561,8 @@ class MediaControlTest {
             var currentPosition: Position = Position.NONE
             val viewId = 12345
         }
+
+        override val name = Companion.name
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
@@ -576,6 +580,8 @@ class MediaControlTest {
             var currentPosition: Position = Position.NONE
         }
 
+        override val name = Companion.name
+
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
     }
@@ -587,6 +593,8 @@ class MediaControlTest {
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
         }
+
+        override val name = Companion.name
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition

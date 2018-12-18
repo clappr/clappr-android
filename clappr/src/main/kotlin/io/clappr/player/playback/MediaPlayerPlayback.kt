@@ -37,8 +37,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
             return true
         }
 
-        override val name: String?
-            get() = "media_player"
+        override val name: String = "media_player"
     }
 
     override val viewClass: Class<*>
@@ -240,6 +239,8 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
     val canStop: Boolean
         get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLING) )
 
+
+    override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
 
     override fun play(): Boolean {
         if (canPlay) {

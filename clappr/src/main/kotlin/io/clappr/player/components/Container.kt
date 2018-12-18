@@ -101,7 +101,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         try {
             action.invoke()
         } catch (error: Exception) {
-            Logger.error(Container::class.simpleName, errorMessage, error)
+            Logger.error(Container::class.java.simpleName, errorMessage, error)
         }
     }
 }

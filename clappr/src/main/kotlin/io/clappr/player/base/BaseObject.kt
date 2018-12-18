@@ -33,14 +33,14 @@ open class BaseObject : EventInterface {
                     try {
                         handler.invoke(intent.getBundleExtra(USERDATA_KEY))
                     } catch (error: Exception) {
-                        Logger.error(BaseObject::class.simpleName,
+                        Logger.error(BaseObject::class.java.simpleName,
                                 "Plugin ${handler.javaClass.name} crashed during invocation of event $eventName",
                                 error)
                     }
                 }
             }
 
-            broadcastManager.registerReceiver(receiver, IntentFilter("clappr:" + eventName))
+            broadcastManager.registerReceiver(receiver, IntentFilter("clappr:$eventName"))
             receivers[listenId] = receiver
         }
         return listenId
@@ -81,7 +81,7 @@ open class BaseObject : EventInterface {
     override fun trigger(eventName: String, userData: Bundle?) {
         val broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
         val intent = Intent()
-        intent.action = "clappr:" + eventName
+        intent.action = "clappr:$eventName"
         intent.putExtra(CONTEXT_KEY, this.id)
         if (userData != null) {
             intent.putExtra(USERDATA_KEY, userData)

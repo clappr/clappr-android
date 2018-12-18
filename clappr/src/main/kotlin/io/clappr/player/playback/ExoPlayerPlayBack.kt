@@ -211,6 +211,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         return true
     }
 
+    override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
+
     private fun release() {
         timeElapsedHandler.cancel()
 

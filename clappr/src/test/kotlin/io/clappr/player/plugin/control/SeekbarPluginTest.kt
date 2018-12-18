@@ -7,20 +7,23 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.assertHiddenView
+import io.clappr.player.plugin.assertVisibleView
+import io.clappr.player.plugin.setupViewVisible
+import io.clappr.player.shadows.ClapprShadowView
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
-import kotlin.test.assertTrue
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.*
-import io.clappr.player.shadows.ClapprShadowView
 import org.robolectric.internal.ShadowExtractor
+import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ClapprShadowView::class])
@@ -392,5 +395,7 @@ class SeekbarPluginTest {
             seekTime = seconds
             return super.seek(seconds)
         }
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

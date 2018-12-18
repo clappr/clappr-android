@@ -14,4 +14,7 @@ open class ContainerPlugin(val container: Container, open val base: BaseObject =
 
     val applicationContext: Context
         get() = BaseObject.applicationContext
+
+    override val name: String
+        get() = Companion.name
 }

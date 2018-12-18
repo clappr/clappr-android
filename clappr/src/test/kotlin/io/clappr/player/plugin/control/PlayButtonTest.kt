@@ -245,5 +245,7 @@ class PlayButtonTest {
             playWasCalled = true
             return super.play()
         }
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

@@ -26,6 +26,7 @@ open class CoreTest {
                 return source.isNotEmpty()
             }
         }
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class TestCorePlugin(core: Core) : UICorePlugin(core) {

@@ -52,6 +52,8 @@ open class PlaybackTest {
 
         var selectedMediaOptionsJson: String? = null
         val hasSelectedMediaOption = selectedMediaOptionList.isNotEmpty()
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     @Before

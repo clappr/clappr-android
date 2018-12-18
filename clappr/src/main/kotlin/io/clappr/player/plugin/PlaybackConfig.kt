@@ -12,7 +12,7 @@ object PlaybackConfig {
                 supportsSource = { source, mimeType -> NoOpPlayback.supportsSource(source, mimeType) },
                 factory = { source, mimeType, options -> NoOpPlayback(source, mimeType, options) }))
         Loader.registerPlayback(PlaybackEntry(
-                name = NoOpPlayback.name,
+                name = ExoPlayerPlayback.name,
                 supportsSource = { source, mimeType -> ExoPlayerPlayback.supportsSource(source, mimeType) },
                 factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) }))
     }

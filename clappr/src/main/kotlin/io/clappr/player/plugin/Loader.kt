@@ -87,14 +87,7 @@ class Loader(extraPlugins: List<PluginEntry> = emptyList(), extraPlaybacks: List
         externalPlaybacks.forEach { addPlayback(it) }
     }
 
-    fun <C : BaseObject> loadPlugins(context: C): List<Plugin> {
-        val loadedPlugins = mutableListOf<Plugin>()
-        availablePlugins.values.forEach {
-            val plugin = loadPlugin(context, it)
-            plugin?.let { loadedPlugins.add(plugin) }
-        }
-        return loadedPlugins.toList()
-    }
+    fun <C : BaseObject> loadPlugins(context: C): List<Plugin> = availablePlugins.values.mapNotNull { loadPlugin(context, it) }
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
@@ -122,18 +115,12 @@ class Loader(extraPlugins: List<PluginEntry> = emptyList(), extraPlaybacks: List
         }
     }
 
-    private fun <C : BaseObject> loadPlugin(component: C, pluginEntry: PluginEntry): Plugin? {
-        var plugin: Plugin? = null
-
-        try {
-            return when (pluginEntry) {
-                is PluginEntry.Core -> pluginEntry.factory(component as Core)
-                is PluginEntry.Container -> pluginEntry.factory(component as Container)
-            }
-        } catch (e: Exception) {
-            println(e)
+    private fun <C : BaseObject> loadPlugin(component: C, pluginEntry: PluginEntry): Plugin? = try {
+        when (pluginEntry) {
+            is PluginEntry.Core -> pluginEntry.factory(component as Core)
+            is PluginEntry.Container -> pluginEntry.factory(component as Container)
         }
-
-        return plugin
+    } catch (e: Exception) {
+        null
     }
 }

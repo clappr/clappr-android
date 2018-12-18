@@ -257,5 +257,7 @@ class TimeIndicatorPluginTest {
 
         override val duration: Double
             get() = currentDuration
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

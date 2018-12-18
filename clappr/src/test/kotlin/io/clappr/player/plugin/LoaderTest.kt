@@ -6,7 +6,6 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
-import io.clappr.player.plugin.control.MediaControlTest
 import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
@@ -15,7 +14,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
-import kotlin.reflect.KClass
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
@@ -24,12 +22,16 @@ class LoaderTest {
         companion object : NamedType {
             override val name = "testplugin"
         }
+        override val name: String
+            get() = Companion.name
     }
 
     class SameNameTestPlugin(core: Core) : CorePlugin(core) {
         companion object : NamedType {
             override val name = "testplugin"
         }
+        override val name: String
+            get() = Companion.name
     }
 
     class NoNameTestPlugin(core: Core) : CorePlugin(core)
@@ -38,6 +40,8 @@ class LoaderTest {
         companion object: NamedType {
             override val name = "coreplugin"
         }
+        override val name: String
+            get() = Companion.name
     }
 
     class TestPlaybackAny(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
@@ -45,6 +49,7 @@ class LoaderTest {
             override val name = "testplayback"
             override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
         }
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
@@ -52,6 +57,7 @@ class LoaderTest {
             override val name = "testplayback"
             override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mp4") }
         }
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class TestPlaybackDash(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
@@ -59,6 +65,7 @@ class LoaderTest {
             override val name = "testplaybackdash"
             override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mpd") }
         }
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class TestDuplicatePlayback(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
@@ -66,6 +73,7 @@ class LoaderTest {
             override val name = "testplayback"
             override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
         }
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     @Before
@@ -107,7 +115,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 0
 
         Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
-        val didUnregistered = Loader.unregisterPlugin(TestCorePlugin::class)
+        val didUnregistered = Loader.unregisterPlugin(TestCorePlugin.name)
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
@@ -118,7 +126,7 @@ class LoaderTest {
 
     @Test
     fun shouldNotUnregisterNotRegisteredPlugin() {
-        val didUnregistered = Loader.unregisterPlugin(TestPlugin::class)
+        val didUnregistered = Loader.unregisterPlugin(TestPlugin.name)
 
         assertFalse("plugin should not be unregistered", didUnregistered)
     }

@@ -340,6 +340,8 @@ open class PlayerTest {
             trigger(Event.DID_PAUSE.value)
             return true
         }
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class CoreTestPlugin(core: Core) : CorePlugin(core) {
