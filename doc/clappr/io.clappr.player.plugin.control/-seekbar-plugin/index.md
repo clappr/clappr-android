@@ -22,7 +22,7 @@
 |---|---|
 | [backgroundView](background-view.md) | `open val backgroundView: `[`View`](https://developer.android.com/reference/android/view/View.html) |
 | [bufferedBar](buffered-bar.md) | `open val bufferedBar: `[`View`](https://developer.android.com/reference/android/view/View.html) |
-| [dragging](dragging.md) | `open var dragging: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [dragging](dragging.md) | `var dragging: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [panel](panel.md) | `open var panel: `[`Panel`](../-media-control/-plugin/-panel/index.md) |
 | [positionBar](position-bar.md) | `open val positionBar: `[`View`](https://developer.android.com/reference/android/view/View.html) |
 | [scrubberView](scrubber-view.md) | `open val scrubberView: `[`View`](https://developer.android.com/reference/android/view/View.html) |
