@@ -11,7 +11,7 @@ import io.clappr.player.components.Playback
 open class PlayButton(core: Core) : ButtonPlugin(core) {
 
     companion object : NamedType {
-        override val name: String?
+        override val name: String
             get() = "playButton"
     }
 

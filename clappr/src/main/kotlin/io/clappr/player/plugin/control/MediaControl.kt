@@ -39,7 +39,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     companion object : NamedType {
-        override val name: String?
+        override val name: String
             get() = "mediaControl"
 
         const val modalPanelViewKey = "modalPanelView"

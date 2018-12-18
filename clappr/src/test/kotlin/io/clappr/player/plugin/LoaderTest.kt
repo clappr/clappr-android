@@ -4,11 +4,9 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
+import io.clappr.player.plugin.control.MediaControlTest
 import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Assert.*
 import org.junit.Before
@@ -95,7 +93,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.registerPlugin(TestCorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
@@ -108,7 +106,7 @@ class LoaderTest {
     fun shouldAllowUnregisteringPlugins() {
         val expectedLoadedPluginsListSize = 0
 
-        Loader.registerPlugin(TestCorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
         val didUnregistered = Loader.unregisterPlugin(TestCorePlugin::class)
 
         val loader = Loader()
@@ -130,7 +128,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        val loaderExternal = Loader(listOf<KClass<out Plugin>>(TestPlugin::class))
+        val loaderExternal = Loader(listOf<PluginEntry>(PluginEntry.Core(name = TestPlugin.name, factory = { context -> TestPlugin(context) })))
         val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
@@ -140,7 +138,7 @@ class LoaderTest {
     @Test
     fun shouldDisregardExternalPluginsWithoutName() {
         val expectedLoadedPluginsListSize = 0
-        val externalPlugins = listOf<KClass<out Plugin>>(NoNameTestPlugin::class)
+        val externalPlugins = listOf<PluginEntry>(PluginEntry.Core(name = "", factory = { context -> NoNameTestPlugin(context) }))
 
         val loaderExternal = Loader(externalPlugins)
         val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
@@ -153,7 +151,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.registerPlugin(CorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
@@ -161,7 +159,7 @@ class LoaderTest {
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
 
-        val loaderExternal = Loader(listOf<KClass<out Plugin>>(TestCorePlugin::class))
+        val loaderExternal = Loader(listOf<PluginEntry>(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) })))
         val loadedExternalPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedExternalPlugins.size)
@@ -174,8 +172,8 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        Loader.registerPlugin(TestPlugin::class)
-        Loader.registerPlugin(SameNameTestPlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = TestPlugin.name, factory = { context -> TestPlugin(context) }))
+        Loader.registerPlugin(PluginEntry.Core(name = SameNameTestPlugin.name, factory = { context -> SameNameTestPlugin(context) }))
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
@@ -199,7 +197,10 @@ class LoaderTest {
 
     @Test
     fun shouldAllowRegisteringPlaybacks() {
-        Loader.registerPlayback(TestPlaybackMp4::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackMp4.name,
+                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
 
         val loader = Loader()
         val loadedMP4Playback = loader.loadPlayback("123.mp4", "video", Options())
@@ -209,8 +210,14 @@ class LoaderTest {
 
     @Test
     fun shouldOverwritePlaybacksWithDuplicateNames() {
-        Loader.registerPlayback(TestPlaybackMp4::class)
-        Loader.registerPlayback(TestDuplicatePlayback::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackMp4.name,
+                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestDuplicatePlayback.name,
+                supportsSource = { source, mimeType -> TestDuplicatePlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestDuplicatePlayback(source, mimeType, options) }))
 
         val loader = Loader()
         val loadedPlayback = loader.loadPlayback("123.mp4", "video", Options())
@@ -221,7 +228,10 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiatePlayback() {
-        Loader.registerPlayback(TestPlaybackAny::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackAny.name,
+                supportsSource = { source, mimeType -> TestPlaybackAny.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackAny(source, mimeType, options) }))
 
         val loader = Loader()
         val playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -231,8 +241,14 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiatePlaybackWhichCanPlaySource() {
-        Loader.registerPlayback(TestPlaybackMp4::class)
-        Loader.registerPlayback(TestPlaybackDash::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackMp4.name,
+                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackDash.name,
+                supportsSource = { source, mimeType -> TestPlaybackDash.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackDash(source, mimeType, options) }))
 
         val loader = Loader()
         var playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -248,7 +264,10 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiateFirstPlaybackInRegisteredListWhenThereAreMoreThanOneThatCanPlaySource() {
-        Loader.registerPlayback(NoOpPlayback::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = NoOpPlayback.name,
+                supportsSource = { source, mimeType -> NoOpPlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> NoOpPlayback(source, mimeType, options) }))
 
         val loader = Loader()
         var playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -256,7 +275,11 @@ class LoaderTest {
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load no-op playback", playback is NoOpPlayback)
 
-        Loader.registerPlayback(TestPlaybackMp4::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = TestPlaybackMp4.name,
+                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
+
 
         playback = loader.loadPlayback("some-source.mp4", null, Options())
 

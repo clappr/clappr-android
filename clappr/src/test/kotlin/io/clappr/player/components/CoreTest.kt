@@ -1,14 +1,14 @@
 package io.clappr.player.base
+
 import io.clappr.player.BuildConfig
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.core.CorePlugin
+import io.clappr.player.components.*
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.PluginEntry
+import io.clappr.player.plugin.core.CorePlugin
 import io.clappr.player.plugin.core.UICorePlugin
-import org.junit.*
 import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -30,15 +30,20 @@ open class CoreTest {
 
     class TestCorePlugin(core: Core) : UICorePlugin(core) {
         companion object : NamedType {
-            override val name: String?
+            override val name: String
                 get() = "testCorePlugin"
         }
 
         var destroyMethod: (() -> Unit)? = null
         var renderMethod: (() -> Unit)? = null
 
-        override fun destroy() { destroyMethod?.invoke() }
-        override fun render() { renderMethod?.invoke() }
+        override fun destroy() {
+            destroyMethod?.invoke()
+        }
+
+        override fun render() {
+            renderMethod?.invoke()
+        }
     }
 
     @Before
@@ -48,7 +53,7 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlugins() {
-        Loader.registerPlugin(CorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
         val core = Core(Loader(), Options()).apply { load() }
 
         assertTrue("no plugins", core.plugins.isNotEmpty())
@@ -58,7 +63,10 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlayback() {
-        Loader.registerPlayback(CoreTestPlayback::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = CoreTestPlayback.name,
+                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
         val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
 
         assertNotNull("no active playback", core.activePlayback)
@@ -98,7 +106,10 @@ open class CoreTest {
 
     @Test
     fun shouldNotTriggerActivePlaybackChangedForSamePlayback() {
-        Loader.registerPlayback(CoreTestPlayback::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = CoreTestPlayback.name,
+                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
         val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
@@ -118,7 +129,10 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActivePlaybackChanged() {
-        Loader.registerPlayback(CoreTestPlayback::class)
+        Loader.registerPlayback(PlaybackEntry(
+                name = CoreTestPlayback.name,
+                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
         val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
@@ -205,7 +219,7 @@ open class CoreTest {
 
     @Test
     fun shouldClearPluginsOnDestroy() {
-        Loader.registerPlugin(CorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
         val core = Core(Loader(), Options())
 
         assertFalse("No plugins", core.plugins.isEmpty())
@@ -279,7 +293,7 @@ open class CoreTest {
     }
 
     private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
-        Loader.registerPlugin(TestCorePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
 
         val core = Core(Loader(), Options())
         val testPlugin = core.plugins[0] as TestCorePlugin

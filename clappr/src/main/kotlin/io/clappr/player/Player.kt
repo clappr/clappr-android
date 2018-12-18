@@ -13,6 +13,8 @@ import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
 import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
+import io.clappr.player.components.PlaybackEntry
+import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
 
 /**
@@ -21,15 +23,13 @@ import io.clappr.player.plugin.PluginConfig
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
 open class Player(private val base: BaseObject = BaseObject(),
-                  private val playbackEventsToListen : MutableSet<String> = mutableSetOf(),
-                  private val containerEventsToListen : MutableSet<String> = mutableSetOf()) : Fragment(), EventInterface by base {
+                  private val playbackEventsToListen: MutableSet<String> = mutableSetOf(),
+                  private val containerEventsToListen: MutableSet<String> = mutableSetOf()) : Fragment(), EventInterface by base {
 
     companion object {
         init {
             PluginConfig.register()
-
-            Loader.registerPlayback(NoOpPlayback::class)
-            Loader.registerPlayback(ExoPlayerPlayback::class)
+            PlaybackConfig.register()
         }
 
         /**
@@ -131,14 +131,14 @@ open class Player(private val base: BaseObject = BaseObject(),
      */
     val state: State
         get() =
-        when (core?.activePlayback?.state ?: Playback.State.NONE) {
-            Playback.State.NONE -> State.NONE
-            Playback.State.IDLE -> State.IDLE
-            Playback.State.PLAYING -> State.PLAYING
-            Playback.State.PAUSED -> State.PAUSED
-            Playback.State.STALLING -> State.STALLING
-            Playback.State.ERROR -> State.ERROR
-        }
+            when (core?.activePlayback?.state ?: Playback.State.NONE) {
+                Playback.State.NONE -> State.NONE
+                Playback.State.IDLE -> State.IDLE
+                Playback.State.PLAYING -> State.PLAYING
+                Playback.State.PAUSED -> State.PAUSED
+                Playback.State.STALLING -> State.STALLING
+                Playback.State.ERROR -> State.ERROR
+            }
 
     private val playbackEventsIds = mutableSetOf<String>()
 

@@ -16,7 +16,7 @@ import io.clappr.player.extensions.asTimeInterval
 open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
 
     companion object : NamedType {
-        override val name: String?
+        override val name: String
             get() = "timeIndicator"
     }
 
