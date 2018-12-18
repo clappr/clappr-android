@@ -22,8 +22,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
     private val imageView = ImageView(context)
 
-    var posterImageUrl: String? = null
-        private set
+    private var posterImageUrl: String? = null
 
     companion object : NamedType {
         override val name = "poster"

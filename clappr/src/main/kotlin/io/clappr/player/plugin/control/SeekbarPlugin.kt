@@ -31,10 +31,9 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
     open val scrubberView by lazy { view.findViewById(R.id.scrubber) as View }
 
-    open var dragging = false
+    protected var dragging = false
 
-    internal val playbackListenerIds = mutableListOf<String>()
-
+    private val playbackListenerIds = mutableListOf<String>()
     private val handler = Handler()
     private var isInteracting = false
     private val timeBetweenInteractionsEvents = 3500L
@@ -56,10 +55,10 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         updateLiveStatus()
         stopPlaybackListeners()
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { bindEventListeners() }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_BUFFER.value, Callback.wrap { updateBuffered(it) }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { updatePosition(it) }))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { hide() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { _ -> bindEventListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_BUFFER.value, Callback.wrap { bundle -> updateBuffered(bundle) }))
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { bundle -> updatePosition(bundle) }))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
         }
     }
 
@@ -150,7 +149,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         }
     }
 
-    fun removeGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener?) {
+    protected fun removeGlobalLayoutListener(listener: ViewTreeObserver.OnGlobalLayoutListener?) {
         listener?.let {
             if (Build.VERSION.SDK_INT < 16) view.viewTreeObserver.removeGlobalOnLayoutListener(listener)
             else view.viewTreeObserver.removeOnGlobalLayoutListener(listener)
