@@ -2,7 +2,7 @@
 
 # view
 
-`open val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html)
+`val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html)
 
 Overrides [UIPlugin.view](../../io.clappr.player.plugin/-u-i-plugin/view.md)
 

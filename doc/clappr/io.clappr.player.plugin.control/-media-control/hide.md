@@ -2,7 +2,7 @@
 
 # hide
 
-`open fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
 Overrides [UIPlugin.hide](../../io.clappr.player.plugin/-u-i-plugin/hide.md)
 

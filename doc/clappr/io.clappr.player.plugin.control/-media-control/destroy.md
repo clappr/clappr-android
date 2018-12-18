@@ -2,7 +2,7 @@
 
 # destroy
 
-`open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
 Overrides [Plugin.destroy](../../io.clappr.player.plugin/-plugin/destroy.md)
 

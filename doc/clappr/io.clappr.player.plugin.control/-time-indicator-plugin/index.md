@@ -21,9 +21,8 @@
 | Name | Summary |
 |---|---|
 | [panel](panel.md) | `open var panel: `[`Panel`](../-media-control/-plugin/-panel/index.md) |
-| [playbackListenerIds](playback-listener-ids.md) | `open val playbackListenerIds: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`>` |
 | [position](position.md) | `open var position: `[`Position`](../-media-control/-plugin/-position/index.md) |
-| [textView](text-view.md) | `open val textView: `[`TextView`](https://developer.android.com/reference/android/widget/TextView.html) |
+| [textView](text-view.md) | `val textView: `[`TextView`](https://developer.android.com/reference/android/widget/TextView.html) |
 | [view](view.md) | `open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
 
 ### Inherited Properties
