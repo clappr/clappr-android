@@ -50,7 +50,6 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode publishAttrs['versionCode']
         versionName publishAttrs['versionName']
     }
     packagingOptions {
