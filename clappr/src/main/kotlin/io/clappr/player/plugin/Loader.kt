@@ -1,19 +1,31 @@
 package io.clappr.player.plugin
 
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
-import io.clappr.player.base.UIObject
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
-import kotlin.reflect.KClass
-import kotlin.reflect.full.companionObjectInstance
-import kotlin.reflect.full.primaryConstructor
+import io.clappr.player.components.*
+import io.clappr.player.plugin.container.ContainerPlugin
+import io.clappr.player.plugin.core.CorePlugin
 
-class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlaybacks: List<KClass<out Playback>> = emptyList()) {
+
+typealias PluginFactory<C, P> = (C) -> P
+
+typealias CorePluginFactory = PluginFactory<Core, CorePlugin>
+
+typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin>
+
+sealed class PluginEntry(val name: String) {
+    class Core(name: String, val factory: CorePluginFactory) : PluginEntry(name)
+
+    class Container(name: String, val factory: ContainerPluginFactory) : PluginEntry(name)
+}
+
+
+class Loader(extraPlugins: List<PluginEntry> = emptyList(), extraPlaybacks: List<PlaybackEntry> = emptyList()) {
     companion object {
-        @JvmStatic private val registeredPlugins = mutableMapOf<String, KClass<out Plugin>>()
-        @JvmStatic private val registeredPlaybacks= mutableListOf<KClass<out Playback>>()
+        @JvmStatic
+        private val registeredPlugins = mutableMapOf<String, PluginEntry>()
+        @JvmStatic
+        private val registeredPlaybacks = mutableListOf<PlaybackEntry>()
 
         @JvmStatic
         fun clearPlaybacks() {
@@ -26,11 +38,11 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
 
         @JvmStatic
-        fun registerPlugin(pluginClass: KClass<out Plugin>): Boolean {
-            val pluginName = (pluginClass.companionObjectInstance as? NamedType)?.name
+        fun registerPlugin(pluginEntry: PluginEntry): Boolean {
+            val pluginName = pluginEntry.name
             pluginName?.let {
                 if (pluginName.isNotEmpty()) {
-                    registeredPlugins[pluginName] = pluginClass
+                    registeredPlugins[pluginName] = pluginEntry
                     return true
                 }
             }
@@ -38,65 +50,44 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         }
 
         @JvmStatic
-        fun unregisterPlugin(pluginClass: KClass<out Plugin>) =
-            (pluginClass.companionObjectInstance as? NamedType)?.run {
-                name?.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
+        fun unregisterPlugin(name: String) =
+                name.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
                     registeredPlugins.remove(it) != null
-                }
-            } ?: false
+                } ?: false
 
         @JvmStatic
-        fun registerPlayback(playbackClass: KClass<out Playback>): Boolean {
-            val playbackName = (playbackClass.companionObjectInstance as? NamedType)?.name
-            playbackName?.let {
-                if (playbackName.isNotEmpty()) {
-                    registeredPlaybacks.removeAll { (it.companionObjectInstance as? NamedType)?.name == playbackName }
-                    registeredPlaybacks.add(0, playbackClass)
-                    return true
-                }
-            }
-            return false
-        }
-
-        @JvmStatic
-        fun supportsSource(playbackClass: KClass<out Playback>, source: String, mimeType: String? = null): Boolean {
-            val companion = playbackClass.companionObjectInstance as? PlaybackSupportInterface
-            companion?.let {
-                return companion.supportsSource(source, mimeType)
+        fun registerPlayback(playbackEntry: PlaybackEntry): Boolean {
+            val playbackName = playbackEntry.name
+            if (playbackName.isNotEmpty()) {
+                registeredPlaybacks.removeAll { it.name == playbackName }
+                registeredPlaybacks.add(0, playbackEntry)
+                return true
             }
             return false
         }
     }
 
-    private val externalPlugins = mutableListOf<KClass<out Plugin>>()
+    private val externalPlugins = mutableListOf<PluginEntry>()
 
-    private val externalPlaybacks = mutableListOf<KClass<out Playback>>()
+    private val externalPlaybacks = mutableListOf<PlaybackEntry>()
 
-    private val availablePlugins = mutableMapOf<String, KClass<out Plugin>>()
+    private val availablePlugins = mutableMapOf<String, PluginEntry>()
 
-    private val availablePlaybacks = mutableListOf<KClass<out Playback>>()
+    private val availablePlaybacks = mutableListOf<PlaybackEntry>()
 
     init {
-        for (pluginClass in registeredPlugins.values) {
-            addPlugin(pluginClass)
-        }
+        registeredPlugins.values.forEach { addPlugin(it) }
 
-        externalPlugins.addAll(extraPlugins.filter { !(it.companionObjectInstance as? NamedType)?.name.isNullOrEmpty() })
-        for (pluginClass in externalPlugins) {
-            addPlugin(pluginClass)
-        }
+        externalPlugins.addAll(extraPlugins.filter { it.name.isNotEmpty() })
+        externalPlugins.forEach { addPlugin(it) }
 
-        for (playbackClass in registeredPlaybacks) {
-            addPlayback(playbackClass)
-        }
+        registeredPlaybacks.forEach { addPlayback(it) }
 
-        externalPlaybacks.addAll(extraPlaybacks.filter { !(it.companionObjectInstance as? NamedType)?.name.isNullOrEmpty() })
-        for (playbackClass in externalPlaybacks) {
-            addPlayback(playbackClass)
-        }
+        externalPlaybacks.addAll(extraPlaybacks.filter { it.name.isNotEmpty() })
+        externalPlaybacks.forEach { addPlayback(it) }
     }
 
-    fun <C: BaseObject> loadPlugins(context: C) : List<Plugin> {
+    fun <C : BaseObject> loadPlugins(context: C): List<Plugin> {
         val loadedPlugins = mutableListOf<Plugin>()
         availablePlugins.values.forEach {
             val plugin = loadPlugin(context, it)
@@ -109,45 +100,39 @@ class Loader(extraPlugins: List<KClass<out Plugin>> = emptyList(), extraPlayback
         var playback: Playback? = null
 
         try {
-            val playbackClass = registeredPlaybacks.first { supportsSource(it, source, mimeType) }
-            val constructor = playbackClass.primaryConstructor
-            playback = constructor?.call(source, mimeType, options) as? Playback
-        } catch (e: Exception) { }
+            val playbackEntry = registeredPlaybacks.first { it.supportsSource(source, mimeType) }
+            playback = playbackEntry.factory(source, mimeType, options)
+        } catch (e: Exception) {
+        }
 
         return playback
     }
 
-    private fun addPlayback(playbackClass: KClass<out Playback>) {
-        val name = (playbackClass.companionObjectInstance as? NamedType)?.name
-        name?.let {
-            if (!name.isEmpty()) {
-                availablePlaybacks.add(playbackClass)
-            }
+    private fun addPlayback(playbackEntry: PlaybackEntry) {
+        val name = playbackEntry.name
+        if (!name.isEmpty()) {
+            availablePlaybacks.add(playbackEntry)
         }
     }
 
-    private fun addPlugin(pluginClass: KClass<out Plugin>) {
-        val name : String? = (pluginClass.companionObjectInstance as? NamedType)?.name
-        name?.let {
-            if (name.isNotEmpty()) {
-                availablePlugins[name] = pluginClass
-            }
+    private fun addPlugin(pluginEntry: PluginEntry) {
+        val name: String = pluginEntry.name
+        if (name.isNotEmpty()) {
+            availablePlugins[name] = pluginEntry
         }
     }
 
-    private fun <C: BaseObject> loadPlugin(component: C, pluginClass: KClass<out Plugin>) : Plugin? {
+    private fun <C : BaseObject> loadPlugin(component: C, pluginEntry: PluginEntry): Plugin? {
         var plugin: Plugin? = null
-        val constructor = pluginClass.primaryConstructor
 
         try {
-            constructor?.run {
-                plugin = if (parameters.count() > 1) {
-                    call(component, UIObject())
-                } else {
-                    call(component)
-                }
+            return when (pluginEntry) {
+                is PluginEntry.Core -> pluginEntry.factory(component as Core)
+                is PluginEntry.Container -> pluginEntry.factory(component as Container)
             }
-        } catch (e: Exception) { }
+        } catch (e: Exception) {
+            println(e)
+        }
 
         return plugin
     }

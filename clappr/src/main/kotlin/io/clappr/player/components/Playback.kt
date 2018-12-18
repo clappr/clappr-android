@@ -10,8 +10,14 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.reflect.full.companionObjectInstance
 
+typealias PlaybackSupportCheck = (String, String?) -> Boolean
+
+typealias PlaybackFactory = (String, String?, Options) -> Playback
+
+data class PlaybackEntry(val name: String = "", val supportsSource: PlaybackSupportCheck, val factory: PlaybackFactory)
+
 interface PlaybackSupportInterface : NamedType {
-    fun supportsSource(source: String, mimeType: String? = null): Boolean
+    fun supportsSource(source: String, mimeType: String?): Boolean
 }
 
 abstract class Playback(var source: String, var mimeType: String? = null, options: Options = Options()) : UIObject(), NamedType {
@@ -45,8 +51,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         stopListening()
     }
 
-    var options : Options = options
-        set(options)  {
+    var options: Options = options
+        set(options) {
             field = options
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
@@ -198,7 +204,7 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         }
     }
 
-    internal fun supportsSource(source: String, mimeType: String?): Boolean {
+    internal fun supportsSource(source: String, mimeType: String? = null): Boolean {
         val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
         return companion?.supportsSource(source, mimeType) ?: false
     }

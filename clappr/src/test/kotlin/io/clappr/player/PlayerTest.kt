@@ -4,8 +4,10 @@ import android.os.Bundle
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Before
 import org.junit.Test
@@ -30,8 +32,11 @@ open class PlayerTest {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
 
         Loader.clearPlaybacks()
-        Loader.registerPlugin(CoreTestPlugin::class)
-        Loader.registerPlayback(PlayerTestPlayback::class)
+        Loader.registerPlugin(PluginEntry.Core(name = CoreTestPlugin.name, factory = { context -> CoreTestPlugin(context) }))
+        Loader.registerPlayback(PlaybackEntry(
+                name = PlayerTestPlayback.name,
+                supportsSource = { source, mimeType -> PlayerTestPlayback.supportsSource(source, mimeType) },
+                factory = { source, mimeType, options -> PlayerTestPlayback(source, mimeType, options) }))
 
         PlayerTestPlayback.internalState = Playback.State.NONE
 
@@ -339,7 +344,7 @@ open class PlayerTest {
 
     class CoreTestPlugin(core: Core) : CorePlugin(core) {
         companion object : NamedType {
-            override val name: String?
+            override val name: String
                 get() = "coreTestPlugin"
         }
 

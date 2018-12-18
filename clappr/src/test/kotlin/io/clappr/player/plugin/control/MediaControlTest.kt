@@ -484,9 +484,9 @@ class MediaControlTest {
         FakePlugin3.currentPanel = panel
         FakePlugin3.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin::class)
-        Loader.registerPlugin(FakePlugin2::class)
-        Loader.registerPlugin(FakePlugin3::class)
+        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin.name, factory = { context -> FakePlugin(context) }))
+        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin2.name, factory = { context -> FakePlugin2(context) }))
+        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin3.name, factory = { context -> FakePlugin3(context) }))
 
         core = Core(Loader(), Options())
         sequenceOption?.let {
@@ -507,7 +507,7 @@ class MediaControlTest {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin::class)
+        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin.name, factory = { context -> FakePlugin(context) }))
 
         core = Core(Loader(), Options())
 
