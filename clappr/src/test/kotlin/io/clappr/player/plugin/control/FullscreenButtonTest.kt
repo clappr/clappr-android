@@ -262,5 +262,7 @@ class FullscreenButtonTest {
 
         override val state: State
             get() = stateFake
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

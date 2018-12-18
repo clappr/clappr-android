@@ -12,4 +12,6 @@ class NoOpPlayback(source: String, mimeType: String? = null, options: Options = 
             return true
         }
     }
+
+    override fun supportsSource(source: String, mimeType: String?): Boolean = true
 }

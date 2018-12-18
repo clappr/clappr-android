@@ -127,5 +127,7 @@ class PosterPluginTest {
             override val name: String = "fakePlayback"
             override fun supportsSource(source: String, mimeType: String?) = true
         }
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

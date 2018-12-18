@@ -35,6 +35,11 @@ open class ContainerTest {
             override val name: String
                 get() = "mp4"
         }
+
+        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
+
+        override val name: String
+            get() = Companion.name
     }
 
     class TestContainerPlugin(container: Container) : UIContainerPlugin(container) {
@@ -42,6 +47,9 @@ open class ContainerTest {
             override val name: String
                 get() = "testContainerPlugin"
         }
+
+        override val name: String
+            get() = Companion.name
 
         var destroyMethod: (() -> Unit)? = null
         var renderMethod: (() -> Unit)? = null

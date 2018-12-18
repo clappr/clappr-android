@@ -14,4 +14,7 @@ open class CorePlugin (val core: Core, open val base: BaseObject = BaseObject())
 
     val applicationContext: Context
         get() = BaseObject.applicationContext
+
+    override val name: String
+        get() = Companion.name
 }

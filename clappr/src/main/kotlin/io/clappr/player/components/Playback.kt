@@ -8,7 +8,6 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.reflect.full.companionObjectInstance
 
 typealias PlaybackSupportCheck = (String, String?) -> Boolean
 
@@ -198,15 +197,12 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         }
     }
 
+    internal open fun supportsSource(source: String, mimeType: String?): Boolean = false
+
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }?.let {
             setSelectedMediaOption(it)
         }
-    }
-
-    internal fun supportsSource(source: String, mimeType: String? = null): Boolean {
-        val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
-        return companion?.supportsSource(source, mimeType) ?: false
     }
 
     open fun load(source: String, mimeType: String? = null): Boolean {
