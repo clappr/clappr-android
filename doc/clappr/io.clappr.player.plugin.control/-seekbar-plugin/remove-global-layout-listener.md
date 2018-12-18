@@ -2,4 +2,4 @@
 
 # removeGlobalLayoutListener
 
-`fun removeGlobalLayoutListener(listener: `[`OnGlobalLayoutListener`](https://developer.android.com/reference/android/view/ViewTreeObserver/OnGlobalLayoutListener.html)`?): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`protected fun removeGlobalLayoutListener(listener: `[`OnGlobalLayoutListener`](https://developer.android.com/reference/android/view/ViewTreeObserver/OnGlobalLayoutListener.html)`?): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)

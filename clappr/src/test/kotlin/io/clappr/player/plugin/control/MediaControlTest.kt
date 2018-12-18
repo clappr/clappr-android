@@ -3,8 +3,11 @@ package io.clappr.player.plugin.control
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import io.clappr.player.BuildConfig
+import io.clappr.player.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
@@ -13,7 +16,6 @@ import io.clappr.player.components.PlaybackSupportInterface
 import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
-import kotlinx.android.synthetic.main.media_control.view.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -52,7 +54,7 @@ class MediaControlTest {
     }
 
     @After
-    fun tearDwon() {
+    fun tearDown() {
         Loader.clearPlugins()
         Loader.clearPlaybacks()
     }
@@ -60,76 +62,75 @@ class MediaControlTest {
     @Test
     fun shouldAddMediaControlPluginInCenterPanel() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.NONE)
-        assertMediaControlPanel(mediaControl.centerPanel, Panel.CENTER, Position.NONE)
+        assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.NONE)
     }
 
     @Test
     fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsLeft() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.LEFT)
-        assertMediaControlPanel(mediaControl.centerPanel, Panel.CENTER, Position.LEFT)
+        assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.LEFT)
     }
 
     @Test
     fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsRight() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.RIGHT)
-        assertMediaControlPanel(mediaControl.centerPanel, Panel.CENTER, Position.RIGHT)
+        assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.RIGHT)
     }
 
     @Test
     fun shouldAddMediaControlPluginInBottomPanel() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.NONE)
-        assertMediaControlPanel(mediaControl.bottomPanel, Panel.BOTTOM, Position.NONE)
+        assertMediaControlPanel(getBottomPanel(), Panel.BOTTOM, Position.NONE)
     }
 
     @Test
     fun shouldAddMediaControlPluginInBottomLeftPanel() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.LEFT)
-        assertMediaControlPanel(mediaControl.bottomLeftPanel, Panel.BOTTOM, Position.LEFT)
+        assertMediaControlPanel(getBottomLeftPanel(), Panel.BOTTOM, Position.LEFT)
     }
 
     @Test
     fun shouldAddMediaControlPluginInBottomRightPanel() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.RIGHT)
-        assertMediaControlPanel(mediaControl.bottomRightPanel, Panel.BOTTOM, Position.RIGHT)
+        assertMediaControlPanel(getBottomRightPanel(), Panel.BOTTOM, Position.RIGHT)
     }
 
     @Test
     fun shouldAddMediaControlPluginInTopPanel() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.NONE)
-        assertMediaControlPanel(mediaControl.topPanel, Panel.TOP, Position.NONE)
+        assertMediaControlPanel(getTopPanel(), Panel.TOP, Position.NONE)
     }
 
     @Test
     fun shouldAddMediaControlPluginInTopLeftPanel() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.LEFT)
-        assertMediaControlPanel(mediaControl.topLeftPanel, Panel.TOP, Position.LEFT)
+        assertMediaControlPanel(getTopLeftPanel(), Panel.TOP, Position.LEFT)
     }
 
     @Test
     fun shouldAddMediaControlPluginInTopRightPanel() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.RIGHT)
-        assertMediaControlPanel(mediaControl.topRightPanel, Panel.TOP, Position.RIGHT)
+        assertMediaControlPanel(getTopRightPanel(), Panel.TOP, Position.RIGHT)
     }
 
     @Test
     fun shouldNotAddMediaControlPluginWhenPanelIsNone() {
         setupFakeMediaControlPlugin(Panel.NONE, Position.NONE)
 
-        assertTrue(mediaControl.controlPlugins.size == 1, "Media Control Plugin should be added to Media Control")
-        assertTrue(mediaControl.centerPanel.childCount == 0, "Media Control Plugin should not be added to Center panel in Media Control")
-        assertTrue(mediaControl.topPanel.childCount == 0, "Media Control Plugin should not be added to Top panel in Media Control")
-        assertTrue(mediaControl.topRightPanel.childCount == 0, "Media Control Plugin should not be added to Top Right panel in Media Control")
-        assertTrue(mediaControl.topLeftPanel.childCount == 0, "Media Control Plugin should not be added to Top Left panel in Media Control")
-        assertTrue(mediaControl.bottomPanel.childCount == 0, "Media Control Plugin should not be added to Bottom panel in Media Control")
-        assertTrue(mediaControl.bottomRightPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Right panel in Media Control")
-        assertTrue(mediaControl.bottomLeftPanel.childCount == 0, "Media Control Plugin should not be added to Bottom Left panel in Media Control")
+        assertEquals(0, getCenterPanel().childCount, "Media Control Plugin should not be added to Center panel in Media Control")
+        assertEquals(0, getTopPanel().childCount,"Media Control Plugin should not be added to Top panel in Media Control")
+        assertEquals(0, getTopRightPanel().childCount,"Media Control Plugin should not be added to Top Right panel in Media Control")
+        assertEquals(0, getTopLeftPanel().childCount,"Media Control Plugin should not be added to Top Left panel in Media Control")
+        assertEquals(0, getBottomPanel().childCount,"Media Control Plugin should not be added to Bottom panel in Media Control")
+        assertEquals(0, getBottomRightPanel().childCount,"Media Control Plugin should not be added to Bottom Right panel in Media Control")
+        assertEquals(0, getBottomLeftPanel().childCount,"Media Control Plugin should not be added to Bottom Left panel in Media Control")
     }
 
     @Test
     fun shouldSetModalPanelVisibilityToInvisibleWhenMediaControlIsRendered() {
         mediaControl.render()
 
-        assertEquals(View.INVISIBLE, mediaControl.modalPanel.visibility, "Modal Panel should be INVISIBLE")
+        assertEquals(View.INVISIBLE, getModalPanel().visibility, "Modal Panel should be INVISIBLE")
     }
 
     @Test
@@ -138,7 +139,7 @@ class MediaControlTest {
 
         triggerOpenModalPanelEvent()
 
-        assertEquals(View.VISIBLE, mediaControl.modalPanel.visibility, "Modal Panel should be VISIBLE")
+        assertEquals(View.VISIBLE, getModalPanel().visibility, "Modal Panel should be VISIBLE")
     }
 
     @Test
@@ -147,7 +148,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.INVISIBLE, mediaControl.modalPanel.visibility, "Modal Panel should be INVISIBLE")
+        assertEquals(View.INVISIBLE, getModalPanel().visibility, "Modal Panel should be INVISIBLE")
     }
 
     @Test
@@ -156,7 +157,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.VISIBLE, mediaControl.controlsPanel.visibility)
+        assertEquals(View.VISIBLE, getControlsPanel().visibility)
     }
 
     @Test
@@ -166,7 +167,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
+        assertEquals(View.INVISIBLE, getControlsPanel().visibility)
     }
 
     @Test
@@ -175,7 +176,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.VISIBLE, mediaControl.foregroundControlsPanel.visibility)
+        assertEquals(View.VISIBLE, getForegroundControlsPanel().visibility)
     }
 
 
@@ -186,7 +187,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+        assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
     }
 
 
@@ -212,14 +213,14 @@ class MediaControlTest {
             modalView = it[MediaControl.modalPanelViewKey] as ViewGroup
         }
 
-        assertEquals(mediaControl.modalPanel, modalView)
+        assertEquals(getModalPanel(), modalView)
     }
 
     @Test
     fun shouldHideControlsPanelOnOpenModalEvent() {
         triggerOpenModalPanelEvent()
 
-        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility, "Should make controls panel invisible when modal panel open")
+        assertEquals(View.INVISIBLE, getControlsPanel().visibility, "Should make controls panel invisible when modal panel open")
     }
 
     @Test
@@ -228,14 +229,14 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(View.VISIBLE, mediaControl.controlsPanel.visibility, "Should make control panel visible when modal panel close")
+        assertEquals(View.VISIBLE, getControlsPanel().visibility, "Should make control panel visible when modal panel close")
     }
 
     @Test
     fun shouldHideForegroundsControlsPanelOnOpenModalEvent() {
         triggerOpenModalPanelEvent()
 
-        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility, "Should make foreground controls panel invisible when panel modal open")
+        assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility, "Should make foreground controls panel invisible when panel modal open")
     }
 
     @Test
@@ -249,7 +250,7 @@ class MediaControlTest {
 
     @Test
     fun shouldInitializeModalPanelInvisibleWhenMediaControlPluginIsCreated() {
-        assertEquals(View.INVISIBLE, mediaControl.modalPanel.visibility)
+        assertEquals(View.INVISIBLE, getModalPanel().visibility)
     }
 
     @Test
@@ -260,9 +261,9 @@ class MediaControlTest {
 
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
 
-        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
-        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
-        assertEquals(View.VISIBLE, mediaControl.modalPanel.visibility)
+        assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
+        assertEquals(View.INVISIBLE, getControlsPanel().visibility)
+        assertEquals(View.VISIBLE, getModalPanel().visibility)
     }
 
     @Test
@@ -271,7 +272,7 @@ class MediaControlTest {
 
         triggerCloseModalPanelEvent()
 
-        assertEquals(mediaControl.foregroundControlsPanel.visibility, View.VISIBLE, "Should make foreground controls panel visible when panel modal close")
+        assertEquals(getForegroundControlsPanel().visibility, View.VISIBLE, "Should make foreground controls panel visible when panel modal close")
     }
 
     @Test
@@ -323,31 +324,29 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldUpdateInteractionTimeWhenDidUpdateInteractingEventIsCalled() {
-        val expectedTime = 1234L
+    fun shouldStopListeningOldContainerWhenDidChangeActiveContainerEventIsTriggered() {
+        val oldContainer = container
 
-        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
+        assertEquals(Plugin.State.ENABLED, mediaControl.state)
 
-        core.trigger(InternalEvent.DID_UPDATE_INTERACTING.value)
+        core.activeContainer = Container(Loader(), Options())
 
-        assertEquals(expectedTime, mediaControl.lastInteractionTime)
+        oldContainer.trigger(InternalEvent.DISABLE_MEDIA_CONTROL.value)
+
+        assertEquals(Plugin.State.ENABLED, mediaControl.state)
     }
 
     @Test
-    fun shouldUpdateInteractionTimeWhenDidTouchMediaControlEventIsCalled() {
-        val expectedTime = 1234L
+    fun shouldStopListeningOldPlaybackWhenDidChangeActivePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
 
-        ShadowSystemClock.setCurrentTimeMillis(expectedTime)
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
 
-        core.trigger(InternalEvent.DID_TOUCH_MEDIA_CONTROL.value)
+        container.playback = FakePlayback()
 
-        assertEquals(expectedTime, mediaControl.lastInteractionTime)
-    }
+        oldPlayback?.trigger(Event.DID_PAUSE.value)
 
-    @Test
-    fun shouldRegisterListenersOnRender() {
-        assertTrue(mediaControl.playbackListenerIds.size > 0, "Media control should have playback listeners ids")
-        assertTrue(mediaControl.containerListenerIds.size > 0, "Media control should have container listeners ids")
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
 
     @Test
@@ -363,32 +362,11 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldClearListenersOnDestroy() {
-        mediaControl.destroy()
-        assertTrue(mediaControl.playbackListenerIds.size == 0, "Media control should not have playback listeners ids")
-        assertTrue(mediaControl.containerListenerIds.size == 0, "Media control should not have container listeners ids")
-    }
-
-    @Test
-    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
-        mediaControl.playbackListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
-        assertTrue(mediaControl.playbackListenerIds.size > 0)
-    }
-
-    @Test
-    fun shouldSetupContainerListenersWhenDidChangePlaybackEventIsCalled() {
-        mediaControl.containerListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
-        assertTrue(mediaControl.containerListenerIds.size > 0)
-    }
-
-    @Test
     fun shouldShowPluginsByRegisterOrder() {
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
@@ -396,9 +374,9 @@ class MediaControlTest {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
     }
 
     @Test
@@ -406,9 +384,9 @@ class MediaControlTest {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name},${FakePlugin2.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
     }
 
     @Test
@@ -416,9 +394,9 @@ class MediaControlTest {
         val sequence = " ${FakePlugin3.name}, ${FakePlugin2.name}, ${FakePlugin.name} "
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
     }
 
     @Test
@@ -426,9 +404,9 @@ class MediaControlTest {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},nonexistent,${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
     }
 
     @Test
@@ -436,9 +414,9 @@ class MediaControlTest {
         val sequence = "${FakePlugin3.name},${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
     }
 
     @Test
@@ -446,9 +424,9 @@ class MediaControlTest {
         val sequence = ""
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
@@ -456,9 +434,9 @@ class MediaControlTest {
         val sequence = "invalid"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(mediaControl.bottomRightPanel, FakePlugin3::class.java, FakePlugin3.name, 2)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
+        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
@@ -469,9 +447,9 @@ class MediaControlTest {
         container.trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
         assertEquals(mediaControl.visibility, UIPlugin.Visibility.HIDDEN)
-        assertEquals(View.INVISIBLE, mediaControl.backgroundView.visibility)
-        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
-        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+        assertEquals(View.INVISIBLE, getBackgroundView().visibility)
+        assertEquals(View.INVISIBLE, getControlsPanel().visibility)
+        assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
     }
 
     @Test
@@ -481,10 +459,22 @@ class MediaControlTest {
         mediaControl.render()
 
         assertEquals(mediaControl.visibility, UIPlugin.Visibility.HIDDEN)
-        assertEquals(View.INVISIBLE, mediaControl.backgroundView.visibility)
-        assertEquals(View.INVISIBLE, mediaControl.controlsPanel.visibility)
-        assertEquals(View.INVISIBLE, mediaControl.foregroundControlsPanel.visibility)
+        assertEquals(View.INVISIBLE, getBackgroundView().visibility)
+        assertEquals(View.INVISIBLE, getControlsPanel().visibility)
+        assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
     }
+
+    private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
+    private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
+    private fun getBottomLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_left_panel)
+    private fun getBottomRightPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_right_panel)
+    private fun getTopPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_panel)
+    private fun getTopLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_left_panel)
+    private fun getTopRightPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_right_panel)
+    private fun getModalPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.modal_panel)
+    private fun getControlsPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.controls_panel)
+    private fun getForegroundControlsPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.foreground_controls_panel)
+    private fun getBackgroundView() = mediaControl.view.findViewById<View>(R.id.background_view)
 
     private fun setupFakeMediaControlPlugins(panel: Panel, position: Position, sequenceOption: String? = null) {
         FakePlugin.currentPanel = panel
@@ -508,7 +498,7 @@ class MediaControlTest {
     }
 
     private fun assertOrderOfMediaControlPlugins(layoutPanel: LinearLayout, className: Class<out MediaControl.Plugin>, name: String, index: Int) {
-        val plugin = core.plugins.filterIsInstance(className).first()
+        val plugin = core.plugins.asSequence().filterIsInstance(className).first()
         assertEquals(name, plugin.name)
         assertEquals(plugin.view, layoutPanel.getChildAt(index))
     }
@@ -526,9 +516,10 @@ class MediaControlTest {
     }
 
     private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
-        val plugin = core.plugins.filterIsInstance(FakePlugin::class.java).first()
-        assertTrue(mediaControl.controlPlugins.any { p -> p is MediaControlTest.FakePlugin }, "Media Control Plugin should be added to Media Control")
-        assertTrue(layoutPanel.childCount == 1, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
+        val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
+
+        assertEquals(1, layoutPanel.childCount, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
+        assertEquals(FakePlugin.viewId, layoutPanel.getChildAt(0).id, "Media Control Plugin should be added to Media Control")
         assertEquals(plugin.view, layoutPanel.getChildAt(0))
     }
 
@@ -566,10 +557,15 @@ class MediaControlTest {
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
+            val viewId = 12345
         }
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
+
+        init {
+            view?.id = viewId
+        }
     }
 
     class FakePlugin2(core: Core) : MediaControl.Plugin(core) {

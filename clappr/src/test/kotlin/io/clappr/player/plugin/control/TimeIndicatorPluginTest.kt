@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
@@ -25,7 +26,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
@@ -94,7 +94,7 @@ class TimeIndicatorPluginTest {
         container.playback?.trigger(Event.DID_UPDATE_POSITION.value, bundle)
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
-        assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
+        assertEquals(expectedTime,  (timeIndicatorPlugin.view as TextView).text)
     }
 
     @Test
@@ -107,7 +107,7 @@ class TimeIndicatorPluginTest {
         container.playback?.trigger(Event.DID_UPDATE_POSITION.value, Bundle())
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
-        assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
+        assertEquals(expectedTime,  (timeIndicatorPlugin.view as TextView).text)
     }
 
     @Test
@@ -120,7 +120,7 @@ class TimeIndicatorPluginTest {
         container.playback?.trigger(Event.DID_UPDATE_POSITION.value, null)
 
         assertNotNull(timeIndicatorPlugin.view, "Time Indicator View should not be null")
-        assertEquals(expectedTime,  timeIndicatorPlugin.textView.text)
+        assertEquals(expectedTime,  (timeIndicatorPlugin.view as TextView).text)
     }
 
     @Test
@@ -191,8 +191,8 @@ class TimeIndicatorPluginTest {
 
         timeIndicatorPlugin.render()
 
-        assertEquals(expectedLayoutParams.height, timeIndicatorPlugin.textView.layoutParams.height)
-        assertEquals(expectedLayoutParams.width, timeIndicatorPlugin.textView.layoutParams.width)
+        assertEquals(expectedLayoutParams.height, timeIndicatorPlugin.view?.layoutParams?.height)
+        assertEquals(expectedLayoutParams.width, timeIndicatorPlugin.view?.layoutParams?.width)
     }
 
     @Test
@@ -201,12 +201,7 @@ class TimeIndicatorPluginTest {
 
         timeIndicatorPlugin.render()
 
-        assertEquals(expectedTimeIndicatorText, timeIndicatorPlugin.textView.text)
-    }
-
-    @Test
-    fun shouldHaveListenersWhenInit() {
-        assertTrue(timeIndicatorPlugin.playbackListenerIds.size > 0, "Seekbar should have playback listeners initialized")
+        assertEquals(expectedTimeIndicatorText, (timeIndicatorPlugin.view as TextView).text)
     }
 
     @Test
@@ -222,16 +217,16 @@ class TimeIndicatorPluginTest {
     }
 
     @Test
-    fun shouldRemoveAllListenersOnDestroy() {
-        timeIndicatorPlugin.destroy()
-        assertEquals(0, timeIndicatorPlugin.playbackListenerIds.size, "Seekbar should have playback listeners initialized")
-    }
+    fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
+        val oldPlayback = container.playback
 
-    @Test
-    fun shouldSetupPlaybackListenersWhenDidChangePlaybackEventIsCalled() {
-        timeIndicatorPlugin.playbackListenerIds.clear()
-        core.trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value)
-        assertTrue(timeIndicatorPlugin.playbackListenerIds.size > 0)
+        assertEquals(View.VISIBLE, timeIndicatorPlugin.view?.visibility)
+
+        container.playback = FakePlayback()
+
+        oldPlayback?.trigger(Event.DID_COMPLETE.value)
+
+        assertEquals(View.VISIBLE, timeIndicatorPlugin.view?.visibility)
     }
 
     private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,

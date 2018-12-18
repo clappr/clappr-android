@@ -23,12 +23,12 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     override var panel: Panel = Panel.BOTTOM
     override var position: Position = Position.LEFT
 
-    open val textView by lazy { LayoutInflater.from(context).inflate(R.layout.time_indicator, null) as TextView }
+    protected val textView by lazy { LayoutInflater.from(context).inflate(R.layout.time_indicator, null) as TextView }
 
     override val view: View?
         get() = textView
 
-    open val playbackListenerIds = mutableListOf<String>()
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { setupPlaybackListeners() })
