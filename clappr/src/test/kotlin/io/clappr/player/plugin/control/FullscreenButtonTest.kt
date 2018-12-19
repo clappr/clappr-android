@@ -28,8 +28,8 @@ class FullscreenButtonTest {
     @Before
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
         fullscreenButton = FullscreenButton(core)
 
         core.activeContainer = container
@@ -56,7 +56,7 @@ class FullscreenButtonTest {
 
         assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
 
-        val newContainer = Container(Loader(), Options())
+        val newContainer = Container(Options())
         val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
 
         newContainer.playback = newPlayback

@@ -55,8 +55,8 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlugins() {
-        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
-        val core = Core(Loader(), Options()).apply { load() }
+        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        val core = Core(Options()).apply { load() }
 
         assertTrue("no plugins", core.plugins.isNotEmpty())
         assertTrue("no containers", core.containers.isNotEmpty())
@@ -65,15 +65,15 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlayback() {
-        Loader.registerPlayback(CoreTestPlayback.entry)
-        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+        Loader.register(CoreTestPlayback.entry)
+        val core = Core(options = Options(source = "some_source")).apply { load() }
 
         assertNotNull("no active playback", core.activePlayback)
     }
 
     @Test
     fun shouldNotTriggerActiveContainerChangedForSameContainer() {
-        val core = Core(Loader(), Options()).apply { load() }
+        val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { callbackWasCalled = true })
@@ -87,7 +87,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActiveContainerChanged() {
-        val core = Core(Loader(), Options()).apply { load() }
+        val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
         val previousActiveContainer: Container? = core.activeContainer
@@ -105,8 +105,8 @@ open class CoreTest {
 
     @Test
     fun shouldNotTriggerActivePlaybackChangedForSamePlayback() {
-        Loader.registerPlayback(CoreTestPlayback.entry)
-        val core = Core(Loader(), Options()).apply { load() }
+        Loader.register(CoreTestPlayback.entry)
+        val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
@@ -125,8 +125,8 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActivePlaybackChanged() {
-        Loader.registerPlayback(CoreTestPlayback.entry)
-        val core = Core(Loader(), Options()).apply { load() }
+        Loader.register(CoreTestPlayback.entry)
+        val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
         var previousActivePlayback: Playback? = core.activePlayback
@@ -144,7 +144,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerDestroyEvents() {
-        val core = Core(Loader(), Options())
+        val core = Core(Options())
         val listenObject = BaseObject()
 
         var willDestroyCalled = false
@@ -161,7 +161,7 @@ open class CoreTest {
 
     @Test
     fun shouldDestroyContainersOnDestroy() {
-        val core = Core(Loader(), Options())
+        val core = Core(Options())
 
         assertFalse("No container", core.containers.isEmpty())
 
@@ -175,7 +175,7 @@ open class CoreTest {
 
     @Test
     fun shouldClearContainersOnDestroy() {
-        val core = Core(Loader(), Options())
+        val core = Core(Options())
 
         assertFalse("No container", core.containers.isEmpty())
 
@@ -212,8 +212,8 @@ open class CoreTest {
 
     @Test
     fun shouldClearPluginsOnDestroy() {
-        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
-        val core = Core(Loader(), Options())
+        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        val core = Core(Options())
 
         assertFalse("No plugins", core.plugins.isEmpty())
 
@@ -225,7 +225,7 @@ open class CoreTest {
     @Test
     fun shouldStoplisteningOnDestroy() {
         val triggerObject = BaseObject()
-        val core = Core(Loader(), Options())
+        val core = Core(Options())
 
         var numberOfTriggers = 0
         core.listenTo(triggerObject, "coreTest", Callback.wrap { numberOfTriggers++ })
@@ -241,7 +241,7 @@ open class CoreTest {
 
     @Test
     fun shouldSetContainerOptionsWhenSetOptions() {
-        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+        val core = Core(options = Options(source = "some_source")).apply { load() }
         core.options = Options(source = "new_source")
 
         assertEquals(core.options, core.activeContainer?.options)
@@ -249,7 +249,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerUpdateOptionOnSetOptions() {
-        val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
+        val core = Core(options = Options(source = "some_source")).apply { load() }
 
         var callbackWasCalled = false
         core.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
@@ -286,9 +286,9 @@ open class CoreTest {
     }
 
     private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
-        Loader.registerPlugin(TestCorePlugin.entry)
+        Loader.register(TestCorePlugin.entry)
 
-        val core = Core(Loader(), Options())
+        val core = Core(Options())
         val testPlugin = core.plugins[0] as TestCorePlugin
 
         return Pair(core, testPlugin)

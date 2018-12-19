@@ -29,8 +29,8 @@ open class PlayerTest {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
 
         Loader.clearPlaybacks()
-        Loader.registerPlugin(CoreTestPlugin.entry)
-        Loader.registerPlayback(PlayerTestPlayback.entry)
+        Loader.register(CoreTestPlugin.entry)
+        Loader.register(PlayerTestPlayback.entry)
 
         PlayerTestPlayback.internalState = Playback.State.NONE
 

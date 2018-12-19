@@ -36,8 +36,8 @@ class TimeIndicatorPluginTest {
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
 
         timeIndicatorPlugin = TimeIndicatorPlugin(core)
 

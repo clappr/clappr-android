@@ -104,8 +104,6 @@ open class Player(private val base: BaseObject = BaseObject(),
             }
         }
 
-    private val loader = Loader()
-
     /**
      * Media current position in seconds.
      */
@@ -184,7 +182,7 @@ open class Player(private val base: BaseObject = BaseObject(),
     }
 
     private fun createCore(options: Options) {
-        core = Core(loader, options)
+        core = Core(options)
     }
 
     /**

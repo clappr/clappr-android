@@ -22,100 +22,71 @@ sealed class PluginEntry(val name: String) {
     class Container(name: String, val factory: ContainerPluginFactory) : PluginEntry(name)
 }
 
+object Loader {
+    @JvmStatic
+    private val registeredPlugins = mutableMapOf<String, PluginEntry>()
+    @JvmStatic
+    private val registeredPlaybacks = mutableListOf<PlaybackEntry>()
 
-class Loader(extraPlugins: List<PluginEntry> = emptyList(), extraPlaybacks: List<PlaybackEntry> = emptyList()) {
-    companion object {
-        @JvmStatic
-        private val registeredPlugins = mutableMapOf<String, PluginEntry>()
-        @JvmStatic
-        private val registeredPlaybacks = mutableListOf<PlaybackEntry>()
+    @JvmStatic
+    fun clearPlaybacks() {
+        registeredPlaybacks.clear()
+    }
 
-        @JvmStatic
-        fun clearPlaybacks() {
-            registeredPlaybacks.clear()
+    @JvmStatic
+    fun clearPlugins() {
+        registeredPlugins.clear()
+    }
+
+    @JvmStatic
+    fun register(pluginEntry: PluginEntry): Boolean {
+        val pluginName = pluginEntry.name
+        if (pluginName.isNotEmpty()) {
+            registeredPlugins[pluginName] = pluginEntry
+            return true
         }
+        return false
+    }
 
-        @JvmStatic
-        fun clearPlugins() {
-            registeredPlugins.clear()
+    @JvmStatic
+    fun register(playbackEntry: PlaybackEntry): Boolean {
+        val playbackName = playbackEntry.name
+        if (playbackName.isNotEmpty()) {
+            registeredPlaybacks.removeAll { it.name == playbackName }
+            registeredPlaybacks.add(0, playbackEntry)
+            return true
         }
+        return false
+    }
 
-        @JvmStatic
-        fun registerPlugin(pluginEntry: PluginEntry): Boolean {
-            val pluginName = pluginEntry.name
-            pluginName?.let {
-                if (pluginName.isNotEmpty()) {
-                    registeredPlugins[pluginName] = pluginEntry
-                    return true
-                }
+    @JvmStatic
+    fun unregisterPlugin(name: String) =
+            name.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
+                registeredPlugins.remove(it) != null
+            } ?: false
+
+    @JvmStatic
+    fun unregisterPlayback(name: String) =
+            registeredPlaybacks.run {
+                val entry = find { it.name == name }
+                if (entry != null) remove(entry) else false
             }
-            return false
-        }
 
-        @JvmStatic
-        fun unregisterPlugin(name: String) =
-                name.takeIf { it.isNotEmpty() && registeredPlugins.containsKey(it) }?.let {
-                    registeredPlugins.remove(it) != null
-                } ?: false
+    fun <Context : BaseObject> loadPlugins(
+            context: Context, externalPlugins: List<PluginEntry> = emptyList()): List<Plugin> =
+            mergeExternalPlugins(externalPlugins).values.mapNotNull { loadPlugin(context, it) }
 
-        @JvmStatic
-        fun registerPlayback(playbackEntry: PlaybackEntry): Boolean {
-            val playbackName = playbackEntry.name
-            if (playbackName.isNotEmpty()) {
-                registeredPlaybacks.removeAll { it.name == playbackName }
-                registeredPlaybacks.add(0, playbackEntry)
-                return true
+    private fun mergeExternalPlugins(plugins: List<PluginEntry>): Map<String, PluginEntry> =
+            plugins.filter { it.name.isNotEmpty() }.fold(HashMap(registeredPlugins)) { resultingMap, entry ->
+                resultingMap[entry.name] = entry
+                resultingMap
             }
-            return false
-        }
-    }
 
-    private val externalPlugins = mutableListOf<PluginEntry>()
-
-    private val externalPlaybacks = mutableListOf<PlaybackEntry>()
-
-    private val availablePlugins = mutableMapOf<String, PluginEntry>()
-
-    private val availablePlaybacks = mutableListOf<PlaybackEntry>()
-
-    init {
-        registeredPlugins.values.forEach { addPlugin(it) }
-
-        externalPlugins.addAll(extraPlugins.filter { it.name.isNotEmpty() })
-        externalPlugins.forEach { addPlugin(it) }
-
-        registeredPlaybacks.forEach { addPlayback(it) }
-
-        externalPlaybacks.addAll(extraPlaybacks.filter { it.name.isNotEmpty() })
-        externalPlaybacks.forEach { addPlayback(it) }
-    }
-
-    fun <Context : BaseObject> loadPlugins(context: Context): List<Plugin> = availablePlugins.values.mapNotNull { loadPlugin(context, it) }
-
-    fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
-        var playback: Playback? = null
-
-        try {
-            val playbackEntry = registeredPlaybacks.first { it.supportsSource(source, mimeType) }
-            playback = playbackEntry.factory(source, mimeType, options)
-        } catch (e: Exception) {
-        }
-
-        return playback
-    }
-
-    private fun addPlayback(playbackEntry: PlaybackEntry) {
-        val name = playbackEntry.name
-        if (!name.isEmpty()) {
-            availablePlaybacks.add(playbackEntry)
-        }
-    }
-
-    private fun addPlugin(pluginEntry: PluginEntry) {
-        val name: String = pluginEntry.name
-        if (name.isNotEmpty()) {
-            availablePlugins[name] = pluginEntry
-        }
+    fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? = try {
+        val playbackEntry = registeredPlaybacks.first { it.supportsSource(source, mimeType) }
+        playbackEntry.factory(source, mimeType, options)
+    } catch (e: Exception) {
+        null
     }
 
     private fun <C : BaseObject> loadPlugin(component: C, pluginEntry: PluginEntry): Plugin? = try {

@@ -28,8 +28,8 @@ class PlayButtonTest {
     fun setup() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
 
         playButton = PlayButton(core)
 

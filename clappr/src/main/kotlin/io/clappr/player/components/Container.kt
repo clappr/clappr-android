@@ -12,7 +12,7 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
-class Container(val loader: Loader, options: Options) : UIObject() {
+class Container(options: Options) : UIObject() {
 
     private val TAG = "Container"
 
@@ -45,7 +45,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         get() = FrameLayout::class.java
 
     init {
-        internalPlugins = loader.loadPlugins(this).toMutableList()
+        internalPlugins = Loader.loadPlugins(this).toMutableList()
     }
 
     fun destroy() {
@@ -65,7 +65,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
-        playback = loader.loadPlayback(source, mimeType, options)
+        playback = Loader.loadPlayback(source, mimeType, options)
         if (playback?.name == NoOpPlayback.entry.name) {
             playback = null
         }

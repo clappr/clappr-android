@@ -4,12 +4,12 @@ import io.clappr.player.plugin.control.*
 
 object PluginConfig {
     fun register() {
-        Loader.registerPlugin(PosterPlugin.entry)
-        Loader.registerPlugin(LoadingPlugin.entry)
-        Loader.registerPlugin(MediaControl.entry)
-        Loader.registerPlugin(FullscreenButton.entry)
-        Loader.registerPlugin(TimeIndicatorPlugin.entry)
-        Loader.registerPlugin(PlayButton.entry)
-        Loader.registerPlugin(SeekbarPlugin.entry)
+        Loader.register(PosterPlugin.entry)
+        Loader.register(LoadingPlugin.entry)
+        Loader.register(MediaControl.entry)
+        Loader.register(FullscreenButton.entry)
+        Loader.register(TimeIndicatorPlugin.entry)
+        Loader.register(PlayButton.entry)
+        Loader.register(SeekbarPlugin.entry)
     }
 }

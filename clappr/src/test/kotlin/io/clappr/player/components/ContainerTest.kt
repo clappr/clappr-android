@@ -1,11 +1,9 @@
 package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
-import io.clappr.player.PlayerTest
 import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
-import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.container.ContainerPlugin
 import io.clappr.player.plugin.container.UIContainerPlugin
@@ -66,16 +64,16 @@ open class ContainerTest {
 
     @Test
     fun shouldLoadPlugins() {
-        Loader.registerPlugin(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
-        val container = Container(Loader(), Options())
+        Loader.register(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+        val container = Container(Options())
 
         assertTrue("no plugins", container.plugins.isNotEmpty())
     }
 
     @Test
     fun shouldLoadPlaybackForSupportedSource() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options())
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options())
         container.load("some_source.mp4")
 
         assertNotNull("should have created playback", container.playback)
@@ -84,9 +82,9 @@ open class ContainerTest {
 
     @Test
     fun shouldNotLoadNoOpPlaybackForUnsupportedSource() {
-        Loader.registerPlayback(NoOpPlayback.entry)
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+        Loader.register(NoOpPlayback.entry)
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("some_unknown_source.mp0"))
 
         assertNull("should not have created playback", container.playback)
         assertNotEquals("should not have created no-op playback", container.playback?.name, NoOpPlayback.entry.name)
@@ -94,8 +92,8 @@ open class ContainerTest {
 
     @Test
     fun shouldNotTriggerPlaybackChangedWhenSameNullPlayback() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("some_unknown_source.mp0"))
 
         var callbackWasCalled = false
         container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
@@ -107,8 +105,8 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerPlaybackChangedWhenDifferentPlayback() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("some_unknown_source.mp0"))
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("some_unknown_source.mp0"))
 
         val previousPlayback: Playback? = container.playback
         var callbackWasCalled = false
@@ -124,8 +122,8 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerLoadSourceEventsOnNewSource() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("aSource.mp4"))
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("aSource.mp4"))
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
@@ -139,8 +137,8 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerLoadSourceEventsOnSameSource() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("aSource.mp4"))
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("aSource.mp4"))
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
@@ -154,8 +152,8 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerDidNotLoadSourceEventsWhenNotSupported() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options("aSource.mp8"))
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options("aSource.mp8"))
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
@@ -173,7 +171,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerDestroyEvents() {
-        val container = Container(Loader(), Options())
+        val container = Container(Options())
         val listenObject = BaseObject()
 
         var willDestroyCalled = false
@@ -191,8 +189,8 @@ open class ContainerTest {
     @Test
     @Ignore
     fun shouldDestroyPlaybackOnDestroy() {
-        Loader.registerPlayback(MP4Playback.entry)
-        val container = Container(Loader(), Options())
+        Loader.register(MP4Playback.entry)
+        val container = Container(Options())
         container.load("some_source.mp4")
 
         assertNotNull("No playback", container.playback)
@@ -207,9 +205,9 @@ open class ContainerTest {
 
     @Test
     fun shouldClearPlaybackOnDestroy() {
-        Loader.registerPlayback(MP4Playback.entry)
+        Loader.register(MP4Playback.entry)
 
-        val container = Container(Loader(), Options())
+        val container = Container(Options())
         container.load("some_source.mp4")
 
         assertNotNull("No playback", container.playback)
@@ -247,8 +245,8 @@ open class ContainerTest {
 
     @Test
     fun shouldClearPluginsOnDestroy() {
-        Loader.registerPlugin(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
-        val container = Container(Loader(), Options())
+        Loader.register(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+        val container = Container(Options())
 
         assertFalse("No plugins", container.plugins.isEmpty())
 
@@ -260,7 +258,7 @@ open class ContainerTest {
     @Test
     fun shouldStoplisteningOnDestroy() {
         val triggerObject = BaseObject()
-        val container = Container(Loader(), Options())
+        val container = Container(Options())
 
         var numberOfTriggers = 0
         container.listenTo(triggerObject, "containerTest", Callback.wrap { numberOfTriggers++ })
@@ -276,12 +274,12 @@ open class ContainerTest {
 
     @Test
     fun shouldSetPlaybackOptionsWhenLoadContainer() {
-        Loader.registerPlayback(MP4Playback.entry)
+        Loader.register(MP4Playback.entry)
         val source = "some_source.mp4"
         val newOptions = Options()
         newOptions.put(ClapprOption.POSTER.value, "fake-poster-url")
 
-        val container = Container(Loader(), options = newOptions).apply { load(source) }
+        val container = Container(options = newOptions).apply { load(source) }
 
         assertNotNull(container.options)
         assertEquals(container.options, container.playback?.options)
@@ -289,9 +287,9 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerUpdateOptionOnSetOptions() {
-        Loader.registerPlayback(MP4Playback.entry)
+        Loader.register(MP4Playback.entry)
         val source = "some_source.mp4"
-        val container = Container(Loader(), options = Options()).apply { load(source) }
+        val container = Container(options = Options()).apply { load(source) }
 
         var callbackWasCalled = false
         container.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
@@ -328,9 +326,9 @@ open class ContainerTest {
     }
 
     private fun setupTestContainerPlugin(): Pair<Container, TestContainerPlugin> {
-        Loader.registerPlugin(TestContainerPlugin.entry)
+        Loader.register(TestContainerPlugin.entry)
 
-        val container = Container(Loader(), Options())
+        val container = Container(Options())
         val testPlugin = container.plugins[0] as TestContainerPlugin
 
         return Pair(container, testPlugin)
