@@ -39,9 +39,9 @@ class MediaControlTest {
     @Before
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
-        container = Container(Loader(), Options())
+        container = Container(Options())
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
 
         mediaControl = MediaControl(core)
 
@@ -294,7 +294,7 @@ class MediaControlTest {
     fun shouldUnregisterContainerEventsOnContainerChange() {
         mediaControl.state = Plugin.State.DISABLED
 
-        val newContainer = Container(Loader(), Options())
+        val newContainer = Container(Options())
         core.activeContainer = newContainer
 
         triggerEnableMediaControlEvent()
@@ -326,7 +326,7 @@ class MediaControlTest {
 
         assertEquals(Plugin.State.ENABLED, mediaControl.state)
 
-        core.activeContainer = Container(Loader(), Options())
+        core.activeContainer = Container(Options())
 
         oldContainer.trigger(InternalEvent.DISABLE_MEDIA_CONTROL.value)
 
@@ -481,11 +481,11 @@ class MediaControlTest {
         FakePlugin3.currentPanel = panel
         FakePlugin3.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin.entry)
-        Loader.registerPlugin(FakePlugin2.entry)
-        Loader.registerPlugin(FakePlugin3.entry)
+        Loader.register(FakePlugin.entry)
+        Loader.register(FakePlugin2.entry)
+        Loader.register(FakePlugin3.entry)
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
         sequenceOption?.let {
             core.options[io.clappr.player.base.ClapprOption.MEDIA_CONTROL_PLUGINS.value] = it
         }
@@ -504,9 +504,9 @@ class MediaControlTest {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin.entry)
+        Loader.register(FakePlugin.entry)
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
 
         mediaControl = MediaControl(core)
         mediaControl.render()

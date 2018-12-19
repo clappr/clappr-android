@@ -27,8 +27,8 @@ class LoadingPluginTest {
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
         loadingPlugin = LoadingPlugin(container)
 
         core.activeContainer = container

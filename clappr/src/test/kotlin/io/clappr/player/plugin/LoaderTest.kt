@@ -103,10 +103,9 @@ class LoaderTest {
     @Test
     fun shouldHaveAnEmptyInitialPluginList() {
         val expectedListSize = 0
-
-        val loader = Loader()
-        val corePlugins = loader.loadPlugins(Core(loader, Options()))
-        val containerPlugins = loader.loadPlugins(Container(loader, Options()))
+        
+        val corePlugins = Loader.loadPlugins(Core(Options()))
+        val containerPlugins = Loader.loadPlugins(Container(Options()))
 
         assertEquals(expectedListSize, corePlugins.size)
         assertEquals(expectedListSize, containerPlugins.size)
@@ -117,10 +116,9 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.registerPlugin(TestCorePlugin.entry)
-
-        val loader = Loader()
-        val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
+        Loader.register(TestCorePlugin.entry)
+        
+        val loadedPlugins = Loader.loadPlugins(Core(Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
@@ -130,11 +128,10 @@ class LoaderTest {
     fun shouldAllowUnregisteringPlugins() {
         val expectedLoadedPluginsListSize = 0
 
-        Loader.registerPlugin(TestCorePlugin.entry)
+        Loader.register(TestCorePlugin.entry)
         val didUnregistered = Loader.unregisterPlugin(TestCorePlugin.name)
-
-        val loader = Loader()
-        val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
+        
+        val loadedPlugins = Loader.loadPlugins(Core(Options()))
 
         assertTrue("plugin still registered", didUnregistered)
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
@@ -152,8 +149,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        val loaderExternal = Loader(listOf<PluginEntry>(TestPlugin.entry))
-        val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
+        val loadedPlugins = Loader.loadPlugins(Core(Options()), listOf<PluginEntry>(TestPlugin.entry))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
@@ -164,8 +160,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 0
         val externalPlugins = listOf<PluginEntry>(NoNameTestPlugin.entry)
 
-        val loaderExternal = Loader(externalPlugins)
-        val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
+        val loadedPlugins = Loader.loadPlugins(Core(Options()), externalPlugins)
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
     }
@@ -175,16 +170,15 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.registerPlugin(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
 
-        val loader = Loader()
-        val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
+        
+        val loadedPlugins = Loader.loadPlugins(Core(Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
 
-        val loaderExternal = Loader(listOf<PluginEntry>(TestCorePlugin.entry))
-        val loadedExternalPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
+        val loadedExternalPlugins = Loader.loadPlugins(Core(Options()), listOf<PluginEntry>(TestCorePlugin.entry))
 
         assertEquals(expectedLoadedPluginsListSize, loadedExternalPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedExternalPlugins[0].name)
@@ -196,11 +190,11 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        Loader.registerPlugin(TestPlugin.entry)
-        Loader.registerPlugin(SameNameTestPlugin.entry)
+        Loader.register(TestPlugin.entry)
+        Loader.register(SameNameTestPlugin.entry)
 
-        val loader = Loader()
-        val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
+        
+        val loadedPlugins = Loader.loadPlugins(Core(Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
@@ -208,11 +202,11 @@ class LoaderTest {
 
     @Test
     fun shouldHaveAnEmptyInitialPlaybackList() {
-        val loader = Loader()
+        
 
-        val loadedDashPlayback = loader.loadPlayback("123.mpd", "video", Options())
-        val loadedHLSPlayback = loader.loadPlayback("123.m3u8", "video", Options())
-        val loadedMP4Playback = loader.loadPlayback("123.mp4", "video", Options())
+        val loadedDashPlayback = Loader.loadPlayback("123.mpd", "video", Options())
+        val loadedHLSPlayback = Loader.loadPlayback("123.m3u8", "video", Options())
+        val loadedMP4Playback = Loader.loadPlayback("123.mp4", "video", Options())
 
         assertNull("no playback should be loaded", loadedDashPlayback)
         assertNull("no playback should be loaded", loadedHLSPlayback)
@@ -221,21 +215,21 @@ class LoaderTest {
 
     @Test
     fun shouldAllowRegisteringPlaybacks() {
-        Loader.registerPlayback(TestPlaybackMp4.entry)
+        Loader.register(TestPlaybackMp4.entry)
 
-        val loader = Loader()
-        val loadedMP4Playback = loader.loadPlayback("123.mp4", "video", Options())
+        
+        val loadedMP4Playback = Loader.loadPlayback("123.mp4", "video", Options())
 
         assertNotNull("mp4 playback should not be empty", loadedMP4Playback)
     }
 
     @Test
     fun shouldOverwritePlaybacksWithDuplicateNames() {
-        Loader.registerPlayback(TestPlaybackMp4.entry)
-        Loader.registerPlayback(TestDuplicatePlayback.entry)
+        Loader.register(TestPlaybackMp4.entry)
+        Loader.register(TestDuplicatePlayback.entry)
 
-        val loader = Loader()
-        val loadedPlayback = loader.loadPlayback("123.mp4", "video", Options())
+        
+        val loadedPlayback = Loader.loadPlayback("123.mp4", "video", Options())
 
         assertNotNull("playback should not be empty", loadedPlayback)
         assertEquals(TestDuplicatePlayback::class, loadedPlayback!!::class)
@@ -243,26 +237,26 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiatePlayback() {
-        Loader.registerPlayback(TestPlaybackAny.entry)
+        Loader.register(TestPlaybackAny.entry)
 
-        val loader = Loader()
-        val playback = loader.loadPlayback("some-source.mp4", null, Options())
+        
+        val playback = Loader.loadPlayback("some-source.mp4", null, Options())
 
         assertNotNull("should have loaded playback", playback)
     }
 
     @Test
     fun shouldInstantiatePlaybackWhichCanPlaySource() {
-        Loader.registerPlayback(TestPlaybackMp4.entry)
-        Loader.registerPlayback(TestPlaybackDash.entry)
+        Loader.register(TestPlaybackMp4.entry)
+        Loader.register(TestPlaybackDash.entry)
 
-        val loader = Loader()
-        var playback = loader.loadPlayback("some-source.mp4", null, Options())
+        
+        var playback = Loader.loadPlayback("some-source.mp4", null, Options())
 
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load mp4 playback", playback is TestPlaybackMp4)
 
-        playback = loader.loadPlayback("some-source.mpd", null, Options())
+        playback = Loader.loadPlayback("some-source.mpd", null, Options())
 
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load dash playback", playback is TestPlaybackDash)
@@ -270,18 +264,18 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiateFirstPlaybackInRegisteredListWhenThereAreMoreThanOneThatCanPlaySource() {
-        Loader.registerPlayback(NoOpPlayback.entry)
+        Loader.register(NoOpPlayback.entry)
 
-        val loader = Loader()
-        var playback = loader.loadPlayback("some-source.mp4", null, Options())
+        
+        var playback = Loader.loadPlayback("some-source.mp4", null, Options())
 
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load no-op playback", playback is NoOpPlayback)
 
-        Loader.registerPlayback(TestPlaybackMp4.entry)
+        Loader.register(TestPlaybackMp4.entry)
 
 
-        playback = loader.loadPlayback("some-source.mp4", null, Options())
+        playback = Loader.loadPlayback("some-source.mp4", null, Options())
 
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load mp4 playback", playback is TestPlaybackMp4)
@@ -289,8 +283,8 @@ class LoaderTest {
 
     @Test
     fun shouldReturnNullForNoPlayback() {
-        val loader = Loader()
-        val playback = loader.loadPlayback("some-source.mp4", null, Options())
+        
+        val playback = Loader.loadPlayback("some-source.mp4", null, Options())
 
         assertNull("should not have loaded playback", playback)
     }

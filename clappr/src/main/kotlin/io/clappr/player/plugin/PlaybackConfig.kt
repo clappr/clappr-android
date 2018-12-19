@@ -6,7 +6,7 @@ import io.clappr.player.playback.NoOpPlayback
 
 object PlaybackConfig {
     fun register() {
-        Loader.registerPlayback(NoOpPlayback.entry)
-        Loader.registerPlayback(ExoPlayerPlayback.entry)
+        Loader.register(NoOpPlayback.entry)
+        Loader.register(ExoPlayerPlayback.entry)
     }
 }
