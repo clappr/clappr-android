@@ -548,7 +548,7 @@ class MediaControlTest {
         var fakeState: State = State.IDLE
     }
 
-    class FakePlugin(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin"
 
@@ -567,7 +567,7 @@ class MediaControlTest {
         }
     }
 
-    class FakePlugin2(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin2(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin2"
 
@@ -581,7 +581,7 @@ class MediaControlTest {
         override var position: Position = currentPosition
     }
 
-    class FakePlugin3(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin3(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin3"
 

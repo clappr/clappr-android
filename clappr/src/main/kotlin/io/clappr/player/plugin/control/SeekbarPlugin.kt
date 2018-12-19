@@ -12,11 +12,10 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 
-open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
+open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core, name) {
 
     companion object : NamedType {
-        override val name: String
-            get() = "seekbar"
+        override val name = "seekbar"
     }
 
     override var panel = Panel.BOTTOM

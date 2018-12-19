@@ -17,7 +17,7 @@ import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.container.UIContainerPlugin
 import okhttp3.OkHttpClient
 
-class PosterPlugin(container: Container): UIContainerPlugin(container) {
+class PosterPlugin(container: Container): UIContainerPlugin(container, name = name) {
 
     private val posterLayout = LinearLayout(applicationContext)
 

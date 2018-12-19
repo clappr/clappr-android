@@ -37,7 +37,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
         val supportsSource: PlaybackSupportCheck = { _, _ -> true }
 
-        private val entry = PlaybackEntry(
+        val entry = PlaybackEntry(
                 name = name,
                 supportsSource = supportsSource,
                 factory = { source, mimeType, options -> MediaPlayerPlayback(source, mimeType, options) })

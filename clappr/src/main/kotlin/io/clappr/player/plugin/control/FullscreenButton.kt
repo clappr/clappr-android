@@ -8,7 +8,7 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 
 
-open class FullscreenButton(core: Core) : ButtonPlugin(core) {
+open class FullscreenButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
         override val name = "fullscreenButton"

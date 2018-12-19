@@ -17,9 +17,9 @@ import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
-class MediaControl(core: Core) : UICorePlugin(core) {
+class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
-    abstract class Plugin(core: Core) : UICorePlugin(core) {
+    abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
         enum class Position { LEFT, RIGHT, NONE }
 
@@ -39,8 +39,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     companion object : NamedType {
-        override val name: String
-            get() = "mediaControl"
+        override val name = "mediaControl"
 
         const val modalPanelViewKey = "modalPanelView"
     }

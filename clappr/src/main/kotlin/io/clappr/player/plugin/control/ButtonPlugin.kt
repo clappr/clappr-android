@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.widget.ImageButton
 import io.clappr.player.components.Core
 
-abstract class ButtonPlugin(core: Core) : MediaControl.Plugin(core) {
+abstract class ButtonPlugin(core: Core, name: String) : MediaControl.Plugin(core, name) {
 
     abstract val resourceDrawable: Int
     abstract val idResourceDrawable: Int
