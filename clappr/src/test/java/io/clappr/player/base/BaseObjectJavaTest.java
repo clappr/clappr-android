@@ -39,11 +39,6 @@ public class BaseObjectJavaTest {
         callbackCalls = 0;
     }
 
-    @Test(expected=IllegalStateException.class)
-    public void baseObjectWithoutContext() {
-        BaseObject bo = new BaseObject();
-    }
-
     @Test
     public void baseObjectCreation() {
         BaseObject.setApplicationContext(ShadowApplication.getInstance().getApplicationContext());
