@@ -18,6 +18,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
 
     val plugins: List<Plugin>
         get() = internalPlugins
+
     private val internalPlugins: MutableList<Plugin>
 
     var playback: Playback? = null
@@ -62,7 +63,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
         playback = loader.loadPlayback(source, mimeType, options)
-        if (playback?.name == NoOpPlayback.name) {
+        if (playback?.name == NoOpPlayback.entry.name) {
             playback = null
         }
         val supported = playback != null

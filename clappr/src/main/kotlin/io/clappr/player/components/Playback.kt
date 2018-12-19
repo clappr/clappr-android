@@ -15,11 +15,12 @@ typealias PlaybackFactory = (String, String?, Options) -> Playback
 
 data class PlaybackEntry(val name: String = "", val supportsSource: PlaybackSupportCheck, val factory: PlaybackFactory)
 
-interface PlaybackSupportInterface : NamedType {
-    fun supportsSource(source: String, mimeType: String?): Boolean
-}
-
-abstract class Playback(var source: String, var mimeType: String? = null, options: Options = Options()) : UIObject(), NamedType {
+abstract class Playback(
+        var source: String,
+        var mimeType: String? = null,
+        options: Options = Options(),
+        override val name: String = "",
+        val supportsSource: PlaybackSupportCheck = { _, _ -> false }) : UIObject(), NamedType {
 
     enum class MediaType {
         UNKNOWN,
@@ -29,15 +30,6 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
 
     enum class State {
         NONE, IDLE, PLAYING, PAUSED, STALLING, ERROR
-    }
-
-    companion object : PlaybackSupportInterface {
-        override val name = ""
-
-        @JvmStatic
-        override fun supportsSource(source: String, mimeType: String?): Boolean {
-            return false
-        }
     }
 
     init {
@@ -196,8 +188,6 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
             Logger.error(name, "Parser Json Exception ${jsonException.message}")
         }
     }
-
-    internal open fun supportsSource(source: String, mimeType: String?): Boolean = false
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }?.let {

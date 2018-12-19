@@ -12,11 +12,11 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.PlaybackEntry
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.log.Logger
 
-
-class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options) {
+class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()): Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
 
     enum class InternalState {
         NONE,
@@ -30,14 +30,17 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         BUFFERING
     }
 
-    companion object: PlaybackSupportInterface {
+    companion object {
         private const val TAG: String = "MediaPlayerPlayback"
 
-        override fun supportsSource(source: String, mimeType: String?): Boolean {
-            return true
-        }
+        const val name = "media_player"
 
-        override val name: String = "media_player"
+        val supportsSource: PlaybackSupportCheck = { _, _ -> true }
+
+        private val entry = PlaybackEntry(
+                name = name,
+                supportsSource = supportsSource,
+                factory = { source, mimeType, options -> MediaPlayerPlayback(source, mimeType, options) })
     }
 
     override val viewClass: Class<*>
@@ -238,9 +241,6 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         get() = ( (state != State.NONE) && (state != State.ERROR) && (mediaType == MediaType.VOD) )
     val canStop: Boolean
         get() = ( (state == State.PLAYING) || (state == State.PAUSED) || (state == State.STALLING) )
-
-
-    override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
 
     override fun play(): Boolean {
         if (canPlay) {

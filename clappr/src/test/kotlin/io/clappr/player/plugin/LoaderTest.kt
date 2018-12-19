@@ -44,36 +44,48 @@ class LoaderTest {
             get() = Companion.name
     }
 
-    class TestPlaybackAny(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface  {
-            override val name = "testplayback"
-            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+    class TestPlaybackAny(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "testplayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> TestPlaybackAny(source, mimeType, options) })
         }
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
-    class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface  {
-            override val name = "testplayback"
-            override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mp4") }
+    class TestPlaybackMp4(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "testplaybackmp4"
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source.toLowerCase().endsWith("mp4") }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) })
         }
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
-    class TestPlaybackDash(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface  {
-            override val name = "testplaybackdash"
-            override fun supportsSource(source: String, mimeType: String?): Boolean { return source.toLowerCase().endsWith("mpd") }
+    class TestPlaybackDash(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "testplaybackdash"
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source.toLowerCase().endsWith("mpd") }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> TestPlaybackDash(source, mimeType, options) })
         }
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
-    class TestDuplicatePlayback(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface  {
-            override val name = "testplayback"
-            override fun supportsSource(source: String, mimeType: String?): Boolean { return true }
+    class TestDuplicatePlayback(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options, name, supportsSource) {
+        companion object  {
+            const val name = "testplayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> TestDuplicatePlayback(source, mimeType, options) })
         }
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     @Before
@@ -205,10 +217,7 @@ class LoaderTest {
 
     @Test
     fun shouldAllowRegisteringPlaybacks() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackMp4.name,
-                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
+        Loader.registerPlayback(TestPlaybackMp4.entry)
 
         val loader = Loader()
         val loadedMP4Playback = loader.loadPlayback("123.mp4", "video", Options())
@@ -218,14 +227,8 @@ class LoaderTest {
 
     @Test
     fun shouldOverwritePlaybacksWithDuplicateNames() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackMp4.name,
-                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestDuplicatePlayback.name,
-                supportsSource = { source, mimeType -> TestDuplicatePlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestDuplicatePlayback(source, mimeType, options) }))
+        Loader.registerPlayback(TestPlaybackMp4.entry)
+        Loader.registerPlayback(TestDuplicatePlayback.entry)
 
         val loader = Loader()
         val loadedPlayback = loader.loadPlayback("123.mp4", "video", Options())
@@ -236,10 +239,7 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiatePlayback() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackAny.name,
-                supportsSource = { source, mimeType -> TestPlaybackAny.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackAny(source, mimeType, options) }))
+        Loader.registerPlayback(TestPlaybackAny.entry)
 
         val loader = Loader()
         val playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -249,14 +249,8 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiatePlaybackWhichCanPlaySource() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackMp4.name,
-                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackDash.name,
-                supportsSource = { source, mimeType -> TestPlaybackDash.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackDash(source, mimeType, options) }))
+        Loader.registerPlayback(TestPlaybackMp4.entry)
+        Loader.registerPlayback(TestPlaybackDash.entry)
 
         val loader = Loader()
         var playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -272,10 +266,7 @@ class LoaderTest {
 
     @Test
     fun shouldInstantiateFirstPlaybackInRegisteredListWhenThereAreMoreThanOneThatCanPlaySource() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = NoOpPlayback.name,
-                supportsSource = { source, mimeType -> NoOpPlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> NoOpPlayback(source, mimeType, options) }))
+        Loader.registerPlayback(NoOpPlayback.entry)
 
         val loader = Loader()
         var playback = loader.loadPlayback("some-source.mp4", null, Options())
@@ -283,10 +274,7 @@ class LoaderTest {
         assertNotNull("should have loaded playback", playback)
         assertTrue("should load no-op playback", playback is NoOpPlayback)
 
-        Loader.registerPlayback(PlaybackEntry(
-                name = TestPlaybackMp4.name,
-                supportsSource = { source, mimeType -> TestPlaybackMp4.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> TestPlaybackMp4(source, mimeType, options) }))
+        Loader.registerPlayback(TestPlaybackMp4.entry)
 
 
         playback = loader.loadPlayback("some-source.mp4", null, Options())

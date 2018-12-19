@@ -2,10 +2,7 @@ package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
 import io.clappr.player.PlayerTest
-import io.clappr.player.components.Container
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackEntry
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
@@ -26,20 +23,16 @@ import org.robolectric.shadows.ShadowLog
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class ContainerTest {
 
-    class MP4Playback(source: String, mimeType: String?, options: Options) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override fun supportsSource(source: String, mimeType: String?): Boolean {
-                return source.endsWith(".mp4")
-            }
+    class MP4Playback(source: String, mimeType: String?, options: Options) : Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
+        companion object {
+            const val name: String = "mp4"
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source.endsWith(".mp4") }
 
-            override val name: String
-                get() = "mp4"
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) })
         }
-
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
-
-        override val name: String
-            get() = Companion.name
     }
 
     class TestContainerPlugin(container: Container) : UIContainerPlugin(container) {
@@ -80,11 +73,7 @@ open class ContainerTest {
 
     @Test
     fun shouldLoadPlaybackForSupportedSource() {
-        Loader.registerPlayback(
-                PlaybackEntry(
-                        name = MP4Playback.name,
-                        supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                        factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options())
         container.load("some_source.mp4")
 
@@ -94,26 +83,17 @@ open class ContainerTest {
 
     @Test
     fun shouldNotLoadNoOpPlaybackForUnsupportedSource() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = NoOpPlayback.name,
-                supportsSource = { source, mimeType -> NoOpPlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> NoOpPlayback(source, mimeType, options) }))
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(NoOpPlayback.entry)
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("some_unknown_source.mp0"))
 
         assertNull("should not have created playback", container.playback)
-        assertNotEquals("should not have created no-op playback", container.playback?.name, NoOpPlayback.name)
+        assertNotEquals("should not have created no-op playback", container.playback?.name, NoOpPlayback.entry.name)
     }
 
     @Test
     fun shouldNotTriggerPlaybackChangedWhenSameNullPlayback() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("some_unknown_source.mp0"))
 
         var callbackWasCalled = false
@@ -126,10 +106,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerPlaybackChangedWhenDifferentPlayback() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("some_unknown_source.mp0"))
 
         val previousPlayback: Playback? = container.playback
@@ -146,10 +123,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerLoadSourceEventsOnNewSource() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("aSource.mp4"))
 
         var willLoadWasCalled = false
@@ -164,10 +138,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerLoadSourceEventsOnSameSource() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("aSource.mp4"))
 
         var willLoadWasCalled = false
@@ -182,10 +153,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerDidNotLoadSourceEventsWhenNotSupported() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options("aSource.mp8"))
 
         var willLoadWasCalled = false
@@ -222,10 +190,7 @@ open class ContainerTest {
     @Test
     @Ignore
     fun shouldDestroyPlaybackOnDestroy() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val container = Container(Loader(), Options())
         container.load("some_source.mp4")
 
@@ -241,10 +206,7 @@ open class ContainerTest {
 
     @Test
     fun shouldClearPlaybackOnDestroy() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
 
         val container = Container(Loader(), Options())
         container.load("some_source.mp4")
@@ -313,10 +275,7 @@ open class ContainerTest {
 
     @Test
     fun shouldSetPlaybackOptionsWhenLoadContainer() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val source = "some_source.mp4"
         val newOptions = Options()
         newOptions.put(ClapprOption.POSTER.value, "fake-poster-url")
@@ -329,10 +288,7 @@ open class ContainerTest {
 
     @Test
     fun shouldTriggerUpdateOptionOnSetOptions() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = MP4Playback.name,
-                supportsSource = { source, mimeType -> MP4Playback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> MP4Playback(source, mimeType, options) }))
+        Loader.registerPlayback(MP4Playback.entry)
         val source = "some_source.mp4"
         val container = Container(Loader(), options = Options()).apply { load(source) }
 

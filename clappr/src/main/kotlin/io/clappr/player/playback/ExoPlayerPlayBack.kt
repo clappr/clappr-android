@@ -33,17 +33,23 @@ import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.util.*
 import kotlin.math.min
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-    companion object : PlaybackSupportInterface {
-        private val tag: String = "ExoPlayerPlayback"
 
-        override fun supportsSource(source: String, mimeType: String?): Boolean {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+    companion object {
+        private const val tag: String = "ExoPlayerPlayback"
+
+        const val name = "exoplayerplayback"
+
+        val supportsSource: PlaybackSupportCheck = { source, _ ->
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
-            return type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
+            type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
         }
 
-        override val name: String = "exoplayerplayback"
+        val entry = PlaybackEntry(
+                name = name,
+                supportsSource = supportsSource,
+                factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
@@ -210,8 +216,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.DID_STOP)
         return true
     }
-
-    override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
 
     private fun release() {
         timeElapsedHandler.cancel()

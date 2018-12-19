@@ -10,10 +10,7 @@ import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.assertVisibleView
@@ -239,10 +236,10 @@ class TimeIndicatorPluginTest {
         }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         var currentMediaType: MediaType = MediaType.VOD
@@ -257,7 +254,5 @@ class TimeIndicatorPluginTest {
 
         override val duration: Double
             get() = currentDuration
-
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }

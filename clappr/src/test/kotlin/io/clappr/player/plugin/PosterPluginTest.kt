@@ -9,7 +9,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.shadows.ShadowUri
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -121,13 +121,11 @@ class PosterPluginTest {
 
         assertHiddenView(posterPlugin)
     }
-    
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
-        }
 
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
+        }
     }
 }
