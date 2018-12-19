@@ -11,9 +11,10 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.control.MediaControl
 
-class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
+class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core, name = name) {
 
     enum class Option(val value: String) {
         TITLE("$name:title"),
@@ -23,8 +24,9 @@ class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
 
     @Keep
     companion object : NamedType {
-        override val name: String?
-            get() = "videoInfo"
+        override val name = "videoInfo"
+
+        val entry = PluginEntry.Core(name = name, factory = { core ->  VideoInfoPlugin(core) })
     }
 
     override var panel: Panel = Panel.TOP
@@ -35,9 +37,9 @@ class VideoInfoPlugin(core: Core) : MediaControl.Plugin(core) {
         LayoutInflater.from(applicationContext).inflate(R.layout.video_info_plugin, null) as LinearLayout
     }
 
-    open val titleLabel by lazy { view.findViewById(R.id.title_label) as TextView }
+    private val titleLabel by lazy { view.findViewById(R.id.title_label) as TextView }
 
-    open val subtitleLabel by lazy { view.findViewById(R.id.subtitle_label) as TextView }
+    private val subtitleLabel by lazy { view.findViewById(R.id.subtitle_label) as TextView }
 
     private val playbackListenerIds = mutableListOf<String>()
 

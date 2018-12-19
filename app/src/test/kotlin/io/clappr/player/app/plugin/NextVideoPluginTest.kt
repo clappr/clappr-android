@@ -16,6 +16,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.core.UICorePlugin
 import org.junit.Before
@@ -41,13 +42,12 @@ class NextVideoPluginTest {
     fun setup() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        Loader.registerPlugin(NextVideoPlugin::class)
-        Loader.registerPlugin(FooUICorePlugin::class)
-
-        core = Core(Loader(), Options(source = source))
+        Loader.register(NextVideoPlugin.entry)
+        Loader.register(FooUICorePlugin.entry)
+        core = Core(Options(source = source))
 
         //Trigger Container change events
-        val container = Container(core.loader, core.options)
+        val container = Container(core.options)
         core.activeContainer  = container
 
         //Trigger Playback change events
@@ -135,11 +135,13 @@ class NextVideoPluginTest {
     }
 }
 
-class FooUICorePlugin(core: Core): UICorePlugin(core){
-    companion object : NamedType {
-        override val name = "FooUICorePlugin"
+class FooUICorePlugin(core: Core): UICorePlugin(core, name = name){
+    companion object {
+        const val name = "FooUICorePlugin"
+
+        val entry = PluginEntry.Core(name, factory = { core -> FooUICorePlugin(core) })
     }
 
     override val view: View?
-        get() = LinearLayout(context)
+        get() = LinearLayout(applicationContext)
 }

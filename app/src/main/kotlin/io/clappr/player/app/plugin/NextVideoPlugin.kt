@@ -8,12 +8,15 @@ import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.UICorePlugin
 
-class NextVideoPlugin(core: Core) : UICorePlugin(core) {
+class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
 
     companion object : NamedType {
         override val name = "nextVideo"
+
+        val entry = PluginEntry.Core(name = name, factory = { core ->  NextVideoPlugin(core) })
     }
 
     private val picasso: Picasso by lazy {
