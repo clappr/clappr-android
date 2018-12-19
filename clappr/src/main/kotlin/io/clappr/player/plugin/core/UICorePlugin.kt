@@ -5,9 +5,10 @@ import io.clappr.player.base.UIObject
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.UIPlugin
 
-open class UICorePlugin(core: Core, override val base: UIObject = UIObject()) : CorePlugin(core, base), UIPlugin {
-    companion object: NamedType {
-        override val name = "uicoreplugin"
+open class UICorePlugin(core: Core, override val base: UIObject = UIObject(), name: String = Companion.name) :
+        CorePlugin(core, base, name), UIPlugin {
+    companion object : NamedType {
+        override val name: String = "uicoreplugin"
     }
 
     override var visibility = UIPlugin.Visibility.HIDDEN

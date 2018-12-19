@@ -8,11 +8,10 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 
-open class PlayButton(core: Core) : ButtonPlugin(core) {
+open class PlayButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
-        override val name: String
-            get() = "playButton"
+        override val name = "playButton"
     }
 
     override var panel: Panel = Panel.CENTER

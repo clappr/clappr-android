@@ -182,7 +182,10 @@ abstract class Playback(
                 val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
                 (0 until jsonArray.length())
                         .map { jsonArray.getJSONObject(it) }
-                        .forEach { setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson)) }
+                        .forEach {
+                            setSelectedMediaOption(
+                                    it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson))
+                        }
             }
         } catch (jsonException: JSONException) {
             Logger.error(name, "Parser Json Exception ${jsonException.message}")
@@ -190,9 +193,10 @@ abstract class Playback(
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
-        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }?.let {
-            setSelectedMediaOption(it)
-        }
+        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }
+                ?.let {
+                    setSelectedMediaOption(it)
+                }
     }
 
     open fun load(source: String, mimeType: String? = null): Boolean {

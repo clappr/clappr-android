@@ -7,14 +7,13 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.Plugin
 
-open class CorePlugin (val core: Core, open val base: BaseObject = BaseObject()) : Plugin, EventInterface by base {
-    companion object: NamedType {
-        override val name = "coreplugin"
+open class CorePlugin(
+        val core: Core, open val base: BaseObject = BaseObject(), override val name: String = Companion.name) :
+        Plugin, EventInterface by base {
+    companion object : NamedType {
+        override val name: String = "coreplugin"
     }
 
     val applicationContext: Context
         get() = BaseObject.applicationContext
-
-    override val name: String
-        get() = Companion.name
 }

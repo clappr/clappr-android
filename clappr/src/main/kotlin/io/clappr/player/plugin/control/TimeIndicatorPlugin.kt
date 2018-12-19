@@ -13,11 +13,10 @@ import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.asTimeInterval
 
-open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
+open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core, name) {
 
     companion object : NamedType {
-        override val name: String
-            get() = "timeIndicator"
+        override val name = "timeIndicator"
     }
 
     override var panel: Panel = Panel.BOTTOM

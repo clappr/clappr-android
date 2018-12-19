@@ -15,7 +15,7 @@ import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
+class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
     private var spinnerLayout: LinearLayout? = LinearLayout(applicationContext)
 

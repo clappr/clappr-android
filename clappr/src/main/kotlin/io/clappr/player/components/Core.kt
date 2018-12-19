@@ -50,9 +50,15 @@ class Core(val loader: Loader, options: Options) : UIObject() {
                 field = value
 
                 activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
+                                    Callback.wrap { bundle: Bundle? ->
+                                        trigger(
+                                                InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                                    })
                 activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
+                                    Callback.wrap { bundle: Bundle? ->
+                                        trigger(
+                                                InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                                    })
                 trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
@@ -63,15 +69,15 @@ class Core(val loader: Loader, options: Options) : UIObject() {
     private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
-    var options : Options = options
-        set(options)  {
+    var options: Options = options
+        set(options) {
             field = options
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
             updateContainerOptions(options)
         }
 
     private fun updateContainerOptions(options: Options) {
-        containers.forEach { it.options = options}
+        containers.forEach { it.options = options }
     }
 
     override val viewClass: Class<*>
@@ -95,8 +101,11 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         trigger(InternalEvent.WILL_DESTROY.value)
         containers.forEach { it.destroy() }
         containers.clear()
-        internalPlugins.forEach { handlePluginAction({ it.destroy() },
-                "Plugin ${it.javaClass.simpleName} crashed during destroy") }
+        internalPlugins.forEach {
+            handlePluginAction(
+                    { it.destroy() },
+                    "Plugin ${it.javaClass.simpleName} crashed during destroy")
+        }
         internalPlugins.clear()
         stopListening()
         trigger(InternalEvent.DID_DESTROY.value)
@@ -110,7 +119,8 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         }
         internalPlugins.filterIsInstance(UICorePlugin::class.java).forEach {
             frameLayout.addView(it.view)
-            handlePluginAction({ it.render() },
+            handlePluginAction(
+                    { it.render() },
                     "Plugin ${it.javaClass.simpleName} crashed during render")
         }
         return this
