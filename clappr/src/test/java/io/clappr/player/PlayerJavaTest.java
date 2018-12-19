@@ -26,12 +26,6 @@ public class PlayerJavaTest {
         player = new Player();
     }
 
-    @Test(expected = IllegalStateException.class)
-    public void instatiateWithoutContext() {
-        BaseObject.setApplicationContext(null);
-        Player invalidPlayer = new Player();
-    }
-
     @Test
     public void shouldHaveInvalidStatesBeforeConfigure() {
         assertEquals("valid duration", Double.NaN, player.getDuration(), 0.0);
