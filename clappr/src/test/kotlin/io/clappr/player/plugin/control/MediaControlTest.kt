@@ -359,14 +359,6 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowPluginsByRegisterOrder() {
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
-    }
-
-    @Test
     fun shouldShowPluginsByOption() {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
@@ -404,36 +396,6 @@ class MediaControlTest {
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderFollowedByOption() {
-        val sequence = "${FakePlugin3.name},${FakePlugin.name}"
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderWhenOptionsIsEmpty() {
-        val sequence = ""
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderWhenOptionsIsInvalid() {
-        val sequence = "invalid"
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
