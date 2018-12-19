@@ -10,7 +10,7 @@ import io.clappr.player.plugin.container.ContainerPlugin
 import io.clappr.player.plugin.core.CorePlugin
 
 
-typealias PluginFactory<C, P> = (C) -> P
+typealias PluginFactory<Context, Plugin> = (Context) -> Plugin
 
 typealias CorePluginFactory = PluginFactory<Core, CorePlugin>
 
@@ -90,7 +90,7 @@ class Loader(extraPlugins: List<PluginEntry> = emptyList(), extraPlaybacks: List
         externalPlaybacks.forEach { addPlayback(it) }
     }
 
-    fun <C : BaseObject> loadPlugins(context: C): List<Plugin> = availablePlugins.values.mapNotNull { loadPlugin(context, it) }
+    fun <Context : BaseObject> loadPlugins(context: Context): List<Plugin> = availablePlugins.values.mapNotNull { loadPlugin(context, it) }
 
     fun loadPlayback(source: String, mimeType: String? = null, options: Options): Playback? {
         var playback: Playback? = null
