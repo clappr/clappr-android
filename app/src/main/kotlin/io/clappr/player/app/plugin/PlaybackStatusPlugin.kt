@@ -9,13 +9,16 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) {
+class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
     companion object : NamedType {
         override val name = "playbackStatus"
+
+        val entry = PluginEntry.Container(name = name, factory = { container->  PlaybackStatusPlugin(container) })
     }
 
     override val view by lazy {

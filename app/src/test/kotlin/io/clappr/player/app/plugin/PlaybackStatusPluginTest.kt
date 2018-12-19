@@ -35,7 +35,7 @@ class PlaybackStatusPluginTest {
     fun setup() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options(source = source))
+        container = Container(Options(source = source))
 
         playbackStatusPlugin = PlaybackStatusPlugin(container)
 

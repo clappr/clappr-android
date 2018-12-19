@@ -37,12 +37,12 @@ class NextVideoPluginTest {
     fun setup() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        core = Core(Loader(), Options(source = source))
+        core = Core(Options(source = source))
 
         nextVideoPlugin = NextVideoPlugin(core)
 
         //Trigger Container change events
-        val container = Container(core.loader, core.options)
+        val container = Container(core.options)
         core.activeContainer  = container
 
         //Trigger Playback change events
