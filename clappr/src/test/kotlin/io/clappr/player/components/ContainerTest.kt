@@ -37,8 +37,9 @@ open class ContainerTest {
 
     class TestContainerPlugin(container: Container) : UIContainerPlugin(container) {
         companion object : NamedType {
-            override val name: String
-                get() = "testContainerPlugin"
+            override val name = "testContainerPlugin"
+
+            val entry = PluginEntry.Container(name = name, factory = { container -> TestContainerPlugin(container) })
         }
 
         override val name: String
@@ -327,7 +328,7 @@ open class ContainerTest {
     }
 
     private fun setupTestContainerPlugin(): Pair<Container, TestContainerPlugin> {
-        Loader.registerPlugin(PluginEntry.Container(name = TestContainerPlugin.name, factory = { context -> TestContainerPlugin(context) } ))
+        Loader.registerPlugin(TestContainerPlugin.entry)
 
         val container = Container(Loader(), Options())
         val testPlugin = container.plugins[0] as TestContainerPlugin

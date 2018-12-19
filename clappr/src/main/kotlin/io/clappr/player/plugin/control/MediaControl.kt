@@ -14,6 +14,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -42,6 +43,8 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         override val name = "mediaControl"
 
         const val modalPanelViewKey = "modalPanelView"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
     private val defaultShowTimeout = 300L

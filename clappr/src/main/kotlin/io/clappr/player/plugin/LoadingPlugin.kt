@@ -21,6 +21,8 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = 
 
     companion object : NamedType {
         override val name = "spinner"
+
+        val entry = PluginEntry.Container(name = name, factory = { container -> LoadingPlugin(container) })
     }
 
     override var state: State = State.ENABLED

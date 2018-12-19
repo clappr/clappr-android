@@ -28,6 +28,8 @@ class PosterPlugin(container: Container): UIContainerPlugin(container, name = na
     companion object : NamedType {
         override val name = "poster"
 
+        val entry = PluginEntry.Container(name = name, factory = { container -> PosterPlugin(container) })
+
         private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         private val picasso: Picasso by lazy {
             Picasso.Builder(BaseObject.applicationContext).downloader(OkHttp3Downloader(httpClient))

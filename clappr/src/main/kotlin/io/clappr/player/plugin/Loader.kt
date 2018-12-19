@@ -2,7 +2,10 @@ package io.clappr.player.plugin
 
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
-import io.clappr.player.components.*
+import io.clappr.player.components.Container
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.plugin.container.ContainerPlugin
 import io.clappr.player.plugin.core.CorePlugin
 

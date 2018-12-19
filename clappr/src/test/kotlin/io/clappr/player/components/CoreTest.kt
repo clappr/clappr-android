@@ -31,8 +31,9 @@ open class CoreTest {
 
     class TestCorePlugin(core: Core) : UICorePlugin(core) {
         companion object : NamedType {
-            override val name: String
-                get() = "testCorePlugin"
+            override val name = "testCorePlugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> TestCorePlugin(core) })
         }
 
         var destroyMethod: (() -> Unit)? = null
@@ -285,7 +286,7 @@ open class CoreTest {
     }
 
     private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
-        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
+        Loader.registerPlugin(TestCorePlugin.entry)
 
         val core = Core(Loader(), Options())
         val testPlugin = core.plugins[0] as TestCorePlugin

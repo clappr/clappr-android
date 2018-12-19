@@ -32,7 +32,7 @@ class PosterPluginTest {
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        Loader.registerPlugin(PluginEntry.Container(name = PosterPlugin.name, factory = { context -> PosterPlugin(context) }))
+        Loader.registerPlugin(PosterPlugin.entry)
 
         container = Container(Loader(), Options())
         core = Core(Loader(), Options())

@@ -18,30 +18,34 @@ import org.robolectric.shadows.ShadowApplication
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
 class LoaderTest {
-    class TestPlugin(core: Core) : CorePlugin(core) {
+    class TestPlugin(core: Core) : CorePlugin(core, name = name) {
         companion object : NamedType {
             override val name = "testplugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> TestPlugin(core) })
         }
-        override val name: String
-            get() = Companion.name
     }
 
-    class SameNameTestPlugin(core: Core) : CorePlugin(core) {
+    class SameNameTestPlugin(core: Core) : CorePlugin(core, name = name) {
         companion object : NamedType {
             override val name = "testplugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> SameNameTestPlugin(core) })
         }
-        override val name: String
-            get() = Companion.name
     }
 
-    class NoNameTestPlugin(core: Core) : CorePlugin(core)
+    class NoNameTestPlugin(core: Core) : CorePlugin(core) {
+        companion object {
+            val entry = PluginEntry.Core(name = "", factory = { core -> NoNameTestPlugin(core) })
+        }
+    }
 
-    class TestCorePlugin(core: Core) : CorePlugin(core) {
+    class TestCorePlugin(core: Core) : CorePlugin(core, name = name) {
         companion object: NamedType {
             override val name = "coreplugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> TestCorePlugin(core) })
         }
-        override val name: String
-            get() = Companion.name
     }
 
     class TestPlaybackAny(source: String, mimeType: String? = null, options: Options): Playback(source, mimeType, options, name, supportsSource) {
@@ -113,7 +117,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
+        Loader.registerPlugin(TestCorePlugin.entry)
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))
@@ -126,7 +130,7 @@ class LoaderTest {
     fun shouldAllowUnregisteringPlugins() {
         val expectedLoadedPluginsListSize = 0
 
-        Loader.registerPlugin(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) }))
+        Loader.registerPlugin(TestCorePlugin.entry)
         val didUnregistered = Loader.unregisterPlugin(TestCorePlugin.name)
 
         val loader = Loader()
@@ -148,7 +152,7 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        val loaderExternal = Loader(listOf<PluginEntry>(PluginEntry.Core(name = TestPlugin.name, factory = { context -> TestPlugin(context) })))
+        val loaderExternal = Loader(listOf<PluginEntry>(TestPlugin.entry))
         val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
@@ -158,7 +162,7 @@ class LoaderTest {
     @Test
     fun shouldDisregardExternalPluginsWithoutName() {
         val expectedLoadedPluginsListSize = 0
-        val externalPlugins = listOf<PluginEntry>(PluginEntry.Core(name = "", factory = { context -> NoNameTestPlugin(context) }))
+        val externalPlugins = listOf<PluginEntry>(NoNameTestPlugin.entry)
 
         val loaderExternal = Loader(externalPlugins)
         val loadedPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
@@ -179,7 +183,7 @@ class LoaderTest {
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
 
-        val loaderExternal = Loader(listOf<PluginEntry>(PluginEntry.Core(name = TestCorePlugin.name, factory = { context -> TestCorePlugin(context) })))
+        val loaderExternal = Loader(listOf<PluginEntry>(TestCorePlugin.entry))
         val loadedExternalPlugins = loaderExternal.loadPlugins(Core(loaderExternal, Options()))
 
         assertEquals(expectedLoadedPluginsListSize, loadedExternalPlugins.size)
@@ -192,8 +196,8 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        Loader.registerPlugin(PluginEntry.Core(name = TestPlugin.name, factory = { context -> TestPlugin(context) }))
-        Loader.registerPlugin(PluginEntry.Core(name = SameNameTestPlugin.name, factory = { context -> SameNameTestPlugin(context) }))
+        Loader.registerPlugin(TestPlugin.entry)
+        Loader.registerPlugin(SameNameTestPlugin.entry)
 
         val loader = Loader()
         val loadedPlugins = loader.loadPlugins(Core(loader, Options()))

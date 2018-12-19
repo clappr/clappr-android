@@ -481,9 +481,9 @@ class MediaControlTest {
         FakePlugin3.currentPanel = panel
         FakePlugin3.currentPosition = position
 
-        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin.name, factory = { context -> FakePlugin(context) }))
-        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin2.name, factory = { context -> FakePlugin2(context) }))
-        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin3.name, factory = { context -> FakePlugin3(context) }))
+        Loader.registerPlugin(FakePlugin.entry)
+        Loader.registerPlugin(FakePlugin2.entry)
+        Loader.registerPlugin(FakePlugin3.entry)
 
         core = Core(Loader(), Options())
         sequenceOption?.let {
@@ -504,7 +504,7 @@ class MediaControlTest {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
 
-        Loader.registerPlugin(PluginEntry.Core(name = FakePlugin.name, factory = { context -> FakePlugin(context) }))
+        Loader.registerPlugin(FakePlugin.entry)
 
         core = Core(Loader(), Options())
 
@@ -552,12 +552,12 @@ class MediaControlTest {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin"
 
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin(core) })
+
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
             val viewId = 12345
         }
-
-        override val name = Companion.name
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
@@ -571,11 +571,11 @@ class MediaControlTest {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin2"
 
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin2(core) })
+
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
         }
-
-        override val name = Companion.name
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
@@ -585,11 +585,11 @@ class MediaControlTest {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin3"
 
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin3(core) })
+
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
         }
-
-        override val name = Companion.name
 
         override var panel: Panel = currentPanel
         override var position: Position = currentPosition
