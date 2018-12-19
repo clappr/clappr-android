@@ -29,7 +29,7 @@ open class PlayerTest {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
 
         Loader.clearPlaybacks()
-        Loader.registerPlugin(PluginEntry.Core(name = CoreTestPlugin.name, factory = { context -> CoreTestPlugin(context) }))
+        Loader.registerPlugin(CoreTestPlugin.entry)
         Loader.registerPlayback(PlayerTestPlayback.entry)
 
         PlayerTestPlayback.internalState = Playback.State.NONE
@@ -341,8 +341,9 @@ open class PlayerTest {
 
     class CoreTestPlugin(core: Core) : CorePlugin(core) {
         companion object : NamedType {
-            override val name: String
-                get() = "coreTestPlugin"
+            override val name = "coreTestPlugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> CoreTestPlugin(core) })
         }
 
         init {
