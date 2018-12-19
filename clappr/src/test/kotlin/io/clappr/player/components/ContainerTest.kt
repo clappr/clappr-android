@@ -1,7 +1,10 @@
 package io.clappr.player.base
 
 import io.clappr.player.BuildConfig
-import io.clappr.player.components.*
+import io.clappr.player.components.Container
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackEntry
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
@@ -21,7 +24,8 @@ import org.robolectric.shadows.ShadowLog
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class ContainerTest {
 
-    class MP4Playback(source: String, mimeType: String?, options: Options) : Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
+    class MP4Playback(source: String, mimeType: String?, options: Options) :
+            Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
         companion object {
             const val name: String = "mp4"
             val supportsSource: PlaybackSupportCheck = { source, _ -> source.endsWith(".mp4") }
@@ -64,7 +68,8 @@ open class ContainerTest {
 
     @Test
     fun shouldLoadPlugins() {
-        Loader.register(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+        Loader.register(
+                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertTrue("no plugins", container.plugins.isNotEmpty())
@@ -96,8 +101,8 @@ open class ContainerTest {
         val container = Container(Options("some_unknown_source.mp0"))
 
         var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value) { callbackWasCalled = true }
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value) { callbackWasCalled = true }
 
         container.load(source = "some_unknown_source.mp0")
         assertFalse("CHANGE_PLAYBACK triggered " + container.playback, callbackWasCalled)
@@ -110,11 +115,11 @@ open class ContainerTest {
 
         val previousPlayback: Playback? = container.playback
         var callbackWasCalled = false
-        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value, Callback.wrap {
+        container.on(InternalEvent.WILL_CHANGE_PLAYBACK.value) {
             assertFalse("DID_CHANGE_PLAYBACK triggered before WILL_CHANGE_PLAYBACK", callbackWasCalled)
             assertEquals("playback already changed", previousPlayback, container.playback)
-        })
-        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { callbackWasCalled = true })
+        }
+        container.on(InternalEvent.DID_CHANGE_PLAYBACK.value) { callbackWasCalled = true }
 
         container.load(source = "some_source.mp4")
         assertTrue("DID_CHANGE_PLAYBACK not triggered", callbackWasCalled)
@@ -127,8 +132,8 @@ open class ContainerTest {
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true })
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value) { willLoadWasCalled = true }
+        container.on(InternalEvent.DID_LOAD_SOURCE.value) { didLoadWasCalled = true }
 
         container.load(source = "anotherSource.mp4")
         assertTrue("Will Load Source was not called", willLoadWasCalled)
@@ -142,8 +147,8 @@ open class ContainerTest {
 
         var willLoadWasCalled = false
         var didLoadWasCalled = false
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true })
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value) { willLoadWasCalled = true }
+        container.on(InternalEvent.DID_LOAD_SOURCE.value) { didLoadWasCalled = true }
 
         container.load(source = "aSource.mp4")
         assertTrue("Will Load Source was not called", willLoadWasCalled)
@@ -159,9 +164,9 @@ open class ContainerTest {
         var didLoadWasCalled = false
         var didNotLoadWasCalled = false
 
-        container.on(InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { willLoadWasCalled = true })
-        container.on(InternalEvent.DID_LOAD_SOURCE.value, Callback.wrap { didLoadWasCalled = true })
-        container.on(InternalEvent.DID_NOT_LOAD_SOURCE.value, Callback.wrap { didNotLoadWasCalled = true })
+        container.on(InternalEvent.WILL_LOAD_SOURCE.value) { willLoadWasCalled = true }
+        container.on(InternalEvent.DID_LOAD_SOURCE.value) { didLoadWasCalled = true }
+        container.on(InternalEvent.DID_NOT_LOAD_SOURCE.value) { didNotLoadWasCalled = true }
 
         container.load(source = "invalid_source.mp8")
         assertTrue("Will Load Source was not called", willLoadWasCalled)
@@ -177,8 +182,8 @@ open class ContainerTest {
         var willDestroyCalled = false
         var didDestroyCalled = false
 
-        listenObject.listenTo(container, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
-        listenObject.listenTo(container, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        listenObject.listenTo(container, InternalEvent.WILL_DESTROY.value) { willDestroyCalled = true }
+        listenObject.listenTo(container, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         container.destroy()
 
@@ -196,7 +201,7 @@ open class ContainerTest {
         assertNotNull("No playback", container.playback)
 
         var didDestroyCalled = false
-        container.listenTo(container.playback!!, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        container.listenTo(container.playback!!, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         container.destroy()
 
@@ -234,7 +239,7 @@ open class ContainerTest {
         val (container, testPlugin) = setupTestContainerPlugin()
 
         val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
-                "crashed during destroy"
+                                 "crashed during destroy"
 
         testPlugin.destroyMethod = { throw NullPointerException() }
 
@@ -245,7 +250,8 @@ open class ContainerTest {
 
     @Test
     fun shouldClearPluginsOnDestroy() {
-        Loader.register(PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+        Loader.register(
+                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertFalse("No plugins", container.plugins.isEmpty())
@@ -261,7 +267,7 @@ open class ContainerTest {
         val container = Container(Options())
 
         var numberOfTriggers = 0
-        container.listenTo(triggerObject, "containerTest", Callback.wrap { numberOfTriggers++ })
+        container.listenTo(triggerObject, "containerTest") { numberOfTriggers++ }
 
         triggerObject.trigger("containerTest")
         assertEquals("no trigger", 1, numberOfTriggers)
@@ -292,7 +298,7 @@ open class ContainerTest {
         val container = Container(options = Options()).apply { load(source) }
 
         var callbackWasCalled = false
-        container.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+        container.on(InternalEvent.DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
 
         container.options = Options(source = "new_source")
 
@@ -316,7 +322,7 @@ open class ContainerTest {
         val (container, testPlugin) = setupTestContainerPlugin()
 
         val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
-                "crashed during render"
+                                 "crashed during render"
 
         testPlugin.renderMethod = { throw NullPointerException() }
 

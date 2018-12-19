@@ -8,7 +8,9 @@ import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
 import android.widget.LinearLayout
 import android.widget.TextView
 import io.clappr.player.R
-import io.clappr.player.base.*
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.asTimeInterval
@@ -33,7 +35,7 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core, name) {
     private val playbackListenerIds = mutableListOf<String>()
 
     init {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { setupPlaybackListeners() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { setupPlaybackListeners() })
         updateLiveStatus()
     }
 
@@ -42,9 +44,9 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core, name) {
         stopPlaybackListeners()
         core.activePlayback?.let {
             updateValue(null)
-            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { _ -> setupPlaybackListeners() }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { bundle -> updateValue(bundle) }))
-                    playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value) { setupPlaybackListeners() })
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value) { bundle -> updateValue(bundle) })
+                    playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value) { hide() })
         }
     }
 

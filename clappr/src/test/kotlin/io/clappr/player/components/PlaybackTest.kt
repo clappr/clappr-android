@@ -20,8 +20,10 @@ import java.util.*
 open class PlaybackTest {
 
 
-    class SomePlayback(source: String, options: Options = Options(),
-                       private val aMediaType: MediaType = MediaType.UNKNOWN) : Playback(source, null, options, name = name, supportsSource = supportsSource) {
+    class SomePlayback(
+            source: String, options: Options = Options(),
+            private val aMediaType: MediaType = MediaType.UNKNOWN) :
+            Playback(source, null, options, name = name, supportsSource = supportsSource) {
         companion object {
             const val name = ""
 
@@ -107,7 +109,7 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldNotCallStartAtWhenVideoIsLive(){
+    fun shouldNotCallStartAtWhenVideoIsLive() {
         val option = Options().also {
             it[ClapprOption.START_AT.value] = 30
         }
@@ -119,7 +121,9 @@ open class PlaybackTest {
         assertFalse("Should not call start at for live videos", playback.seekWasCalled)
     }
 
-    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
+    private fun testPlaybackSeek(
+            startAtValue: Any, shouldAssertSeekValue: Boolean,
+            mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
         val option = Options()
         option.put(ClapprOption.START_AT.value, startAtValue)
 
@@ -127,7 +131,7 @@ open class PlaybackTest {
 
         val playback = SomePlayback("valid-source.mp4", option, mediaType)
         playback.render()
-        playback.once(Event.READY.value, Callback.wrap {
+        playback.once(Event.READY.value, {
             willSeekBeCalled = shouldAssertSeekValue
         }, playback)
 
@@ -135,7 +139,7 @@ open class PlaybackTest {
 
         assertEquals("seek should be called when start at is set", willSeekBeCalled, playback.seekWasCalled)
         if (shouldAssertSeekValue) {
-            assertEquals("seek value in seconds ", (startAtValue as Number).toInt() , playback.seekValueInSeconds)
+            assertEquals("seek value in seconds ", (startAtValue as Number).toInt(), playback.seekValueInSeconds)
         }
     }
 
@@ -145,7 +149,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var numberOfTriggers = 0
-        playback.listenTo(triggerObject, "playbackTest", Callback.wrap { numberOfTriggers++ })
+        playback.listenTo(triggerObject, "playbackTest") { numberOfTriggers++ }
 
         triggerObject.trigger("playbackTest")
         assertEquals("no trigger", 1, numberOfTriggers)
@@ -155,15 +159,16 @@ open class PlaybackTest {
         assertEquals("trigger", 1, numberOfTriggers)
     }
 
-    @Test @Ignore
+    @Test
+    @Ignore
     fun shouldTriggerEventsOnDestroy() {
         val listenObject = BaseObject()
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var willDestroyCalled = false
         var didDestroyCalled = false
-        listenObject.listenTo(playback, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
-        listenObject.listenTo(playback, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        listenObject.listenTo(playback, InternalEvent.WILL_DESTROY.value) { willDestroyCalled = true }
+        listenObject.listenTo(playback, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         playback.destroy()
 
@@ -181,21 +186,22 @@ open class PlaybackTest {
         checkAvailableMedia(MediaOptionType.AUDIO)
     }
 
-    private fun checkAvailableMedia(mediaOptionType: MediaOptionType){
+    private fun checkAvailableMedia(mediaOptionType: MediaOptionType) {
         val playback = SomePlayback("valid-source.mp4", Options())
         val quantity = 10
         val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
 
         val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
         assertEquals(mediaOptionList.size, addedMediaOptionList.size)
-        for (i in 0..quantity-1) {
+        for (i in 0..quantity - 1) {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
 
         assertTrue(playback.hasMediaOptionAvailable)
     }
 
-    private fun insertMedia(playback: Playback, mediaOptionType: MediaOptionType, quantity: Int): MutableList<MediaOption> {
+    private fun insertMedia(
+            playback: Playback, mediaOptionType: MediaOptionType, quantity: Int): MutableList<MediaOption> {
         val mediaOptionList: MutableList<MediaOption> = ArrayList()
         for (i in 1..quantity) {
             val mediaOption = MediaOption("Name $i", mediaOptionType, i, null)
@@ -227,7 +233,7 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldReturnNoOneSelectedMediaOption(){
+    fun shouldReturnNoOneSelectedMediaOption() {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
@@ -244,7 +250,7 @@ open class PlaybackTest {
 
         var mediaOptionsUpdateCalled = false
 
-        listenObject.listenTo(playback, InternalEvent.MEDIA_OPTIONS_UPDATE.value, Callback.wrap { mediaOptionsUpdateCalled = true })
+        listenObject.listenTo(playback, InternalEvent.MEDIA_OPTIONS_UPDATE.value, { mediaOptionsUpdateCalled = true })
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
 
@@ -308,7 +314,8 @@ open class PlaybackTest {
     fun shouldSelectUpperCasePortugueseAudioFromSelectedMediaOptions() {
         val jsonMediaOptionName = AudioLanguage.PORTUGUESE.value
         val jsonMediaOptionType = MediaOptionType.AUDIO
-        val validJsonWithUpperCase = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val validJsonWithUpperCase =
+                convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
         val expectedJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJsonWithUpperCase).run {
@@ -353,7 +360,8 @@ open class PlaybackTest {
     fun shouldSelectUpperCaseSubtitleFromSelectedMediaOptions() {
         val jsonMediaOptionName = SubtitleLanguage.PORTUGUESE.value
         val jsonMediaOptionType = MediaOptionType.SUBTITLE
-        val validJsonWithUpperCase = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
+        val validJsonWithUpperCase =
+                convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
         val expectedJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
 
         setupPlaybackWithMediaOptions(validJsonWithUpperCase).run {
@@ -378,7 +386,8 @@ open class PlaybackTest {
         val jsonMediaOptionTypeAudio = MediaOptionType.AUDIO
         val jsonMediaOptionNameSubtitle = SubtitleLanguage.PORTUGUESE.value
         val jsonMediaOptionTypeSubtitle = MediaOptionType.SUBTITLE
-        val validJson = convertMediaOptionsToJson(jsonMediaOptionTypeAudio.name, jsonMediaOptionNameAudio,
+        val validJson = convertMediaOptionsToJson(
+                jsonMediaOptionTypeAudio.name, jsonMediaOptionNameAudio,
                 jsonMediaOptionTypeSubtitle.name, jsonMediaOptionNameSubtitle)
 
         setupPlaybackWithMediaOptions(validJson).run {
@@ -391,24 +400,26 @@ open class PlaybackTest {
         val options = Options(options = hashMapOf(ClapprOption.SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
         val playback = SomePlayback("valid-source.mp4", options)
 
-        playback.on(Event.MEDIA_OPTIONS_SELECTED.value, Callback.wrap {
+        playback.on(Event.MEDIA_OPTIONS_SELECTED.value) {
             playback.selectedMediaOptionsJson = it?.getString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value) ?: ""
-        })
+        }
 
         playback.addAvailableMediaOption(MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, null, null))
         playback.addAvailableMediaOption(MediaOption(AudioLanguage.PORTUGUESE.value, MediaOptionType.AUDIO, null, null))
         playback.addAvailableMediaOption(MediaOption(AudioLanguage.ENGLISH.value, MediaOptionType.AUDIO, null, null))
 
         playback.addAvailableMediaOption(SUBTITLE_OFF)
-        playback.addAvailableMediaOption(MediaOption(SubtitleLanguage.PORTUGUESE.value, MediaOptionType.SUBTITLE, null, null))
+        playback.addAvailableMediaOption(
+                MediaOption(SubtitleLanguage.PORTUGUESE.value, MediaOptionType.SUBTITLE, null, null))
 
         playback.setupInitialMediasFromClapprOptions()
 
         return playback
     }
 
-    private fun assertSelectedMediaOption(playback: SomePlayback, expectedType: MediaOptionType, expectedValue: String,
-                                          expectedJson: String) {
+    private fun assertSelectedMediaOption(
+            playback: SomePlayback, expectedType: MediaOptionType, expectedValue: String,
+            expectedJson: String) {
         val optionSelected = playback.selectedMediaOption(expectedType)
         assertEquals(expectedValue, optionSelected?.name)
         assertEquals(expectedType.name, optionSelected?.type?.name)
@@ -422,8 +433,9 @@ open class PlaybackTest {
         assertNull(playback.selectedMediaOptionsJson)
     }
 
-    private fun convertMediaOptionsToJson(jsonMediaOptionTypeAudio:String? = null, jsonMediaOptionNameAudio: String? = null,
-                                          jsonMediaOptionTypeSubtitle: String? = null, jsonMediaOptionNameSubtitle: String? = null): String {
+    private fun convertMediaOptionsToJson(
+            jsonMediaOptionTypeAudio: String? = null, jsonMediaOptionNameAudio: String? = null,
+            jsonMediaOptionTypeSubtitle: String? = null, jsonMediaOptionNameSubtitle: String? = null): String {
         val mediaOptionsArrayJson = "media_option"
         val mediaOptionsNameJson = "name"
         val mediaOptionsTypeJson = "type"
@@ -454,7 +466,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var callbackWasCalled = false
-        playback.on(InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { callbackWasCalled = true })
+        playback.on(InternalEvent.DID_UPDATE_OPTIONS.value, { callbackWasCalled = true })
 
         playback.options = Options(source = "new_source")
 
@@ -462,7 +474,7 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldNotSeekToLivePositionByDefault(){
+    fun shouldNotSeekToLivePositionByDefault() {
         val playback = SomePlayback("valid-source.mp4", Options())
         assertFalse(playback.seekToLivePosition())
     }
