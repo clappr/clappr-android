@@ -18,15 +18,15 @@ import org.robolectric.shadows.ShadowLog
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 open class CoreTest {
-    class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "container_test"
-
-            override fun supportsSource(source: String, mimeType: String?): Boolean {
-                return source.isNotEmpty()
-            }
+    class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "core_test"
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source.isNotEmpty() }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) })
         }
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 
     class TestCorePlugin(core: Core) : UICorePlugin(core) {
@@ -64,10 +64,7 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlayback() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = CoreTestPlayback.name,
-                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
+        Loader.registerPlayback(CoreTestPlayback.entry)
         val core = Core(Loader(), options = Options(source = "some_source")).apply { load() }
 
         assertNotNull("no active playback", core.activePlayback)
@@ -107,10 +104,7 @@ open class CoreTest {
 
     @Test
     fun shouldNotTriggerActivePlaybackChangedForSamePlayback() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = CoreTestPlayback.name,
-                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
+        Loader.registerPlayback(CoreTestPlayback.entry)
         val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false
@@ -130,10 +124,7 @@ open class CoreTest {
 
     @Test
     fun shouldTriggerActivePlaybackChanged() {
-        Loader.registerPlayback(PlaybackEntry(
-                name = CoreTestPlayback.name,
-                supportsSource = { source, mimeType -> CoreTestPlayback.supportsSource(source, mimeType) },
-                factory = { source, mimeType, options -> CoreTestPlayback(source, mimeType, options) }))
+        Loader.registerPlayback(CoreTestPlayback.entry)
         val core = Core(Loader(), Options()).apply { load() }
 
         var callbackWasCalled = false

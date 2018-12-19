@@ -5,10 +5,7 @@ import android.view.MotionEvent
 import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.assertHiddenView
 import io.clappr.player.plugin.assertVisibleView
@@ -367,10 +364,10 @@ class SeekbarPluginTest {
         }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         var currentMediaType: MediaType = MediaType.VOD
@@ -395,7 +392,5 @@ class SeekbarPluginTest {
             seekTime = seconds
             return super.seek(seconds)
         }
-
-        override fun supportsSource(source: String, mimeType: String?): Boolean = Companion.supportsSource(source, mimeType)
     }
 }
