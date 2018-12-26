@@ -7,8 +7,8 @@ import android.widget.LinearLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
 import io.clappr.player.app.plugin.util.FakePlayback
-import io.clappr.player.app.plugin.util.assertHidden
-import io.clappr.player.app.plugin.util.assertShown
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginHidden
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.NamedType
@@ -64,7 +64,7 @@ class NextVideoPluginTest {
 
     @Test
     fun shouldHideAfterDidChangePlaybackEventIsTriggered() {
-        assertHidden(nextVideoPlugin)
+        assertUiPluginHidden(nextVideoPlugin)
     }
 
     @Test
@@ -73,14 +73,14 @@ class NextVideoPluginTest {
 
         core.activeContainer?.playback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(nextVideoPlugin)
+        assertUiPluginHidden(nextVideoPlugin)
     }
 
     @Test
     fun shouldShowViewWhenDidCompleteEventIsTriggered() {
         core.activeContainer?.playback?.trigger(Event.DID_COMPLETE.value)
 
-        assertShown(nextVideoPlugin)
+        assertUiPluginShown(nextVideoPlugin)
     }
 
     @Test
@@ -96,7 +96,7 @@ class NextVideoPluginTest {
     fun shouldShowViewWhenDidStopEventIsTriggered() {
         core.activeContainer?.playback?.trigger(Event.DID_STOP.value)
 
-        assertShown(nextVideoPlugin)
+        assertUiPluginShown(nextVideoPlugin)
     }
 
     @Test
@@ -106,7 +106,7 @@ class NextVideoPluginTest {
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
-        assertHidden(nextVideoPlugin)
+        assertUiPluginHidden(nextVideoPlugin)
     }
 
     @Test
