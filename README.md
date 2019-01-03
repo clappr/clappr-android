@@ -67,7 +67,6 @@ Following, add following lines to `dependencies` section in `project/build.gradl
 dependencies {
     ...
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.2.71"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.2.71"
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.android.support:support-v4:27.1.1"
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
