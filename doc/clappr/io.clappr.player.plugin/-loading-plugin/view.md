@@ -2,7 +2,7 @@
 
 # view
 
-`open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?`
+`val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?`
 
 Overrides [UIPlugin.view](../-u-i-plugin/view.md)
 

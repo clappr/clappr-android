@@ -63,7 +63,6 @@
 | [pause](pause.md) | `open fun pause(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [play](play.md) | `open fun play(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [render](render.md) | `open fun render(): `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
-| [resetAvailableMediaOptions](reset-available-media-options.md) | `open fun resetAvailableMediaOptions(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [seek](seek.md) | `open fun seek(seconds: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [seekToLivePosition](seek-to-live-position.md) | `open fun seekToLivePosition(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [selectedMediaOption](selected-media-option.md) | `fun selectedMediaOption(type: `[`MediaOptionType`](../-media-option-type/index.md)`): `[`MediaOption`](../-media-option/index.md)`?` |
@@ -95,4 +94,4 @@
 |---|---|
 | [ExoPlayerPlayback](../../io.clappr.player.playback/-exo-player-playback/index.md) | `open class ExoPlayerPlayback : `[`Playback`](./index.md) |
 | [MediaPlayerPlayback](../../io.clappr.player.playback/-media-player-playback/index.md) | `class MediaPlayerPlayback : `[`Playback`](./index.md) |
-| [NoOpPlayback](../../io.clappr.player.playback/-no-op-playback/index.md) | `open class NoOpPlayback : `[`Playback`](./index.md) |
+| [NoOpPlayback](../../io.clappr.player.playback/-no-op-playback/index.md) | `class NoOpPlayback : `[`Playback`](./index.md) |

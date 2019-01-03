@@ -15,7 +15,7 @@ import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.core.UICorePlugin
 
-open class MediaControl(core: Core) : UICorePlugin(core) {
+class MediaControl(core: Core) : UICorePlugin(core) {
 
     abstract class Plugin(core: Core) : UICorePlugin(core) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
@@ -48,31 +48,31 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
 
     private val handler = Handler()
 
-    open var lastInteractionTime = 0L
+    private var lastInteractionTime = 0L
 
     override val view by lazy {
         LayoutInflater.from(context).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
+    private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
-    open val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
+    private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
-    open val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
-    open val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
-    open val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
+    private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
+    private val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
+    private val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
 
-    open val bottomPanel by lazy { view.findViewById(R.id.bottom_panel) as LinearLayout }
-    open val bottomLeftPanel by lazy { view.findViewById(R.id.bottom_left_panel) as LinearLayout }
-    open val bottomRightPanel by lazy { view.findViewById(R.id.bottom_right_panel) as LinearLayout }
+    private val bottomPanel by lazy { view.findViewById(R.id.bottom_panel) as LinearLayout }
+    private val bottomLeftPanel by lazy { view.findViewById(R.id.bottom_left_panel) as LinearLayout }
+    private val bottomRightPanel by lazy { view.findViewById(R.id.bottom_right_panel) as LinearLayout }
 
-    open val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as FrameLayout }
+    private val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as FrameLayout }
 
-    open val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
+    private val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
 
-    open val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
+    private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
-    open val controlPlugins = mutableListOf<MediaControl.Plugin>()
+    private val controlPlugins = mutableListOf<MediaControl.Plugin>()
 
     override var state: State = State.ENABLED
         set(value) {
@@ -96,8 +96,8 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
                     core.activePlayback?.state == Playback.State.NONE
         }
 
-    internal val containerListenerIds = mutableListOf<String>()
-    internal val playbackListenerIds = mutableListOf<String>()
+    private val containerListenerIds = mutableListOf<String>()
+    private val playbackListenerIds = mutableListOf<String>()
 
     init {
         setupPanelsVisibility()
@@ -120,9 +120,9 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         stopContainerListeners()
 
         core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.ENABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value, Callback.wrap { state = State.DISABLED }))
-            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { hide() }))
+            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.ENABLED }))
+            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value, Callback.wrap { _ -> state = State.DISABLED }))
+            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value, Callback.wrap { _ -> hide() }))
         }
     }
 
@@ -130,7 +130,7 @@ open class MediaControl(core: Core) : UICorePlugin(core) {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap {
+            playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, Callback.wrap { _ ->
                 if (!modalPanelIsOpen())
                     show()
             }))

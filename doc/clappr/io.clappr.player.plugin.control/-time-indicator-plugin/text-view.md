@@ -2,4 +2,4 @@
 
 # textView
 
-`open val textView: `[`TextView`](https://developer.android.com/reference/android/widget/TextView.html)
+`protected val textView: `[`TextView`](https://developer.android.com/reference/android/widget/TextView.html)

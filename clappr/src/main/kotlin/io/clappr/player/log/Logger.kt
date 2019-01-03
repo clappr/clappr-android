@@ -17,7 +17,7 @@ object Logger {
         }
     }
 
-    fun formattedMessage(scope: String? = null, message: String): String {
+    private fun formattedMessage(scope: String? = null, message: String): String {
         return if (scope != null) String.format("[%s] %s", scope, message) else message
     }
 

@@ -2,7 +2,7 @@
 
 # show
 
-`open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
 Overrides [UIPlugin.show](../../io.clappr.player.plugin/-u-i-plugin/show.md)
 

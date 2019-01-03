@@ -79,6 +79,7 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun showNextVideo() = Callback.wrap {
+        view.bringToFront()
         show()
     }
 

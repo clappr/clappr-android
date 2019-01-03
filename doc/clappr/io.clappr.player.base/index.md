@@ -20,10 +20,3 @@
 | [Options](-options/index.md) | `class Options : `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`Any`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)`>` |
 | [UIObject](-u-i-object/index.md) | `open class UIObject : `[`BaseObject`](-base-object/index.md) |
 | [Utils](-utils/index.md) | `object Utils` |
-
-### Functions
-
-| Name | Summary |
-|---|---|
-| [readBundle](read-bundle.md) | `fun readBundle(source: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`): `[`Bundle`](https://developer.android.com/reference/android/os/Bundle.html)`?` |
-| [writeBundle](write-bundle.md) | `fun writeBundle(dest: `[`Parcel`](https://developer.android.com/reference/android/os/Parcel.html)`, value: `[`Bundle`](https://developer.android.com/reference/android/os/Bundle.html)`?): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |

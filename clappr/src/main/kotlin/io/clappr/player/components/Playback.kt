@@ -165,10 +165,6 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
     }
 
-    open fun resetAvailableMediaOptions() {
-        mediaOptionList.clear()
-    }
-
     private fun convertSelectedMediaOptionsToJson(): String {
         val result = JSONObject()
         val jsonArray = JSONArray()
