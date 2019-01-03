@@ -300,6 +300,15 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
         }
     }
 
+    override fun startAt(seconds: Int): Boolean {
+        return if (canSeek) {
+            mediaPlayer.seekTo(seconds * 1000)
+            true
+        } else {
+            false
+        }
+    }
+
     private fun sendUpdateStateEvents(previousState: State) {
         if (state != previousState) {
             when (state) {

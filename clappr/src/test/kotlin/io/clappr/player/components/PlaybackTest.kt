@@ -33,8 +33,8 @@ open class PlaybackTest {
         }
 
         var playWasCalled = false
-        var seekWasCalled = false
-        var seekValueInSeconds: Int = 0
+        var startAtWasCalled = false
+        var startAtValueInSeconds: Int = 0
 
         override val mediaType: MediaType
             get() = aMediaType
@@ -44,10 +44,10 @@ open class PlaybackTest {
             return super.play()
         }
 
-        override fun seek(seconds: Int): Boolean {
-            seekWasCalled = true
-            seekValueInSeconds = seconds
-            return super.seek(seconds)
+        override fun startAt(seconds: Int): Boolean {
+            startAtWasCalled = true
+            startAtValueInSeconds = seconds
+            return super.startAt(seconds)
         }
 
         var selectedMediaOptionsJson: String? = null
@@ -84,23 +84,23 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldCallSeekWhenOptionsHaveIntValueStartAt() {
-        testPlaybackSeek(80, shouldAssertSeekValue = true)
+    fun shouldCallStartAtWhenOptionsHaveIntValueStartAt() {
+        testPlaybackStartAt(80, shouldAssertStartAtValue = true)
     }
 
     @Test
-    fun shouldCallSeekWhenOptionsHaveFloatValueStartAt() {
-        testPlaybackSeek(70.0f, shouldAssertSeekValue = true)
+    fun shouldCallStartAtWhenOptionsHaveFloatValueStartAt() {
+        testPlaybackStartAt(70.0f, shouldAssertStartAtValue = true)
     }
 
     @Test
-    fun shouldCallSeekWhenOptionsHaveDoubleValueStartAt() {
-        testPlaybackSeek(70.0, shouldAssertSeekValue = true)
+    fun shouldCallStartAtWhenOptionsHaveDoubleValueStartAt() {
+        testPlaybackStartAt(70.0, shouldAssertStartAtValue = true)
     }
 
     @Test
-    fun shouldCallSeekWhenOptionsHaveNotANumberValueStartAt() {
-        testPlaybackSeek("fail", shouldAssertSeekValue = false)
+    fun shouldCallStartAtWhenOptionsHaveNotANumberValueStartAt() {
+        testPlaybackStartAt("fail", shouldAssertStartAtValue = false)
     }
 
     @Test
@@ -113,26 +113,21 @@ open class PlaybackTest {
             it.render()
         }
 
-        assertFalse("Should not call start at for live videos", playback.seekWasCalled)
+        assertFalse("Should not call start at for live videos", playback.startAtWasCalled)
     }
 
-    private fun testPlaybackSeek(startAtValue: Any, shouldAssertSeekValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
+    private fun testPlaybackStartAt(startAtValue: Any, shouldAssertStartAtValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
         val option = Options()
         option.put(ClapprOption.START_AT.value, startAtValue)
 
-        var willSeekBeCalled = false
-
         val playback = SomePlayback("valid-source.mp4", option, mediaType)
         playback.render()
-        playback.once(Event.READY.value, Callback.wrap {
-            willSeekBeCalled = shouldAssertSeekValue
-        }, playback)
 
         playback.trigger(Event.READY.value)
 
-        assertEquals("seek should be called when start at is set", willSeekBeCalled, playback.seekWasCalled)
-        if (shouldAssertSeekValue) {
-            assertEquals("seek value in seconds ", (startAtValue as Number).toInt() , playback.seekValueInSeconds)
+        assertEquals("startAt should be called when start at is set", shouldAssertStartAtValue, playback.startAtWasCalled)
+        if (shouldAssertStartAtValue) {
+            assertEquals("startAt value in seconds ", (startAtValue as Number).toInt() , playback.startAtValueInSeconds)
         }
     }
 
