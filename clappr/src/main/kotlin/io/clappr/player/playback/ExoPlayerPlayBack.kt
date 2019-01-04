@@ -244,8 +244,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override fun startAt(seconds: Int): Boolean {
         if (!canSeek) return false
+
         player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         triggerPositionUpdateEvent()
+
         return true
     }
 
