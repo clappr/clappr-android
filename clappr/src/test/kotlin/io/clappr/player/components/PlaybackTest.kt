@@ -104,7 +104,16 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldNotCallStartAtWhenVideoIsLive(){
+    fun shouldNotStartAtWhenVideoDoesNotHaveValueStartAt() {
+        val playback = SomePlayback("valid-source.mp4")
+        playback.render()
+
+        assertEquals("startAt value in seconds ", 0 , playback.startAtValueInSeconds)
+
+    }
+
+    @Test
+    fun shouldNotCallStartAtWhenVideoIsLive() {
         val option = Options().also {
             it[ClapprOption.START_AT.value] = 30
         }
