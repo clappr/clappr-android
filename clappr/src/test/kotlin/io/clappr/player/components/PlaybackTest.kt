@@ -105,11 +105,12 @@ open class PlaybackTest {
 
     @Test
     fun shouldNotStartAtWhenVideoDoesNotHaveValueStartAt() {
-        val playback = SomePlayback("valid-source.mp4")
-        playback.render()
+        val playback = SomePlayback("valid-source.mp4").also {
+            it.render()
+            it.trigger(Event.READY.value)
+        }
 
-        assertEquals("startAt value in seconds ", 0 , playback.startAtValueInSeconds)
-
+        assertFalse("Should not call start at when option is not passed", playback.startAtWasCalled)
     }
 
     @Test
@@ -120,18 +121,17 @@ open class PlaybackTest {
 
         val playback = SomePlayback("valid-source.mp4", option, Playback.MediaType.LIVE).also {
             it.render()
+            it.trigger(Event.READY.value)
         }
 
         assertFalse("Should not call start at for live videos", playback.startAtWasCalled)
     }
 
     private fun testPlaybackStartAt(startAtValue: Any, shouldAssertStartAtValue: Boolean, mediaType: Playback.MediaType = Playback.MediaType.UNKNOWN) {
-        val option = Options()
-        option.put(ClapprOption.START_AT.value, startAtValue)
-
+        val option = Options().also { it[ClapprOption.START_AT.value] = startAtValue }
         val playback = SomePlayback("valid-source.mp4", option, mediaType)
-        playback.render()
 
+        playback.render()
         playback.trigger(Event.READY.value)
 
         assertEquals("startAt should be called when start at is set", shouldAssertStartAtValue, playback.startAtWasCalled)
