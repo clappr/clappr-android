@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.10.8'
+version = '0.10.9'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -50,8 +50,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode publishAttrs['versionCode']
-        versionName publishAttrs['versionName']
+
+        buildConfigField("String", "CLAPPR_VERSION", "\"$version\"")
     }
     packagingOptions {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
