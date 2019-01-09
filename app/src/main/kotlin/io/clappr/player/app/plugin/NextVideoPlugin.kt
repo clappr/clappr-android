@@ -42,6 +42,7 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
     }
 
     private val showNextVideo: EventHandler = {
+        view.bringToFront()
         show()
     }
 

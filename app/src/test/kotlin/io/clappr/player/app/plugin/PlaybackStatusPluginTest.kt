@@ -5,8 +5,8 @@ import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
 import io.clappr.player.app.plugin.util.FakePlayback
-import io.clappr.player.app.plugin.util.assertHidden
-import io.clappr.player.app.plugin.util.assertShown
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginHidden
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -50,7 +50,7 @@ class PlaybackStatusPluginTest {
         val newPlayback = FakePlayback(source)
         container.playback = newPlayback
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     @Test
@@ -82,14 +82,14 @@ class PlaybackStatusPluginTest {
     fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
         val oldPlayback = container.playback
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
 
         val newPlayback = FakePlayback(source)
         container.playback = newPlayback
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     @Test
@@ -100,14 +100,14 @@ class PlaybackStatusPluginTest {
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     private fun assertLabelOnEvent(eventName: String) {
         container.playback?.trigger(eventName)
 
         assertText(eventName)
-        assertShown(playbackStatusPlugin)
+        assertUiPluginShown(playbackStatusPlugin)
     }
 
     private fun assertText(text: String) {

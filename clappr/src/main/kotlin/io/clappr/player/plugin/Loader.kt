@@ -39,25 +39,17 @@ object Loader {
     }
 
     @JvmStatic
-    fun register(pluginEntry: PluginEntry): Boolean {
-        val pluginName = pluginEntry.name
-        if (pluginName.isNotEmpty()) {
-            registeredPlugins[pluginName] = pluginEntry
-            return true
-        }
-        return false
-    }
+    fun register(pluginEntry: PluginEntry) = pluginEntry.takeUnless { it.name.isEmpty() }?.let {
+        registeredPlugins[it.name] = it
+        true
+    } ?: false
 
     @JvmStatic
-    fun register(playbackEntry: PlaybackEntry): Boolean {
-        val playbackName = playbackEntry.name
-        if (playbackName.isNotEmpty()) {
-            registeredPlaybacks.removeAll { it.name == playbackName }
-            registeredPlaybacks.add(0, playbackEntry)
-            return true
-        }
-        return false
-    }
+    fun register(playbackEntry: PlaybackEntry) = playbackEntry.takeUnless { it.name.isEmpty() }?.let { entry ->
+        registeredPlaybacks.removeAll { it.name == entry.name }
+        registeredPlaybacks.add(0, entry)
+        true
+    } ?: false
 
     @JvmStatic
     fun unregisterPlugin(name: String) =
