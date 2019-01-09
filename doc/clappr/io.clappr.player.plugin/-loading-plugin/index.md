@@ -27,7 +27,9 @@
 
 | Name | Summary |
 |---|---|
-| [container](../../io.clappr.player.plugin.container/-u-i-container-plugin/container.md) | `val container: `[`Container`](../../io.clappr.player.components/-container/index.md) |
+| [base](../../io.clappr.player.plugin.container/-u-i-container-plugin/base.md) | `open val base: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [uiObject](../../io.clappr.player.plugin.container/-u-i-container-plugin/ui-object.md) | `open val uiObject: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [visibility](../../io.clappr.player.plugin.container/-u-i-container-plugin/visibility.md) | `open var visibility: `[`Visibility`](../-u-i-plugin/-visibility/index.md) |
 
 ### Functions
 
@@ -39,4 +41,5 @@
 
 | Name | Summary |
 |---|---|
+| [entry](entry.md) | `val entry: `[`Container`](../-plugin-entry/-container/index.md) |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

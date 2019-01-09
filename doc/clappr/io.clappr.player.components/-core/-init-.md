@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`Core(loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md)`, options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)`
+`Core(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)`

@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`CorePlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`)`
+`CorePlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`, base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = Companion.name)`

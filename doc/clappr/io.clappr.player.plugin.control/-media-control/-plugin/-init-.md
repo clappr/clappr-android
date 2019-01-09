@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`Plugin(core: `[`Core`](../../../io.clappr.player.components/-core/index.md)`)`
+`Plugin(core: `[`Core`](../../../io.clappr.player.components/-core/index.md)`, name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`)`

@@ -8,13 +8,12 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Container(loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md)`, options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)` |
+| [&lt;init&gt;](-init-.md) | `Container(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)` |
 
 ### Properties
 
 | Name | Summary |
 |---|---|
-| [loader](loader.md) | `val loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md) |
 | [options](options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [playback](playback.md) | `var playback: `[`Playback`](../-playback/index.md)`?` |
 | [plugins](plugins.md) | `val plugins: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)`>` |
