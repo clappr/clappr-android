@@ -2,4 +2,4 @@
 
 # state
 
-`open var state: `[`State`](-state/index.md)
+`open val state: `[`State`](-state/index.md)

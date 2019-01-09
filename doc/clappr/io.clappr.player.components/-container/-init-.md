@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`Container(loader: `[`Loader`](../../io.clappr.player.plugin/-loader/index.md)`, options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)`
+`Container(options: `[`Options`](../../io.clappr.player.base/-options/index.md)`)`

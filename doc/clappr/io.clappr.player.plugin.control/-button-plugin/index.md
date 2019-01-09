@@ -8,7 +8,7 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `ButtonPlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`)` |
+| [&lt;init&gt;](-init-.md) | `ButtonPlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`, name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`)` |
 
 ### Properties
 

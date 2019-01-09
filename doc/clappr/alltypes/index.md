@@ -11,9 +11,11 @@
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
 | [io.clappr.player.plugin.container.ContainerPlugin](../io.clappr.player.plugin.container/-container-plugin/index.md) |  |
+| [io.clappr.player.plugin.ContainerPluginFactory](../io.clappr.player.plugin/-container-plugin-factory.md) |  |
 | [android.content.Context](../io.clappr.player.extensions.context/android.content.-context/index.md) (extensions in package io.clappr.player.extensions.context) |  |
 | [io.clappr.player.components.Core](../io.clappr.player.components/-core/index.md) |  |
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
+| [io.clappr.player.plugin.CorePluginFactory](../io.clappr.player.plugin/-core-plugin-factory.md) |  |
 | [kotlin.Double](../io.clappr.player.extensions/kotlin.-double/index.md) (extensions in package io.clappr.player.extensions) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |
 | [io.clappr.player.base.ErrorInfo](../io.clappr.player.base/-error-info/index.md) |  |
@@ -38,10 +40,15 @@
 | [io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler](../io.clappr.player.periodic-timer/-periodic-time-elapsed-handler/index.md) |  |
 | [io.clappr.player.plugin.control.PlayButton](../io.clappr.player.plugin.control/-play-button/index.md) |  |
 | [io.clappr.player.components.Playback](../io.clappr.player.components/-playback/index.md) |  |
-| [io.clappr.player.components.PlaybackSupportInterface](../io.clappr.player.components/-playback-support-interface/index.md) |  |
+| [io.clappr.player.plugin.PlaybackConfig](../io.clappr.player.plugin/-playback-config/index.md) |  |
+| [io.clappr.player.components.PlaybackEntry](../io.clappr.player.components/-playback-entry/index.md) |  |
+| [io.clappr.player.components.PlaybackFactory](../io.clappr.player.components/-playback-factory.md) |  |
+| [io.clappr.player.components.PlaybackSupportCheck](../io.clappr.player.components/-playback-support-check.md) |  |
 | [io.clappr.player.Player](../io.clappr.player/-player/index.md) | Main Player class. |
 | [io.clappr.player.plugin.Plugin](../io.clappr.player.plugin/-plugin/index.md) |  |
 | [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
+| [io.clappr.player.plugin.PluginEntry](../io.clappr.player.plugin/-plugin-entry/index.md) |  |
+| [io.clappr.player.plugin.PluginFactory](../io.clappr.player.plugin/-plugin-factory.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.SeekbarPlugin](../io.clappr.player.plugin.control/-seekbar-plugin/index.md) |  |
 | [io.clappr.player.components.SubtitleLanguage](../io.clappr.player.components/-subtitle-language/index.md) |  |

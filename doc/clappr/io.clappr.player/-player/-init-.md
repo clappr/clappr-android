@@ -2,7 +2,7 @@
 
 # &lt;init&gt;
 
-`Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf<String>(), containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf<String>())`
+`Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf(), containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf())`
 
 Main Player class.
 

@@ -2,7 +2,7 @@
 
 # UIPlugin
 
-`abstract class UIPlugin : `[`Plugin`](../-plugin/index.md)`, `[`EventInterface`](../../io.clappr.player.base/-event-interface/index.md)
+`interface UIPlugin : `[`Plugin`](../-plugin/index.md)
 
 ### Types
 
@@ -10,25 +10,19 @@
 |---|---|
 | [Visibility](-visibility/index.md) | `enum class Visibility` |
 
-### Constructors
-
-| Name | Summary |
-|---|---|
-| [&lt;init&gt;](-init-.md) | `UIPlugin(component: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)`, uiObject: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md)` = UIObject())` |
-
 ### Properties
 
 | Name | Summary |
 |---|---|
+| [uiObject](ui-object.md) | `abstract val uiObject: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
 | [view](view.md) | `open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
-| [visibility](visibility.md) | `open var visibility: `[`Visibility`](-visibility/index.md) |
+| [visibility](visibility.md) | `abstract var visibility: `[`Visibility`](-visibility/index.md) |
 
 ### Inherited Properties
 
 | Name | Summary |
 |---|---|
-| [component](../-plugin/component.md) | `val component: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md) |
-| [state](../-plugin/state.md) | `open var state: `[`State`](../-plugin/-state/index.md) |
+| [state](../-plugin/state.md) | `open val state: `[`State`](../-plugin/-state/index.md) |
 
 ### Functions
 
@@ -48,5 +42,5 @@
 
 | Name | Summary |
 |---|---|
-| [UIContainerPlugin](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) | `open class UIContainerPlugin : `[`UIPlugin`](./index.md) |
-| [UICorePlugin](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) | `open class UICorePlugin : `[`UIPlugin`](./index.md) |
+| [UIContainerPlugin](../../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) | `open class UIContainerPlugin : `[`UIPlugin`](./index.md)`, `[`ContainerPlugin`](../../io.clappr.player.plugin.container/-container-plugin/index.md) |
+| [UICorePlugin](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) | `open class UICorePlugin : `[`CorePlugin`](../../io.clappr.player.plugin.core/-core-plugin/index.md)`, `[`UIPlugin`](./index.md) |
