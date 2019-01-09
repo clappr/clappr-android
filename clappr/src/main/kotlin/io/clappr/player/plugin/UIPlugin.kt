@@ -5,24 +5,26 @@ import io.clappr.player.base.BaseObject
 import io.clappr.player.base.EventInterface
 import io.clappr.player.base.UIObject
 
-abstract class UIPlugin (component: BaseObject, private val uiObject: UIObject = UIObject()) : Plugin(component), EventInterface by uiObject {
+interface UIPlugin: Plugin {
     enum class Visibility { HIDDEN, VISIBLE }
 
-    open var visibility = Visibility.HIDDEN
+    val uiObject: UIObject
 
-    open val view: View?
+    var visibility: Visibility
+
+    val view: View?
         get() = uiObject.view
 
-    open fun render() {
+    fun render() {
         uiObject.render()
     }
 
-    open fun show() {
+    fun show() {
         visibility = Visibility.VISIBLE
         view?.visibility = View.VISIBLE
     }
 
-    open fun hide() {
+    fun hide() {
         visibility = Visibility.HIDDEN
         view?.visibility = View.GONE
     }

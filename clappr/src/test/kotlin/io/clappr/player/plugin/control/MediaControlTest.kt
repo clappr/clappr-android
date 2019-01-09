@@ -9,10 +9,7 @@ import android.widget.RelativeLayout
 import io.clappr.player.BuildConfig
 import io.clappr.player.R
 import io.clappr.player.base.*
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
@@ -41,10 +38,10 @@ class MediaControlTest {
 
     @Before
     fun setUp() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
-        container = Container(Loader(), Options())
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        container = Container(Options())
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
 
         mediaControl = MediaControl(core)
 
@@ -297,7 +294,7 @@ class MediaControlTest {
     fun shouldUnregisterContainerEventsOnContainerChange() {
         mediaControl.state = Plugin.State.DISABLED
 
-        val newContainer = Container(Loader(), Options())
+        val newContainer = Container(Options())
         core.activeContainer = newContainer
 
         triggerEnableMediaControlEvent()
@@ -329,7 +326,7 @@ class MediaControlTest {
 
         assertEquals(Plugin.State.ENABLED, mediaControl.state)
 
-        core.activeContainer = Container(Loader(), Options())
+        core.activeContainer = Container(Options())
 
         oldContainer.trigger(InternalEvent.DISABLE_MEDIA_CONTROL.value)
 
@@ -359,14 +356,6 @@ class MediaControlTest {
         oldPlayback?.trigger(InternalEvent.ENABLE_MEDIA_CONTROL.value)
 
         assertHiddenView(mediaControl)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrder() {
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
@@ -407,36 +396,6 @@ class MediaControlTest {
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 0)
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
         assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderFollowedByOption() {
-        val sequence = "${FakePlugin3.name},${FakePlugin.name}"
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderWhenOptionsIsEmpty() {
-        val sequence = ""
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
-    }
-
-    @Test
-    fun shouldShowPluginsByRegisterOrderWhenOptionsIsInvalid() {
-        val sequence = "invalid"
-        setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
-
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin::class.java, FakePlugin.name, 0)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin2::class.java, FakePlugin2.name, 1)
-        assertOrderOfMediaControlPlugins(getBottomRightPanel(), FakePlugin3::class.java, FakePlugin3.name, 2)
     }
 
     @Test
@@ -484,11 +443,11 @@ class MediaControlTest {
         FakePlugin3.currentPanel = panel
         FakePlugin3.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin::class)
-        Loader.registerPlugin(FakePlugin2::class)
-        Loader.registerPlugin(FakePlugin3::class)
+        Loader.register(FakePlugin.entry)
+        Loader.register(FakePlugin2.entry)
+        Loader.register(FakePlugin3.entry)
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
         sequenceOption?.let {
             core.options[io.clappr.player.base.ClapprOption.MEDIA_CONTROL_PLUGINS.value] = it
         }
@@ -507,9 +466,9 @@ class MediaControlTest {
         FakePlugin.currentPanel = panel
         FakePlugin.currentPosition = position
 
-        Loader.registerPlugin(FakePlugin::class)
+        Loader.register(FakePlugin.entry)
 
-        core = Core(Loader(), Options())
+        core = Core(Options())
 
         mediaControl = MediaControl(core)
         mediaControl.render()
@@ -539,10 +498,10 @@ class MediaControlTest {
         container.trigger(InternalEvent.ENABLE_MEDIA_CONTROL.value)
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         override val state: State
@@ -551,9 +510,11 @@ class MediaControlTest {
         var fakeState: State = State.IDLE
     }
 
-    class FakePlugin(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin(core) })
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
@@ -568,9 +529,11 @@ class MediaControlTest {
         }
     }
 
-    class FakePlugin2(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin2(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin2"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin2(core) })
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
@@ -580,9 +543,11 @@ class MediaControlTest {
         override var position: Position = currentPosition
     }
 
-    class FakePlugin3(core: Core) : MediaControl.Plugin(core) {
+    class FakePlugin3(core: Core) : MediaControl.Plugin(core, name) {
         companion object : NamedType {
             override val name = "fakeMediaControlPlugin3"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> FakePlugin3(core) })
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE

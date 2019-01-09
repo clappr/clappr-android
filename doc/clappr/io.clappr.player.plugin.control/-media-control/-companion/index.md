@@ -8,5 +8,6 @@
 
 | Name | Summary |
 |---|---|
+| [entry](entry.md) | `val entry: `[`Core`](../../../io.clappr.player.plugin/-plugin-entry/-core/index.md) |
 | [modalPanelViewKey](modal-panel-view-key.md) | `const val modalPanelViewKey: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
+| [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

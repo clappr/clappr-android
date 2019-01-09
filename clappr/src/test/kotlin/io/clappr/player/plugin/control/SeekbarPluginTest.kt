@@ -5,22 +5,22 @@ import android.view.MotionEvent
 import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
+import io.clappr.player.components.*
+import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.assertHiddenView
+import io.clappr.player.plugin.assertVisibleView
+import io.clappr.player.plugin.setupViewVisible
+import io.clappr.player.shadows.ClapprShadowView
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
-import kotlin.test.assertTrue
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.*
-import io.clappr.player.shadows.ClapprShadowView
 import org.robolectric.internal.ShadowExtractor
+import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ClapprShadowView::class])
@@ -33,10 +33,10 @@ class SeekbarPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
 
         seekbarPlugin = SeekbarPlugin(core)
 
@@ -364,10 +364,10 @@ class SeekbarPluginTest {
         }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         var currentMediaType: MediaType = MediaType.VOD

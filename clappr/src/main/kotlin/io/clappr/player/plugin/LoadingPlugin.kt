@@ -10,15 +10,19 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
+class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
-    private var spinnerLayout: LinearLayout? = LinearLayout(context)
+    private var spinnerLayout: LinearLayout? = LinearLayout(applicationContext)
 
     companion object : NamedType {
         override val name = "spinner"
+
+        val entry = PluginEntry.Container(name = name, factory = { container -> LoadingPlugin(container) })
     }
 
     override var state: State = State.ENABLED
@@ -67,10 +71,10 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         spinnerLayout?.let {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(applicationContext, android.R.color.black))
             it.alpha = 0.7f
 
-            it.addView(ProgressBar(context))
+            it.addView(ProgressBar(applicationContext))
         }
     }
 

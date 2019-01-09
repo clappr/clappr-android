@@ -12,18 +12,20 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.asTimeInterval
+import io.clappr.player.plugin.PluginEntry
 
-open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
+open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core, name) {
 
     companion object : NamedType {
-        override val name: String?
-            get() = "timeIndicator"
+        override val name = "timeIndicator"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> TimeIndicatorPlugin(core) })
     }
 
     override var panel: Panel = Panel.BOTTOM
     override var position: Position = Position.LEFT
 
-    protected val textView by lazy { LayoutInflater.from(context).inflate(R.layout.time_indicator, null) as TextView }
+    protected val textView by lazy { LayoutInflater.from(applicationContext).inflate(R.layout.time_indicator, null) as TextView }
 
     override val view: View?
         get() = textView
@@ -66,7 +68,7 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core) {
     }
 
     override fun render() {
-        val height = context?.resources?.getDimensionPixelSize(R.dimen.time_indicator_height) ?: 0
+        val height = applicationContext.resources?.getDimensionPixelSize(R.dimen.time_indicator_height) ?: 0
         val layoutParams = LinearLayout.LayoutParams(WRAP_CONTENT, height)
         layoutParams.gravity = Gravity.CENTER_VERTICAL
         textView.layoutParams = layoutParams

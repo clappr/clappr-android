@@ -8,4 +8,5 @@
 
 | Name | Summary |
 |---|---|
+| [entry](entry.md) | `val entry: `[`Container`](../../-plugin-entry/-container/index.md) |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

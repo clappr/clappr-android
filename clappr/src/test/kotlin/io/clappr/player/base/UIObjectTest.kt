@@ -1,6 +1,5 @@
 package io.clappr.player.base
 
-import android.os.Bundle
 import io.clappr.player.BuildConfig
 import org.junit.Assert.*
 import org.junit.Test
@@ -14,7 +13,7 @@ import org.robolectric.shadows.ShadowApplication
 open class UIObjectTest {
     @Test
     fun shouldHandleEvents() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         val uiObject = UIObject()
         var callbackWasCalled = false
 

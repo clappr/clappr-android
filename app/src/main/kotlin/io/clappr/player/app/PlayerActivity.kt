@@ -59,9 +59,9 @@ class  PlayerActivity : Activity() {
     }
 
     private fun registerExternalPlugins() {
-        Loader.registerPlugin(NextVideoPlugin::class)
-        Loader.registerPlugin(VideoInfoPlugin::class)
-        Loader.registerPlugin(PlaybackStatusPlugin::class)
+        Loader.register(NextVideoPlugin.entry)
+        Loader.register(VideoInfoPlugin.entry)
+        Loader.register(PlaybackStatusPlugin.entry)
     }
 
     private fun loadVideo() {

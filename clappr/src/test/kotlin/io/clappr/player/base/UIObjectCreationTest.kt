@@ -15,19 +15,9 @@ import kotlin.test.assertNotNull
 open class UIObjectCreationTest {
     var context: Context? = null
 
-    @Before
-    fun setup() {
-        BaseObject.context = null
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun uiObjectWithoutContext() {
-        var uo = UIObject()
-    }
-
     @Test
     fun uiObjectCreation() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         val uo = UIObject()
         assertNotNull(uo.view, "invalid view")
     }
