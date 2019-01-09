@@ -2,7 +2,7 @@
 
 # UICorePlugin
 
-`open class UICorePlugin : `[`UIPlugin`](../../io.clappr.player.plugin/-u-i-plugin/index.md)
+`open class UICorePlugin : `[`CorePlugin`](../-core-plugin/index.md)`, `[`UIPlugin`](../../io.clappr.player.plugin/-u-i-plugin/index.md)
 
 ### Types
 
@@ -14,20 +14,24 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `UICorePlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`)` |
+| [&lt;init&gt;](-init-.md) | `UICorePlugin(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`, base: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md)` = UIObject(), name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = Companion.name)` |
 
 ### Properties
 
 | Name | Summary |
 |---|---|
-| [core](core.md) | `val core: `[`Core`](../../io.clappr.player.components/-core/index.md) |
+| [base](base.md) | `open val base: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [uiObject](ui-object.md) | `open val uiObject: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [visibility](visibility.md) | `open var visibility: `[`Visibility`](../../io.clappr.player.plugin/-u-i-plugin/-visibility/index.md) |
 
 ### Inherited Properties
 
 | Name | Summary |
 |---|---|
+| [applicationContext](../-core-plugin/application-context.md) | `val applicationContext: `[`Context`](https://developer.android.com/reference/android/content/Context.html) |
+| [core](../-core-plugin/core.md) | `val core: `[`Core`](../../io.clappr.player.components/-core/index.md) |
+| [name](../-core-plugin/name.md) | `open val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [view](../../io.clappr.player.plugin/-u-i-plugin/view.md) | `open val view: `[`View`](https://developer.android.com/reference/android/view/View.html)`?` |
-| [visibility](../../io.clappr.player.plugin/-u-i-plugin/visibility.md) | `open var visibility: `[`Visibility`](../../io.clappr.player.plugin/-u-i-plugin/-visibility/index.md) |
 
 ### Inherited Functions
 

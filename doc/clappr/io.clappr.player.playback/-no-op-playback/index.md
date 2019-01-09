@@ -4,12 +4,6 @@
 
 `class NoOpPlayback : `[`Playback`](../../io.clappr.player.components/-playback/index.md)
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [Companion](-companion/index.md) | `companion object Companion : `[`PlaybackSupportInterface`](../../io.clappr.player.components/-playback-support-interface/index.md) |
-
 ### Constructors
 
 | Name | Summary |
@@ -32,11 +26,13 @@
 | [mediaOptionList](../../io.clappr.player.components/-playback/media-option-list.md) | `var mediaOptionList: `[`LinkedList`](https://developer.android.com/reference/java/util/LinkedList.html)`<`[`MediaOption`](../../io.clappr.player.components/-media-option/index.md)`>` |
 | [mediaType](../../io.clappr.player.components/-playback/media-type.md) | `open val mediaType: `[`MediaType`](../../io.clappr.player.components/-playback/-media-type/index.md) |
 | [mimeType](../../io.clappr.player.components/-playback/mime-type.md) | `var mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
+| [name](../../io.clappr.player.components/-playback/name.md) | `open val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [options](../../io.clappr.player.components/-playback/options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [position](../../io.clappr.player.components/-playback/position.md) | `open val position: `[`Double`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html) |
 | [selectedMediaOptionList](../../io.clappr.player.components/-playback/selected-media-option-list.md) | `var selectedMediaOptionList: `[`ArrayList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-array-list/index.html)`<`[`MediaOption`](../../io.clappr.player.components/-media-option/index.md)`>` |
 | [source](../../io.clappr.player.components/-playback/source.md) | `var source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [state](../../io.clappr.player.components/-playback/state.md) | `open val state: `[`State`](../../io.clappr.player.components/-playback/-state/index.md) |
+| [supportsSource](../../io.clappr.player.components/-playback/supports-source.md) | `val supportsSource: `[`PlaybackSupportCheck`](../../io.clappr.player.components/-playback-support-check.md) |
 
 ### Inherited Functions
 
@@ -65,10 +61,6 @@
 
 | Name | Summary |
 |---|---|
-| [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-
-### Companion Object Functions
-
-| Name | Summary |
-|---|---|
-| [supportsSource](supports-source.md) | `fun supportsSource(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [entry](entry.md) | `val entry: `[`PlaybackEntry`](../../io.clappr.player.components/-playback-entry/index.md) |
+| [name](name.md) | `const val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [supportsSource](supports-source.md) | `val supportsSource: `[`PlaybackSupportCheck`](../../io.clappr.player.components/-playback-support-check.md) |

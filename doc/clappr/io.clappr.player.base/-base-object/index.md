@@ -42,11 +42,10 @@
 |---|---|
 | [CONTEXT_KEY](-c-o-n-t-e-x-t_-k-e-y.md) | `const val CONTEXT_KEY: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [USERDATA_KEY](-u-s-e-r-d-a-t-a_-k-e-y.md) | `const val USERDATA_KEY: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [context](context.md) | `var context: `[`Context`](https://developer.android.com/reference/android/content/Context.html)`?` |
+| [applicationContext](application-context.md) | `lateinit var applicationContext: `[`Context`](https://developer.android.com/reference/android/content/Context.html) |
 
 ### Inheritors
 
 | Name | Summary |
 |---|---|
-| [Plugin](../../io.clappr.player.plugin/-plugin/index.md) | `abstract class Plugin : `[`BaseObject`](./index.md)`, `[`NamedType`](../-named-type/index.md) |
 | [UIObject](../-u-i-object/index.md) | `open class UIObject : `[`BaseObject`](./index.md) |

@@ -2,4 +2,4 @@
 
 # visibility
 
-`open var visibility: `[`Visibility`](-visibility/index.md)
+`abstract var visibility: `[`Visibility`](-visibility/index.md)
