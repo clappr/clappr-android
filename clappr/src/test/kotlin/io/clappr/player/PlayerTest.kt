@@ -2,10 +2,9 @@ package io.clappr.player
 
 import android.os.Bundle
 import io.clappr.player.base.*
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
 import org.junit.Before
 import org.junit.Test
@@ -30,18 +29,12 @@ open class PlayerTest {
         Player.initialize(ShadowApplication.getInstance().applicationContext)
 
         Loader.clearPlaybacks()
-        Loader.registerPlugin(CoreTestPlugin::class)
-        Loader.registerPlayback(PlayerTestPlayback::class)
+        Loader.register(CoreTestPlugin.entry)
+        Loader.register(PlayerTestPlayback.entry)
 
         PlayerTestPlayback.internalState = Playback.State.NONE
 
         player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
-    }
-
-    @Test(expected = IllegalStateException::class)
-    fun instantiateWithoutContext() {
-        BaseObject.context = null
-        val invalidPlayer = Player()
     }
 
     @Test
@@ -313,14 +306,17 @@ open class PlayerTest {
         assertEquals(expectedDistinctCoreId, coreIdList.size)
     }
 
-    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object: PlaybackSupportInterface {
-            override val name: String = "player_test"
-            var internalState = State.NONE
+    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
+        companion object {
+            const val name: String = "player_test"
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source.isNotEmpty() }
 
-            override fun supportsSource(source: String, mimeType: String?): Boolean {
-                return source.isNotEmpty()
-            }
+            val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, mimeType, options -> PlayerTestPlayback(source, mimeType, options) })
+
+            var internalState = State.NONE
         }
 
         override val state: State
@@ -345,8 +341,9 @@ open class PlayerTest {
 
     class CoreTestPlugin(core: Core) : CorePlugin(core) {
         companion object : NamedType {
-            override val name: String?
-                get() = "coreTestPlugin"
+            override val name = "coreTestPlugin"
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> CoreTestPlugin(core) })
         }
 
         init {

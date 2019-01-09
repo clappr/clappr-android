@@ -3,10 +3,7 @@ package io.clappr.player.plugin.control
 import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import io.clappr.player.plugin.*
 import org.junit.Before
 import org.junit.Test
@@ -30,9 +27,9 @@ class FullscreenButtonTest {
 
     @Before
     fun setUp() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        container = Container(Options())
+        core = Core(Options())
         fullscreenButton = FullscreenButton(core)
 
         core.activeContainer = container
@@ -59,7 +56,7 @@ class FullscreenButtonTest {
 
         assertEquals(View.VISIBLE, fullscreenButton.view.visibility)
 
-        val newContainer = Container(Loader(), Options())
+        val newContainer = Container(Options())
         val newPlayback = FakePlayback(stateFake = Playback.State.PLAYING)
 
         newContainer.playback = newPlayback
@@ -254,10 +251,11 @@ class FullscreenButtonTest {
         core.trigger(Event.PLAYING.value)
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options(), var stateFake: State = State.PLAYING) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options(), var stateFake: State = State.PLAYING) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         override val state: State

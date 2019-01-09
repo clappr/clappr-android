@@ -21,15 +21,18 @@ open class PlaybackTest {
 
 
     class SomePlayback(source: String, options: Options = Options(),
-                       private val aMediaType: MediaType = MediaType.UNKNOWN) : Playback(source, null, options) {
-        companion object : PlaybackSupportInterface {
-            val validSource = "valid-source.mp4"
-            override val name = ""
+                       private val aMediaType: MediaType = MediaType.UNKNOWN) : Playback(source, null, options, name = name, supportsSource = supportsSource) {
+        companion object {
+            const val name = ""
 
-            @JvmStatic
-            override fun supportsSource(source: String, mimeType: String?): Boolean {
-                return source == validSource
-            }
+            const val validSource = "valid-source.mp4"
+
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
+
+            private val entry = PlaybackEntry(
+                    name = name,
+                    supportsSource = supportsSource,
+                    factory = { source, _, options -> SomePlayback(source, options) })
         }
 
         var playWasCalled = false
@@ -56,7 +59,7 @@ open class PlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
     }
 
     @Test(expected = IllegalArgumentException::class)

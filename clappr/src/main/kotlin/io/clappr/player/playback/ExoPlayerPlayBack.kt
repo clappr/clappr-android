@@ -33,17 +33,23 @@ import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import java.util.*
 import kotlin.math.min
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-    companion object : PlaybackSupportInterface {
-        private val tag: String = "ExoPlayerPlayback"
 
-        override fun supportsSource(source: String, mimeType: String?): Boolean {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+    companion object {
+        private const val tag: String = "ExoPlayerPlayback"
+
+        const val name = "exoplayerplayback"
+
+        val supportsSource: PlaybackSupportCheck = { source, _ ->
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
-            return type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
+            type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
         }
 
-        override val name: String = "exoplayerplayback"
+        val entry = PlaybackEntry(
+                name = name,
+                supportsSource = supportsSource,
+                factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
@@ -71,7 +77,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val formatIndexKey = "formatIndexKey"
     private var needSetupMediaOptions = true
 
-    private val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+    private val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
     private val drmScheme = C.WIDEVINE_UUID
@@ -270,7 +276,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun mediaSource(uri: Uri): MediaSource {
         val mediaType = Util.inferContentType(uri.lastPathSegment)
-        val dataSourceFactory = DefaultDataSourceFactory(context, "agent", bandwidthMeter)
+        val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
 
         when (mediaType) {
             C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
@@ -305,7 +311,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
-        val rendererFactory = DefaultRenderersFactory(context,
+        val rendererFactory = DefaultRenderersFactory(applicationContext,
                 buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
         return rendererFactory
     }
@@ -316,7 +322,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             return null
         }
 
-        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(context, context?.packageName), bandwidthMeter)
+        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(applicationContext, applicationContext.packageName), bandwidthMeter)
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
         var drmSessionManager : DrmSessionManager<FrameworkMediaCrypto>? = null
 

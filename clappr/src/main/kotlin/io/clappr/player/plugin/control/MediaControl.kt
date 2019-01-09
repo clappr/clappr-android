@@ -13,11 +13,14 @@ import io.clappr.player.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.PluginEntry
+import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
-class MediaControl(core: Core) : UICorePlugin(core) {
+class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
-    abstract class Plugin(core: Core) : UICorePlugin(core) {
+    abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
         enum class Position { LEFT, RIGHT, NONE }
 
@@ -37,10 +40,11 @@ class MediaControl(core: Core) : UICorePlugin(core) {
     }
 
     companion object : NamedType {
-        override val name: String?
-            get() = "mediaControl"
+        override val name = "mediaControl"
 
         const val modalPanelViewKey = "modalPanelView"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
     private val defaultShowTimeout = 300L
@@ -51,7 +55,7 @@ class MediaControl(core: Core) : UICorePlugin(core) {
     private var lastInteractionTime = 0L
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.media_control, null) as FrameLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }

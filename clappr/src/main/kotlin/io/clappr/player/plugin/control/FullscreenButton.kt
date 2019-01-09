@@ -6,12 +6,15 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
+import io.clappr.player.plugin.PluginEntry
 
 
-open class FullscreenButton(core: Core) : ButtonPlugin(core) {
+open class FullscreenButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
         override val name = "fullscreenButton"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> FullscreenButton(core) })
     }
 
     override var panel: Panel = Panel.BOTTOM
@@ -96,9 +99,9 @@ open class FullscreenButton(core: Core) : ButtonPlugin(core) {
 
     //Because full screen button is the last button
     private fun removeDefaultRightPadding() {
-        val leftPadding = context?.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding)
+        val leftPadding = applicationContext.resources?.getDimensionPixelOffset(R.dimen.bottom_panel_button_left_padding)
                 ?: 0
-        val verticalPadding = context?.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
+        val verticalPadding = applicationContext.resources?.getDimensionPixelOffset(R.dimen.fullscreen_button_vertical_padding)
                 ?: 0
         view.setPadding(leftPadding, verticalPadding, 0, verticalPadding)
     }

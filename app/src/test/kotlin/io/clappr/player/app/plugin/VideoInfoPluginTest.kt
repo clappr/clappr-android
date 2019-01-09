@@ -37,18 +37,18 @@ class VideoInfoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         val options = HashMap<String, Any>()
         options[VideoInfoPlugin.Option.TITLE.value] = title
         options[VideoInfoPlugin.Option.SUBTITLE.value] = subtitle
 
-        core = Core(Loader(), Options(source = source, options = options))
+        core = Core(Options(source = source, options = options))
 
         videoInfoPlugin = VideoInfoPlugin(core)
 
         //Trigger Container change events
-        val container = Container(core.loader, core.options)
+        val container = Container(core.options)
         core.activeContainer  = container
 
         //Trigger Playback change events
