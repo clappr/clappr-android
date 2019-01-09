@@ -7,6 +7,7 @@ io.clappr.player.base
 io.clappr.player.components
 io.clappr.player.extensions
 io.clappr.player.extensions.context
+io.clappr.player.interop
 io.clappr.player.log
 io.clappr.player.periodicTimer
 io.clappr.player.playback

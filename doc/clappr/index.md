@@ -9,6 +9,7 @@
 | [io.clappr.player.components](io.clappr.player.components/index.md) |  |
 | [io.clappr.player.extensions](io.clappr.player.extensions/index.md) |  |
 | [io.clappr.player.extensions.context](io.clappr.player.extensions.context/index.md) |  |
+| [io.clappr.player.interop](io.clappr.player.interop/index.md) |  |
 | [io.clappr.player.log](io.clappr.player.log/index.md) |  |
 | [io.clappr.player.periodicTimer](io.clappr.player.periodic-timer/index.md) |  |
 | [io.clappr.player.playback](io.clappr.player.playback/index.md) |  |
