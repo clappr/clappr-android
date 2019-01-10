@@ -60,9 +60,9 @@ class PosterPlugin(container: Container): UIContainerPlugin(container, name = na
 
     private fun bindEventListeners() {
         updatePoster()
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindPlaybackListeners() })
-        listenTo(container, Event.REQUEST_POSTER_UPDATE.value, Callback.wrap { it -> updatePoster(it) })
-        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) { bindPlaybackListeners() }
+        listenTo(container, Event.REQUEST_POSTER_UPDATE.value) { it -> updatePoster(it) }
+        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value) { updateImageUrlFromOptions() }
     }
 
     private fun bindPlaybackListeners() {
@@ -71,9 +71,9 @@ class PosterPlugin(container: Container): UIContainerPlugin(container, name = na
 
         container.playback?.let {
             playbackListenerIds.addAll(listOf(
-                listenTo(it, Event.PLAYING.value, Callback.wrap { _ -> hide() }),
-                listenTo(it, Event.DID_STOP.value, Callback.wrap { _ -> show() }),
-                listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> show() })
+                    listenTo(it, Event.PLAYING.value) { hide() },
+                    listenTo(it, Event.DID_STOP.value) { show() },
+                    listenTo(it, Event.DID_COMPLETE.value) { show() }
             ))
         }
     }

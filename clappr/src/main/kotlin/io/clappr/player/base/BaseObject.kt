@@ -10,18 +10,18 @@ import io.clappr.player.log.Logger
 
 open class BaseObject : EventInterface {
     companion object {
-        const val CONTEXT_KEY  = "clappr:baseobject:applicationContext"
+        const val CONTEXT_KEY = "clappr:baseobject:applicationContext"
         const val USERDATA_KEY = "clappr:baseobject:userdata"
 
         @JvmStatic
         lateinit var applicationContext: Context
     }
 
-    override val id =  Utils.uniqueId("o")
+    override val id = Utils.uniqueId("o")
 
     private var receivers: MutableMap<String, BroadcastReceiver> = hashMapOf()
 
-    override fun on(eventName: String, handler: Callback, obj: EventInterface): String {
+    override fun on(eventName: String, handler: EventHandler, obj: EventInterface): String {
         val listenId = createListenId(eventName, obj, handler)
 
         val broadcastManager = LocalBroadcastManager.getInstance(applicationContext)
@@ -33,7 +33,8 @@ open class BaseObject : EventInterface {
                     try {
                         handler.invoke(intent.getBundleExtra(USERDATA_KEY))
                     } catch (error: Exception) {
-                        Logger.error(BaseObject::class.java.simpleName,
+                        Logger.error(
+                                BaseObject::class.java.simpleName,
                                 "Plugin ${handler.javaClass.name} crashed during invocation of event $eventName",
                                 error)
                     }
@@ -46,9 +47,9 @@ open class BaseObject : EventInterface {
         return listenId
     }
 
-    override fun once(eventName: String, handler: Callback, obj: EventInterface) : String {
+    override fun once(eventName: String, handler: EventHandler, obj: EventInterface): String {
         var listenId: String? = null
-        var onceCallback = Callback.wrap { bundle : Bundle? ->
+        val onceCallback: EventHandler = { bundle ->
             off(listenId!!)
             handler.invoke(bundle)
         }
@@ -64,7 +65,7 @@ open class BaseObject : EventInterface {
         }
     }
 
-    override fun listenTo(obj: EventInterface, eventName: String, handler: Callback) : String {
+    override fun listenTo(obj: EventInterface, eventName: String, handler: EventHandler): String {
         return on(eventName, handler, obj)
     }
 
@@ -89,7 +90,7 @@ open class BaseObject : EventInterface {
         broadcastManager.sendBroadcastSync(intent)
     }
 
-    private fun createListenId(eventName: String, baseObject: EventInterface, handler: Callback) : String {
+    private fun createListenId(eventName: String, baseObject: EventInterface, handler: EventHandler): String {
         return eventName + baseObject.hashCode() + handler.hashCode()
     }
 }

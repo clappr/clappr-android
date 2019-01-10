@@ -211,7 +211,7 @@ abstract class Playback(
     override fun render(): UIObject {
         if (mediaType != MediaType.LIVE) configureStartAt()
 
-        if (!play()) once(Event.READY.value, Callback.wrap { play() })
+        if (!play()) once(Event.READY.value, { play() })
 
         return this
     }
@@ -222,11 +222,11 @@ abstract class Playback(
 
     private fun configureStartAt() {
         if (options.containsKey(ClapprOption.START_AT.value))
-            once(Event.READY.value, Callback.wrap {
+            once(Event.READY.value) {
                 (options[ClapprOption.START_AT.value] as? Number)?.let {
                     startAt(it.toInt())
                 }
                 options.remove(ClapprOption.START_AT.value)
-            })
+            }
     }
 }

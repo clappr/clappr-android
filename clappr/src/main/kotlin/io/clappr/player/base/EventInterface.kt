@@ -2,34 +2,27 @@ package io.clappr.player.base
 
 import android.os.Bundle
 
-interface Callback {
-    companion object {
-        inline fun wrap(crossinline callback: (Bundle?) -> Unit) = object: Callback {
-            override fun invoke(bundle: Bundle?) = callback(bundle)
-        }
-    }
-    fun invoke(bundle: Bundle?)
-}
+typealias EventHandler = (Bundle?) -> Unit
 
 interface EventInterface {
     val id : String
 
-    fun on(eventName: String, handler: Callback, obj: EventInterface) : String
-    fun once(eventName: String, handler: Callback, obj: EventInterface) : String
+    fun on(eventName: String, handler: EventHandler, obj: EventInterface) : String
+    fun once(eventName: String, handler: EventHandler, obj: EventInterface) : String
     fun off(listenId: String)
 
     fun trigger(eventName: String, userData: Bundle?)
 
-    fun listenTo(obj: EventInterface, eventName: String, handler: Callback) : String
+    fun listenTo(obj: EventInterface, eventName: String, handler: EventHandler) : String
     fun stopListening(listenId: String?)
 
     // Manual overloads for Java Interoperability (Kotlin interfaces don't generate Java overloads
     // for default parameter values)
-    fun on(eventName: String, handler: Callback) : String {
+    fun on(eventName: String, handler: EventHandler) : String {
         return on(eventName, handler, this)
     }
 
-    fun once(eventName: String, handler: Callback) : String {
+    fun once(eventName: String, handler: EventHandler) : String {
         return once(eventName, handler, this)
     }
 

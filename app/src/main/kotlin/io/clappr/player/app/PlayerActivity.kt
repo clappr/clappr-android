@@ -12,11 +12,14 @@ import io.clappr.player.Player
 import io.clappr.player.app.plugin.NextVideoPlugin
 import io.clappr.player.app.plugin.PlaybackStatusPlugin
 import io.clappr.player.app.plugin.VideoInfoPlugin
-import io.clappr.player.base.*
+import io.clappr.player.base.ErrorInfo
+import io.clappr.player.base.ErrorInfoData
+import io.clappr.player.base.Event
+import io.clappr.player.base.Options
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 
-class  PlayerActivity : Activity() {
+class PlayerActivity : Activity() {
 
     private lateinit var player: Player
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
@@ -38,18 +41,22 @@ class  PlayerActivity : Activity() {
         registerExternalPlugins()
 
         player = Player()
-        player.on(Event.WILL_PLAY.value, Callback.wrap { Logger.info("App", "Will Play") })
-        player.on(Event.PLAYING.value, Callback.wrap { Logger.info("App","Playing") })
-        player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("App", "Completed") })
-        player.on(Event.DID_UPDATE_BUFFER.value, Callback.wrap { bundle: Bundle? -> Logger.info("App","Buffer update: ${bundle?.getDouble("percentage")}") })
-        player.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { Logger.info("App","Enter full screen"); enterFullscreen() })
-        player.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { Logger.info("App","Exit full screen"); exitFullscreen() })
+        player.on(Event.WILL_PLAY.value) { Logger.info("App", "Will Play") }
+        player.on(Event.PLAYING.value) { Logger.info("App", "Playing") }
+        player.on(Event.DID_COMPLETE.value) { Logger.info("App", "Completed") }
+        player.on(Event.DID_UPDATE_BUFFER.value) { bundle: Bundle? ->
+            Logger.info("App", "Buffer update: ${bundle?.getDouble("percentage")}")
+        }
+        player.on(Event.REQUEST_FULLSCREEN.value) { Logger.info("App", "Enter full screen"); enterFullscreen() }
+        player.on(Event.EXIT_FULLSCREEN.value) { Logger.info("App", "Exit full screen"); exitFullscreen() }
 
-        player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
+        player.on(Event.ERROR.value) { bundle: Bundle? ->
             bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
-                Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
+                Logger.error(
+                        "App", "Error: ${it.code} ${it.message}",
+                        (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
             }
-        })
+        }
 
         val fragmentTransaction = fragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.player_container, player)

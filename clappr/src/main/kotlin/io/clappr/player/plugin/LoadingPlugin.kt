@@ -5,8 +5,8 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
+import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
@@ -38,7 +38,7 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = 
     }
 
     private fun bindEventListeners() {
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) { bindLoadingVisibilityCallBacks() }
     }
 
     private fun bindLoadingVisibilityCallBacks() {
@@ -60,8 +60,8 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = 
         playbackListenerIds.clear()
     }
 
-    private fun startAnimating(): Callback {
-        return Callback.wrap {
+    private fun startAnimating(): EventHandler {
+        return {
             spinnerLayout?.visibility = View.VISIBLE
             visibility = Visibility.VISIBLE
         }
@@ -78,8 +78,8 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = 
         }
     }
 
-    private fun stopAnimating(): Callback {
-        return Callback.wrap {
+    private fun stopAnimating(): EventHandler {
+        return {
             spinnerLayout?.visibility = View.INVISIBLE
             visibility = Visibility.HIDDEN
         }

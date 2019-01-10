@@ -81,8 +81,7 @@ class SeekbarPluginTest {
     fun shouldTriggerDidUpdateInteractingEventWhenTouchDownEventHappens() {
         var didUpdateInteractingCalled = false
 
-        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value,
-                Callback.wrap { didUpdateInteractingCalled = true })
+        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { didUpdateInteractingCalled = true }
 
         val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
 
@@ -159,7 +158,8 @@ class SeekbarPluginTest {
 
     @Test
     fun shouldUpdateViewVisibilityToVisibleWhenUserTouchSeekbarAndVideoIsVOD() {
-        assertViewVisibilityWhenTouchEventHappens(View.VISIBLE, Playback.MediaType.VOD, Playback.State.PLAYING, View.GONE)
+        assertViewVisibilityWhenTouchEventHappens(
+                View.VISIBLE, Playback.MediaType.VOD, Playback.State.PLAYING, View.GONE)
     }
 
     @Test
@@ -297,10 +297,11 @@ class SeekbarPluginTest {
         assertEquals(View.VISIBLE, seekbarPlugin.view.visibility)
     }
 
-    private fun assertViewVisibilityWhenTouchEventHappens(expectedViewVisibility: Int,
-                                                          mediaType: Playback.MediaType,
-                                                          playbackState: Playback.State,
-                                                          currentViewVisibility : Int = View.VISIBLE) {
+    private fun assertViewVisibilityWhenTouchEventHappens(
+            expectedViewVisibility: Int,
+            mediaType: Playback.MediaType,
+            playbackState: Playback.State,
+            currentViewVisibility: Int = View.VISIBLE) {
         val motionEvent = MotionEvent.obtain(
                 0, 0, MotionEvent.ACTION_DOWN, 0.0f, 0.0f, 0)
 
@@ -322,9 +323,10 @@ class SeekbarPluginTest {
         return seekbarPlugin.view.dispatchTouchEvent(motionEvent)
     }
 
-    private fun assertViewVisibilityOnRender(playbackMediaType: Playback.MediaType,
-                                             playbackState: Playback.State,
-                                             expectedViewVisibility: Int) {
+    private fun assertViewVisibilityOnRender(
+            playbackMediaType: Playback.MediaType,
+            playbackState: Playback.State,
+            expectedViewVisibility: Int) {
         setupFakePlayback(playbackMediaType, playbackState)
         seekbarPlugin.render()
         assertEquals(expectedViewVisibility, seekbarPlugin.view.visibility)
@@ -352,10 +354,11 @@ class SeekbarPluginTest {
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
     }
 
-    private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,
-                                  state: Playback.State = Playback.State.PLAYING,
-                                  duration: Double = 0.0,
-                                  position: Double = 0.0) {
+    private fun setupFakePlayback(
+            mediaType: Playback.MediaType = Playback.MediaType.VOD,
+            state: Playback.State = Playback.State.PLAYING,
+            duration: Double = 0.0,
+            position: Double = 0.0) {
         (container.playback as FakePlayback).apply {
             currentMediaType = mediaType
             currentPlaybackState = state
@@ -364,7 +367,8 @@ class SeekbarPluginTest {
         }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) :
+            Playback(source, mimeType, options, name, supportsSource) {
         companion object {
             const val name = "fakePlayback"
             val supportsSource: PlaybackSupportCheck = { _, _ -> true }

@@ -7,7 +7,7 @@
 | [io.clappr.player.components.AudioLanguage](../io.clappr.player.components/-audio-language/index.md) |  |
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
-| [io.clappr.player.base.Callback](../io.clappr.player.base/-callback/index.md) |  |
+| [io.clappr.player.interop.Callback](../io.clappr.player.interop/-callback.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
 | [io.clappr.player.components.Container](../io.clappr.player.components/-container/index.md) |  |
 | [io.clappr.player.plugin.container.ContainerPlugin](../io.clappr.player.plugin.container/-container-plugin/index.md) |  |
@@ -22,6 +22,7 @@
 | [io.clappr.player.base.ErrorInfoData](../io.clappr.player.base/-error-info-data/index.md) | Event bundle data keys for error info |
 | [io.clappr.player.base.Event](../io.clappr.player.base/-event/index.md) |  |
 | [io.clappr.player.base.EventData](../io.clappr.player.base/-event-data/index.md) | Event bundle data keys for selected Events |
+| [io.clappr.player.base.EventHandler](../io.clappr.player.base/-event-handler.md) |  |
 | [io.clappr.player.base.EventInterface](../io.clappr.player.base/-event-interface/index.md) |  |
 | [io.clappr.player.playback.ExoPlayerPlayback](../io.clappr.player.playback/-exo-player-playback/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
