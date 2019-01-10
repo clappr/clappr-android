@@ -4,13 +4,6 @@
 
 `enum class MediaOptionType`
 
-### Types
-
-| Name | Summary |
-|---|---|
-| [Audio](-audio/index.md) | `enum class ~~Audio~~` |
-| [Language](-language/index.md) | `enum class ~~Language~~` |
-
 ### Enum Values
 
 | Name | Summary |

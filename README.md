@@ -71,7 +71,7 @@ dependencies {
     implementation "com.android.support:support-v4:27.1.1"
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 
-    implementation "io.clappr.player:clappr:0.10.0"
+    implementation "io.clappr.player:clappr:0.12.0"
     ...
 }
 ```
