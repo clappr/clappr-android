@@ -71,7 +71,7 @@ dependencies {
     implementation "com.android.support:support-v4:27.1.1"
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 
-    implementation "io.clappr.player:clappr:0.10.0"
+    implementation "io.clappr.player:clappr:0.12.0"
     ...
 }
 ```
@@ -124,8 +124,8 @@ The Player events are described by [Event class](doc/clappr/io.clappr.player.bas
 
 For example, to listen the event when the video starts playing, and the event when the video ends successfully: 
 ``` java
-player.on(Event.PLAYING.value, Callback.wrap { Logger.info("App","Playing") })
-player.on(Event.DID_COMPLETE.value, Callback.wrap { Logger.info("App", "Completed") })
+player.on(Event.PLAYING.value) { Logger.info("App","Playing") }
+player.on(Event.DID_COMPLETE.value) { Logger.info("App", "Completed") }
 ```
 
 #### Options
@@ -142,11 +142,11 @@ player.configure(Options(source = "http://clappr.io/highline.mp4", options = opt
 
 All errors are reported through the `Event.Error` event. This event includes an `ErrorInfo` in its `Bundle`.
 ``` java
-player.on(Event.ERROR.value, Callback.wrap { bundle: Bundle? ->
+player.on(Event.ERROR.value) { bundle: Bundle? ->
             bundle?.getParcelable<ErrorInfo>(Event.ERROR.value)?.let {
                 Logger.error("App","Error: ${it.code} ${it.message}", (it.extras?.getSerializable(ErrorInfoData.EXCEPTION.value) as? Exception))
             }
-        })
+        }
 ```
 
 Generic error codes (`UNKNOWN_ERROR` and `PLAYBACK_ERROR`) are also provided in [ErrorCode class](doc/clappr/io.clappr.player.base/-error-code/index.md):
@@ -161,8 +161,8 @@ Application must handle all fullscreen transitions and behavior.
 
 Player provides two events to indicate that the user has requested fullscreen transition:
 ``` java
-player.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { enterFullscreen() })
-player.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { exitFullscreen() })
+player.on(Event.REQUEST_FULLSCREEN.value) { enterFullscreen() }
+player.on(Event.EXIT_FULLSCREEN.value) { exitFullscreen() }
 ```
 
 ## [API Documentation](doc/clappr/index.md)

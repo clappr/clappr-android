@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import android.view.View
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
@@ -184,7 +183,7 @@ class MediaPlayerPlayback(source: String, mimeType: String? = null, options: Opt
 
     override fun render() : UIObject {
         if (!play()) {
-            this.once(Event.READY.value, Callback.wrap { _: Bundle? -> play() })
+            this.once(Event.READY.value, { _: Bundle? -> play() })
         }
 
         return this

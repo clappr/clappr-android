@@ -10,10 +10,6 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
-import io.clappr.player.playback.ExoPlayerPlayback
-import io.clappr.player.playback.NoOpPlayback
-import io.clappr.player.plugin.Loader
-import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
 
@@ -85,12 +81,12 @@ open class Player(private val base: BaseObject = BaseObject(),
             field = value
             updateCoreFullScreenStatus()
             core?.let {
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> unbindPlaybackEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> bindPlaybackEvents() })
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> unbindContainerEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> bindContainerEvents() })
-                it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
-                it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, { _ -> unbindPlaybackEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { _ -> bindPlaybackEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, { _ -> unbindContainerEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, { _ -> bindContainerEvents() })
+                it.on(Event.REQUEST_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
+                it.on(Event.EXIT_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
 
                 if (it.activeContainer != null) {
                     bindContainerEvents()
@@ -251,7 +247,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
@@ -264,7 +260,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
-            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 

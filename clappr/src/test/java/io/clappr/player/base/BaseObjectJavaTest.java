@@ -2,8 +2,6 @@ package io.clappr.player.base;
 
 import android.os.Bundle;
 
-import io.clappr.player.BuildConfig;
-
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,6 +9,10 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowApplication;
+
+import io.clappr.player.BuildConfig;
+import io.clappr.player.interop.Callback;
+import kotlin.Unit;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -26,9 +28,10 @@ public class BaseObjectJavaTest {
 
     static final Callback callback = new Callback() {
         @Override
-        public void invoke(@Nullable Bundle bundle) {
+        public Unit invoke(@Nullable Bundle bundle) {
             callbackWasCalled = true;
             ++callbackCalls;
+            return null;
         }
     };
 

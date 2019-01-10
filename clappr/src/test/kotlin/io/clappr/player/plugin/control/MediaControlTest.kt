@@ -194,10 +194,10 @@ class MediaControlTest {
 
         var resultBundle: Bundle? = null
 
-        core.on(InternalEvent.DID_OPEN_MODAL_PANEL.value, Callback.wrap { bundle ->
+        core.on(InternalEvent.DID_OPEN_MODAL_PANEL.value) { bundle ->
             didOpenModalPanelEventWasSent = true
             resultBundle = bundle
-        })
+        }
 
         triggerOpenModalPanelEvent()
 

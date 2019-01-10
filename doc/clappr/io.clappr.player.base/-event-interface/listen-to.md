@@ -2,4 +2,4 @@
 
 # listenTo
 
-`abstract fun listenTo(obj: `[`EventInterface`](index.md)`, eventName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, handler: `[`Callback`](../-callback/index.md)`): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)
+`abstract fun listenTo(obj: `[`EventInterface`](index.md)`, eventName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, handler: `[`EventHandler`](../-event-handler.md)`): `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)

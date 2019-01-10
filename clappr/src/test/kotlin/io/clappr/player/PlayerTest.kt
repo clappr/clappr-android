@@ -1,20 +1,25 @@
 package io.clappr.player
 
 import android.os.Bundle
-import io.clappr.player.base.*
-import io.clappr.player.components.*
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackEntry
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
+import org.junit.Assert.*
 import org.junit.Before
+import org.junit.Ignore
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
-
-import org.junit.Assert.*
-import org.junit.Ignore
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23])
@@ -49,7 +54,8 @@ open class PlayerTest {
         assertFalse("load enabled", player.load(""))
     }
 
-    @Ignore @Test
+    @Ignore
+    @Test
     fun shouldHaveInvalidStatesWithUnsupportedMedia() {
         player.configure(Options(source = ""))
 
@@ -82,8 +88,8 @@ open class PlayerTest {
     fun shouldTriggerEvents() {
         var willPauseCalled = false
         var didPauseCalled = false
-        player.on(Event.WILL_PAUSE.value, Callback.wrap { willPauseCalled = true })
-        player.on(Event.DID_PAUSE.value, Callback.wrap { didPauseCalled = true })
+        player.on(Event.WILL_PAUSE.value) { willPauseCalled = true }
+        player.on(Event.DID_PAUSE.value) { didPauseCalled = true }
 
         player.configure(Options(source = "valid"))
         player.pause()
@@ -116,8 +122,8 @@ open class PlayerTest {
         var willPauseCalled = false
         var didPauseCalled = false
 
-        player.on(Event.WILL_PAUSE.value, Callback.wrap { willPauseCalled = true })
-        player.on(Event.DID_PAUSE.value, Callback.wrap { didPauseCalled = true })
+        player.on(Event.WILL_PAUSE.value, { willPauseCalled = true })
+        player.on(Event.DID_PAUSE.value, { didPauseCalled = true })
 
         player.configure(Options(source = "valid"))
         player.pause()
@@ -155,16 +161,16 @@ open class PlayerTest {
         val expectedSecondOption = "second option"
 
         var option = ""
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent, { bundle ->
             bundle?.let { option = it.getString("option") }
         })
 
-        player.configure(Options(source="123", options=hashMapOf("test_option" to expectedFirstOption)))
+        player.configure(Options(source = "123", options = hashMapOf("test_option" to expectedFirstOption)))
         player.play()
 
         assertEquals(expectedFirstOption, option)
 
-        player.configure(Options(source="321", options=hashMapOf("test_option" to expectedSecondOption)))
+        player.configure(Options(source = "321", options = hashMapOf("test_option" to expectedSecondOption)))
         player.play()
 
         assertEquals(expectedSecondOption, option)
@@ -181,11 +187,11 @@ open class PlayerTest {
         val expectedSecondMimeType = "other-mimeType"
 
         var mimeType = ""
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent) { bundle ->
             bundle?.let {
                 mimeType = it.getString("mimeType")
             }
-        })
+        }
 
         player.configure(Options(source = "123", mimeType = expectedFirstMimeType))
         player.play()
@@ -209,11 +215,11 @@ open class PlayerTest {
         val expectedSecondMimeType = "other-mimeType"
 
         var mimeType = ""
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent) { bundle ->
             bundle?.let {
                 mimeType = it.getString("mimeType")
             }
-        })
+        }
 
         player.configure(Options(source = "123", mimeType = expectedFirstMimeType))
         player.play()
@@ -237,18 +243,18 @@ open class PlayerTest {
         val expectedSecondSource = "other-source"
 
         var sourceToPlay = ""
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent) { bundle ->
             bundle?.let {
                 sourceToPlay = it.getString("source")
             }
-        })
+        }
 
-        player.configure(Options(source=expectedFirstSource))
+        player.configure(Options(source = expectedFirstSource))
         player.play()
 
         assertEquals(expectedFirstSource, sourceToPlay)
 
-        player.configure(Options(source=expectedSecondSource))
+        player.configure(Options(source = expectedSecondSource))
         player.play()
 
         assertEquals(expectedSecondSource, sourceToPlay)
@@ -265,18 +271,18 @@ open class PlayerTest {
         val expectedSecondSource = "other-source"
 
         var sourceToPlay = ""
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent) { bundle ->
             bundle?.let {
                 sourceToPlay = it.getString("source")
             }
-        })
+        }
 
-        player.configure(Options(source=expectedFirstSource))
+        player.configure(Options(source = expectedFirstSource))
         player.play()
 
         assertEquals(expectedFirstSource, sourceToPlay)
 
-        player.load(source=expectedSecondSource)
+        player.load(source = expectedSecondSource)
         player.play()
 
         assertEquals(expectedSecondSource, sourceToPlay)
@@ -293,9 +299,9 @@ open class PlayerTest {
         val expectedDistinctCoreId = 1
 
         val coreIdList = mutableSetOf<String>()
-        player.on(playerTestEvent, Callback.wrap { bundle ->
+        player.on(playerTestEvent) { bundle ->
             bundle?.let { coreIdList.add(it.getString("coreId")) }
-        })
+        }
 
         player.configure(Options(source = "123"))
         player.play()
@@ -306,7 +312,8 @@ open class PlayerTest {
         assertEquals(expectedDistinctCoreId, coreIdList.size)
     }
 
-    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
+    class PlayerTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) :
+            Playback(source, mimeType, options, name = name, supportsSource = supportsSource) {
         companion object {
             const val name: String = "player_test"
             val supportsSource: PlaybackSupportCheck = { source, _ -> source.isNotEmpty() }
@@ -325,13 +332,19 @@ open class PlayerTest {
         override val duration: Double = 1.0
         override val position: Double = 0.0
 
-        override fun stop(): Boolean { return true }
-        override fun seek(seconds: Int): Boolean { return true }
+        override fun stop(): Boolean {
+            return true
+        }
+
+        override fun seek(seconds: Int): Boolean {
+            return true
+        }
 
         override fun play(): Boolean {
             trigger(Event.WILL_PLAY.value)
             return true
         }
+
         override fun pause(): Boolean {
             trigger(Event.WILL_PAUSE.value)
             trigger(Event.DID_PAUSE.value)
@@ -347,13 +360,13 @@ open class PlayerTest {
         }
 
         init {
-            listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindPlaybackEvents() })
+            listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { bindPlaybackEvents() })
         }
 
         private fun bindPlaybackEvents() {
-            core.activePlayback?.let {
-                listenTo(it, Event.WILL_PLAY.value, Callback.wrap { _ ->
-                    it.trigger("playerTestEvent", Bundle().apply {
+            core.activePlayback?.let { playback ->
+                listenTo(playback, Event.WILL_PLAY.value) {
+                    playback.trigger("playerTestEvent", Bundle().apply {
                         putString("source", core.options.source)
                         putString("mimeType", core.options.mimeType)
                         putString("coreId", core.id)
@@ -361,7 +374,7 @@ open class PlayerTest {
                             putString("option", testOption as String)
                         }
                     })
-                })
+                }
             }
         }
     }

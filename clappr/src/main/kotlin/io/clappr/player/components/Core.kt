@@ -2,12 +2,11 @@ package io.clappr.player.components
 
 import android.os.Bundle
 import android.widget.FrameLayout
-import io.clappr.player.base.Callback
 import io.clappr.player.base.InternalEvent
-import io.clappr.player.plugin.Loader
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.log.Logger
+import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -50,12 +49,12 @@ class Core(options: Options) : UIObject() {
                 field = value
 
                 activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                                    Callback.wrap { bundle: Bundle? ->
+                                    { bundle: Bundle? ->
                                         trigger(
                                                 InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
                                     })
                 activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                                    Callback.wrap { bundle: Bundle? ->
+                                    { bundle: Bundle? ->
                                         trigger(
                                                 InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
                                     })
