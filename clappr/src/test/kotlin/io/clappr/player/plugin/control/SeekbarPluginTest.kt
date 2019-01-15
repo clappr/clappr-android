@@ -16,7 +16,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.internal.ShadowExtractor
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -333,8 +333,8 @@ class SeekbarPluginTest {
     }
 
     private fun setupViewWidth(backgroundViewWidth: Int, scrubberViewWidth: Int) {
-        (ShadowExtractor.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
-        (ShadowExtractor.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
+        (Shadow.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
+        (Shadow.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
     }
 
     private fun assertActionNotUpdateView(event: Int) {
