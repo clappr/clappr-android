@@ -76,6 +76,17 @@ dependencies {
 }
 ```
 
+Clappr supports Java 8 resources, so it is necessary to add Java 8 compatibility in `project/build.gradle`.
+```
+android {
+  ...
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
+}
+```
+
 For both local and remote reference, you can see how [Sample app](app/) works.
 
 ### Initialization
