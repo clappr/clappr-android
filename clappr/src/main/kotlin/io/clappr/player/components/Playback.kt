@@ -92,6 +92,12 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     open val isDvrInUse: Boolean
         get() = false
 
+    open val bitrate: Int?
+        get() = 0
+
+    open val avgBitrate: Long
+        get() = 0
+
     open val currentDate: Long? = null
 
     open val currentTime: Long? = null
