@@ -6,10 +6,7 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
+import io.clappr.player.components.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,10 +25,10 @@ class LoadingPluginTest {
 
     @Before
     fun setUp() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
         loadingPlugin = LoadingPlugin(container)
 
         core.activeContainer = container
@@ -154,10 +151,10 @@ class LoadingPluginTest {
         assertEquals(UIPlugin.Visibility.HIDDEN, loadingPlugin.visibility)
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
     }
 }

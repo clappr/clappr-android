@@ -5,23 +5,24 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.*
 import io.clappr.player.R
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.plugin.PluginEntry
 
-open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
+open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core, name) {
 
     companion object : NamedType {
-        override val name: String?
-            get() = "seekbar"
+        override val name = "seekbar"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> SeekbarPlugin(core) })
     }
 
     override var panel = Panel.BOTTOM
 
-    override val view by lazy { LayoutInflater.from(context).inflate(R.layout.seekbar_plugin, null) as ViewGroup }
+    override val view by lazy { LayoutInflater.from(applicationContext).inflate(R.layout.seekbar_plugin, null) as ViewGroup }
 
     open val backgroundView by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -40,9 +41,9 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
 
 
     init {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { bindEventListeners() })
-        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
-        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, Callback.wrap { updatePositionOnResize() })
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { bindEventListeners() })
+        listenTo(core, InternalEvent.DID_ENTER_FULLSCREEN.value, { updatePositionOnResize() })
+        listenTo(core, InternalEvent.DID_EXIT_FULLSCREEN.value, { updatePositionOnResize() })
     }
 
     override fun render() {
@@ -55,10 +56,10 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core) {
         updateLiveStatus()
         stopPlaybackListeners()
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, Callback.wrap { _ -> bindEventListeners() }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_BUFFER.value, Callback.wrap { bundle -> updateBuffered(bundle) }))
-            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, Callback.wrap { bundle -> updatePosition(bundle) }))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> hide() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_LOAD_SOURCE.value, { _ -> bindEventListeners() }))
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_BUFFER.value, { bundle -> updateBuffered(bundle) }))
+            playbackListenerIds.add(listenTo(it, Event.DID_UPDATE_POSITION.value, { bundle -> updatePosition(bundle) }))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, { _ -> hide() }))
         }
     }
 

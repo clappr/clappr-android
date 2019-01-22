@@ -5,20 +5,24 @@ import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
+import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
+class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
-    private var spinnerLayout: LinearLayout? = LinearLayout(context)
+    private var spinnerLayout: LinearLayout? = LinearLayout(applicationContext)
 
     companion object : NamedType {
         override val name = "spinner"
+
+        val entry = PluginEntry.Container(name = name, factory = { container -> LoadingPlugin(container) })
     }
 
     override var state: State = State.ENABLED
@@ -34,7 +38,7 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
     }
 
     private fun bindEventListeners() {
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindLoadingVisibilityCallBacks() })
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) { bindLoadingVisibilityCallBacks() }
     }
 
     private fun bindLoadingVisibilityCallBacks() {
@@ -56,8 +60,8 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         playbackListenerIds.clear()
     }
 
-    private fun startAnimating(): Callback {
-        return Callback.wrap {
+    private fun startAnimating(): EventHandler {
+        return {
             spinnerLayout?.visibility = View.VISIBLE
             visibility = Visibility.VISIBLE
         }
@@ -67,15 +71,15 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container) {
         spinnerLayout?.let {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this, android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(applicationContext, android.R.color.black))
             it.alpha = 0.7f
 
-            it.addView(ProgressBar(context))
+            it.addView(ProgressBar(applicationContext))
         }
     }
 
-    private fun stopAnimating(): Callback {
-        return Callback.wrap {
+    private fun stopAnimating(): EventHandler {
+        return {
             spinnerLayout?.visibility = View.INVISIBLE
             visibility = Visibility.HIDDEN
         }

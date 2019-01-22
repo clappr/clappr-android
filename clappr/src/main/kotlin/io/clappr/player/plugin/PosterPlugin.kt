@@ -13,23 +13,26 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Playback
 import io.clappr.player.log.Logger
+import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.container.UIContainerPlugin
 import okhttp3.OkHttpClient
 
-class PosterPlugin(container: Container): UIContainerPlugin(container) {
+class PosterPlugin(container: Container): UIContainerPlugin(container, name = name) {
 
-    private val posterLayout = LinearLayout(context)
+    private val posterLayout = LinearLayout(applicationContext)
 
-    private val imageView = ImageView(context)
+    private val imageView = ImageView(applicationContext)
 
     private var posterImageUrl: String? = null
 
     companion object : NamedType {
         override val name = "poster"
 
+        val entry = PluginEntry.Container(name = name, factory = { container -> PosterPlugin(container) })
+
         private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         private val picasso: Picasso by lazy {
-            Picasso.Builder(context).downloader(OkHttp3Downloader(httpClient))
+            Picasso.Builder(BaseObject.applicationContext).downloader(OkHttp3Downloader(httpClient))
                 .listener{ _, uri, _ -> Logger.error(message = "Failed to load image: $uri") }
                 .build()
         }
@@ -57,9 +60,9 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
     private fun bindEventListeners() {
         updatePoster()
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap { bindPlaybackListeners() })
-        listenTo(container, Event.REQUEST_POSTER_UPDATE.value, Callback.wrap { it -> updatePoster(it) })
-        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value, Callback.wrap { updateImageUrlFromOptions() })
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) { bindPlaybackListeners() }
+        listenTo(container, Event.REQUEST_POSTER_UPDATE.value) { it -> updatePoster(it) }
+        listenTo(container, InternalEvent.DID_UPDATE_OPTIONS.value) { updateImageUrlFromOptions() }
     }
 
     private fun bindPlaybackListeners() {
@@ -68,9 +71,9 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
 
         container.playback?.let {
             playbackListenerIds.addAll(listOf(
-                listenTo(it, Event.PLAYING.value, Callback.wrap { _ -> hide() }),
-                listenTo(it, Event.DID_STOP.value, Callback.wrap { _ -> show() }),
-                listenTo(it, Event.DID_COMPLETE.value, Callback.wrap { _ -> show() })
+                    listenTo(it, Event.PLAYING.value) { hide() },
+                    listenTo(it, Event.DID_STOP.value) { show() },
+                    listenTo(it, Event.DID_COMPLETE.value) { show() }
             ))
         }
     }
@@ -84,7 +87,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container) {
             it.layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
             it.gravity = Gravity.CENTER
 
-            context?.run { it.setBackgroundColor(ContextCompat.getColor(this , android.R.color.black)) }
+            it.setBackgroundColor(ContextCompat.getColor(applicationContext, android.R.color.black))
 
             it.addView(imageView)
 

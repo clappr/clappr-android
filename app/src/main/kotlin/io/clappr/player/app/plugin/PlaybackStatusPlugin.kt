@@ -4,22 +4,25 @@ import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.TextView
 import io.clappr.player.app.R
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
+import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.container.UIContainerPlugin
 
 
-class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) {
+class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
     companion object : NamedType {
         override val name = "playbackStatus"
+
+        val entry = PluginEntry.Container(name = name, factory = { container->  PlaybackStatusPlugin(container) })
     }
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.playback_status_plugin, null) as RelativeLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.playback_status_plugin, null) as RelativeLayout
     }
 
     private val status by lazy { view.findViewById(R.id.status) as TextView }
@@ -31,10 +34,10 @@ class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) 
     }
 
     private fun bindContainerEvents() {
-        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value, Callback.wrap {
+        listenTo(container, InternalEvent.DID_CHANGE_PLAYBACK.value) {
             hide()
             bindPlaybackEvents()
-        })
+        }
     }
 
     private fun bindPlaybackEvents() {
@@ -50,8 +53,8 @@ class PlaybackStatusPlugin(container: Container) : UIContainerPlugin(container) 
         }
     }
 
-    private fun updateLabel(text: String): Callback {
-        return Callback.wrap {
+    private fun updateLabel(text: String): EventHandler {
+        return {
             status.text = text
             show()
         }

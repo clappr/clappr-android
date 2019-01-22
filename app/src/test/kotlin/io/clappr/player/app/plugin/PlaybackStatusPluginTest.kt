@@ -1,18 +1,16 @@
 package io.clappr.player.app.plugin
 
 import android.app.Application
-import android.view.View
 import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
 import io.clappr.player.app.plugin.util.FakePlayback
-import io.clappr.player.app.plugin.util.assertHidden
-import io.clappr.player.app.plugin.util.assertShown
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginHidden
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Container
-import io.clappr.player.components.Core
 import io.clappr.player.plugin.Loader
 import org.junit.Before
 import org.junit.Test
@@ -35,9 +33,9 @@ class PlaybackStatusPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options(source = source))
+        container = Container(Options(source = source))
 
         playbackStatusPlugin = PlaybackStatusPlugin(container)
 
@@ -52,7 +50,7 @@ class PlaybackStatusPluginTest {
         val newPlayback = FakePlayback(source)
         container.playback = newPlayback
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     @Test
@@ -84,14 +82,14 @@ class PlaybackStatusPluginTest {
     fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
         val oldPlayback = container.playback
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
 
         val newPlayback = FakePlayback(source)
         container.playback = newPlayback
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     @Test
@@ -102,14 +100,14 @@ class PlaybackStatusPluginTest {
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(playbackStatusPlugin)
+        assertUiPluginHidden(playbackStatusPlugin)
     }
 
     private fun assertLabelOnEvent(eventName: String) {
         container.playback?.trigger(eventName)
 
         assertText(eventName)
-        assertShown(playbackStatusPlugin)
+        assertUiPluginShown(playbackStatusPlugin)
     }
 
     private fun assertText(text: String) {

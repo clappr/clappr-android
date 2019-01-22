@@ -12,12 +12,13 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 
-class Container(val loader: Loader, options: Options) : UIObject() {
+class Container(options: Options) : UIObject() {
 
     private val TAG = "Container"
 
     val plugins: List<Plugin>
         get() = internalPlugins
+
     private val internalPlugins: MutableList<Plugin>
 
     var playback: Playback? = null
@@ -34,8 +35,8 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
-    var options : Options = options
-        set(options)  {
+    var options: Options = options
+        set(options) {
             field = options
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
@@ -44,15 +45,18 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         get() = FrameLayout::class.java
 
     init {
-        internalPlugins = loader.loadPlugins(this).toMutableList()
+        internalPlugins = Loader.loadPlugins(this).toMutableList()
     }
 
     fun destroy() {
         trigger(InternalEvent.WILL_DESTROY.value)
         playback?.destroy()
         playback = null
-        internalPlugins.forEach { handlePluginAction({ it.destroy() },
-                "Plugin ${it.javaClass.simpleName} crashed during destroy") }
+        internalPlugins.forEach {
+            handlePluginAction(
+                    { it.destroy() },
+                    "Plugin ${it.javaClass.simpleName} crashed during destroy")
+        }
         internalPlugins.clear()
         stopListening()
         trigger(InternalEvent.DID_DESTROY.value)
@@ -61,14 +65,15 @@ class Container(val loader: Loader, options: Options) : UIObject() {
     fun load(source: String, mimeType: String? = null): Boolean {
         trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
-        playback = loader.loadPlayback(source, mimeType, options)
-        if (playback?.name == NoOpPlayback.name) {
+        playback = Loader.loadPlayback(source, mimeType, options)
+        if (playback?.name == NoOpPlayback.entry.name) {
             playback = null
         }
         val supported = playback != null
         render()
 
-        val eventToTrigger = if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
+        val eventToTrigger =
+                if (supported) InternalEvent.DID_LOAD_SOURCE else InternalEvent.DID_NOT_LOAD_SOURCE
         trigger(eventToTrigger.value)
 
         return supported
@@ -84,7 +89,8 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         internalPlugins.filterIsInstance(UIContainerPlugin::class.java).forEach {
             removeViewFromParent(it.view, it.name)
             frameLayout.addView(it.view)
-            handlePluginAction({ it.render() },
+            handlePluginAction(
+                    { it.render() },
                     "Plugin ${it.javaClass.simpleName} crashed during render")
         }
         return this
@@ -101,7 +107,7 @@ class Container(val loader: Loader, options: Options) : UIObject() {
         try {
             action.invoke()
         } catch (error: Exception) {
-            Logger.error(Container::class.simpleName, errorMessage, error)
+            Logger.error(Container::class.java.simpleName, errorMessage, error)
         }
     }
 }

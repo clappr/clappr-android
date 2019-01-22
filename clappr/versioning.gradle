@@ -6,14 +6,6 @@ ext {
     def RELEASE = "RELEASE"
     def SNAPSHOT = "SNAPSHOT"
 
-    buildVersionCode = { version ->
-        def (major, minor, patch) = version.toLowerCase().tokenize('.')
-        patch = patch.tokenize('-').first()
-
-        (major, minor, patch) = [major, minor, patch].collect{it.toInteger()}
-
-        (major * 1000000) + (minor * 1000) + patch;
-    }
     buildVersionType = { version ->
         if (version.toUpperCase().contains("SNAPSHOT")) {
             throw new Exception("Reserved word \"SNAPSHOT\" can not be used in the version name")
@@ -29,17 +21,14 @@ ext {
     }
     buildPublishAttrs = { version ->
         def versionType = buildVersionType(version)
-        def versionName = version
-        def versionCode = buildVersionCode(version)
 
         def bintrayRepoName = (versionType == SNAPSHOT)? 'clappr-android-snapshot' : 'clappr-android-release'
         def bintrayVersionDesc = (versionType == SNAPSHOT)? 'Clappr snapshot' : (versionType == RC)? 'Clappr candidate alpha version': 'Clappr alpha version'
         def bintrayPublishNonDefault = (versionType == RELEASE)? false : true
-        println "Building $bintrayVersionDesc ($versionCode - $versionName) as $versionType to publish on $bintrayRepoName"
+        println "Building $bintrayVersionDesc ($version) as $versionType to publish on $bintrayRepoName"
 
         [
-                versionCode: versionCode,
-                versionName: versionName,
+                versionName: version,
                 versionType: versionType,
                 bintrayRepoName: bintrayRepoName,
                 bintrayVersionDesc: bintrayVersionDesc,

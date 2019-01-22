@@ -2,9 +2,9 @@ package io.clappr.player.plugin
 
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Callback
 import io.clappr.player.base.InternalEvent
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Ignore
 import org.junit.Test
@@ -16,11 +16,11 @@ import org.robolectric.shadows.ShadowApplication
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23))
 class PluginTest {
-    class TestPlugin: Plugin(BaseObject())
+    class TestPlugin: Plugin, BaseObject()
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
     }
 
     @Test
@@ -35,7 +35,7 @@ class PluginTest {
         val plugin = TestPlugin()
 
         var numberOfTriggers = 0
-        plugin.listenTo(triggerObject, "pluginTest", Callback.wrap { numberOfTriggers++ })
+        plugin.listenTo(triggerObject, "pluginTest") { numberOfTriggers++ }
 
         triggerObject.trigger("pluginTest")
         assertEquals("no trigger", 1, numberOfTriggers)
@@ -52,8 +52,8 @@ class PluginTest {
 
         var willDestroyCalled = false
         var didDestroyCalled = false
-        listenObject.listenTo(plugin, InternalEvent.WILL_DESTROY.value, Callback.wrap { willDestroyCalled = true })
-        listenObject.listenTo(plugin, InternalEvent.DID_DESTROY.value, Callback.wrap { didDestroyCalled = true })
+        listenObject.listenTo(plugin, InternalEvent.WILL_DESTROY.value) { willDestroyCalled = true }
+        listenObject.listenTo(plugin, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
 
         plugin.destroy()
 

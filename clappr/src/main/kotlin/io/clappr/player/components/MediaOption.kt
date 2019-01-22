@@ -18,16 +18,4 @@ enum class SubtitleLanguage(val value: String) {
 enum class MediaOptionType {
     SUBTITLE,
     AUDIO;
-
-    @Deprecated("This option is deprecated and can be changed in the near future.", ReplaceWith("SubtitleLanguage"), level = DeprecationLevel.WARNING)
-    enum class Language(val value: String) {
-        PT_BR(SubtitleLanguage.PORTUGUESE.value)
-    }
-
-    @Deprecated("This option is deprecated and can be changed in the near future.", ReplaceWith("AudioLanguage"), level = DeprecationLevel.WARNING)
-    enum class Audio(val value: String) {
-        PT_BR(AudioLanguage.PORTUGUESE.value),
-        ORIGINAL(AudioLanguage.ORIGINAL.value),
-        EN(AudioLanguage.ENGLISH.value)
-    }
 }

@@ -1,20 +1,15 @@
 package io.clappr.player.plugin
 
-import io.clappr.player.plugin.control.SeekbarPlugin
-import io.clappr.player.plugin.control.MediaControl
-import io.clappr.player.plugin.control.TimeIndicatorPlugin
-import io.clappr.player.plugin.control.FullscreenButton
-import io.clappr.player.plugin.control.PlayButton
+import io.clappr.player.plugin.control.*
 
 object PluginConfig {
     fun register() {
-        // TODO - Add default plugins
-        Loader.registerPlugin(PosterPlugin::class)
-        Loader.registerPlugin(LoadingPlugin::class)
-        Loader.registerPlugin(MediaControl::class)
-        Loader.registerPlugin(FullscreenButton::class)
-        Loader.registerPlugin(TimeIndicatorPlugin::class)
-        Loader.registerPlugin(PlayButton::class)
-        Loader.registerPlugin(SeekbarPlugin::class)
+        Loader.register(PosterPlugin.entry)
+        Loader.register(LoadingPlugin.entry)
+        Loader.register(MediaControl.entry)
+        Loader.register(FullscreenButton.entry)
+        Loader.register(TimeIndicatorPlugin.entry)
+        Loader.register(PlayButton.entry)
+        Loader.register(SeekbarPlugin.entry)
     }
 }

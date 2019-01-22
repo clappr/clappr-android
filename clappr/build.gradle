@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.10.8'
+version = '0.12.0'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -50,8 +50,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode publishAttrs['versionCode']
-        versionName publishAttrs['versionName']
+
+        buildConfigField("String", "CLAPPR_VERSION", "\"$version\"")
     }
     packagingOptions {
         // workaround for http://stackoverflow.com/questions/20673625/android-gradle-plugin-0-7-0-duplicate-files-during-packaging-of-apk
@@ -95,14 +95,13 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$android_support_version"
     implementation "com.android.support:support-v4:$android_support_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.1.2"
+    testImplementation "org.robolectric:robolectric:3.8"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }

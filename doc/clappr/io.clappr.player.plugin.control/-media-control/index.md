@@ -29,7 +29,9 @@
 
 | Name | Summary |
 |---|---|
-| [core](../../io.clappr.player.plugin.core/-u-i-core-plugin/core.md) | `val core: `[`Core`](../../io.clappr.player.components/-core/index.md) |
+| [base](../../io.clappr.player.plugin.core/-u-i-core-plugin/base.md) | `open val base: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [uiObject](../../io.clappr.player.plugin.core/-u-i-core-plugin/ui-object.md) | `open val uiObject: `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
+| [visibility](../../io.clappr.player.plugin.core/-u-i-core-plugin/visibility.md) | `open var visibility: `[`Visibility`](../../io.clappr.player.plugin/-u-i-plugin/-visibility/index.md) |
 
 ### Functions
 
@@ -44,5 +46,6 @@
 
 | Name | Summary |
 |---|---|
+| [entry](entry.md) | `val entry: `[`Core`](../../io.clappr.player.plugin/-plugin-entry/-core/index.md) |
 | [modalPanelViewKey](modal-panel-view-key.md) | `const val modalPanelViewKey: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`?` |
+| [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

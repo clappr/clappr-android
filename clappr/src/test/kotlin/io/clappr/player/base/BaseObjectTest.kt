@@ -2,8 +2,9 @@ package io.clappr.player.base
 
 import android.os.Bundle
 import io.clappr.player.BuildConfig
-import org.junit.*
 import org.junit.Assert.*
+import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
@@ -16,12 +17,12 @@ open class BaseObjectTest {
     var baseObject: BaseObject? = null
     var callbackWasCalled = false
 
-    val eventName = "some-event"
-    val callback = Callback.wrap { callbackWasCalled = true }
+    private val eventName = "some-event"
+    val callback: EventHandler = { callbackWasCalled = true }
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         baseObject = BaseObject()
         callbackWasCalled = false
     }
@@ -38,7 +39,7 @@ open class BaseObjectTest {
     fun onCallbackShouldReceiveUserInfo() {
         var value = "Not Expected"
 
-        baseObject?.on(eventName, Callback.wrap { bundle: Bundle? -> value = bundle?.getString("value")!! })
+        baseObject?.on(eventName) { bundle -> value = bundle?.getString("value")!! }
         val userData = Bundle()
         userData.putString("value", "Expected")
         baseObject?.trigger(eventName, userData)
@@ -51,7 +52,7 @@ open class BaseObjectTest {
         baseObject?.on(eventName, callback)
 
         var secondCallbackCalled = false
-        baseObject?.on(eventName, Callback.wrap { secondCallbackCalled = true })
+        baseObject?.on(eventName) { secondCallbackCalled = true }
 
         baseObject?.trigger(eventName)
 
@@ -62,7 +63,7 @@ open class BaseObjectTest {
     @Test
     fun onCallbackShouldOnlyBeRegisteredOnce() {
         var numberOfCalls = 0
-        val localCallback = Callback.wrap { numberOfCalls += 1 }
+        val localCallback: EventHandler = { numberOfCalls += 1 }
         baseObject?.on(eventName, localCallback)
         baseObject?.on(eventName, localCallback)
 
@@ -131,7 +132,7 @@ open class BaseObjectTest {
 
     @Test
     fun listenToShouldHandleCallbackException() {
-        val brokenCallback = Callback.wrap { throw NullPointerException() }
+        val brokenCallback: EventHandler = { throw NullPointerException() }
         val expectedLogMessage = "[BaseObject] Plugin ${brokenCallback.javaClass.name} " +
                 "crashed during invocation of event $eventName"
 
@@ -155,7 +156,7 @@ open class BaseObjectTest {
     @Test
     fun offOtherShouldBeCalledAfterRemoval() {
         var anotherCallbackWasCalled = false
-        val anotherCallback = Callback.wrap { anotherCallbackWasCalled = true}
+        val anotherCallback: EventHandler = { anotherCallbackWasCalled = true}
 
         val listenId = baseObject?.on(eventName, callback)
         baseObject?.on(eventName, anotherCallback)
@@ -184,7 +185,7 @@ open class BaseObjectTest {
     fun stopListeningShouldCancelOnlyOnObject() {
         val anotherObject = BaseObject()
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName, Callback.wrap { anotherCallbackWasCalled = true})
+        anotherObject.on(eventName, { anotherCallbackWasCalled = true})
 
         baseObject?.on(eventName, callback)
 

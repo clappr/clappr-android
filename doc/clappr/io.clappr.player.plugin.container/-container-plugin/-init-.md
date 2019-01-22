@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`ContainerPlugin(container: `[`Container`](../../io.clappr.player.components/-container/index.md)`)`
+`ContainerPlugin(container: `[`Container`](../../io.clappr.player.components/-container/index.md)`, base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = Companion.name)`

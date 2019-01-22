@@ -2,16 +2,15 @@ package io.clappr.player.components
 
 import android.os.Bundle
 import android.widget.FrameLayout
-import io.clappr.player.base.Callback
 import io.clappr.player.base.InternalEvent
-import io.clappr.player.plugin.Loader
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.log.Logger
+import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
 
-class Core(val loader: Loader, options: Options) : UIObject() {
+class Core(options: Options) : UIObject() {
 
     enum class FullscreenState {
         EMBEDDED, FULLSCREEN
@@ -50,9 +49,15 @@ class Core(val loader: Loader, options: Options) : UIObject() {
                 field = value
 
                 activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
+                                    { bundle: Bundle? ->
+                                        trigger(
+                                                InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                                    })
                 activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                        Callback.wrap { bundle: Bundle? -> trigger(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle) })
+                                    { bundle: Bundle? ->
+                                        trigger(
+                                                InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                                    })
                 trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
@@ -63,24 +68,24 @@ class Core(val loader: Loader, options: Options) : UIObject() {
     private val frameLayout: FrameLayout
         get() = view as FrameLayout
 
-    var options : Options = options
-        set(options)  {
+    var options: Options = options
+        set(options) {
             field = options
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
             updateContainerOptions(options)
         }
 
     private fun updateContainerOptions(options: Options) {
-        containers.forEach { it.options = options}
+        containers.forEach { it.options = options }
     }
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
 
     init {
-        internalPlugins = loader.loadPlugins(this).toMutableList()
+        internalPlugins = Loader.loadPlugins(this).toMutableList()
 
-        val container = Container(loader, options)
+        val container = Container(options)
         containers.add(container)
     }
 
@@ -95,8 +100,11 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         trigger(InternalEvent.WILL_DESTROY.value)
         containers.forEach { it.destroy() }
         containers.clear()
-        internalPlugins.forEach { handlePluginAction({ it.destroy() },
-                "Plugin ${it.javaClass.simpleName} crashed during destroy") }
+        internalPlugins.forEach {
+            handlePluginAction(
+                    { it.destroy() },
+                    "Plugin ${it.javaClass.simpleName} crashed during destroy")
+        }
         internalPlugins.clear()
         stopListening()
         trigger(InternalEvent.DID_DESTROY.value)
@@ -110,7 +118,8 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         }
         internalPlugins.filterIsInstance(UICorePlugin::class.java).forEach {
             frameLayout.addView(it.view)
-            handlePluginAction({ it.render() },
+            handlePluginAction(
+                    { it.render() },
                     "Plugin ${it.javaClass.simpleName} crashed during render")
         }
         return this
@@ -120,7 +129,7 @@ class Core(val loader: Loader, options: Options) : UIObject() {
         try {
             action.invoke()
         } catch (error: Exception) {
-            Logger.error(Core::class.simpleName, errorMessage, error)
+            Logger.error(Core::class.java.simpleName, errorMessage, error)
         }
     }
 }

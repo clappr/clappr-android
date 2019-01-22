@@ -1,18 +1,20 @@
 package io.clappr.player.plugin.control
 
 import io.clappr.player.R
-import io.clappr.player.base.Callback
 import io.clappr.player.base.Event
+import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.plugin.PluginEntry
 
-open class PlayButton(core: Core) : ButtonPlugin(core) {
+open class PlayButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
-        override val name: String?
-            get() = "playButton"
+        override val name = "playButton"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> PlayButton(core) })
     }
 
     override var panel: Panel = Panel.CENTER
@@ -33,17 +35,17 @@ open class PlayButton(core: Core) : ButtonPlugin(core) {
     }
 
     open fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) {
             bindPlaybackEvents()
             updateState()
-        })
+        }
     }
 
     private fun bindPlaybackEvents() {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            val updateStateCallback = Callback.wrap { _ -> updateState() }
+            val updateStateCallback: EventHandler = { updateState() }
 
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value, updateStateCallback))
             playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, updateStateCallback))

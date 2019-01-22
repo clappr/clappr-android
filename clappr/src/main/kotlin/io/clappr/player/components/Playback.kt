@@ -8,13 +8,19 @@ import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.reflect.full.companionObjectInstance
 
-interface PlaybackSupportInterface : NamedType {
-    fun supportsSource(source: String, mimeType: String? = null): Boolean
-}
+typealias PlaybackSupportCheck = (String, String?) -> Boolean
 
-abstract class Playback(var source: String, var mimeType: String? = null, options: Options = Options()) : UIObject(), NamedType {
+typealias PlaybackFactory = (String, String?, Options) -> Playback
+
+data class PlaybackEntry(val name: String = "", val supportsSource: PlaybackSupportCheck, val factory: PlaybackFactory)
+
+abstract class Playback(
+        var source: String,
+        var mimeType: String? = null,
+        options: Options = Options(),
+        override val name: String = "",
+        val supportsSource: PlaybackSupportCheck = { _, _ -> false }) : UIObject(), NamedType {
 
     enum class MediaType {
         UNKNOWN,
@@ -24,15 +30,6 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
 
     enum class State {
         NONE, IDLE, PLAYING, PAUSED, STALLING, ERROR
-    }
-
-    companion object : PlaybackSupportInterface {
-        override val name = ""
-
-        @JvmStatic
-        override fun supportsSource(source: String, mimeType: String?): Boolean {
-            return false
-        }
     }
 
     init {
@@ -45,8 +42,8 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
         stopListening()
     }
 
-    var options : Options = options
-        set(options)  {
+    var options: Options = options
+        set(options) {
             field = options
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
         }
@@ -191,7 +188,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
                 val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
                 (0 until jsonArray.length())
                         .map { jsonArray.getJSONObject(it) }
-                        .forEach { setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson)) }
+                        .forEach {
+                            setSelectedMediaOption(
+                                    it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson))
+                        }
             }
         } catch (jsonException: JSONException) {
             Logger.error(name, "Parser Json Exception ${jsonException.message}")
@@ -199,14 +199,10 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
-        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }?.let {
-            setSelectedMediaOption(it)
-        }
-    }
-
-    internal fun supportsSource(source: String, mimeType: String?): Boolean {
-        val companion = javaClass.kotlin.companionObjectInstance as? PlaybackSupportInterface
-        return companion?.supportsSource(source, mimeType) ?: false
+        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }
+                ?.let {
+                    setSelectedMediaOption(it)
+                }
     }
 
     open fun load(source: String, mimeType: String? = null): Boolean {
@@ -221,18 +217,22 @@ abstract class Playback(var source: String, var mimeType: String? = null, option
     override fun render(): UIObject {
         if (mediaType != MediaType.LIVE) configureStartAt()
 
-        if (!play()) once(Event.READY.value, Callback.wrap { play() })
+        if (!play()) once(Event.READY.value, { play() })
 
         return this
     }
 
+    open fun startAt(seconds: Int): Boolean {
+        return false
+    }
+
     private fun configureStartAt() {
         if (options.containsKey(ClapprOption.START_AT.value))
-            once(Event.READY.value, Callback.wrap {
+            once(Event.READY.value) {
                 (options[ClapprOption.START_AT.value] as? Number)?.let {
-                    seek(it.toInt())
+                    startAt(it.toInt())
                 }
                 options.remove(ClapprOption.START_AT.value)
-            })
+            }
     }
 }

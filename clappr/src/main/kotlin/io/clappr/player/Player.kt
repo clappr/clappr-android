@@ -10,9 +10,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
-import io.clappr.player.playback.ExoPlayerPlayback
-import io.clappr.player.playback.NoOpPlayback
-import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
 
 /**
@@ -21,23 +19,21 @@ import io.clappr.player.plugin.PluginConfig
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
 open class Player(private val base: BaseObject = BaseObject(),
-                  private val playbackEventsToListen : MutableSet<String> = mutableSetOf<String>(),
-                  private val containerEventsToListen : MutableSet<String> = mutableSetOf<String>()) : Fragment(), EventInterface by base {
+                  private val playbackEventsToListen: MutableSet<String> = mutableSetOf(),
+                  private val containerEventsToListen: MutableSet<String> = mutableSetOf()) : Fragment(), EventInterface by base {
 
     companion object {
         init {
             PluginConfig.register()
-
-            Loader.registerPlayback(NoOpPlayback::class)
-            Loader.registerPlayback(ExoPlayerPlayback::class)
+            PlaybackConfig.register()
         }
 
         /**
          * Initialize Player for the application. This method need to be called before any Player instantiation.
          */
         @JvmStatic
-        fun initialize(context: Context) {
-            BaseObject.context = context
+        fun initialize(applicationContext: Context) {
+            BaseObject.applicationContext = applicationContext
         }
     }
 
@@ -85,12 +81,12 @@ open class Player(private val base: BaseObject = BaseObject(),
             field = value
             updateCoreFullScreenStatus()
             core?.let {
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> unbindPlaybackEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap { _ -> bindPlaybackEvents() })
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> unbindContainerEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, Callback.wrap { _ -> bindContainerEvents() })
-                it.on(Event.REQUEST_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
-                it.on(Event.EXIT_FULLSCREEN.value, Callback.wrap { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, { _ -> unbindPlaybackEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { _ -> bindPlaybackEvents() })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, { _ -> unbindContainerEvents() })
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, { _ -> bindContainerEvents() })
+                it.on(Event.REQUEST_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
+                it.on(Event.EXIT_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
 
                 if (it.activeContainer != null) {
                     bindContainerEvents()
@@ -103,8 +99,6 @@ open class Player(private val base: BaseObject = BaseObject(),
                 playerViewGroup?.addView(it.render().view)
             }
         }
-
-    private val loader = Loader()
 
     /**
      * Media current position in seconds.
@@ -131,14 +125,14 @@ open class Player(private val base: BaseObject = BaseObject(),
      */
     val state: State
         get() =
-        when (core?.activePlayback?.state ?: Playback.State.NONE) {
-            Playback.State.NONE -> State.NONE
-            Playback.State.IDLE -> State.IDLE
-            Playback.State.PLAYING -> State.PLAYING
-            Playback.State.PAUSED -> State.PAUSED
-            Playback.State.STALLING -> State.STALLING
-            Playback.State.ERROR -> State.ERROR
-        }
+            when (core?.activePlayback?.state ?: Playback.State.NONE) {
+                Playback.State.NONE -> State.NONE
+                Playback.State.IDLE -> State.IDLE
+                Playback.State.PLAYING -> State.PLAYING
+                Playback.State.PAUSED -> State.PAUSED
+                Playback.State.STALLING -> State.STALLING
+                Playback.State.ERROR -> State.ERROR
+            }
 
     private val playbackEventsIds = mutableSetOf<String>()
 
@@ -184,7 +178,7 @@ open class Player(private val base: BaseObject = BaseObject(),
     }
 
     private fun createCore(options: Options) {
-        core = Core(loader, options)
+        core = Core(options)
     }
 
     /**
@@ -253,7 +247,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 
@@ -266,7 +260,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
-            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, Callback.wrap { bundle: Bundle? -> trigger(event, bundle) }) }
+            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
         }
     }
 

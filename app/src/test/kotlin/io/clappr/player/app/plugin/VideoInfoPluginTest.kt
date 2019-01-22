@@ -6,8 +6,8 @@ import android.widget.TextView
 import io.clappr.player.BuildConfig
 import io.clappr.player.app.R
 import io.clappr.player.app.plugin.util.FakePlayback
-import io.clappr.player.app.plugin.util.assertHidden
-import io.clappr.player.app.plugin.util.assertShown
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginHidden
+import io.clappr.player.app.plugin.assertPlugin.assertUiPluginShown
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -37,18 +37,18 @@ class VideoInfoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
         val options = HashMap<String, Any>()
         options[VideoInfoPlugin.Option.TITLE.value] = title
         options[VideoInfoPlugin.Option.SUBTITLE.value] = subtitle
 
-        core = Core(Loader(), Options(source = source, options = options))
+        core = Core(Options(source = source, options = options))
 
         videoInfoPlugin = VideoInfoPlugin(core)
 
         //Trigger Container change events
-        val container = Container(core.loader, core.options)
+        val container = Container(core.options)
         core.activeContainer  = container
 
         //Trigger Playback change events
@@ -101,28 +101,28 @@ class VideoInfoPluginTest {
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
-        assertHidden(videoInfoPlugin)
+        assertUiPluginHidden(videoInfoPlugin)
     }
 
     @Test
     fun shouldShowViewWhenWillPlayEventIsTriggered() {
         core.activeContainer?.playback?.trigger(Event.WILL_PLAY.value)
 
-        assertShown(videoInfoPlugin)
+        assertUiPluginShown(videoInfoPlugin)
     }
 
     @Test
     fun shouldStopListeningOldPlaybackWhenDidChangePlaybackEventIsTriggered() {
         val oldPlayback = core.activePlayback
 
-        assertHidden(videoInfoPlugin)
+        assertUiPluginHidden(videoInfoPlugin)
 
         val newPlayback = FakePlayback(source)
         core.activeContainer?.playback = newPlayback
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(videoInfoPlugin)
+        assertUiPluginHidden(videoInfoPlugin)
     }
 
     @Test
@@ -133,6 +133,6 @@ class VideoInfoPluginTest {
 
         oldPlayback?.trigger(Event.WILL_PLAY.value)
 
-        assertHidden(videoInfoPlugin)
+        assertUiPluginHidden(videoInfoPlugin)
     }
 }

@@ -8,4 +8,5 @@
 
 | Name | Summary |
 |---|---|
+| [entry](entry.md) | `val entry: `[`Core`](../../../io.clappr.player.plugin/-plugin-entry/-core/index.md) |
 | [name](name.md) | `val name: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |

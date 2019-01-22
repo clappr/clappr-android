@@ -8,20 +8,23 @@ import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.UICorePlugin
 
-class NextVideoPlugin(core: Core) : UICorePlugin(core) {
+class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
 
     companion object : NamedType {
         override val name = "nextVideo"
+
+        val entry = PluginEntry.Core(name = name, factory = { core -> NextVideoPlugin(core) })
     }
 
     private val picasso: Picasso by lazy {
-        Picasso.Builder(context!!).build()
+        Picasso.Builder(applicationContext).build()
     }
 
     override val view by lazy {
-        LayoutInflater.from(context).inflate(R.layout.next_video_plugin, null) as RelativeLayout
+        LayoutInflater.from(applicationContext).inflate(R.layout.next_video_plugin, null) as RelativeLayout
     }
 
     private val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
@@ -34,6 +37,15 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core) {
 
     private val playbackListenerIds = mutableListOf<String>()
 
+    private val hideNextVideo: EventHandler = {
+        hide()
+    }
+
+    private val showNextVideo: EventHandler = {
+        view.bringToFront()
+        show()
+    }
+
     init {
         bindCoreEvents()
     }
@@ -44,19 +56,19 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun bindCoreEvents() {
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, Callback.wrap {
+        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) {
             hide()
             bindPlaybackEvents()
-        })
+        }
     }
 
     private fun bindPlaybackEvents() {
         stopPlaybackListeners()
 
         core.activePlayback?.let {
-            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hideNextVideo()))
-            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showNextVideo()))
-            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showNextVideo()))
+            playbackListenerIds.add(listenTo(it, Event.WILL_PLAY.value, hideNextVideo))
+            playbackListenerIds.add(listenTo(it, Event.DID_STOP.value, showNextVideo))
+            playbackListenerIds.add(listenTo(it, Event.DID_COMPLETE.value, showNextVideo))
         }
     }
 
@@ -67,20 +79,12 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core) {
     }
 
     private fun getNextVideoView(entry: Pair<String, String>) =
-            (LayoutInflater.from(context).inflate(R.layout.next_video_item, null) as RelativeLayout).apply {
+            (LayoutInflater.from(applicationContext).inflate(R.layout.next_video_item, null) as RelativeLayout).apply {
                 val videoPoster = findViewById<ImageView>(R.id.video_poster)
                 picasso.load(entry.first).fit().centerCrop().into(videoPoster)
 
                 setOnClickListener { onClick(entry.second) }
             }
-
-    private fun hideNextVideo() = Callback.wrap {
-        hide()
-    }
-
-    private fun showNextVideo() = Callback.wrap {
-        show()
-    }
 
     private fun stopPlaybackListeners() {
         playbackListenerIds.forEach(::stopListening)

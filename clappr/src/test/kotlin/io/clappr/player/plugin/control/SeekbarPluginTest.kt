@@ -5,22 +5,22 @@ import android.view.MotionEvent
 import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
-import io.clappr.player.components.Container
-import io.clappr.player.components.Core
+import io.clappr.player.components.*
+import io.clappr.player.plugin.Loader
+import io.clappr.player.plugin.assertHiddenView
+import io.clappr.player.plugin.assertVisibleView
+import io.clappr.player.plugin.setupViewVisible
+import io.clappr.player.shadows.ClapprShadowView
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowApplication
-import kotlin.test.assertTrue
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackSupportInterface
-import io.clappr.player.plugin.*
-import io.clappr.player.shadows.ClapprShadowView
-import org.robolectric.internal.ShadowExtractor
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = [23], shadows = [ClapprShadowView::class])
@@ -33,10 +33,10 @@ class SeekbarPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.context = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        container = Container(Loader(), Options())
-        core = Core(Loader(), Options())
+        container = Container(Options())
+        core = Core(Options())
 
         seekbarPlugin = SeekbarPlugin(core)
 
@@ -81,8 +81,7 @@ class SeekbarPluginTest {
     fun shouldTriggerDidUpdateInteractingEventWhenTouchDownEventHappens() {
         var didUpdateInteractingCalled = false
 
-        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value,
-                Callback.wrap { didUpdateInteractingCalled = true })
+        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { didUpdateInteractingCalled = true }
 
         val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
 
@@ -159,7 +158,8 @@ class SeekbarPluginTest {
 
     @Test
     fun shouldUpdateViewVisibilityToVisibleWhenUserTouchSeekbarAndVideoIsVOD() {
-        assertViewVisibilityWhenTouchEventHappens(View.VISIBLE, Playback.MediaType.VOD, Playback.State.PLAYING, View.GONE)
+        assertViewVisibilityWhenTouchEventHappens(
+                View.VISIBLE, Playback.MediaType.VOD, Playback.State.PLAYING, View.GONE)
     }
 
     @Test
@@ -297,10 +297,11 @@ class SeekbarPluginTest {
         assertEquals(View.VISIBLE, seekbarPlugin.view.visibility)
     }
 
-    private fun assertViewVisibilityWhenTouchEventHappens(expectedViewVisibility: Int,
-                                                          mediaType: Playback.MediaType,
-                                                          playbackState: Playback.State,
-                                                          currentViewVisibility : Int = View.VISIBLE) {
+    private fun assertViewVisibilityWhenTouchEventHappens(
+            expectedViewVisibility: Int,
+            mediaType: Playback.MediaType,
+            playbackState: Playback.State,
+            currentViewVisibility: Int = View.VISIBLE) {
         val motionEvent = MotionEvent.obtain(
                 0, 0, MotionEvent.ACTION_DOWN, 0.0f, 0.0f, 0)
 
@@ -322,17 +323,18 @@ class SeekbarPluginTest {
         return seekbarPlugin.view.dispatchTouchEvent(motionEvent)
     }
 
-    private fun assertViewVisibilityOnRender(playbackMediaType: Playback.MediaType,
-                                             playbackState: Playback.State,
-                                             expectedViewVisibility: Int) {
+    private fun assertViewVisibilityOnRender(
+            playbackMediaType: Playback.MediaType,
+            playbackState: Playback.State,
+            expectedViewVisibility: Int) {
         setupFakePlayback(playbackMediaType, playbackState)
         seekbarPlugin.render()
         assertEquals(expectedViewVisibility, seekbarPlugin.view.visibility)
     }
 
     private fun setupViewWidth(backgroundViewWidth: Int, scrubberViewWidth: Int) {
-        (ShadowExtractor.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
-        (ShadowExtractor.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
+        (Shadow.extract(seekbarPlugin.backgroundView) as ClapprShadowView).viewWidth = backgroundViewWidth
+        (Shadow.extract(seekbarPlugin.scrubberView) as ClapprShadowView).viewWidth = scrubberViewWidth
     }
 
     private fun assertActionNotUpdateView(event: Int) {
@@ -352,10 +354,11 @@ class SeekbarPluginTest {
         assertEquals(expectedScrubberViewX, seekbarPlugin.scrubberView.x)
     }
 
-    private fun setupFakePlayback(mediaType: Playback.MediaType = Playback.MediaType.VOD,
-                                  state: Playback.State = Playback.State.PLAYING,
-                                  duration: Double = 0.0,
-                                  position: Double = 0.0) {
+    private fun setupFakePlayback(
+            mediaType: Playback.MediaType = Playback.MediaType.VOD,
+            state: Playback.State = Playback.State.PLAYING,
+            duration: Double = 0.0,
+            position: Double = 0.0) {
         (container.playback as FakePlayback).apply {
             currentMediaType = mediaType
             currentPlaybackState = state
@@ -364,10 +367,11 @@ class SeekbarPluginTest {
         }
     }
 
-    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options) {
-        companion object : PlaybackSupportInterface {
-            override val name: String = "fakePlayback"
-            override fun supportsSource(source: String, mimeType: String?) = true
+    class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) :
+            Playback(source, mimeType, options, name, supportsSource) {
+        companion object {
+            const val name = "fakePlayback"
+            val supportsSource: PlaybackSupportCheck = { _, _ -> true }
         }
 
         var currentMediaType: MediaType = MediaType.VOD
