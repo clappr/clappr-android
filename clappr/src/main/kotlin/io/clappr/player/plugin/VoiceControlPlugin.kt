@@ -34,7 +34,7 @@ class VoiceControlPlugin(core: Core) : UICorePlugin(core) {
 
         recognizeIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
 
-        recognizeIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+        recognizeIntent!!.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "pt-BR")
         recognizeIntent!!.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, applicationContext.packageName)
         recognizeIntent!!.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, MAX_RESULTS) // Optional
         recognizeIntent!!.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, MINIMUM_LENGTH_MILLIS)
@@ -76,19 +76,20 @@ class VoiceControlPlugin(core: Core) : UICorePlugin(core) {
                 var resultStringArrayList = command?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION)
                 Log.d("@@@", command?.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).toString())
                 recognizer?.startListening(recognizeIntent)
-                if (resultStringArrayList?.get(0).equals("pause")) {
-                    core.activePlayback?.pause()
-                }
-                if (resultStringArrayList?.get(0).equals("play")) {
-                    core.activePlayback?.play()
-                }
-                if (resultStringArrayList?.get(0).equals("stop")) {
-                    core.activePlayback?.stop()
-                }
+                resultStringArrayList?.forEach {
+                    if (it!!.toUpperCase().contains("GLOBO")) {
+                        if (it!!.toUpperCase().contains("PAUSE")) {
+                            core.activePlayback?.pause()
+                        } else if (it!!.toUpperCase().contains("PLAY")) {
+                            core.activePlayback?.play()
+                        } else if (it!!.toUpperCase().contains("STOP")) {
+                            core.activePlayback?.stop()
+                        }
+                    } }
             }
-
-        })
-    }
+          }
+        )
+      }
 
     fun getErrorText(errorCode: Int): String {
         val message: String
