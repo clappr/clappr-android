@@ -11,5 +11,6 @@ object PluginConfig {
         Loader.register(TimeIndicatorPlugin.entry)
         Loader.register(PlayButton.entry)
         Loader.register(SeekbarPlugin.entry)
+        Loader.register(VoiceControlPlugin.entry)
     }
 }

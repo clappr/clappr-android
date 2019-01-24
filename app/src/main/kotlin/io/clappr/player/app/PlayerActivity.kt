@@ -1,9 +1,13 @@
 package io.clappr.player.app
 
+import android.Manifest
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
@@ -39,6 +43,10 @@ class PlayerActivity : Activity() {
         changeVideo.setOnClickListener { changeVideo() }
 
         registerExternalPlugins()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestMicPermission()
+        }
 
         player = Player()
         player.on(Event.WILL_PLAY.value) { Logger.info("App", "Will Play") }
@@ -131,5 +139,12 @@ class PlayerActivity : Activity() {
                 View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
         playerContainer.layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT
         playerContainer.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun requestMicPermission() {
+        if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 1)
+        }
     }
 }
