@@ -69,10 +69,21 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.2.71"
     implementation "com.android.support:appcompat-v7:27.1.1"
     implementation "com.android.support:support-v4:27.1.1"
-    implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
+    implementation 'com.google.android.exoplayer:exoplayer:2.9.2'
 
     implementation "io.clappr.player:clappr:0.12.0"
     ...
+}
+```
+
+Clappr supports Java 8 resources, so it is necessary to add Java 8 compatibility in `project/build.gradle`.
+```
+android {
+  ...
+  compileOptions {
+    sourceCompatibility JavaVersion.VERSION_1_8
+    targetCompatibility JavaVersion.VERSION_1_8
+  }
 }
 ```
 
