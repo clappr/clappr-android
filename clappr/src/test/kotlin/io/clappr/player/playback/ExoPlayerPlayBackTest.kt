@@ -1,14 +1,14 @@
-package io.clappr.player
+package io.clappr.player.playback
 
 
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.nhaarman.mockito_kotlin.whenever
+import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
 import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportCheck
-import io.clappr.player.playback.ExoPlayerPlayback
 import io.clappr.player.shadows.ExoPlayerShadow
 import org.junit.Before
 import org.junit.Test
@@ -25,7 +25,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class, ExoPlayerShadow::class])
-class ExoPlayerPlayBackTest {
+class ExoPlayerPlaybackTest {
 
     private lateinit var exoPlayerPlayBack: ExoPlayerPlayback
 
