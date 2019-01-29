@@ -11,14 +11,24 @@ class BitrateHistory {
                     .reduce { currentSum, next -> currentSum + next }) / totalTime
         }
 
-    fun addBitrateLog(bitrate: Int?) {
+    fun addBitrateLog(bitrate: Int?, bitrateTimestamp: Long = System.currentTimeMillis()) {
         bitrate?.let {
-            val currentTime = System.currentTimeMillis()
-            val startTime = if (bitrateLogList.size > 0) bitrateLogList[0].time
-            else currentTime
-            bitrateLogList.add(BitrateLog(time = currentTime - startTime, bitrate = bitrate))
+            setTimesForLastBitrate(bitrateTimestamp)
+            bitrateLogList.add(BitrateLog(start = bitrateTimestamp, bitrate = bitrate))
         }
     }
 
-    internal data class BitrateLog(val time: Long, val bitrate: Int = 0)
+    internal fun setTimesForLastBitrate(currentTime: Long) {
+        if (bitrateLogList.size > 0) {
+            val lastBitrate = bitrateLogList.last()
+            lastBitrate.end = currentTime
+            lastBitrate.time = currentTime - lastBitrate.start
+        }
+    }
+
+    internal data class BitrateLog(
+            val start: Long,
+            var end: Long = 0,
+            var time: Long = 0,
+            val bitrate: Int = 0)
 }

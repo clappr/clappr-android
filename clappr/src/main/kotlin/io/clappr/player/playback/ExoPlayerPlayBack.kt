@@ -176,9 +176,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val bitrate: Int?
         get() {
-            val bitrate = player?.videoFormat?.bitrate
-            bitrateHistory.addBitrateLog(bitrate)
-            return bitrate
+            return player?.let {
+                val bitrate = it.videoFormat?.bitrate
+                bitrateHistory.addBitrateLog(bitrate, it.currentPosition)
+                return bitrate
+            }
         }
 
     override val avgBitrate: Long
