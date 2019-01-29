@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.12.0'
+version = '0.13.0'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -83,6 +83,11 @@ android {
             includeAndroidResources = true
         }
     }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 configurations {
@@ -95,13 +100,13 @@ dependencies {
     implementation "com.android.support:appcompat-v7:$android_support_version"
     implementation "com.android.support:support-v4:$android_support_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'com.google.android.exoplayer:exoplayer:2.8.2'
+    implementation 'com.google.android.exoplayer:exoplayer:2.9.2'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.1.2"
+    testImplementation "org.robolectric:robolectric:3.8"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
