@@ -172,21 +172,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private var lastDrvAvailableCheck: Boolean? = null
 
-    private val bitrateHistory: MutableList<BitrateLog> = mutableListOf()
+    private val bitrateHistory by lazy { BitrateHistory() }
 
     override val bitrate: Int?
         get() {
             val bitrate = player?.videoFormat?.bitrate
-            addBitrateLog(bitrate)
+            bitrateHistory.addBitrateLog(bitrate)
             return bitrate
         }
 
     override val avgBitrate: Long
-        get() {
-            val totalTime = bitrateHistory.map { log -> log.time }.reduce { currentSum, next -> currentSum + next }
-            return (bitrateHistory.map { log -> log.bitrate.toLong() * log.time }
-                    .reduce { currentSum, next -> currentSum + next }) / totalTime
-        }
+        get() = bitrateHistory.avgBitrate
 
     override val currentDate: Long?
         get() = dvrStartTimeinSeconds
@@ -641,17 +637,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             function(index, getFormat(index))
         }
     }
-
-    private fun addBitrateLog(bitrate: Int?) {
-        bitrate?.let {
-            val currentTime = System.currentTimeMillis()
-            val startTime = if (bitrateHistory.size > 0) bitrateHistory[0].time
-                            else currentTime
-            bitrateHistory.add(BitrateLog(time = currentTime - startTime, bitrate = bitrate))
-        }
-    }
-
-    data class BitrateLog(val time: Long, val bitrate: Int = 0)
 
     inner class ExoplayerEventsListener: Player.EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
