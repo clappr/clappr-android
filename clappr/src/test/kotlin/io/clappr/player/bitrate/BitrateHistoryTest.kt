@@ -103,6 +103,18 @@ class BitrateHistoryTest {
     }
 
     @Test
+    fun shouldAddNewBitrateIfDifferentOnlyFromTheLastAdded() {
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
+        bitrateHistoryUnderTest.addBitrate(0, 4)
+        bitrateHistoryUnderTest.addBitrate(1, 4)
+        bitrateHistoryUnderTest.addBitrate(0, 4)
+        bitrateHistoryUnderTest.addBitrate(1, 4)
+
+        assertEquals(6, bitrateHistoryUnderTest.bitrateLogList.size)
+    }
+
+    @Test
     fun shouldSumBitrateWithTime() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
         bitrateHistoryUnderTest.addBitrate(100, 3)
