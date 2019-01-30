@@ -22,9 +22,9 @@ class BitrateHistoryTest {
     @Test
     fun shouldListBitrate() {
         bitrateHistoryUnderTest.addBitrate(0)
-        bitrateHistoryUnderTest.addBitrate(0)
-        bitrateHistoryUnderTest.addBitrate(0)
-        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(1)
+        bitrateHistoryUnderTest.addBitrate(2)
+        bitrateHistoryUnderTest.addBitrate(3)
 
         assertEquals(4, bitrateHistoryUnderTest.bitrateLogList.size, "Bitrate log list size incorrect")
     }
@@ -40,8 +40,8 @@ class BitrateHistoryTest {
     fun shouldIgnoreBitrateWhenNullFromList() {
         bitrateHistoryUnderTest.addBitrate(0)
         bitrateHistoryUnderTest.addBitrate(null)
-        bitrateHistoryUnderTest.addBitrate(0)
-        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(1)
+        bitrateHistoryUnderTest.addBitrate(2)
 
         assertEquals(3, bitrateHistoryUnderTest.bitrateLogList.size)
     }
@@ -55,7 +55,7 @@ class BitrateHistoryTest {
     @Test
     fun shouldSetBitrateEndTime() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
-        bitrateHistoryUnderTest.addBitrate(0, 3)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
         assertEquals(3, bitrateHistoryUnderTest.bitrateLogList[0].end)
     }
 
@@ -68,7 +68,7 @@ class BitrateHistoryTest {
     @Test
     fun shouldSetBitrateTimeAsDifferenceBetweenFirstAndLastTimes() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
-        bitrateHistoryUnderTest.addBitrate(0, 3)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
         assertEquals(1, bitrateHistoryUnderTest.bitrateLogList[0].time)
     }
 
@@ -81,7 +81,7 @@ class BitrateHistoryTest {
     @Test
     fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTime() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
-        bitrateHistoryUnderTest.addBitrate(0, 3)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
 
@@ -89,8 +89,17 @@ class BitrateHistoryTest {
     fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTimeWhenNullBitrateAdded() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
         bitrateHistoryUnderTest.addBitrate(null, 500)
-        bitrateHistoryUnderTest.addBitrate(0, 3)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
+    }
+
+    @Test
+    fun shouldNotAddNewBitrateIfEqualsTheLastAdded() {
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(1, 3)
+        bitrateHistoryUnderTest.addBitrate(1, 4)
+
+        assertEquals(2, bitrateHistoryUnderTest.bitrateLogList.size)
     }
 
     @Test
