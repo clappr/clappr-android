@@ -29,7 +29,6 @@ import io.clappr.player.base.*
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
-import kotlin.collections.HashMap
 import kotlin.math.min
 
 
@@ -175,15 +174,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val bitrate: Int?
         get() {
-            return player?.let {
-                val bitrate = it.videoFormat?.bitrate
-                bitrateHistory.addBitrateLog(bitrate, it.currentPosition)
-                return bitrate
-            }
+            val bitrate = player?.videoFormat?.bitrate
+            bitrateHistory.addBitrateLog(bitrate)
+            return bitrate
         }
 
     override val avgBitrate: Long
-        get() = bitrateHistory.avgBitrate
+        get() = bitrateHistory.averageBitrate()
 
     override val currentDate: Long?
         get() = dvrStartTimeinSeconds

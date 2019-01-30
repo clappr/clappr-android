@@ -92,4 +92,57 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrateLog(0, 3)
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
+
+    @Test
+    fun shouldSumBitrateWithTime() {
+        bitrateHistoryUnderTest.addBitrateLog(90, 2)
+        bitrateHistoryUnderTest.addBitrateLog(100, 3)
+        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+
+        val bitrateList = bitrateHistoryUnderTest.bitrateLogList
+
+        val firstBitrateLog = bitrateList.first()
+        val secondBitrateLog = bitrateList[1]
+        val thirdBitrateLog = bitrateList[2]
+
+
+        val sumOfAllBitrateWithTime = ((firstBitrateLog.bitrate * firstBitrateLog.time)
+                + (secondBitrateLog.bitrate * secondBitrateLog.time)
+                + (thirdBitrateLog.bitrate * thirdBitrateLog.time))
+
+        assertEquals(sumOfAllBitrateWithTime, bitrateHistoryUnderTest.sumOfAllBitrateWithTime())
+    }
+
+    @Test
+    fun shouldSumTotalTime() {
+        bitrateHistoryUnderTest.addBitrateLog(90, 2)
+        bitrateHistoryUnderTest.addBitrateLog(100, 3)
+        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+
+        val bitrateList = bitrateHistoryUnderTest.bitrateLogList
+
+        val firstBitrateLog = bitrateList.first()
+        val secondBitrateLog = bitrateList[1]
+        val thirdBitrateLog = bitrateList[2]
+
+        bitrateList.last().time = 5
+
+        val totalTimeSum = firstBitrateLog.time + secondBitrateLog.time + thirdBitrateLog.time
+        assertEquals(totalTimeSum, bitrateHistoryUnderTest.totalBitrateHistoryTime())
+    }
+
+    @Test
+    fun shouldSetLastBitrateTimeAndDivideSums() {
+
+        bitrateHistoryUnderTest.addBitrateLog(90, 2)
+        bitrateHistoryUnderTest.addBitrateLog(100, 3)
+        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+
+        val bitrateList = bitrateHistoryUnderTest.bitrateLogList
+
+        bitrateList.last().time = 5
+        val averageBitrate =  bitrateHistoryUnderTest.sumOfAllBitrateWithTime() / bitrateHistoryUnderTest.totalBitrateHistoryTime()
+
+        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(5))
+    }
 }

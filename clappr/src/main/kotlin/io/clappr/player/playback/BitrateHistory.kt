@@ -1,24 +1,29 @@
 package io.clappr.player.playback
 
 class BitrateHistory {
-    
+
     internal val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
-    val avgBitrate: Long
-        get() {
-            val totalTime = bitrateLogList.map { log -> log.time }.reduce { currentSum, next -> currentSum + next }
-            return (bitrateLogList.map { log -> log.bitrate.toLong() * log.time }
-                    .reduce { currentSum, next -> currentSum + next }) / totalTime
-        }
+    fun averageBitrate(currentTimestamp: Long = System.currentTimeMillis()): Long {
+        bitrateLogList.last().time = currentTimestamp
+        return sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
+    }
 
-    fun addBitrateLog(bitrate: Int?, bitrateTimestamp: Long = System.currentTimeMillis()) {
+    fun addBitrateLog(bitrate: Int?, currentTimestamp: Long = System.currentTimeMillis()) {
         bitrate?.let {
-            setTimesForLastBitrate(bitrateTimestamp)
-            bitrateLogList.add(BitrateLog(start = bitrateTimestamp, bitrate = bitrate))
+            setTimesForLastBitrate(currentTimestamp)
+            bitrateLogList.add(BitrateLog(start = currentTimestamp, bitrate = bitrate))
         }
     }
 
-    internal fun setTimesForLastBitrate(currentTime: Long) {
+    internal fun sumOfAllBitrateWithTime() =
+            (bitrateLogList.map { log -> log.bitrate.toLong() * log.time }
+                    .reduce { currentSum, next -> currentSum + next })
+
+    internal fun totalBitrateHistoryTime() =
+            bitrateLogList.map { log -> log.time }.reduce { currentSum, next -> currentSum + next }
+
+    private fun setTimesForLastBitrate(currentTime: Long) {
         if (bitrateLogList.size > 0) {
             val lastBitrate = bitrateLogList.last()
             lastBitrate.end = currentTime
