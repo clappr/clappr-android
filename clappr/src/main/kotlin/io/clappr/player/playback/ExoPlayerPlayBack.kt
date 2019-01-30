@@ -29,6 +29,7 @@ import io.clappr.player.base.*
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
+import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
@@ -175,7 +176,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val bitrate: Int?
         get() {
             val bitrate = player?.videoFormat?.bitrate
-            bitrateHistory.addBitrateLog(bitrate)
+            bitrateHistory.addBitrate(bitrate)
             return bitrate
         }
 
@@ -351,6 +352,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         updateDvrAvailableState()
         updateIsDvrInUse()
+        player?.let { bitrateHistory.addBitrate(it.videoFormat?.bitrate)}
 
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
