@@ -1,16 +1,9 @@
 package io.clappr.player.bitrate
 
-import io.clappr.player.BuildConfig
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 
-
-@RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
 class BitrateHistoryTest {
     private lateinit var bitrateHistoryUnderTest: BitrateHistory
 
@@ -82,7 +75,7 @@ class BitrateHistoryTest {
     fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTime() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
         bitrateHistoryUnderTest.addBitrate(1, 3)
-        assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
+        assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end, bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
 
     @Test
@@ -90,7 +83,7 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(0, 2)
         bitrateHistoryUnderTest.addBitrate(null, 500)
         bitrateHistoryUnderTest.addBitrate(1, 3)
-        assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
+        assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end, bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
 
     @Test
@@ -179,7 +172,7 @@ class BitrateHistoryTest {
 
         bitrateList.last().time = 5 - bitrateList.last().start
 
-        val averageBitrate =  bitrateHistoryUnderTest.sumOfAllBitrateWithTime() / bitrateHistoryUnderTest.totalBitrateHistoryTime()
+        val averageBitrate = bitrateHistoryUnderTest.sumOfAllBitrateWithTime() / bitrateHistoryUnderTest.totalBitrateHistoryTime()
 
         assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(5))
     }
