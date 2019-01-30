@@ -12,28 +12,27 @@ class BitrateHistory {
     fun addBitrate(bitrate: Int?, currentTimestamp: Long = System.currentTimeMillis()) {
         bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
             setTimesForLastBitrate(currentTimestamp)
-            bitrateLogList.add(BitrateLog(start = currentTimestamp, bitrate = bitrate))
+            bitrateLogList.add(BitrateLog(startTime = currentTimestamp, bitrate = bitrate))
         }
     }
 
     internal fun sumOfAllBitrateWithTime() =
-            (bitrateLogList.map { log -> log.bitrate.toLong() * log.time }
+            (bitrateLogList.map { it.bitrate.toLong() * it.totalActiveTimeInMillis }
                     .reduce { currentSum, next -> currentSum + next })
 
     internal fun totalBitrateHistoryTime() =
-            bitrateLogList.map { log -> log.time }.reduce { currentSum, next -> currentSum + next }
+            bitrateLogList.map { it.totalActiveTimeInMillis }.reduce { currentSum, next -> currentSum + next }
 
-    private fun setTimesForLastBitrate(currentTime: Long) {
+    private fun setTimesForLastBitrate(currentTimestamp: Long) {
         if (bitrateLogList.size > 0) {
             val lastBitrate = bitrateLogList.last()
-            lastBitrate.end = currentTime
-            lastBitrate.time = currentTime - lastBitrate.start
+            lastBitrate.endTime = currentTimestamp
         }
     }
 
-    internal data class BitrateLog(
-            val start: Long,
-            var end: Long = 0,
-            var time: Long = 0,
-            val bitrate: Int = 0)
+    internal data class BitrateLog(val startTime: Long, var endTime: Long = 0, val bitrate: Int = 0) {
+
+        val totalActiveTimeInMillis: Long
+            get() = endTime - startTime
+    }
 }
