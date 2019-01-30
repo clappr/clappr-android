@@ -1,16 +1,16 @@
-package io.clappr.player.playback
+package io.clappr.player.bitrate
 
 class BitrateHistory {
 
     internal val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
     fun averageBitrate(currentTimestamp: Long = System.currentTimeMillis()): Long {
-        bitrateLogList.last().time = currentTimestamp
+        setTimesForLastBitrate(currentTimestamp)
         return sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
     }
 
-    fun addBitrateLog(bitrate: Int?, currentTimestamp: Long = System.currentTimeMillis()) {
-        bitrate?.let {
+    fun addBitrate(bitrate: Int?, currentTimestamp: Long = System.currentTimeMillis()) {
+        bitrate?.takeIf { bitrate != bitrateLogList.last().bitrate }?.apply {
             setTimesForLastBitrate(currentTimestamp)
             bitrateLogList.add(BitrateLog(start = currentTimestamp, bitrate = bitrate))
         }

@@ -1,4 +1,4 @@
-package io.clappr.player.playback
+package io.clappr.player.bitrate
 
 import io.clappr.player.BuildConfig
 import org.junit.Before
@@ -21,83 +21,83 @@ class BitrateHistoryTest {
 
     @Test
     fun shouldListBitrate() {
-        bitrateHistoryUnderTest.addBitrateLog(0)
-        bitrateHistoryUnderTest.addBitrateLog(0)
-        bitrateHistoryUnderTest.addBitrateLog(0)
-        bitrateHistoryUnderTest.addBitrateLog(0)
+        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(0)
 
         assertEquals(4, bitrateHistoryUnderTest.bitrateLogList.size, "Bitrate log list size incorrect")
     }
 
     @Test
     fun shouldNotAddBitrateWhenNull() {
-        bitrateHistoryUnderTest.addBitrateLog(null)
+        bitrateHistoryUnderTest.addBitrate(null)
 
         assertEquals(0, bitrateHistoryUnderTest.bitrateLogList.size)
     }
 
     @Test
     fun shouldIgnoreBitrateWhenNullFromList() {
-        bitrateHistoryUnderTest.addBitrateLog(0)
-        bitrateHistoryUnderTest.addBitrateLog(null)
-        bitrateHistoryUnderTest.addBitrateLog(0)
-        bitrateHistoryUnderTest.addBitrateLog(0)
+        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(null)
+        bitrateHistoryUnderTest.addBitrate(0)
+        bitrateHistoryUnderTest.addBitrate(0)
 
         assertEquals(3, bitrateHistoryUnderTest.bitrateLogList.size)
     }
 
     @Test
     fun shouldSetBitrateTimeStampAsStartTime() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
         assertEquals(2, bitrateHistoryUnderTest.bitrateLogList[0].start)
     }
 
     @Test
     fun shouldSetBitrateEndTime() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
-        bitrateHistoryUnderTest.addBitrateLog(0, 3)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 3)
         assertEquals(3, bitrateHistoryUnderTest.bitrateLogList[0].end)
     }
 
     @Test
     fun shouldNotSetBitrateEndTime() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
         assertEquals(0, bitrateHistoryUnderTest.bitrateLogList[0].end)
     }
 
     @Test
     fun shouldSetBitrateTimeAsDifferenceBetweenFirstAndLastTimes() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
-        bitrateHistoryUnderTest.addBitrateLog(0, 3)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 3)
         assertEquals(1, bitrateHistoryUnderTest.bitrateLogList[0].time)
     }
 
     @Test
     fun shouldNotSetBitrateTime() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
         assertEquals(0, bitrateHistoryUnderTest.bitrateLogList[0].time)
     }
 
     @Test
     fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTime() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
-        bitrateHistoryUnderTest.addBitrateLog(0, 3)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(0, 3)
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
 
     @Test
     fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTimeWhenNullBitrateAdded() {
-        bitrateHistoryUnderTest.addBitrateLog(0, 2)
-        bitrateHistoryUnderTest.addBitrateLog(null, 500)
-        bitrateHistoryUnderTest.addBitrateLog(0, 3)
+        bitrateHistoryUnderTest.addBitrate(0, 2)
+        bitrateHistoryUnderTest.addBitrate(null, 500)
+        bitrateHistoryUnderTest.addBitrate(0, 3)
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].end ,bitrateHistoryUnderTest.bitrateLogList[1].start)
     }
 
     @Test
     fun shouldSumBitrateWithTime() {
-        bitrateHistoryUnderTest.addBitrateLog(90, 2)
-        bitrateHistoryUnderTest.addBitrateLog(100, 3)
-        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 3)
+        bitrateHistoryUnderTest.addBitrate(110, 4)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
 
@@ -115,9 +115,9 @@ class BitrateHistoryTest {
 
     @Test
     fun shouldSumTotalTime() {
-        bitrateHistoryUnderTest.addBitrateLog(90, 2)
-        bitrateHistoryUnderTest.addBitrateLog(100, 3)
-        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 3)
+        bitrateHistoryUnderTest.addBitrate(110, 4)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
 
@@ -125,22 +125,39 @@ class BitrateHistoryTest {
         val secondBitrateLog = bitrateList[1]
         val thirdBitrateLog = bitrateList[2]
 
-        bitrateList.last().time = 5
+        bitrateList.last().time = 5 - bitrateList.last().start
 
         val totalTimeSum = firstBitrateLog.time + secondBitrateLog.time + thirdBitrateLog.time
         assertEquals(totalTimeSum, bitrateHistoryUnderTest.totalBitrateHistoryTime())
     }
 
     @Test
+    fun shouldEqualsTotalTimeSumWithBitrateDelta() {
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 3)
+        bitrateHistoryUnderTest.addBitrate(110, 4)
+
+        val bitrateList = bitrateHistoryUnderTest.bitrateLogList
+        bitrateList.last().end = 5
+        bitrateList.last().time = 5 - bitrateList.last().start
+
+        val bitrateDelta = bitrateList.last().end - bitrateList.first().start
+        val totalTime = bitrateHistoryUnderTest.totalBitrateHistoryTime()
+
+        assertEquals(bitrateDelta, totalTime)
+    }
+
+    @Test
     fun shouldSetLastBitrateTimeAndDivideSums() {
 
-        bitrateHistoryUnderTest.addBitrateLog(90, 2)
-        bitrateHistoryUnderTest.addBitrateLog(100, 3)
-        bitrateHistoryUnderTest.addBitrateLog(110, 4)
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 3)
+        bitrateHistoryUnderTest.addBitrate(110, 4)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
 
-        bitrateList.last().time = 5
+        bitrateList.last().time = 5 - bitrateList.last().start
+
         val averageBitrate =  bitrateHistoryUnderTest.sumOfAllBitrateWithTime() / bitrateHistoryUnderTest.totalBitrateHistoryTime()
 
         assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(5))
