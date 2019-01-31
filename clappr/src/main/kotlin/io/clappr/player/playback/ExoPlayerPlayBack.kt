@@ -173,11 +173,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val bitrateHistory by lazy { BitrateHistory() }
 
-    override val bitrate: Int?
+    override val bitrate: Int
         get() {
-            val bitrate = player?.videoFormat?.bitrate
-            bitrateHistory.addBitrate(bitrate)
-            return bitrate
+            return player?.videoFormat?.let {
+                bitrateHistory.addBitrate(it.bitrate)
+                return it.bitrate
+            } ?: 0
         }
 
     override val avgBitrate: Long
