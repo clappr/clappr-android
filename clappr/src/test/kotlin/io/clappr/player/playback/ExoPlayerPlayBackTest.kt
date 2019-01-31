@@ -9,7 +9,7 @@ import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
 import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportCheck
-import io.clappr.player.shadows.ExoPlayerShadow
+import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -23,7 +23,7 @@ import kotlin.test.assertEquals
 
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class, ExoPlayerShadow::class])
+@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class, SubtitleViewShadow::class])
 class ExoPlayerPlaybackTest {
 
     private lateinit var exoPlayerPlayBack: ExoPlayerPlayback
