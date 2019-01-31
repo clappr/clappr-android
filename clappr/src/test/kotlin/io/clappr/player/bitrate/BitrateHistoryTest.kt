@@ -41,6 +41,14 @@ class BitrateHistoryTest {
     }
 
     @Test
+    fun shouldSetBitrateValueOnBitrateLog() {
+        bitrateHistoryUnderTest.addBitrate(123456)
+        val bitrateLog =  bitrateHistoryUnderTest.bitrateLogList.first()
+
+        assertEquals(123456, bitrateLog.bitrate)
+    }
+
+    @Test
     fun shouldSetBitrateTimeStampAsStartTime() {
         bitrateHistoryUnderTest.addBitrate(0, 2)
         assertEquals(2, bitrateHistoryUnderTest.bitrateLogList[0].startTime)
