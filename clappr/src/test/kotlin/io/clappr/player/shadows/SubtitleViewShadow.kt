@@ -7,7 +7,7 @@ import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowView
 
 @Implements(SubtitleView::class)
- class ExoPlayerShadow : ShadowView() {
+ class SubtitleViewShadow : ShadowView() {
 
  @Implementation
  fun setUserDefaultStyle() {
