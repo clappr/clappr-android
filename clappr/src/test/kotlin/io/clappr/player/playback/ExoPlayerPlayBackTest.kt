@@ -20,7 +20,6 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -38,15 +37,13 @@ class ExoPlayerPlaybackTest {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         MockitoAnnotations.initMocks(this)
 
-        exoPlayerPlayBack = FakeExoPlayerPlayback(source = "aSource", options = Options())
-        (exoPlayerPlayBack as FakeExoPlayerPlayback).setSimpleExoPlayerMock(simpleExoPlayerMock)
+        exoPlayerPlayBack = MockedExoPlayerPlayback(source = "aSource", options = Options(), simpleExoPlayerMock = simpleExoPlayerMock)
     }
 
     @Test
     fun shouldKeepOriginalBitrateValueWhenPlayerNull() {
-        (exoPlayerPlayBack as FakeExoPlayerPlayback).setSimpleExoPlayerMock(null)
 
-        assertNull( exoPlayerPlayBack.bitrate)
+        assertEquals(0, exoPlayerPlayBack.bitrate)
     }
 
     @Test
@@ -65,15 +62,14 @@ class ExoPlayerPlaybackTest {
     fun shouldKeepOriginalBitrateValueWhenVideoFormatNull() {
         whenever(simpleExoPlayerMock.videoFormat).thenReturn(null)
 
-        assertNull(exoPlayerPlayBack.bitrate)
+        assertEquals(0, exoPlayerPlayBack.bitrate)
     }
 
 
-    class FakeExoPlayerPlayback(
-            source: String, options: Options) :
-            ExoPlayerPlayback(source = source, options = options) {
+    class MockedExoPlayerPlayback(source: String, options: Options,
+                                  var simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options) {
 
-      fun setSimpleExoPlayerMock(simpleExoPlayerMock: SimpleExoPlayer?) {
+      init {
             player = simpleExoPlayerMock
         }
 
@@ -86,10 +82,7 @@ class ExoPlayerPlaybackTest {
 
             val entry = PlaybackEntry(
                     name, supportsSource,
-                    factory = { source, _, options -> FakeExoPlayerPlayback(source, options = options) })
-
+                    factory = { source, _, options -> MockedExoPlayerPlayback(source, options = options) })
         }
-
-
     }
 }
