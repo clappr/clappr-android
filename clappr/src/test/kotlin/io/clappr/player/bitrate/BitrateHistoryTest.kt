@@ -119,8 +119,8 @@ class BitrateHistoryTest {
     @Test
     fun shouldSumBitrateWithTime() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
-        bitrateHistoryUnderTest.addBitrate(100, 3)
-        bitrateHistoryUnderTest.addBitrate(110, 4)
+        bitrateHistoryUnderTest.addBitrate(100, 17)
+        bitrateHistoryUnderTest.addBitrate(110, 31)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
 
@@ -128,19 +128,22 @@ class BitrateHistoryTest {
         val secondBitrateLog = bitrateList[1]
         val thirdBitrateLog = bitrateList[2]
 
+        bitrateList.last().endTime = 49
 
         val sumOfAllBitrateWithTime = ((firstBitrateLog.bitrate * firstBitrateLog.totalActiveTimeInMillis)
                 + (secondBitrateLog.bitrate * secondBitrateLog.totalActiveTimeInMillis)
                 + (thirdBitrateLog.bitrate * thirdBitrateLog.totalActiveTimeInMillis))
 
-        assertEquals(sumOfAllBitrateWithTime, bitrateHistoryUnderTest.sumOfAllBitrateWithTime())
+        val averageBitrate = sumOfAllBitrateWithTime / 47
+
+        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(49))
     }
 
     @Test
     fun shouldSumTotalTime() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
-        bitrateHistoryUnderTest.addBitrate(100, 3)
-        bitrateHistoryUnderTest.addBitrate(110, 4)
+        bitrateHistoryUnderTest.addBitrate(100, 17)
+        bitrateHistoryUnderTest.addBitrate(110, 31)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
 
@@ -148,43 +151,42 @@ class BitrateHistoryTest {
         val secondBitrateLog = bitrateList[1]
         val thirdBitrateLog = bitrateList[2]
 
-        bitrateList.last().endTime = 5
+        bitrateList.last().endTime = 49
 
         val totalTimeSum = (firstBitrateLog.totalActiveTimeInMillis
                 + secondBitrateLog.totalActiveTimeInMillis
                 + thirdBitrateLog.totalActiveTimeInMillis)
 
-        assertEquals(totalTimeSum, bitrateHistoryUnderTest.totalBitrateHistoryTime())
+        val averageBitrate = ((90 * 15) + (100 * 14) + (110 * 18)) / totalTimeSum
+
+        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(49))
     }
 
     @Test
     fun shouldEqualsTotalTimeSumWithBitrateDelta() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
-        bitrateHistoryUnderTest.addBitrate(100, 3)
-        bitrateHistoryUnderTest.addBitrate(110, 4)
+        bitrateHistoryUnderTest.addBitrate(100, 17)
+        bitrateHistoryUnderTest.addBitrate(110, 31)
 
         val bitrateList = bitrateHistoryUnderTest.bitrateLogList
-        bitrateList.last().endTime = 5
+
+        bitrateList.last().endTime = 49
 
         val bitrateDelta = bitrateList.last().endTime - bitrateList.first().startTime
-        val totalTime = bitrateHistoryUnderTest.totalBitrateHistoryTime()
+        val averageBitrate = ((90 * 15) + (100 * 14) + (110 * 18)) / bitrateDelta
 
-        assertEquals(bitrateDelta, totalTime)
+        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(49))
     }
 
     @Test
     fun shouldSetLastBitrateTimeAndDivideSums() {
 
         bitrateHistoryUnderTest.addBitrate(90, 2)
-        bitrateHistoryUnderTest.addBitrate(100, 3)
-        bitrateHistoryUnderTest.addBitrate(110, 4)
+        bitrateHistoryUnderTest.addBitrate(100, 17)
+        bitrateHistoryUnderTest.addBitrate(110, 31)
 
-        val bitrateList = bitrateHistoryUnderTest.bitrateLogList
+        val averageBitrate = (((90 * 15) + (100 * 14) + (110 * 18)) / 47).toLong()
 
-        bitrateList.last().endTime = 5
-
-        val averageBitrate = bitrateHistoryUnderTest.sumOfAllBitrateWithTime() / bitrateHistoryUnderTest.totalBitrateHistoryTime()
-
-        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(5))
+        assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(49))
     }
 }

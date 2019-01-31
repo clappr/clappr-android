@@ -16,11 +16,11 @@ class BitrateHistory {
         }
     }
 
-    internal fun sumOfAllBitrateWithTime() =
+    private fun sumOfAllBitrateWithTime() =
             bitrateLogList.map { it.bitrate.toLong() * it.totalActiveTimeInMillis }
                     .reduce { currentSum, next -> currentSum + next }
 
-    internal fun totalBitrateHistoryTime() =
+    private fun totalBitrateHistoryTime() =
             bitrateLogList.map { it.totalActiveTimeInMillis }.reduce { currentSum, next -> currentSum + next }
 
     private fun setTimesForLastBitrate(currentTimestamp: Long) {
