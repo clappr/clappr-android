@@ -2,7 +2,6 @@ package io.clappr.player.playback
 
 import android.annotation.SuppressLint
 import android.graphics.Color
-import android.media.UnsupportedSchemeException
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -333,7 +332,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                         drmLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) }
                     }
         }
-        catch (schemeException: UnsupportedSchemeException) { handleError(schemeException) }
         catch (drmException: UnsupportedDrmException) { handleError(drmException) }
 
         return drmSessionManager
