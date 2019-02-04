@@ -33,7 +33,7 @@ import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), private val bitrateHistory: BitrateHistory) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
     companion object {
         private const val tag: String = "ExoPlayerPlayback"
 
@@ -48,7 +48,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val entry = PlaybackEntry(
                 name = name,
                 supportsSource = supportsSource,
-                factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
+                factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options, BitrateHistory()) })
     }
 
     private val ONE_SECOND_IN_MILLIS: Int = 1000
@@ -170,8 +170,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
     private var lastDrvAvailableCheck: Boolean? = null
-
-    private val bitrateHistory by lazy { BitrateHistory() }
 
     override val bitrate: Int
         get() {
@@ -353,7 +351,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         updateDvrAvailableState()
         updateIsDvrInUse()
-        player?.let { bitrateHistory.addBitrate(it.videoFormat?.bitrate)}
+        player?.videoFormat?.let { bitrateHistory.addBitrate(it.bitrate)}
 
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()

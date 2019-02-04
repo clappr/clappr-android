@@ -7,6 +7,7 @@ import com.nhaarman.mockito_kotlin.whenever
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
+import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.shadows.SubtitleViewShadow
@@ -67,7 +68,7 @@ class ExoPlayerPlaybackTest {
 
 
     class MockedExoPlayerPlayback(source: String, options: Options,
-                                  var simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options) {
+                                  var simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options, bitrateHistory = BitrateHistory()) {
 
       init {
             player = simpleExoPlayerMock
