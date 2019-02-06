@@ -174,8 +174,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastDrvAvailableCheck: Boolean? = null
 
     override val bitrate: Int
-        get() = bitrateHistory.bitrateLogList.takeIf {
-            it.isNotEmpty() }?.last()?.bitrate ?: 0
+        get() = bitrateHistory.bitrateLogList.takeIf { it.isNotEmpty() }?.last()?.bitrate ?: 0
 
     override val avgBitrate: Long
         get() = bitrateHistory.averageBitrate()

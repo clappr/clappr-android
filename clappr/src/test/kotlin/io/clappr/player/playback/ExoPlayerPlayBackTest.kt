@@ -5,7 +5,6 @@ import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceEventListener
-import com.nhaarman.mockito_kotlin.whenever
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
@@ -74,6 +73,16 @@ class ExoPlayerPlaybackTest {
         assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
     }
 
+    @Test
+    fun shouldReturnAverageBitrate() {
+        val expectedAverageBitrate = 109L
+
+        bitrateHistory.addBitrate(90, 2)
+        bitrateHistory.addBitrate(100, 17)
+        bitrateHistory.addBitrate(110, 31)
+
+        assertEquals(expectedAverageBitrate, exoPlayerPlayBack.avgBitrate)
+    }
 
     class MockedExoPlayerPlayback(source: String, options: Options, bitrateHistory: BitrateHistory,
                                       val simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options, bitrateHistory = bitrateHistory) {
