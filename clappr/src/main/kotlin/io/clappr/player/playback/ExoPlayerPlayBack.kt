@@ -233,6 +233,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         needSetupMediaOptions = true
         mediaOptionList.clear()
         selectedMediaOptionList.clear()
+        bitrateHistory.bitrateLogList.clear()
 
         removeListeners()
 

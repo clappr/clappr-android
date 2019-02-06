@@ -14,7 +14,22 @@ class BitrateHistoryTest {
     }
 
     @Test
-    fun shouldListBitrate() {
+    fun shouldHaveEmptyListAsDefault() {
+        assertEquals(0, bitrateHistoryUnderTest.bitrateLogList.size)
+    }
+
+    @Test
+    fun shouldReturnZeroAverageBitrateWhenEmpty() {
+        assertEquals(0, bitrateHistoryUnderTest.averageBitrate())
+    }
+
+    @Test
+    fun shouldReturnZeroAverageBitrateWhenEmptyWithTimestamp() {
+        assertEquals(0, bitrateHistoryUnderTest.averageBitrate(1000))
+    }
+
+    @Test
+    fun shouldAddBitrateOnList() {
         bitrateHistoryUnderTest.addBitrate(0)
         bitrateHistoryUnderTest.addBitrate(1)
         bitrateHistoryUnderTest.addBitrate(2)

@@ -48,6 +48,11 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
+    fun shouldReturnZeroAverageBitrateWhenHistoryIsEmpty() {
+        assertEquals(0, exoPlayerPlayBack.avgBitrate)
+    }
+
+    @Test
     fun shouldReturnLastReportedBitrate() {
         val expectedBitrate = 60
 
@@ -81,6 +86,28 @@ class ExoPlayerPlaybackTest {
         bitrateHistory.addBitrate(110, 31)
 
         assertEquals(expectedAverageBitrate, exoPlayerPlayBack.avgBitrate)
+    }
+
+    @Test
+    fun shouldResetBitrateHistoryAfterStopping() {
+        bitrateHistory.addBitrate(90, 2)
+        bitrateHistory.addBitrate(100, 17)
+        bitrateHistory.addBitrate(110, 31)
+
+        exoPlayerPlayBack.stop()
+
+        assertEquals(0, exoPlayerPlayBack.bitrate)
+    }
+
+    @Test
+    fun shouldResetAverageBitrateHistoryAfterStopping() {
+        bitrateHistory.addBitrate(90, 2)
+        bitrateHistory.addBitrate(100, 17)
+        bitrateHistory.addBitrate(110, 31)
+
+        exoPlayerPlayBack.stop()
+
+        assertEquals(0, exoPlayerPlayBack.avgBitrate)
     }
 
     class MockedExoPlayerPlayback(source: String, options: Options, bitrateHistory: BitrateHistory,

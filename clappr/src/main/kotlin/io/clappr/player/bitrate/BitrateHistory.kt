@@ -5,8 +5,10 @@ class BitrateHistory {
     internal val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
     fun averageBitrate(currentTimestamp: Long = System.nanoTime()): Long {
-        setTimesForLastBitrate(currentTimestamp)
-        return sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
+        return bitrateLogList.takeIf { it.isNotEmpty() }?.let {
+            setTimesForLastBitrate(currentTimestamp)
+            sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
+        } ?: 0
     }
 
     fun addBitrate(bitrate: Int?, currentTimestamp: Long = System.nanoTime()) {
