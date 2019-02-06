@@ -1,14 +1,15 @@
 package io.clappr.player.playback
 
 
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.nhaarman.mockito_kotlin.whenever
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
-import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Before
@@ -32,58 +33,63 @@ class ExoPlayerPlaybackTest {
     @Mock
     lateinit var simpleExoPlayerMock: SimpleExoPlayer
 
+    lateinit var bitrateHistory: BitrateHistory
 
     @Before
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
         MockitoAnnotations.initMocks(this)
 
-        exoPlayerPlayBack = MockedExoPlayerPlayback(source = "aSource", options = Options(), simpleExoPlayerMock = simpleExoPlayerMock)
+        bitrateHistory = BitrateHistory()
+        exoPlayerPlayBack = MockedExoPlayerPlayback(source = "aSource", options = Options(), bitrateHistory = bitrateHistory, simpleExoPlayerMock = simpleExoPlayerMock)
     }
 
     @Test
-    fun shouldKeepOriginalBitrateValueWhenPlayerNull() {
-
+    fun shouldReturnZeroBitrateWhenHistoryIsEmpty() {
         assertEquals(0, exoPlayerPlayBack.bitrate)
     }
 
     @Test
-    fun shouldHaveBitrate() {
-        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, 10,
-                0, 0, 0, 0f, listOf<ByteArray>(), null)
+    fun shouldReturnLastReportedBitrate() {
+        val expectedBitrate = 60
 
-        val expectedBitrate = 10
-
-        whenever(simpleExoPlayerMock.videoFormat).thenReturn(videoFormatMock)
+        bitrateHistory.addBitrate(40)
+        bitrateHistory.addBitrate(50)
+        bitrateHistory.addBitrate(expectedBitrate)
 
         assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
     }
 
     @Test
-    fun shouldKeepOriginalBitrateValueWhenVideoFormatNull() {
-        whenever(simpleExoPlayerMock.videoFormat).thenReturn(null)
+    fun shouldReturnLastReportedBitrateAfterOnLoadCompleted() {
+        val expectedBitrate = 10
+        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, expectedBitrate,
+                0, 0, 0, 0f, listOf<ByteArray>(), null)
+        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
+                null, 0L, 0L )
 
-        assertEquals(0, exoPlayerPlayBack.bitrate)
+        bitrateHistory.addBitrate(40)
+        (exoPlayerPlayBack as MockedExoPlayerPlayback).eventListener.onLoadCompleted(null, null, mediaLoadData)
+
+        assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
     }
 
 
-    class MockedExoPlayerPlayback(source: String, options: Options,
-                                  var simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options, bitrateHistory = BitrateHistory()) {
+    class MockedExoPlayerPlayback(source: String, options: Options, bitrateHistory: BitrateHistory,
+                                      val simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options, bitrateHistory = bitrateHistory) {
+        val eventListener = ExoplayerEventsListener()
 
-      init {
+        init {
             player = simpleExoPlayerMock
         }
 
         companion object {
-            const val name: String = "fakeExoPlayerPlayback"
+            const val name: String = "mockedExoPlayerPlayback"
 
             const val validSource = "valid-source.mp4"
 
-            val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
 
-            val entry = PlaybackEntry(
-                    name, supportsSource,
-                    factory = { source, _, options -> MockedExoPlayerPlayback(source, options = options) })
+            val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
         }
     }
 }

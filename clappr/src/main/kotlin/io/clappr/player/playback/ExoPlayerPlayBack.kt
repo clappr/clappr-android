@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -23,6 +24,7 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
@@ -33,7 +35,7 @@ import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), private val bitrateHistory: BitrateHistory) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), protected val bitrateHistory: BitrateHistory) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
     companion object {
         private const val tag: String = "ExoPlayerPlayback"
 
@@ -172,12 +174,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastDrvAvailableCheck: Boolean? = null
 
     override val bitrate: Int
-        get() {
-            return player?.videoFormat?.let {
-                bitrateHistory.addBitrate(it.bitrate)
-                return it.bitrate
-            } ?: 0
-        }
+        get() = bitrateHistory.bitrateLogList.takeIf {
+            it.isNotEmpty() }?.last()?.bitrate ?: 0
 
     override val avgBitrate: Long
         get() = bitrateHistory.averageBitrate()
@@ -351,7 +349,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun checkPeriodicUpdates() {
         updateDvrAvailableState()
         updateIsDvrInUse()
-        player?.videoFormat?.let { bitrateHistory.addBitrate(it.bitrate)}
 
         if (bufferPercentage != lastBufferPercentageSent) triggerBufferUpdateEvent()
         if (position != lastPositionSent) triggerPositionUpdateEvent()
@@ -636,7 +633,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener: Player.EventListener {
+    inner class ExoplayerEventsListener: Player.EventListener, EventLogger(trackSelector) {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
@@ -670,6 +667,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             Logger.info(tag, "onTracksChanged")
         }
 
+        override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
+            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
+            if (mediaLoadData?.trackFormat != null) {
+                if (mediaLoadData.trackType == C.TRACK_TYPE_DEFAULT ||
+                        mediaLoadData.trackType == C.TRACK_TYPE_VIDEO)
+                    mediaLoadData.trackFormat?.bitrate?.let {
+                        bitrateHistory.addBitrate(it)
+                    }
+            }
+        }
+
         override fun onSeekProcessed() {
         }
 
@@ -678,6 +686,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         }
+
     }
 
     inner class ExoplayerDrmEventsListeners : DefaultDrmSessionManager.EventListener {

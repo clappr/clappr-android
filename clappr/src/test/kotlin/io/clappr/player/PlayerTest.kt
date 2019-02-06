@@ -5,6 +5,7 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
+import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackEntry
