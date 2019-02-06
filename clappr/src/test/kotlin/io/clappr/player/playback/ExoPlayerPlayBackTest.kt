@@ -9,7 +9,6 @@ import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
-import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Before
 import org.junit.Test
@@ -90,15 +89,6 @@ class ExoPlayerPlaybackTest {
 
         init {
             player = simpleExoPlayerMock
-        }
-
-        companion object {
-            const val name: String = "mockedExoPlayerPlayback"
-
-            const val validSource = "valid-source.mp4"
-
-
-            val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
         }
     }
 }
