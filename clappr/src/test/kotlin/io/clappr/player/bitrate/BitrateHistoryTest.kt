@@ -24,23 +24,6 @@ class BitrateHistoryTest {
     }
 
     @Test
-    fun shouldNotAddBitrateWhenNull() {
-        bitrateHistoryUnderTest.addBitrate(null)
-
-        assertEquals(0, bitrateHistoryUnderTest.bitrateLogList.size)
-    }
-
-    @Test
-    fun shouldIgnoreBitrateWhenNullFromList() {
-        bitrateHistoryUnderTest.addBitrate(0)
-        bitrateHistoryUnderTest.addBitrate(null)
-        bitrateHistoryUnderTest.addBitrate(1)
-        bitrateHistoryUnderTest.addBitrate(2)
-
-        assertEquals(3, bitrateHistoryUnderTest.bitrateLogList.size)
-    }
-
-    @Test
     fun shouldSetBitrateValueOnBitrateLog() {
         bitrateHistoryUnderTest.addBitrate(123456)
         val bitrateLog =  bitrateHistoryUnderTest.bitrateLogList.first()
@@ -87,13 +70,6 @@ class BitrateHistoryTest {
         assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].endTime, bitrateHistoryUnderTest.bitrateLogList[1].startTime)
     }
 
-    @Test
-    fun shouldEqualFirstBitrateEndTimeWithSecondBitrateStartTimeWhenNullBitrateAdded() {
-        bitrateHistoryUnderTest.addBitrate(0, 2)
-        bitrateHistoryUnderTest.addBitrate(null, 500)
-        bitrateHistoryUnderTest.addBitrate(1, 3)
-        assertEquals(bitrateHistoryUnderTest.bitrateLogList[0].endTime, bitrateHistoryUnderTest.bitrateLogList[1].startTime)
-    }
 
     @Test
     fun shouldNotAddNewBitrateIfEqualsTheLastAdded() {

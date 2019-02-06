@@ -9,8 +9,8 @@ class BitrateHistory {
         return sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
     }
 
-    fun addBitrate(bitrate: Int?, currentTimestamp: Long = System.currentTimeMillis()) {
-        bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
+    fun addBitrate(bitrate: Int, currentTimestamp: Long = System.currentTimeMillis()) {
+        bitrate.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
             setTimesForLastBitrate(currentTimestamp)
             bitrateLogList.add(BitrateLog(startTime = currentTimestamp, bitrate = bitrate))
         }
