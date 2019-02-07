@@ -252,6 +252,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
+        player?.removeAnalyticsListener(bitrateEventsListener)
     }
 
     override fun seek(seconds: Int): Boolean {
@@ -325,6 +326,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
+
+        trackSelector?.let {
+            bitrateEventsListener = ExoplayerBitrateLogger(it)
+            player?.addAnalyticsListener(bitrateEventsListener)
+        }
+
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
