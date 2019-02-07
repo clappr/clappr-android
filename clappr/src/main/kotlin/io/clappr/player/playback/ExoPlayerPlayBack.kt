@@ -65,6 +65,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
+    private var bitrateEventsListener : ExoplayerBitrateLogger? = null
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
@@ -173,8 +174,16 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private var lastDrvAvailableCheck: Boolean? = null
 
+    private var lastBitrate: Int? = null
+    set(value) {
+        if(field != value)
+            trigger(Event.DID_UPDATE_BITRATE)
+
+        field = value
+    }
+
     override val bitrate: Int
-        get() = bitrateHistory.bitrateLogList.takeIf { it.isNotEmpty() }?.last()?.bitrate ?: 0
+        get() = lastBitrate ?: 0
 
     override val avgBitrate: Long
         get() = bitrateHistory.averageBitrate()
@@ -633,7 +642,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener: Player.EventListener, EventLogger(trackSelector) {
+    inner class ExoplayerEventsListener: Player.EventListener{
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
@@ -667,17 +676,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             Logger.info(tag, "onTracksChanged")
         }
 
-        override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
-            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
-            if (mediaLoadData?.trackFormat != null) {
-                if (mediaLoadData.trackType == C.TRACK_TYPE_DEFAULT ||
-                        mediaLoadData.trackType == C.TRACK_TYPE_VIDEO)
-                    mediaLoadData.trackFormat?.bitrate?.let {
-                        bitrateHistory.addBitrate(it)
-                    }
-            }
-        }
-
         override fun onSeekProcessed() {
         }
 
@@ -687,6 +685,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
         }
 
+    }
+
+    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector) : EventLogger(trackSelector) {
+        override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
+            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
+
+            if (mediaLoadData?.trackFormat != null) {
+                if (mediaLoadData.trackType == C.TRACK_TYPE_DEFAULT ||
+                        mediaLoadData.trackType == C.TRACK_TYPE_VIDEO)
+                    mediaLoadData.trackFormat?.bitrate?.let {
+                        lastBitrate = it.apply { bitrateHistory.addBitrate(it) }
+                    }
+            }
+        }
     }
 
     inner class ExoplayerDrmEventsListeners : DefaultDrmSessionManager.EventListener {
