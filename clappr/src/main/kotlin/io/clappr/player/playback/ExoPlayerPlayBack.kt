@@ -181,7 +181,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         field = value
 
-        if(oldValue != field) trigger(Event.DID_UPDATE_BITRATE)
+        if(oldValue != field) {
+            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putInt("bitrate", field ?: 0) })
+        }
     }
 
     override val bitrate: Int
