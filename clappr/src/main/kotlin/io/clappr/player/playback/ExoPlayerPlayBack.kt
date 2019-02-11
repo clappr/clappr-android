@@ -182,7 +182,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         field = value
 
         if(oldValue != field) {
-            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putInt("bitrate", field ?: 0) })
+            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putInt(EventData.BITRATE.value, field ?: 0) })
         }
     }
 

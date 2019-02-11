@@ -131,5 +131,14 @@ enum class EventData(val value: String) {
      *
      * Selected media options.
      */
-    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse")
+    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse"),
+
+    /**
+     * [Event.DID_UPDATE_BITRATE] data
+     *
+     * Type: Int
+     *
+     * New bitrate value
+     */
+    BITRATE("bitrate")
 }
