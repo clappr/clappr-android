@@ -35,7 +35,7 @@ import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), protected val bitrateHistory: BitrateHistory = BitrateHistory()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), private val bitrateHistory: BitrateHistory = BitrateHistory()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
     companion object {
         private const val tag: String = "ExoPlayerPlayback"
 
