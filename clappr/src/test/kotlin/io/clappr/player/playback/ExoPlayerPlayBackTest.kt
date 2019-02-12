@@ -6,10 +6,10 @@ import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.BuildConfig
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.shadows.SubtitleViewShadow
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -54,27 +54,64 @@ class ExoPlayerPlaybackTest {
 
     @Test
     fun shouldReturnLastReportedBitrate() {
-        val expectedBitrate = 60
+        val expectedBitrate = 40
 
-        bitrateHistory.addBitrate(40)
-        bitrateHistory.addBitrate(50)
-        bitrateHistory.addBitrate(expectedBitrate)
+        (exoPlayerPlayBack as MockedExoPlayerPlayback).bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+        (exoPlayerPlayBack as MockedExoPlayerPlayback).bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(20))
+        (exoPlayerPlayBack as MockedExoPlayerPlayback).bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(40))
 
         assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
     }
 
     @Test
-    fun shouldReturnLastReportedBitrateAfterOnLoadCompleted() {
-        val expectedBitrate = 10
-        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, expectedBitrate,
-                0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
-                null, 0L, 0L )
+    fun shouldTriggerEventDidUpdateBitrate() {
+        val listenObject = BaseObject()
+        val exoPlayback = (exoPlayerPlayBack as MockedExoPlayerPlayback)
+        var didUpdateBitrateCalled = false
 
-        bitrateHistory.addBitrate(40)
-        (exoPlayerPlayBack as MockedExoPlayerPlayback).eventListener.onLoadCompleted(null, null, mediaLoadData)
+        listenObject.listenTo(exoPlayback, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        exoPlayback.bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(10))
 
-        assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
+        Assert.assertTrue("Did update bitrate not triggered", didUpdateBitrateCalled)
+    }
+
+    @Test
+    fun shouldListeningOnDidUpdateDifferentBitrate() {
+        val listenObject = BaseObject()
+        val exoPlayback = (exoPlayerPlayBack as MockedExoPlayerPlayback)
+
+        var numberOfTriggers = 0
+        listenObject.listenTo(exoPlayback, Event.DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
+
+        exoPlayback.bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+        exoPlayback.bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(40))
+
+        Assert.assertEquals("trigger", 2, numberOfTriggers)
+    }
+
+    @Test
+    fun shouldStopListeningOnDestroy2() {
+        val listenObject = BaseObject()
+        val exoPlayback = (exoPlayerPlayBack as MockedExoPlayerPlayback)
+
+        var numberOfTriggers = 0
+        listenObject.listenTo(exoPlayback, Event.DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
+
+        exoPlayback.bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+        exoPlayback.bitrateLogger?.onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+
+        Assert.assertEquals("trigger", 1, numberOfTriggers)
+    }
+
+    @Test
+    fun shouldReturnLastReportedBitrateAfterOnLoadCompletede() {
+        val listenObject = BaseObject()
+        val exoPlayback = (exoPlayerPlayBack as MockedExoPlayerPlayback)
+        var didUpdateBitrateCalled = false
+
+        listenObject.listenTo(exoPlayback, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+
+        Assert.assertFalse("Did update bitrate triggered", didUpdateBitrateCalled)
     }
 
     @Test
@@ -110,12 +147,24 @@ class ExoPlayerPlaybackTest {
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
     }
 
+    private fun addBitrateMediaLoadData(bitrate: Int): MediaSourceEventListener.MediaLoadData {
+        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate,
+                0, 0, 0, 0f, listOf<ByteArray>(), null)
+        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
+                null, 0L, 0L)
+
+        return mediaLoadData
+    }
+
     class MockedExoPlayerPlayback(source: String, options: Options, bitrateHistory: BitrateHistory,
                                       val simpleExoPlayerMock: SimpleExoPlayer? = null) : ExoPlayerPlayback(source = source, options = options, bitrateHistory = bitrateHistory) {
-        val eventListener = ExoplayerEventsListener()
+        var bitrateLogger: ExoplayerBitrateLogger?
 
         init {
             player = simpleExoPlayerMock
+
+            configureTrackSelector()
+            bitrateLogger = trackSelector?.let { ExoplayerBitrateLogger(it) }
         }
     }
 }
