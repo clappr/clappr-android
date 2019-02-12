@@ -702,12 +702,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
-            if (mediaLoadData?.trackFormat != null) {
-                if (mediaLoadData.trackType == C.TRACK_TYPE_DEFAULT ||
-                        mediaLoadData.trackType == C.TRACK_TYPE_VIDEO)
-                    mediaLoadData.trackFormat?.bitrate?.let {
+            mediaLoadData?.let {
+                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO){
+                    it.trackFormat?.bitrate?.let {
                         lastBitrate = it.apply { bitrateHistory.addBitrate(it) }
                     }
+                }
             }
         }
     }
