@@ -28,5 +28,8 @@ enum class InternalEvent (val value: String) {
     OPEN_MODAL_PANEL("openModalPanel"),
     CLOSE_MODAL_PANEL("closeModalPanel"),
     DID_OPEN_MODAL_PANEL("didOpenModalPanel"),
-    DID_CLOSE_MODAL_PANEL("didCloseModalPanel")
+    DID_CLOSE_MODAL_PANEL("didCloseModalPanel"),
+
+    WILL_SHOW_MEDIA_CONTROL("willShowMediaControl"),
+    WILL_HIDE_MEDIA_CONTROL("willHideMediaControl")
 }

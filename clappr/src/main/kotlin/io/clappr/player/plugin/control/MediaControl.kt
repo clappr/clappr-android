@@ -229,7 +229,13 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     private fun toggleVisibility() {
         if (isEnabled) {
-            if (visibility == Visibility.VISIBLE) hide() else show(longShowTimeout)
+            if (visibility == Visibility.VISIBLE) {
+                core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
+                hide()
+            } else {
+                core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
+                show(longShowTimeout)
+            }
         }
     }
 
