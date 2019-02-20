@@ -6,7 +6,6 @@ import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.*
-import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.assertHiddenView
 import io.clappr.player.plugin.assertVisibleView
 import io.clappr.player.plugin.setupViewVisible
@@ -78,15 +77,27 @@ class SeekbarPluginTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdateInteractingEventWhenTouchDownEventHappens() {
-        var didUpdateInteractingCalled = false
+    fun shouldTriggerWillBeginScrubbingEventWhenTouchDownEventHappens() {
+        var willBeginScrubbingCalled = false
 
-        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { didUpdateInteractingCalled = true }
+        core.listenTo(core, InternalEvent.WILL_BEGIN_SCRUBBING.value) { willBeginScrubbingCalled = true }
 
         val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
 
         assertTrue(didTouchSeekbar)
-        assertTrue(didUpdateInteractingCalled)
+        assertTrue(willBeginScrubbingCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidFinishScrubbingEventWhenTouchUpEventHappens() {
+        var didFinishScrubbingCalled = false
+
+        core.listenTo(core, InternalEvent.DID_FINISH_SCRUBBING.value) { didFinishScrubbingCalled = true }
+
+        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_UP)
+
+        assertTrue(didTouchSeekbar)
+        assertTrue(didFinishScrubbingCalled)
     }
 
     @Test

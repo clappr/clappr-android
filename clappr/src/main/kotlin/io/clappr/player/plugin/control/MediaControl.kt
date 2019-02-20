@@ -112,7 +112,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
 
-        listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { updateInteractionTime() }
+        listenTo(core, InternalEvent.WILL_BEGIN_SCRUBBING.value) { updateInteractionTime() }
         listenTo(core, InternalEvent.DID_TOUCH_MEDIA_CONTROL.value) { updateInteractionTime() }
 
         listenTo(core, InternalEvent.OPEN_MODAL_PANEL.value) { openModal() }
