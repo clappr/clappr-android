@@ -14,7 +14,6 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
@@ -32,7 +31,6 @@ class ExoPlayerPlaybackTest {
     @Before
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
-        MockitoAnnotations.initMocks(this)
 
         bitrateHistory = BitrateHistory()
         listenObject = BaseObject()
