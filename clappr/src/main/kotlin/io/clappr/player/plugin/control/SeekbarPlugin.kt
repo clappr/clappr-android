@@ -72,7 +72,7 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core, name) {
         when (motionEvent.action) {
             MotionEvent.ACTION_DOWN -> handleActionDown(motionEvent)
             MotionEvent.ACTION_MOVE -> updateDrag(motionEvent.x)
-            MotionEvent.ACTION_UP -> handleActionUp(motionEvent.x)
+            MotionEvent.ACTION_UP -> handleActionUp(motionEvent)
             MotionEvent.ACTION_CANCEL -> {
                 isInteracting = false
                 stopDrag()
@@ -84,23 +84,21 @@ open class SeekbarPlugin(core: Core) : MediaControl.Plugin(core, name) {
 
     private fun handleActionDown(motionEvent: MotionEvent) {
         isInteracting = true
-        core.trigger(InternalEvent.WILL_BEGIN_SCRUBBING.value)
+        core.trigger(InternalEvent.DID_UPDATE_INTERACTING.value)
 
         notifyInteraction()
         updateDrag(motionEvent.x)
     }
 
-    private fun handleActionUp(position: Float) {
+    private fun handleActionUp(motionEvent: MotionEvent) {
         isInteracting = false
-
-        core.trigger(InternalEvent.DID_FINISH_SCRUBBING.value)
-        handleStopDrag(position)
+        handleStopDrag(motionEvent.x)
     }
 
     private fun notifyInteraction() {
         handler.postDelayed({
             if (isInteracting) {
-                core.trigger(InternalEvent.WILL_BEGIN_SCRUBBING.value)
+                core.trigger(InternalEvent.DID_UPDATE_INTERACTING.value)
                 notifyInteraction()
             }
         }, timeBetweenInteractionsEvents)

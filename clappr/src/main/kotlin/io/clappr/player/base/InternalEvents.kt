@@ -23,6 +23,7 @@ enum class InternalEvent (val value: String) {
     DID_TOUCH_MEDIA_CONTROL("didTouchMediaControl"),
     ENABLE_MEDIA_CONTROL("enableMediaControl"),
     DISABLE_MEDIA_CONTROL("disableMediaControl"),
+    DID_UPDATE_INTERACTING("didUpdateInteracting"),
 
     OPEN_MODAL_PANEL("openModalPanel"),
     CLOSE_MODAL_PANEL("closeModalPanel"),
@@ -31,7 +32,6 @@ enum class InternalEvent (val value: String) {
 
     WILL_SHOW_MEDIA_CONTROL("willShowMediaControl"),
     WILL_HIDE_MEDIA_CONTROL("willHideMediaControl"),
-
-    DID_FINISH_SCRUBBING("didFinishScrubbing"),
-    WILL_BEGIN_SCRUBBING("willBeginScrubbing")
+    DID_HIDE_MEDIA_CONTROL("didHideMediaControl"),
+    DID_SHOW_MEDIA_CONTROL("didShowMediaControl")
 }
