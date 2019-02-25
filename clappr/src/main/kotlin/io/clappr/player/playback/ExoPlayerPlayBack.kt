@@ -181,6 +181,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         field = value
 
+        bitrateHistory.addBitrate(field)
+
         if(oldValue != field) {
             trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putInt(EventData.BITRATE.value, field ?: 0) })
         }
@@ -699,9 +701,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
             mediaLoadData?.let {
                 if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO){
-                    it.trackFormat?.bitrate?.let {
-                        lastBitrate = it.apply { bitrateHistory.addBitrate(it) }
-                    }
+                    it.trackFormat?.bitrate?.let { lastBitrate = it }
                 }
             }
         }
