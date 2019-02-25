@@ -138,7 +138,7 @@ enum class EventData(val value: String) {
      *
      * Type: Int
      *
-     * New bitrate value
+     * Bits per second
      */
     BITRATE("bitrate")
 }
