@@ -65,7 +65,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
-    protected var bitrateEventsListener : ExoplayerBitrateLogger? = null
+    protected var bitrateEventsListener = ExoplayerBitrateLogger()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
@@ -330,12 +330,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
-
-        trackSelector?.let {
-            bitrateEventsListener = ExoplayerBitrateLogger(it)
-            player?.addAnalyticsListener(bitrateEventsListener)
-        }
-
+        player?.addAnalyticsListener(bitrateEventsListener)
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
@@ -698,7 +693,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     }
 
-    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector) : EventLogger(trackSelector) {
+    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
         override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
