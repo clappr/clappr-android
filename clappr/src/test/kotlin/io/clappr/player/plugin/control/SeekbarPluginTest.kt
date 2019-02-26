@@ -77,6 +77,18 @@ class SeekbarPluginTest {
     }
 
     @Test
+    fun shouldTriggerDidUpdateInteractingEventWhenTouchDownEventHappens() {
+        var didUpdateInteractingCalled = false
+
+        core.listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { didUpdateInteractingCalled = true }
+
+        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
+
+        assertTrue(didTouchSeekbar)
+        assertTrue(didUpdateInteractingCalled)
+    }
+
+    @Test
     fun shouldHideSeekbarWhenDidCompleteEventHappens() {
         setupViewVisible(seekbarPlugin)
 
