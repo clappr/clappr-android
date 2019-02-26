@@ -77,30 +77,6 @@ class SeekbarPluginTest {
     }
 
     @Test
-    fun shouldTriggerWillBeginScrubbingEventWhenTouchDownEventHappens() {
-        var willBeginScrubbingCalled = false
-
-        core.listenTo(core, InternalEvent.WILL_BEGIN_SCRUBBING.value) { willBeginScrubbingCalled = true }
-
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_DOWN)
-
-        assertTrue(didTouchSeekbar)
-        assertTrue(willBeginScrubbingCalled)
-    }
-
-    @Test
-    fun shouldTriggerDidFinishScrubbingEventWhenTouchUpEventHappens() {
-        var didFinishScrubbingCalled = false
-
-        core.listenTo(core, InternalEvent.DID_FINISH_SCRUBBING.value) { didFinishScrubbingCalled = true }
-
-        val didTouchSeekbar = performTouchActionOnSeekbar(MotionEvent.ACTION_UP)
-
-        assertTrue(didTouchSeekbar)
-        assertTrue(didFinishScrubbingCalled)
-    }
-
-    @Test
     fun shouldHideSeekbarWhenDidCompleteEventHappens() {
         setupViewVisible(seekbarPlugin)
 
