@@ -650,7 +650,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener: Player.EventListener{
+    inner class ExoplayerEventsListener: Player.EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
