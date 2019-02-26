@@ -65,7 +65,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
-    protected var bitrateEventsListener = ExoplayerBitrateLogger()
+    private val bitrateEventsListener = ExoplayerBitrateLogger()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
