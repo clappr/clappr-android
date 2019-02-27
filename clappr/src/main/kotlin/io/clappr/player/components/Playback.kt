@@ -89,7 +89,7 @@ abstract class Playback(
     open val isDvrInUse: Boolean
         get() = false
 
-    open val bitrate: Int
+    open val bitrate: Long
         get() = 0
 
     open val avgBitrate: Long

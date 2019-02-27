@@ -174,7 +174,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private var lastDrvAvailableCheck: Boolean? = null
 
-    private var lastBitrate: Int? = null
+    private var lastBitrate: Long? = null
     set(value) {
 
         val oldValue = field
@@ -184,12 +184,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         bitrateHistory.addBitrate(field)
 
         if(oldValue != field) {
-            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putInt(EventData.BITRATE.value, field ?: 0) })
+            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putLong(EventData.BITRATE.value, field ?: 0) })
         }
     }
 
-    override val bitrate: Int
-        get() = lastBitrate ?: 0
+    override val bitrate: Long
+        get() = lastBitrate ?: 0L
 
     override val avgBitrate: Long
         get() = bitrateHistory.averageBitrate()
@@ -695,13 +695,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     }
 
-    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
+    inner class ExoplayerBitrateLogger() : EventLogger(trackSelector) {
         override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
             mediaLoadData?.let {
                 if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO){
-                    it.trackFormat?.bitrate?.let { lastBitrate = it }
+                    it.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
                 }
             }
         }
