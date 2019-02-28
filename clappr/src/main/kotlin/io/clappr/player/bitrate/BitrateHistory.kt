@@ -28,8 +28,7 @@ class BitrateHistory {
             bitrateLogList.asSequence().map { it.bitrate * it.totalActiveTimeInMillis }
                     .reduce { currentSum, next -> currentSum + next }
 
-    private fun totalBitrateHistoryTime() =
-            bitrateLogList.asSequence().map { it.totalActiveTimeInMillis }.reduce { currentSum, next -> currentSum + next }
+    private fun totalBitrateHistoryTime() = bitrateLogList.last().endTime - bitrateLogList.first().startTime
 
     private fun setTimesForLastBitrate(currentTimestamp: Long) {
         if (bitrateLogList.size > 0) {
