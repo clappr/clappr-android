@@ -1,6 +1,7 @@
 package io.clappr.player.bitrate
 
-import kotlin.RuntimeException
+import io.clappr.player.log.Logger
+
 
 class BitrateHistory {
 
@@ -8,15 +9,23 @@ class BitrateHistory {
 
     fun averageBitrate(currentTimestamp: Long = System.nanoTime()): Long {
         return bitrateLogList.takeIf { it.isNotEmpty() }?.let {
-            setTimesForLastBitrate(currentTimestamp)
-            sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
-        } ?: 0
+            try{
+                setTimesForLastBitrate(currentTimestamp)
+                sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
+            } catch (e: BitrateLog.WrongTimeIntervalException) {
+                Logger.error("BitrateHistory", "Error: ${e.message} - BitrateLog: ${e.bitrateLog}")
+                0L
+            }
+        } ?: 0L
     }
 
     fun addBitrate(bitrate: Long?, currentTimestamp: Long = System.nanoTime()) {
         bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
-            setTimesForLastBitrate(currentTimestamp)
-            bitrateLogList.add(BitrateLog(startTime = currentTimestamp, bitrate = bitrate))
+                BitrateLog(startTime = currentTimestamp, bitrate = bitrate).apply {
+                    setTimesForLastBitrate(currentTimestamp)
+                    bitrateLogList.add(this)
+                }
+
         }
     }
 
@@ -39,14 +48,14 @@ class BitrateHistory {
 
     data class BitrateLog(val startTime: Long, var endTime: Long = 0, val bitrate: Long = 0) {
 
-        init {
-            if(startTime > endTime)
-                throw WrongTimeIntervalException("startTime should be less than endTime")
-        }
-
         val totalActiveTimeInMillis: Long
-            get() = endTime - startTime
+            get() {
+                if (startTime > endTime)
+                    throw WrongTimeIntervalException("startTime should be less than endTime", this)
 
-        class WrongTimeIntervalException(message: String): RuntimeException(message)
+                return endTime - startTime
+            }
+
+        class WrongTimeIntervalException(message: String, val bitrateLog: BitrateLog? = null) : RuntimeException(message)
     }
 }
