@@ -695,7 +695,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     }
 
-    inner class ExoplayerBitrateLogger() : EventLogger(trackSelector) {
+    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
         override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
