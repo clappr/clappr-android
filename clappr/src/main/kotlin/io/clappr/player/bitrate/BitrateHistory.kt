@@ -1,5 +1,7 @@
 package io.clappr.player.bitrate
 
+import kotlin.math.abs
+
 class BitrateHistory {
 
     private val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
@@ -39,6 +41,6 @@ class BitrateHistory {
     internal data class BitrateLog(val startTime: Long, var endTime: Long = 0, val bitrate: Long = 0) {
 
         val totalActiveTimeInMillis: Long
-            get() = endTime - startTime
+            get() = abs(endTime - startTime)
     }
 }
