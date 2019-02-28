@@ -136,7 +136,7 @@ enum class EventData(val value: String) {
     /**
      * [Event.DID_UPDATE_BITRATE] data
      *
-     * Type: Int
+     * Type: Long
      *
      * Bits per second
      */

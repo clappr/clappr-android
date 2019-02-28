@@ -18,6 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
+import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 @Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class, SubtitleViewShadow::class])
@@ -61,17 +62,17 @@ class ExoPlayerPlaybackTest {
     @Test
     fun shouldTriggerDidUpdateBitrate() {
         val expectedBitrate = 40L
-        var actualBitrate = 0.0
+        var actualBitrate = 0L
 
         val exoPlayerPlayback = ExoPlayerPlayback(source = "aSource", options = Options(), bitrateHistory = bitrateHistory)
 
         listenObject.listenTo(exoPlayerPlayback, Event.DID_UPDATE_BITRATE.value) {
-            actualBitrate = it?.getLong(EventData.BITRATE.value)?.toDouble() ?: 0.0
+            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
 
         }
         exoPlayerPlayback.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
-        assertEquals(expectedBitrate.toDouble(), actualBitrate, 0.0)
+        assertEquals(expectedBitrate, actualBitrate)
     }
 
     @Test
@@ -100,15 +101,10 @@ class ExoPlayerPlaybackTest {
     @Test
     fun shouldNotTriggerDidUpdateBitrateWhenTrackTypeDifferentDefaultOrVideo() {
         var didUpdateBitrateCalled = false
-        val bitrate = 40
-        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate,
-                0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_AUDIO, videoFormatMock, 0,
-                null, 0L, 0L)
-
+        val bitrate = 40L
 
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -140,14 +136,10 @@ class ExoPlayerPlaybackTest {
     @Test
     fun shouldTriggerDidUpdateBitrateWhenTrackTypeDefault() {
         var didUpdateBitrateCalled = false
-        val bitrate = 40
-        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate,
-                0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
-                null, 0L, 0L)
+        val bitrate = 40L
 
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
 
         assertTrue(didUpdateBitrateCalled)
     }
@@ -155,14 +147,10 @@ class ExoPlayerPlaybackTest {
     @Test
     fun shouldTriggerDidUpdateBitrateWhenTrackTypeVideo() {
         var didUpdateBitrateCalled = false
-        val bitrate = 40
-        val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate,
-                0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_VIDEO, videoFormatMock, 0,
-                null, 0L, 0L)
+        val bitrate = 40L
 
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertTrue(didUpdateBitrateCalled)
     }
@@ -200,10 +188,10 @@ class ExoPlayerPlaybackTest {
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
     }
 
-    private fun addBitrateMediaLoadData(bitrate: Long): MediaSourceEventListener.MediaLoadData {
+    private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
         val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate.toInt(),
                 0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
+        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, trackType, videoFormatMock, 0,
                 null, 0L, 0L)
 
         return mediaLoadData
