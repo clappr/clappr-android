@@ -186,8 +186,9 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     }
 
     override fun hide() {
-        core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
         if (isEnabled && isPlaybackIdle) return
+
+        core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
         visibility = Visibility.HIDDEN
         backgroundView.visibility = View.INVISIBLE
         controlsPanel.visibility = View.INVISIBLE
