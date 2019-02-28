@@ -45,26 +45,12 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(10, 3)
         bitrateHistoryUnderTest.addBitrate(10, 4)
 
-        val bitrateLogsList = listOf(
-                BitrateHistory.BitrateLog(0, 2, 0),
-                BitrateHistory.BitrateLog(2, 5, 10)
-        )
-
-        assertEquals(expectedAverageBitrate(bitrateLogsList), bitrateHistoryUnderTest.averageBitrate(5))
+        assertEquals(6, bitrateHistoryUnderTest.averageBitrate(5))
     }
 
 
     @Test
     fun shouldAddNewBitrateIfDifferentOnlyFromTheLastAdded() {
-        val bitrateLogsList = listOf(
-                BitrateHistory.BitrateLog(0, 2, 0),
-                BitrateHistory.BitrateLog(2, 4, 10),
-                BitrateHistory.BitrateLog(4,4, 0),
-                BitrateHistory.BitrateLog(4,4, 10),
-                BitrateHistory.BitrateLog(4,4, 0),
-                BitrateHistory.BitrateLog(4,4, 10)
-        )
-
         bitrateHistoryUnderTest.addBitrate(0, 2)
         bitrateHistoryUnderTest.addBitrate(10, 3)
         bitrateHistoryUnderTest.addBitrate(0, 4)
@@ -72,7 +58,7 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(0, 4)
         bitrateHistoryUnderTest.addBitrate(10, 4)
 
-        assertEquals(expectedAverageBitrate(bitrateLogsList), bitrateHistoryUnderTest.averageBitrate(4))
+        assertEquals(5, bitrateHistoryUnderTest.averageBitrate(4))
     }
 
     @Test
@@ -81,13 +67,7 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(100, 17)
         bitrateHistoryUnderTest.addBitrate(110, 31)
 
-        val bitrateLogsList = listOf(
-                BitrateHistory.BitrateLog(2,17, 90),
-                BitrateHistory.BitrateLog(17,31, 100),
-                BitrateHistory.BitrateLog(31,49, 110)
-        )
-
-        assertEquals(expectedAverageBitrate(bitrateLogsList), bitrateHistoryUnderTest.averageBitrate(49))
+        assertEquals(100, bitrateHistoryUnderTest.averageBitrate(49))
     }
 
     @Test
@@ -109,13 +89,5 @@ class BitrateHistoryTest {
 
         assertEquals(0, bitrateAverage)
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
-    }
-
-    private fun expectedAverageBitrate(expectedBitrateLogs: List<BitrateHistory.BitrateLog>): Long {
-        val totalTimeSum = expectedBitrateLogs.last().endTime - expectedBitrateLogs.first().startTime
-
-        return expectedBitrateLogs.asSequence()
-                .map { it.bitrate * it.totalActiveTimeInMillis }
-                .reduce { current, next -> current + next } / totalTimeSum
     }
 }
