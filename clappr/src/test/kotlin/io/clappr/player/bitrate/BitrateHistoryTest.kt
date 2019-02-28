@@ -149,4 +149,15 @@ class BitrateHistoryTest {
 
         assertEquals(averageBitrate, bitrateHistoryUnderTest.averageBitrate(49))
     }
+
+    @Test
+    fun shouldClean() {
+
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 17)
+        bitrateHistoryUnderTest.addBitrate(110, 31)
+        bitrateHistoryUnderTest.clear()
+
+        assertEquals(0, bitrateHistoryUnderTest.averageBitrate())
+    }
 }

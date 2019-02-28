@@ -2,7 +2,7 @@ package io.clappr.player.bitrate
 
 class BitrateHistory {
 
-    internal val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
+    private val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
     fun averageBitrate(currentTimestamp: Long = System.nanoTime()): Long {
         return bitrateLogList.takeIf { it.isNotEmpty() }?.let {
@@ -16,6 +16,10 @@ class BitrateHistory {
             setTimesForLastBitrate(currentTimestamp)
             bitrateLogList.add(BitrateLog(startTime = currentTimestamp, bitrate = bitrate))
         }
+    }
+
+    fun clear() {
+        bitrateLogList.clear()
     }
 
     private fun sumOfAllBitrateWithTime() =
