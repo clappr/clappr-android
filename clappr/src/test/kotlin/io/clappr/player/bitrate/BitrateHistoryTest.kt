@@ -1,9 +1,16 @@
 package io.clappr.player.bitrate
 
+import io.clappr.player.BuildConfig
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 import kotlin.test.assertEquals
 
+@RunWith(RobolectricTestRunner::class)
+@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
 class BitrateHistoryTest {
     private lateinit var bitrateHistoryUnderTest: BitrateHistory
 
@@ -91,6 +98,17 @@ class BitrateHistoryTest {
         val expectedAverageBitrate = bitrate.bitrate * bitrate.totalActiveTimeInMillis/ bitrate.totalActiveTimeInMillis
 
         assertEquals(expectedAverageBitrate, bitrateHistoryUnderTest.averageBitrate(17))
+    }
+
+    @Test
+    fun shouldReturnZeroAverageBitrateWhenEndTimeIsLessThanStartTimeForABitrateLog(){
+        val expectedLogMessage = "[BitrateHistory] Error: startTime should be less than endTime - BitrateLog: BitrateLog(startTime=2, endTime=-1, bitrate=90)"
+
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        val bitrateAverage = bitrateHistoryUnderTest.averageBitrate(-1)
+
+        assertEquals(0, bitrateAverage)
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
 
     private fun expectedAverageBitrate(expectedBitrateLogs: List<BitrateHistory.BitrateLog>): Long {

@@ -14,6 +14,6 @@ class BitrateLogTest {
 
     @Test(expected = BitrateHistory.BitrateLog.WrongTimeIntervalException::class)
     fun shouldThrowWrongTimeIntervalExceptionWhenEndTimeIsLessThanStartTime(){
-       BitrateHistory.BitrateLog(2, 1, 2)
+       BitrateHistory.BitrateLog(2, 1, 2).totalActiveTimeInMillis
     }
 }
