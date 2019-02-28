@@ -1,6 +1,6 @@
 package io.clappr.player.bitrate
 
-import kotlin.math.abs
+import kotlin.RuntimeException
 
 class BitrateHistory {
 
@@ -37,9 +37,16 @@ class BitrateHistory {
         }
     }
 
-    internal data class BitrateLog(val startTime: Long, var endTime: Long = 0, val bitrate: Long = 0) {
+    data class BitrateLog(val startTime: Long, var endTime: Long = 0, val bitrate: Long = 0) {
+
+        init {
+            if(startTime > endTime)
+                throw WrongTimeIntervalException("startTime should be less than endTime")
+        }
 
         val totalActiveTimeInMillis: Long
-            get() = abs(endTime - startTime)
+            get() = endTime - startTime
+
+        class WrongTimeIntervalException(message: String): RuntimeException(message)
     }
 }
