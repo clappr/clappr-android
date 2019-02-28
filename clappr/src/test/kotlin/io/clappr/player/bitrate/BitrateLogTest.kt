@@ -12,9 +12,8 @@ class BitrateLogTest {
         assertEquals(1, bitRateLog.totalActiveTimeInMillis)
     }
 
-    @Test
-    fun shouldNotReturnBitrateTimeNegative(){
-        val bitRateLog = BitrateHistory.BitrateLog(2, 1, 2)
-        assertEquals(1, bitRateLog.totalActiveTimeInMillis)
+    @Test(expected = BitrateHistory.BitrateLog.WrongTimeIntervalException::class)
+    fun shouldThrowWrongTimeIntervalExceptionWhenEndTimeIsLessThanStartTime(){
+       BitrateHistory.BitrateLog(2, 1, 2)
     }
 }
