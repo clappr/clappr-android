@@ -529,7 +529,7 @@ class MediaControlTest {
     }
 
     private fun assertEventTriggeredWhenHideIsCalled(event: String) {
-        mediaControl.state = Plugin.State.DISABLED
+        mediaControl.state = Plugin.State.ENABLED
         fakePlayback.fakeState = Playback.State.PLAYING
         var eventTriggered = false
         core.on(event) {
