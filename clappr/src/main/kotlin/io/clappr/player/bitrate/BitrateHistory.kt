@@ -9,7 +9,7 @@ class BitrateHistory {
 
     fun averageBitrate(currentTimestamp: Long = System.nanoTime()): Long {
         return bitrateLogList.takeIf { it.isNotEmpty() }?.let {
-            try{
+            try {
                 setTimesForLastBitrate(currentTimestamp)
                 sumOfAllBitrateWithTime() / totalBitrateHistoryTime()
             } catch (e: BitrateLog.WrongTimeIntervalException) {
@@ -21,11 +21,16 @@ class BitrateHistory {
 
     fun addBitrate(bitrate: Long?, currentTimestamp: Long = System.nanoTime()) {
         bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
+
+            if (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp) {
+                Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent." +
+                        " Can not add time stamp with value bellow ${bitrateLogList.last().startTime}")
+            } else {
                 BitrateLog(startTime = currentTimestamp, bitrate = bitrate).apply {
                     setTimesForLastBitrate(currentTimestamp)
                     bitrateLogList.add(this)
                 }
-
+            }
         }
     }
 
@@ -37,7 +42,8 @@ class BitrateHistory {
             bitrateLogList.asSequence().map { it.bitrate * it.totalActiveTimeInMillis }
                     .reduce { currentSum, next -> currentSum + next }
 
-    private fun totalBitrateHistoryTime() = bitrateLogList.last().endTime - bitrateLogList.first().startTime
+    private fun totalBitrateHistoryTime() = (bitrateLogList.last().endTime - bitrateLogList.first().startTime).takeIf { it != 0L }
+            ?: 1
 
     private fun setTimesForLastBitrate(currentTimestamp: Long) {
         if (bitrateLogList.size > 0) {
