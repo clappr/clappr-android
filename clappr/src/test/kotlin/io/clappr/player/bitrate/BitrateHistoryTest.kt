@@ -62,6 +62,31 @@ class BitrateHistoryTest {
     }
 
     @Test
+    fun shouldNotHaveTotalBitrateHistoryTimeEqualToZero(){
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        val bitrateAverage = bitrateHistoryUnderTest.averageBitrate(2)
+
+        assertEquals(0, bitrateAverage)
+    }
+
+    @Test
+    fun shouldNotAddBitrateWithTimeStampBellowLastAddedBitrate(){
+        val expectedLogMessage = "[BitrateHistory] Bitrate list time stamp should be crescent. Can not add time stamp with value bellow 2"
+
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        var bitrateAverage = bitrateHistoryUnderTest.averageBitrate(3)
+
+        assertEquals(90, bitrateAverage)
+
+        bitrateHistoryUnderTest.addBitrate(100, 1)
+
+        bitrateAverage = bitrateHistoryUnderTest.averageBitrate(4)
+
+        assertEquals(90, bitrateAverage)
+        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    @Test
     fun shouldAverageBitrate() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
         bitrateHistoryUnderTest.addBitrate(100, 17)
@@ -90,4 +115,5 @@ class BitrateHistoryTest {
         assertEquals(0, bitrateAverage)
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
+
 }
