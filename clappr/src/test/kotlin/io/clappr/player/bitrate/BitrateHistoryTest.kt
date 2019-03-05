@@ -115,5 +115,4 @@ class BitrateHistoryTest {
         assertEquals(0, bitrateAverage)
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
-
 }
