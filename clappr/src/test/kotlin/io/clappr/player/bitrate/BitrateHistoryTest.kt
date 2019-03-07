@@ -92,10 +92,7 @@ class BitrateHistoryTest {
     fun shouldHaveAverageBitrateForOneElement() {
         bitrateHistoryUnderTest.addBitrate(90, 2)
 
-        val bitrate = BitrateHistory.BitrateLog(2,17, 90)
-        val expectedAverageBitrate = bitrate.bitrate * bitrate.totalActiveTimeInMillis/ bitrate.totalActiveTimeInMillis
-
-        assertEquals(expectedAverageBitrate, bitrateHistoryUnderTest.averageBitrate(17))
+        assertEquals(90, bitrateHistoryUnderTest.averageBitrate(17))
     }
 
     @Test
