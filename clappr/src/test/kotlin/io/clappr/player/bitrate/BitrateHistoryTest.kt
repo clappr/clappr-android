@@ -16,7 +16,7 @@ class BitrateHistoryTest {
 
     @Before
     fun setup() {
-        bitrateHistoryUnderTest = BitrateHistory()
+        bitrateHistoryUnderTest = BitrateHistory{ System.nanoTime() }
     }
 
     @Test

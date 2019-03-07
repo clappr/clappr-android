@@ -10,7 +10,8 @@ import io.clappr.player.base.EventData
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.shadows.SubtitleViewShadow
-import org.junit.Assert.*
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,12 +28,14 @@ class ExoPlayerPlaybackTest {
     private lateinit var exoPlayerPlayBack: ExoPlayerPlayback
     private lateinit var bitrateHistory: BitrateHistory
     private lateinit var listenObject: BaseObject
+    private var timeInNano: Long = 0L
 
     @Before
     fun setUp() {
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
 
-        bitrateHistory = BitrateHistory()
+        timeInNano = System.nanoTime()
+        bitrateHistory = BitrateHistory { timeInNano }
         listenObject = BaseObject()
         exoPlayerPlayBack = ExoPlayerPlayback(source = "aSource", options = Options(), bitrateHistory = bitrateHistory)
 
@@ -118,6 +121,19 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
+    }
+
+    @Test
+    fun shouldHandleWrongTimeIntervalExceptionOnAddBitrateOnHistory() {
+        timeInNano = 1
+
+        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10L))
+
+        timeInNano = -1
+
+        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
+
+        assertEquals(10, exoPlayerPlayBack.avgBitrate)
     }
 
     @Test
