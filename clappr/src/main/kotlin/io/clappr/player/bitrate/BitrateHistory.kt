@@ -20,17 +20,17 @@ class BitrateHistory {
     }
 
     fun addBitrate(bitrate: Long?, currentTimestamp: Long = System.nanoTime()) {
-        bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
+        if (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp) {
+            Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent." +
+                    " Can not add time stamp with value bellow ${bitrateLogList.last().startTime}")
+            throw BitrateLog.WrongTimeIntervalException("Bitrate list time stamp should be crescent.", null)
+        }
 
-            if (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp) {
-                Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent." +
-                        " Can not add time stamp with value bellow ${bitrateLogList.last().startTime}")
-            } else {
+        bitrate?.takeIf { bitrateLogList.isEmpty() || bitrate != bitrateLogList.last().bitrate }?.apply {
                 BitrateLog(startTime = currentTimestamp, bitrate = bitrate).apply {
                     setTimesForLastBitrate(currentTimestamp)
                     bitrateLogList.add(this)
                 }
-            }
         }
     }
 
