@@ -181,7 +181,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         field = value
 
-        bitrateHistory.addBitrate(field)
+        try{
+            bitrateHistory.addBitrate(field)
+        } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
+            Logger.error(name,  e.message ?: "Can not add bitrate on history")
+        }
 
         if(oldValue != field) {
             trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putLong(EventData.BITRATE.value, field ?: 0) })
