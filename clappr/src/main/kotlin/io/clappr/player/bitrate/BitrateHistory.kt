@@ -7,7 +7,7 @@ class BitrateHistory(val clockInNano: () -> Long) {
 
     private val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
-    fun averageBitrate(currentTimestamp: Long = System.nanoTime()): Long {
+    fun averageBitrate(currentTimestamp: Long = clockInNano()): Long {
         return bitrateLogList.takeIf { it.isNotEmpty() }?.let {
             try {
                 setTimesForLastBitrate(currentTimestamp)
@@ -20,9 +20,8 @@ class BitrateHistory(val clockInNano: () -> Long) {
     }
 
     fun addBitrate(bitrate: Long?, currentTimestamp: Long = clockInNano()) {
-        if (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp) {
-            Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent." +
-                    " Can not add time stamp with value bellow ${bitrateLogList.last().startTime}")
+        if (currentTimestamp < 0 || (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp)) {
+            Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent.")
             throw BitrateLog.WrongTimeIntervalException("Bitrate list time stamp should be crescent.", null)
         }
 
