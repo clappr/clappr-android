@@ -187,11 +187,14 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     override fun hide() {
         if (isEnabled && isPlaybackIdle) return
+
+        core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
         visibility = Visibility.HIDDEN
         backgroundView.visibility = View.INVISIBLE
         controlsPanel.visibility = View.INVISIBLE
         foregroundControlsPanel.visibility = View.INVISIBLE
         hideModalPanel()
+        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
     private fun hideDelayed(timeout: Long) {
@@ -212,6 +215,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     }
 
     private fun show(timeout: Long) {
+        core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
         visibility = Visibility.VISIBLE
         backgroundView.visibility = View.VISIBLE
         showDefaultMediaControlPanels()
@@ -221,6 +225,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         if (!isPlaybackIdle && timeout > 0) {
             hideDelayed(timeout)
         }
+        core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
     private fun updateInteractionTime() {
@@ -229,7 +234,11 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     private fun toggleVisibility() {
         if (isEnabled) {
-            if (visibility == Visibility.VISIBLE) hide() else show(longShowTimeout)
+            if (visibility == Visibility.VISIBLE) {
+                hide()
+            } else {
+                show(longShowTimeout)
+            }
         }
     }
 
