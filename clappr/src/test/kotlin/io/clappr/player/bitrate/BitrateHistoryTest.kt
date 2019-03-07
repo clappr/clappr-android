@@ -69,20 +69,13 @@ class BitrateHistoryTest {
         assertEquals(0, bitrateAverage)
     }
 
-    @Test
+    @Test(expected = BitrateHistory.BitrateLog.WrongTimeIntervalException::class)
     fun shouldNotAddBitrateWithTimeStampBellowLastAddedBitrate(){
         val expectedLogMessage = "[BitrateHistory] Bitrate list time stamp should be crescent. Can not add time stamp with value bellow 2"
 
         bitrateHistoryUnderTest.addBitrate(90, 2)
-        var bitrateAverage = bitrateHistoryUnderTest.averageBitrate(3)
-
-        assertEquals(90, bitrateAverage)
-
         bitrateHistoryUnderTest.addBitrate(100, 1)
 
-        bitrateAverage = bitrateHistoryUnderTest.averageBitrate(4)
-
-        assertEquals(90, bitrateAverage)
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
     }
 
@@ -114,5 +107,17 @@ class BitrateHistoryTest {
 
         assertEquals(0, bitrateAverage)
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    @Test
+    fun shouldReturnZeroAverageBitrateWhenEndTimeIsEqualThanStartTimeForABitrateLog(){
+        bitrateHistoryUnderTest.addBitrate(90, 2)
+        bitrateHistoryUnderTest.addBitrate(100, 2)
+        bitrateHistoryUnderTest.addBitrate(110, 3)
+        bitrateHistoryUnderTest.addBitrate(120, 3)
+
+        val bitrateAverage = bitrateHistoryUnderTest.averageBitrate(4)
+
+        assertEquals(110, bitrateAverage)
     }
 }
