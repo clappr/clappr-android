@@ -3,7 +3,7 @@ package io.clappr.player.bitrate
 import io.clappr.player.log.Logger
 
 
-class BitrateHistory {
+class BitrateHistory(val clockInNano: () -> Long) {
 
     private val bitrateLogList: MutableList<BitrateLog> = mutableListOf()
 
@@ -19,7 +19,7 @@ class BitrateHistory {
         } ?: 0L
     }
 
-    fun addBitrate(bitrate: Long?, currentTimestamp: Long = System.nanoTime()) {
+    fun addBitrate(bitrate: Long?, currentTimestamp: Long = clockInNano()) {
         if (bitrateLogList.isNotEmpty() && bitrateLogList.last().startTime > currentTimestamp) {
             Logger.error("BitrateHistory", "Bitrate list time stamp should be crescent." +
                     " Can not add time stamp with value bellow ${bitrateLogList.last().startTime}")
