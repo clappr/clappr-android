@@ -125,15 +125,9 @@ class ExoPlayerPlaybackTest {
 
     @Test
     fun shouldHandleWrongTimeIntervalExceptionOnAddBitrateOnHistory() {
-        timeInNano = 1
-
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10L))
-
         timeInNano = -1
 
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
-
-        assertEquals(10, exoPlayerPlayBack.avgBitrate)
     }
 
     @Test
