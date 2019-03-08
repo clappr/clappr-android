@@ -6,7 +6,6 @@ import android.view.View
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.*
 import io.clappr.player.components.*
-import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.assertHiddenView
 import io.clappr.player.plugin.assertVisibleView
 import io.clappr.player.plugin.setupViewVisible

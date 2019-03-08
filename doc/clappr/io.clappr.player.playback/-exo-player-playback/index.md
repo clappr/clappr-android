@@ -8,6 +8,7 @@
 
 | Name | Summary |
 |---|---|
+| [ExoplayerBitrateLogger](-exoplayer-bitrate-logger/index.md) | `inner class ExoplayerBitrateLogger : EventLogger` |
 | [ExoplayerDrmEventsListeners](-exoplayer-drm-events-listeners/index.md) | `inner class ExoplayerDrmEventsListeners : EventListener` |
 | [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener` |
 
@@ -15,13 +16,15 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `ExoPlayerPlayback(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null, options: `[`Options`](../../io.clappr.player.base/-options/index.md)` = Options())` |
+| [&lt;init&gt;](-init-.md) | `ExoPlayerPlayback(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null, options: `[`Options`](../../io.clappr.player.base/-options/index.md)` = Options(), bitrateHistory: `[`BitrateHistory`](../../io.clappr.player.bitrate/-bitrate-history/index.md)` = BitrateHistory { System.nanoTime() })` |
 
 ### Properties
 
 | Name | Summary |
 |---|---|
+| [avgBitrate](avg-bitrate.md) | `open val avgBitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [bandwidthMeter](bandwidth-meter.md) | `val bandwidthMeter: DefaultBandwidthMeter` |
+| [bitrate](bitrate.md) | `open val bitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [canPause](can-pause.md) | `open val canPause: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [canPlay](can-play.md) | `open val canPlay: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [canSeek](can-seek.md) | `open val canSeek: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |

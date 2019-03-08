@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -23,17 +24,18 @@ import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
+import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
-import java.util.*
+import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
+open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
     companion object {
         private const val tag: String = "ExoPlayerPlayback"
 
@@ -63,6 +65,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val mainHandler = Handler()
     private val eventsListener = ExoplayerEventsListener()
+    private val bitrateEventsListener = ExoplayerBitrateLogger()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
@@ -171,6 +174,30 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private var lastDrvAvailableCheck: Boolean? = null
 
+    private var lastBitrate: Long? = null
+    set(value) {
+
+        val oldValue = field
+
+        field = value
+
+        try{
+            bitrateHistory.addBitrate(field)
+        } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
+            Logger.error(name,  e.message ?: "Can not add bitrate on history")
+        }
+
+        if(oldValue != field) {
+            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putLong(EventData.BITRATE.value, field ?: 0) })
+        }
+    }
+
+    override val bitrate: Long
+        get() = lastBitrate ?: 0L
+
+    override val avgBitrate: Long
+        get() = bitrateHistory.averageBitrate()
+
     override val currentDate: Long?
         get() = dvrStartTimeinSeconds
 
@@ -225,6 +252,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         needSetupMediaOptions = true
         mediaOptionList.clear()
         selectedMediaOptionList.clear()
+        bitrateHistory.clear()
 
         removeListeners()
 
@@ -234,6 +262,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
+        player?.removeAnalyticsListener(bitrateEventsListener)
     }
 
     override fun seek(seconds: Int): Boolean {
@@ -307,6 +336,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
+        player?.addAnalyticsListener(bitrateEventsListener)
     }
 
     private fun setUpRendererFactory(): DefaultRenderersFactory {
@@ -665,6 +695,19 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+        }
+
+    }
+
+    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
+        override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
+            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
+
+            mediaLoadData?.let {
+                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO){
+                    it.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
+                }
+            }
         }
     }
 

@@ -399,7 +399,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldHideMediaControlWhenWillLoadSource(){
+    fun shouldHideMediaControlWhenWillLoadSource() {
         fakePlayback.fakeState = Playback.State.PAUSED
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
 
@@ -412,7 +412,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldRenderWithHiddenMediaControl(){
+    fun shouldRenderWithHiddenMediaControl() {
         fakePlayback.fakeState = Playback.State.PAUSED
 
         mediaControl.render()
@@ -421,6 +421,36 @@ class MediaControlTest {
         assertEquals(View.INVISIBLE, getBackgroundView().visibility)
         assertEquals(View.INVISIBLE, getControlsPanel().visibility)
         assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
+    }
+
+    @Test
+    fun shouldTriggerWillHideMediaControlWhenHideIsCalled() {
+        assertEventTriggeredWhenHideIsCalled(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
+    }
+
+    @Test
+    fun shouldTriggerDidHideMediaControlWhenHideIsCalled() {
+        assertEventTriggeredWhenHideIsCalled(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+    }
+
+    @Test
+    fun shouldNotTriggerWillHideMediaControlWhenHideIsCalledAndIsEnableAndPlaybackIsIdle() {
+        assertEventNotTriggeredWhenHideIsCalled(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
+    }
+
+    @Test
+    fun shouldNotTriggerDidHideMediaControlWhenHideIsCalledAndIsEnableAndPlaybackIsIdle() {
+        assertEventNotTriggeredWhenHideIsCalled(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+    }
+
+    @Test
+    fun shouldTriggerWillShowMediaControlWhenShowIsCalled() {
+        assertEventTriggeredWhenShowIsCalled(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
+    }
+
+    @Test
+    fun shouldTriggerDidShowMediaControlWhenShowIsCalled() {
+        assertEventTriggeredWhenShowIsCalled(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
@@ -496,6 +526,40 @@ class MediaControlTest {
 
     private fun triggerEnableMediaControlEvent() {
         container.trigger(InternalEvent.ENABLE_MEDIA_CONTROL.value)
+    }
+
+    private fun assertEventTriggeredWhenHideIsCalled(event: String) {
+        mediaControl.state = Plugin.State.ENABLED
+        fakePlayback.fakeState = Playback.State.PLAYING
+        var eventTriggered = false
+        core.on(event) {
+            eventTriggered = true
+        }
+
+        mediaControl.hide()
+        assertTrue(eventTriggered)
+    }
+
+    private fun assertEventNotTriggeredWhenHideIsCalled(event: String) {
+        mediaControl.state = Plugin.State.ENABLED
+        fakePlayback.fakeState = Playback.State.IDLE
+        var eventTriggered = false
+        core.on(event) {
+            eventTriggered = true
+        }
+
+        mediaControl.hide()
+        assertFalse(eventTriggered)
+    }
+
+    private fun assertEventTriggeredWhenShowIsCalled(event: String) {
+        var eventTriggered = false
+        core.on(event) {
+            eventTriggered = true
+        }
+
+        mediaControl.show()
+        assertTrue(eventTriggered)
     }
 
     class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {

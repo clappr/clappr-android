@@ -6,6 +6,7 @@
 |---|---|
 | [io.clappr.player.components.AudioLanguage](../io.clappr.player.components/-audio-language/index.md) |  |
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
+| [io.clappr.player.bitrate.BitrateHistory](../io.clappr.player.bitrate/-bitrate-history/index.md) |  |
 | [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
 | [io.clappr.player.interop.Callback](../io.clappr.player.interop/-callback.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |

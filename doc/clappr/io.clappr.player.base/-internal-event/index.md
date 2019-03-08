@@ -34,6 +34,10 @@
 | [CLOSE_MODAL_PANEL](-c-l-o-s-e_-m-o-d-a-l_-p-a-n-e-l.md) |  |
 | [DID_OPEN_MODAL_PANEL](-d-i-d_-o-p-e-n_-m-o-d-a-l_-p-a-n-e-l.md) |  |
 | [DID_CLOSE_MODAL_PANEL](-d-i-d_-c-l-o-s-e_-m-o-d-a-l_-p-a-n-e-l.md) |  |
+| [WILL_SHOW_MEDIA_CONTROL](-w-i-l-l_-s-h-o-w_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [WILL_HIDE_MEDIA_CONTROL](-w-i-l-l_-h-i-d-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [DID_HIDE_MEDIA_CONTROL](-d-i-d_-h-i-d-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [DID_SHOW_MEDIA_CONTROL](-d-i-d_-s-h-o-w_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
 
 ### Properties
 
