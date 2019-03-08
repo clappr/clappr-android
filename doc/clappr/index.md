@@ -6,6 +6,7 @@
 |---|---|
 | [io.clappr.player](io.clappr.player/index.md) |  |
 | [io.clappr.player.base](io.clappr.player.base/index.md) |  |
+| [io.clappr.player.bitrate](io.clappr.player.bitrate/index.md) |  |
 | [io.clappr.player.components](io.clappr.player.components/index.md) |  |
 | [io.clappr.player.extensions](io.clappr.player.extensions/index.md) |  |
 | [io.clappr.player.extensions.context](io.clappr.player.extensions.context/index.md) |  |
