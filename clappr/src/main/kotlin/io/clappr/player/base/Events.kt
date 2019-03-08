@@ -111,7 +111,12 @@ enum class Event(val value: String) {
     /**
      * There was a change in DVR availability
      */
-    DID_CHANGE_DVR_AVAILABILITY("didChangeDvrAvailability")
+    DID_CHANGE_DVR_AVAILABILITY("didChangeDvrAvailability"),
+
+    /**
+     * Bitrate was updated
+     */
+    DID_UPDATE_BITRATE("didUpdateBitrate")
 }
 
 /**
@@ -126,5 +131,14 @@ enum class EventData(val value: String) {
      *
      * Selected media options.
      */
-    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse")
+    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse"),
+
+    /**
+     * [Event.DID_UPDATE_BITRATE] data
+     *
+     * Type: Long
+     *
+     * Bits per second
+     */
+    BITRATE("bitrate")
 }
