@@ -14,6 +14,8 @@
 
 | Name | Summary |
 |---|---|
+| [avgBitrate](../../io.clappr.player.components/-playback/avg-bitrate.md) | `open val avgBitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
+| [bitrate](../../io.clappr.player.components/-playback/bitrate.md) | `open val bitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [canPause](../../io.clappr.player.components/-playback/can-pause.md) | `open val canPause: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [canPlay](../../io.clappr.player.components/-playback/can-play.md) | `open val canPlay: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [canSeek](../../io.clappr.player.components/-playback/can-seek.md) | `open val canSeek: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
