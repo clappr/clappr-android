@@ -42,6 +42,7 @@
 | [source](source.md) | `var source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [state](state.md) | `open val state: `[`State`](-state/index.md) |
 | [supportsSource](supports-source.md) | `val supportsSource: `[`PlaybackSupportCheck`](../-playback-support-check.md) |
+| [volume](volume.md) | `open var volume: `[`Float`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-float/index.html)`?`<br>Playback volume. Its not the device volume. If the playback has this capability. You can set the volume from 0.0f to 1.0f. Where 0.0f is muted and 1.0f is the playback maximum volume. PS.: If you set a volume less than 0.0f we'll set the volume to 0.0f PS.: If you set a volume greater than 1.0f we'll set the volume to 1.0f |
 
 ### Inherited Properties
 

@@ -28,10 +28,10 @@ import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util
 import io.clappr.player.base.*
+import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
-import io.clappr.player.bitrate.BitrateHistory
 import kotlin.math.min
 
 
@@ -149,6 +149,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     else -> duration != 0.0
                 }
 
+    override var volume: Float?
+        get() = player?.volume
+        set(volume) {
+            volume?.let { player?.volume = it }
+        }
+
     override val isDvrAvailable: Boolean
         get() {
             val videoHasMinimumDurationForDvr = duration >= minDvrSize
@@ -175,22 +181,24 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private var lastDrvAvailableCheck: Boolean? = null
 
     private var lastBitrate: Long? = null
-    set(value) {
+        set(value) {
 
-        val oldValue = field
+            val oldValue = field
 
-        field = value
+            field = value
 
-        try{
-            bitrateHistory.addBitrate(field)
-        } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-            Logger.error(name,  e.message ?: "Can not add bitrate on history")
+            try {
+                bitrateHistory.addBitrate(field)
+            } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
+                Logger.error(name, e.message ?: "Can not add bitrate on history")
+            }
+
+            if (oldValue != field) {
+                trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply {
+                    putLong(EventData.BITRATE.value, field ?: 0)
+                })
+            }
         }
-
-        if(oldValue != field) {
-            trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply { putLong(EventData.BITRATE.value, field ?: 0) })
-        }
-    }
 
     override val bitrate: Long
         get() = lastBitrate ?: 0L
@@ -286,7 +294,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     override fun seekToLivePosition(): Boolean {
-        if(!canSeek) return false
+        if (!canSeek) return false
 
         player?.seekToDefaultPosition()
         return true
@@ -308,7 +316,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         when (mediaType) {
             C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_SS -> return  SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            C.TYPE_SS -> return SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
             C.TYPE_HLS -> return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
             C.TYPE_OTHER -> return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
             else -> throw IllegalStateException("Unsupported type: " + mediaType)
@@ -353,7 +361,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(applicationContext, applicationContext.packageName), bandwidthMeter)
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
-        var drmSessionManager : DrmSessionManager<FrameworkMediaCrypto>? = null
+        var drmSessionManager: DrmSessionManager<FrameworkMediaCrypto>? = null
 
         try {
             drmSessionManager = DefaultDrmSessionManager(drmScheme, FrameworkMediaDrm.newInstance(drmScheme), drmMediaCallback, null)
@@ -458,7 +466,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun handleExoplayerIdleState() {
         timeElapsedHandler.cancel()
-        if(!recoveredFromBehindLiveWindowException) {
+        if (!recoveredFromBehindLiveWindowException) {
             currentState = State.NONE
         } else {
             recoveredFromBehindLiveWindowException = false
@@ -704,7 +712,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
             mediaLoadData?.let {
-                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO){
+                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO) {
                     it.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
                 }
             }
