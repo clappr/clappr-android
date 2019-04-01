@@ -1,6 +1,7 @@
 package io.clappr.player.components
 
 import android.os.Bundle
+import android.view.View
 import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
@@ -82,6 +83,19 @@ class Core(options: Options) : UIObject() {
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
 
+    private val layoutChangeListener = View.OnLayoutChangeListener { _, left, top, right, bottom,
+                                                                     oldLeft, oldTop, oldRight, oldBottom ->
+        val horizontal = right - left
+        val oldHorizontal = oldRight - oldLeft
+
+        val vertical = bottom - top
+        val oldVertical = oldBottom - oldTop
+
+        if (horizontal != oldHorizontal || vertical != oldVertical) {
+            trigger(InternalEvent.DID_RESIZE.value)
+        }
+    }
+
     init {
         internalPlugins = Loader.loadPlugins(this).toMutableList()
 
@@ -107,6 +121,7 @@ class Core(options: Options) : UIObject() {
         }
         internalPlugins.clear()
         stopListening()
+        frameLayout.removeOnLayoutChangeListener(layoutChangeListener)
         trigger(InternalEvent.DID_DESTROY.value)
     }
 
@@ -122,6 +137,10 @@ class Core(options: Options) : UIObject() {
                     { it.render() },
                     "Plugin ${it.javaClass.simpleName} crashed during render")
         }
+
+        frameLayout.removeOnLayoutChangeListener(layoutChangeListener)
+        frameLayout.addOnLayoutChangeListener(layoutChangeListener)
+
         return this
     }
 
