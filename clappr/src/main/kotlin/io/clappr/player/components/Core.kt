@@ -85,15 +85,10 @@ class Core(options: Options) : UIObject() {
 
     private val layoutChangeListener = View.OnLayoutChangeListener { _, left, top, right, bottom,
                                                                      oldLeft, oldTop, oldRight, oldBottom ->
-        val horizontal = right - left
-        val oldHorizontal = oldRight - oldLeft
+        val horizontalChange = (right - left) != (oldRight - oldLeft)
+        val verticalChange = (bottom - top) != (oldBottom - oldTop)
 
-        val vertical = bottom - top
-        val oldVertical = oldBottom - oldTop
-
-        if (horizontal != oldHorizontal || vertical != oldVertical) {
-            trigger(InternalEvent.DID_RESIZE.value)
-        }
+        if (horizontalChange || verticalChange) { trigger(InternalEvent.DID_RESIZE.value) }
     }
 
     init {
