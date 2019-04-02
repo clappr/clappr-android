@@ -1,7 +1,13 @@
-package io.clappr.player.base
+package io.clappr.player.components
 
+import android.view.View
+import android.widget.FrameLayout
+import com.nhaarman.mockito_kotlin.*
 import io.clappr.player.BuildConfig
-import io.clappr.player.components.*
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
@@ -10,6 +16,8 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.ArgumentCaptor
+import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
@@ -39,6 +47,11 @@ open class CoreTest {
 
         var destroyMethod: (() -> Unit)? = null
         var renderMethod: (() -> Unit)? = null
+        var didResizeWasCalled = false
+
+        init {
+            listenTo(core, InternalEvent.DID_RESIZE.value) { didResizeWasCalled = true }
+        }
 
         override fun destroy() {
             destroyMethod?.invoke()
@@ -284,6 +297,142 @@ open class CoreTest {
         core.render()
 
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    @Test
+    fun shouldRemoveLayoutChangeListenerOnDestroy() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val core = Core(options = Options(source = "source")).apply { view = mockView }
+
+        core.destroy()
+
+        verify(mockView).removeOnLayoutChangeListener(any())
+    }
+
+    @Test
+    fun shouldAddLayoutChangeListenerOnRender() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val core = Core(options = Options(source = "source")).apply { view = mockView }
+
+        core.render()
+
+        verify(mockView).addOnLayoutChangeListener(any())
+    }
+
+    @Test
+    fun shouldRemoveBeforeAddLayoutChangeListenerOnRender() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val core = Core(options = Options(source = "source")).apply { view = mockView }
+
+        core.render()
+
+        with(inOrder(mockView)) {
+            verify(mockView).removeOnLayoutChangeListener(any())
+            verify(mockView).addOnLayoutChangeListener(any())
+        }
+    }
+
+    @Test
+    fun shouldRemoveAndAddTheSameLayoutChangeListenerOnRender() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val core = Core(options = Options(source = "source")).apply { view = mockView }
+
+        core.render()
+
+        verify(mockView).removeOnLayoutChangeListener(capture(listenerCapture))
+        verify(mockView).addOnLayoutChangeListener(listenerCapture.value)
+    }
+
+    @Test
+    fun shouldRemoveTheSameLayoutChangeListenerOnDestroy() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val core = Core(options = Options(source = "source")).apply { view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        core.destroy()
+        verify(mockView, times(2)).removeOnLayoutChangeListener(listenerCapture.value)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeHorizontallyToRight() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        val right = 1920
+        val oldRight = 1080
+        listenerCapture.value.onLayoutChange(mockView, 0, 0, right, 0, 0, 0, oldRight, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeHorizontallyToLeft() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        val left = 1920
+        val oldLeft = 1080
+        listenerCapture.value.onLayoutChange(mockView, left, 0, 0, 0, oldLeft, 0, 0, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeVerticallyToTop() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        val top = 1920
+        val oldTop = 1080
+        listenerCapture.value.onLayoutChange(mockView, 0, top, 0, 0, 0, oldTop, 0, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeVerticallyToBottom() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        val bottom = 1920
+        val oldBottom = 1080
+        listenerCapture.value.onLayoutChange(mockView, 0, 0, 0, bottom, 0, 0, 0, oldBottom)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldNotTriggerDidResizeWhenLayoutNotChangeSize() {
+        val mockView = Mockito.mock(FrameLayout::class.java)
+        val listenerCapture = ArgumentCaptor.forClass(View.OnLayoutChangeListener::class.java)
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = mockView }
+
+        core.render()
+        verify(mockView).addOnLayoutChangeListener(capture(listenerCapture))
+
+        listenerCapture.value.onLayoutChange(mockView, 100, 100, 100, 100, 100, 100, 100, 100)
+
+        assertFalse(testPlugin.didResizeWasCalled)
     }
 
     private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
