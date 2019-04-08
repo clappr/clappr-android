@@ -415,4 +415,19 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
         assertFalse(playback.seekToLivePosition())
     }
+
+    @Test
+    fun shouldNotSentMediaOptionSelectedWhenOptionIsUpdated() {
+        var didSelectedMediaOption = false
+        val playback = SomePlayback("valid-source.mp4", Options())
+        val option = MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, null, null)
+
+        playback.on(Event.MEDIA_OPTIONS_SELECTED.value) {
+            didSelectedMediaOption = true
+        }
+
+        playback.setSelectedMediaOption(option)
+
+        assertFalse(didSelectedMediaOption)
+    }
 }
