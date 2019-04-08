@@ -1,9 +1,7 @@
 package io.clappr.player.components
 
-import android.os.Bundle
 import io.clappr.player.base.*
 import io.clappr.player.log.Logger
-import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
@@ -129,11 +127,14 @@ abstract class Playback(
     }
 
     protected var mediaOptionList = LinkedList<MediaOption>()
-    protected var selectedMediaOptionList = ArrayList<MediaOption>()
+    var selectedMediaOptionList = ArrayList<MediaOption>()
+        private set
 
-    private val mediaOptionsArrayJson = "media_option"
-    private val mediaOptionsNameJson = "name"
-    private val mediaOptionsTypeJson = "type"
+    companion object {
+        const val mediaOptionsArrayJson = "media_option"
+        const val mediaOptionsNameJson = "name"
+        const val mediaOptionsTypeJson = "type"
+    }
 
     fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
         mediaOptionList.add(index, media)
@@ -171,23 +172,6 @@ abstract class Playback(
         selectedMediaOptionList.add(mediaOption)
 
         trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
-
-        val bundle = Bundle()
-        bundle.putString(EventData.MEDIA_OPTIONS_SELECTED_RESPONSE.value, convertSelectedMediaOptionsToJson())
-        trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
-    }
-
-    private fun convertSelectedMediaOptionsToJson(): String {
-        val result = JSONObject()
-        val jsonArray = JSONArray()
-        selectedMediaOptionList.forEach {
-            val jsonObject = JSONObject()
-            jsonObject.put(mediaOptionsNameJson, it.name)
-            jsonObject.put(mediaOptionsTypeJson, it.type)
-            jsonArray.put(jsonObject)
-        }
-        result.put(mediaOptionsArrayJson, jsonArray)
-        return result.toString()
     }
 
     fun setupInitialMediasFromClapprOptions() {
