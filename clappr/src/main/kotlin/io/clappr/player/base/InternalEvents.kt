@@ -33,5 +33,7 @@ enum class InternalEvent (val value: String) {
     WILL_SHOW_MEDIA_CONTROL("willShowMediaControl"),
     WILL_HIDE_MEDIA_CONTROL("willHideMediaControl"),
     DID_HIDE_MEDIA_CONTROL("didHideMediaControl"),
-    DID_SHOW_MEDIA_CONTROL("didShowMediaControl")
+    DID_SHOW_MEDIA_CONTROL("didShowMediaControl"),
+
+    DID_RESIZE("didResize")
 }

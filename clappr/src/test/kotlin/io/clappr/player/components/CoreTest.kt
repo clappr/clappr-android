@@ -1,7 +1,13 @@
-package io.clappr.player.base
+package io.clappr.player.components
 
+import android.view.View
+import android.widget.FrameLayout
+import com.nhaarman.mockito_kotlin.*
 import io.clappr.player.BuildConfig
-import io.clappr.player.components.*
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
@@ -10,6 +16,7 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.*
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowApplication
@@ -39,6 +46,11 @@ open class CoreTest {
 
         var destroyMethod: (() -> Unit)? = null
         var renderMethod: (() -> Unit)? = null
+        var didResizeWasCalled = false
+
+        init {
+            listenTo(core, InternalEvent.DID_RESIZE.value) { didResizeWasCalled = true }
+        }
 
         override fun destroy() {
             destroyMethod?.invoke()
@@ -49,8 +61,16 @@ open class CoreTest {
         }
     }
 
+    @Mock
+    private lateinit var frameLayoutMock: FrameLayout
+
+    @Captor
+    private lateinit var onLayoutChangeListenerCapture: ArgumentCaptor<View.OnLayoutChangeListener>
+
     @Before
     fun setup() {
+        MockitoAnnotations.initMocks(this)
+
         BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
     }
 
@@ -284,6 +304,131 @@ open class CoreTest {
         core.render()
 
         assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+    }
+
+    @Test
+    fun shouldRemoveLayoutChangeListenerOnDestroy() {
+        val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
+
+        core.destroy()
+
+        verify(frameLayoutMock).removeOnLayoutChangeListener(any())
+    }
+
+    @Test
+    fun shouldAddLayoutChangeListenerOnRender() {
+        val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
+
+        core.render()
+
+        verify(frameLayoutMock).addOnLayoutChangeListener(any())
+    }
+
+    @Test
+    fun shouldRemoveBeforeAddLayoutChangeListenerOnRender() {
+        val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
+
+        core.render()
+
+        with(inOrder(frameLayoutMock)) {
+            verify(frameLayoutMock).removeOnLayoutChangeListener(any())
+            verify(frameLayoutMock).addOnLayoutChangeListener(any())
+        }
+    }
+
+    @Test
+    fun shouldRemoveAndAddTheSameLayoutChangeListenerOnRender() {
+        val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
+
+        core.render()
+
+        verify(frameLayoutMock).removeOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+        verify(frameLayoutMock).addOnLayoutChangeListener(onLayoutChangeListenerCapture.value)
+    }
+
+    @Test
+    fun shouldRemoveTheSameLayoutChangeListenerOnDestroy() {
+        val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        core.destroy()
+        verify(frameLayoutMock, times(2))
+                .removeOnLayoutChangeListener(onLayoutChangeListenerCapture.value)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeHorizontallyToRight() {
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val right = 1920
+        val oldRight = 1080
+        onLayoutChangeListenerCapture.value.onLayoutChange(
+                frameLayoutMock, 0, 0, right, 0, 0, 0, oldRight, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeHorizontallyToLeft() {
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val left = 1920
+        val oldLeft = 1080
+        onLayoutChangeListenerCapture.value.onLayoutChange(
+                frameLayoutMock, left, 0, 0, 0, oldLeft, 0, 0, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeVerticallyToTop() {
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val top = 1920
+        val oldTop = 1080
+        onLayoutChangeListenerCapture.value.onLayoutChange(
+                frameLayoutMock, 0, top, 0, 0, 0, oldTop, 0, 0)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidResizeWhenLayoutChangeSizeVerticallyToBottom() {
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val bottom = 1920
+        val oldBottom = 1080
+        onLayoutChangeListenerCapture.value.onLayoutChange(
+                frameLayoutMock, 0, 0, 0, bottom, 0, 0, 0, oldBottom)
+
+        assertTrue(testPlugin.didResizeWasCalled)
+    }
+
+    @Test
+    fun shouldNotTriggerDidResizeWhenLayoutNotChangeSize() {
+        val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
+
+        core.render()
+        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        onLayoutChangeListenerCapture.value.onLayoutChange(
+                frameLayoutMock, 100, 100, 100, 100, 100, 100, 100, 100)
+
+        assertFalse(testPlugin.didResizeWasCalled)
     }
 
     private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
