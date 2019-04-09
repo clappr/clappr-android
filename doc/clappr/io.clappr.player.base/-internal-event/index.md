@@ -38,6 +38,7 @@
 | [WILL_HIDE_MEDIA_CONTROL](-w-i-l-l_-h-i-d-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
 | [DID_HIDE_MEDIA_CONTROL](-d-i-d_-h-i-d-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
 | [DID_SHOW_MEDIA_CONTROL](-d-i-d_-s-h-o-w_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
+| [DID_RESIZE](-d-i-d_-r-e-s-i-z-e.md) |  |
 
 ### Properties
 
