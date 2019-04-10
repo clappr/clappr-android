@@ -42,6 +42,36 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
+    fun shouldTriggerWillSeekWhenSeekToLivePositionIsCalled() {
+        var willSeekWasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, Event.WILL_SEEK.value) {
+            willSeekWasCalled = true
+        }
+        exoPlayerPlayBack.seekToLivePosition()
+        assertTrue("WILL_SEEK event wasn't triggered when seekToLivePosition() method was called", willSeekWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidSeekWhenSeekToLivePositionIsCalled() {
+        var didSeekWasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, Event.DID_SEEK.value) {
+            didSeekWasCalled = true
+        }
+        exoPlayerPlayBack.seekToLivePosition()
+        assertTrue("DID_SEEK event wasn't triggered when seekToLivePosition() method was called", didSeekWasCalled)
+    }
+
+    @Test
+    fun shouldTriggerDidUpdatePositionWhenSeekToLivePositionIsCalled() {
+        var didUpdatePositionWasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_POSITION.value) { bundle ->
+            didUpdatePositionWasCalled = true
+        }
+        exoPlayerPlayBack.seekToLivePosition()
+        assertTrue("DID_UPDATE_POSITION event wasn't triggered when seekToLivePosition() method was called", didUpdatePositionWasCalled)
+    }
+
+    @Test
     fun shouldReturnZeroBitrateWhenHistoryIsEmpty() {
         assertEquals(0, exoPlayerPlayBack.bitrate)
     }
