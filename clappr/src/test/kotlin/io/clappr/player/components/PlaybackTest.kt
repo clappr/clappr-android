@@ -251,7 +251,7 @@ open class PlaybackTest {
 
         var mediaOptionsUpdateCalled = false
 
-        listenObject.listenTo(playback, InternalEvent.MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateCalled = true }
+        listenObject.listenTo(playback, Event.MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateCalled = true }
 
         playback.setSelectedMediaOption(MediaOption("Name", MediaOptionType.SUBTITLE, "name", null))
 

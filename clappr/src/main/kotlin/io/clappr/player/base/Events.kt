@@ -99,9 +99,15 @@ enum class Event(val value: String) {
     DID_UPDATE_POSTER("didUpdatePoster"),
 
     /**
-     * Media Options Selected. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
+     * Media Options Selected. Triggered when the user select a Media Option.
+     * Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
      */
     MEDIA_OPTIONS_SELECTED("mediaOptionsSelected"),
+
+    /**
+     * Media Options Update. Triggered when the Playback load a media option
+     */
+    MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
 
     /**
      * There was a change in DVR status

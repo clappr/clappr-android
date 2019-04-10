@@ -171,7 +171,7 @@ abstract class Playback(
         selectedMediaOptionList.removeAll { it.type == mediaOption.type }
         selectedMediaOptionList.add(mediaOption)
 
-        trigger(InternalEvent.MEDIA_OPTIONS_UPDATE.value)
+        trigger(Event.MEDIA_OPTIONS_UPDATE.value)
     }
 
     fun setupInitialMediasFromClapprOptions() {
