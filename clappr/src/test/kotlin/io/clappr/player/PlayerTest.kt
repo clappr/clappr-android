@@ -416,8 +416,8 @@ open class PlayerTest {
 
         player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
 
-        player.on(event) {
-            eventWasCalled = true
+        player.on(event) { bundle ->
+            eventWasCalled = bundle?.getBoolean(EventTestPlayback.eventBundle) ?: false
         }
 
         player.configure(Options(source = "valid"))
@@ -438,11 +438,17 @@ open class PlayerTest {
                     supportsSource = EventTestPlayback.supportsSource,
                     factory = { source, mimeType, options -> EventTestPlayback(source, mimeType, options) })
 
+            const val eventBundle = "test-bundle"
             var event: String? = null
         }
 
         override fun play(): Boolean {
-            EventTestPlayback.event?.let { trigger(it) }
+            EventTestPlayback.event?.let {
+                Bundle().apply {
+                    putBoolean(eventBundle, true)
+                    trigger(it, this)
+                }
+            }
             return super.play()
         }
     }
