@@ -29,7 +29,8 @@
 | [REQUEST_POSTER_UPDATE](-r-e-q-u-e-s-t_-p-o-s-t-e-r_-u-p-d-a-t-e.md) | Request to update poster |
 | [WILL_UPDATE_POSTER](-w-i-l-l_-u-p-d-a-t-e_-p-o-s-t-e-r.md) | Will update poster image |
 | [DID_UPDATE_POSTER](-d-i-d_-u-p-d-a-t-e_-p-o-s-t-e-r.md) | Poster image updated |
-| [MEDIA_OPTIONS_SELECTED](-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d.md) | Media Options Selected. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE](../-event-data/-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d_-r-e-s-p-o-n-s-e.md) key. |
+| [MEDIA_OPTIONS_SELECTED](-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d.md) | Media Options Selected. Triggered when the user select a Media Option. Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE](../-event-data/-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d_-r-e-s-p-o-n-s-e.md) key. |
+| [MEDIA_OPTIONS_UPDATE](-m-e-d-i-a_-o-p-t-i-o-n-s_-u-p-d-a-t-e.md) | Media Options Update. Triggered when the Playback load a media option |
 | [DID_CHANGE_DVR_STATUS](-d-i-d_-c-h-a-n-g-e_-d-v-r_-s-t-a-t-u-s.md) | There was a change in DVR status |
 | [DID_CHANGE_DVR_AVAILABILITY](-d-i-d_-c-h-a-n-g-e_-d-v-r_-a-v-a-i-l-a-b-i-l-i-t-y.md) | There was a change in DVR availability |
 | [DID_UPDATE_BITRATE](-d-i-d_-u-p-d-a-t-e_-b-i-t-r-a-t-e.md) | Bitrate was updated |

@@ -24,7 +24,6 @@
 | [WILL_DESTROY](-w-i-l-l_-d-e-s-t-r-o-y.md) |  |
 | [DID_DESTROY](-d-i-d_-d-e-s-t-r-o-y.md) |  |
 | [MEDIA_OPTIONS_READY](-m-e-d-i-a_-o-p-t-i-o-n-s_-r-e-a-d-y.md) |  |
-| [MEDIA_OPTIONS_UPDATE](-m-e-d-i-a_-o-p-t-i-o-n-s_-u-p-d-a-t-e.md) |  |
 | [DID_UPDATE_OPTIONS](-d-i-d_-u-p-d-a-t-e_-o-p-t-i-o-n-s.md) |  |
 | [DID_TOUCH_MEDIA_CONTROL](-d-i-d_-t-o-u-c-h_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
 | [ENABLE_MEDIA_CONTROL](-e-n-a-b-l-e_-m-e-d-i-a_-c-o-n-t-r-o-l.md) |  |
