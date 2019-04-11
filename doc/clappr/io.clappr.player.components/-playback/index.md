@@ -80,6 +80,14 @@
 |---|---|
 | [remove](../../io.clappr.player.base/-u-i-object/remove.md) | `fun remove(): `[`UIObject`](../../io.clappr.player.base/-u-i-object/index.md) |
 
+### Companion Object Properties
+
+| Name | Summary |
+|---|---|
+| [mediaOptionsArrayJson](media-options-array-json.md) | `const val mediaOptionsArrayJson: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [mediaOptionsNameJson](media-options-name-json.md) | `const val mediaOptionsNameJson: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+| [mediaOptionsTypeJson](media-options-type-json.md) | `const val mediaOptionsTypeJson: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
+
 ### Inheritors
 
 | Name | Summary |
