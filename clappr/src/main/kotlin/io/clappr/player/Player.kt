@@ -247,7 +247,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
+            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) } }
         }
     }
 
@@ -260,7 +260,7 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
-            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event, { bundle: Bundle? -> trigger(event, bundle) }) }
+            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) } }
         }
     }
 
