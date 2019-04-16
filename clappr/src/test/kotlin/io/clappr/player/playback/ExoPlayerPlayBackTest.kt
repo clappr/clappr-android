@@ -2,6 +2,7 @@ package io.clappr.player.playback
 
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
@@ -9,6 +10,7 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.EventData
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
+import io.clappr.player.shadows.SimpleExoplayerShadow
 import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -226,6 +228,53 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.stop()
 
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when no option is passed`() {
+        val source = "supported-source.mp4"
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = Options())
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when invalid option is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to "asda"))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when loop false is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to false))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_ALL when loop true is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to true))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_ALL, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
