@@ -2,6 +2,7 @@ package io.clappr.player.playback
 
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
@@ -9,6 +10,7 @@ import io.clappr.player.base.Event
 import io.clappr.player.base.EventData
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
+import io.clappr.player.shadows.SimpleExoplayerShadow
 import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -42,7 +44,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerWillSeekWhenSeekToLivePositionIsCalled() {
+    fun `Should trigger WILL_SEEK when seekToLivePosition() is called`() {
         var willSeekWasCalled = false
         listenObject.listenTo(exoPlayerPlayBack, Event.WILL_SEEK.value) {
             willSeekWasCalled = true
@@ -52,7 +54,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidSeekWhenSeekToLivePositionIsCalled() {
+    fun `Should trigger DID_SEEK when seekToLivePosition() is called`() {
         var didSeekWasCalled = false
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_SEEK.value) {
             didSeekWasCalled = true
@@ -62,7 +64,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdatePositionWhenSeekToLivePositionIsCalled() {
+    fun `Should trigger DID_UPDATE_POSITION when seek to live position is called`() {
         var didUpdatePositionWasCalled = false
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_POSITION.value) { bundle ->
             didUpdatePositionWasCalled = true
@@ -72,17 +74,17 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldReturnZeroBitrateWhenHistoryIsEmpty() {
+    fun `Should return zero bitrate when history is empty`() {
         assertEquals(0, exoPlayerPlayBack.bitrate)
     }
 
     @Test
-    fun shouldReturnZeroAverageBitrateWhenHistoryIsEmpty() {
+    fun `Should return zero average bitrate when history is empty`() {
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
     }
 
     @Test
-    fun shouldReturnLastReportedBitrate() {
+    fun `Should return last reported bitrate`() {
         val expectedBitrate = 40L
 
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
@@ -93,7 +95,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdateBitrate() {
+    fun `Should trigger DID_UPDATE_BITRATE`() {
         val expectedBitrate = 40L
         var actualBitrate = 0L
 
@@ -109,7 +111,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldListeningDidUpdateOnDifferentBitrates() {
+    fun `Should listening DID_UPDATE_BITRATE on different bitrates`() {
         var numberOfTriggers = 0
 
         listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
@@ -120,7 +122,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdateBitrateOnlyForDifferentBitrate() {
+    fun `Should trigger DID_UPDATE_BITRATE only for different bitrate`() {
         val bitrate = 10L
         var numberOfTriggers = 0
 
@@ -132,7 +134,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldNotTriggerDidUpdateBitrateWhenTrackTypeDifferentDefaultOrVideo() {
+    fun `Should not trigger DID_UPDATE_BITRATE when track type is different from TRACK_TYPE_DEFAULT or TRACK_TYPE_VIDEO`() {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
@@ -143,7 +145,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldNotTriggerDidUpdateBitrateWhenMediaLoadDataNull() {
+    fun `Should not trigger DID_UPDATE_BITRATE when media load data is null`() {
         val mediaLoadData = null
         var didUpdateBitrateCalled = false
 
@@ -154,14 +156,14 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldHandleWrongTimeIntervalExceptionOnAddBitrateOnHistory() {
+    fun `Should handle wrong time interval exception on add bitrate on history`() {
         timeInNano = -1
 
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
     }
 
     @Test
-    fun shouldNotTriggerDidUpdateBitrateWhenVideoFormatNull() {
+    fun `Should not trigger DID_UPDATE_BITRATE when video format is null`() {
         val videoFormatMock = null
         val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
                 null, 0L, 0L)
@@ -174,7 +176,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdateBitrateWhenTrackTypeDefault() {
+    fun `should trigger DID_UPDATE_BITRATE when TRACK_TYPE_DEFAULT`() {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
@@ -185,7 +187,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldTriggerDidUpdateBitrateWhenTrackTypeVideo() {
+    fun `Should trigger DID_UPDATE_BITRATE when TRACK_TYPE_VIDEO`() {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
@@ -196,7 +198,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldReturnAverageBitrate() {
+    fun `Should return average bitrate`() {
         val expectedAverageBitrate = 109L
 
         bitrateHistory.addBitrate(90, 2)
@@ -207,7 +209,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldResetBitrateHistoryAfterStopping() {
+    fun `Should reset bitrate history after stopping`() {
         bitrateHistory.addBitrate(90, 2)
         bitrateHistory.addBitrate(100, 17)
         bitrateHistory.addBitrate(110, 31)
@@ -218,7 +220,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun shouldResetAverageBitrateHistoryAfterStopping() {
+    fun `Should reset average bitrate history after stopping`() {
         bitrateHistory.addBitrate(90, 2)
         bitrateHistory.addBitrate(100, 17)
         bitrateHistory.addBitrate(110, 31)
@@ -226,6 +228,53 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.stop()
 
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when no option is passed`() {
+        val source = "supported-source.mp4"
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = Options())
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when invalid option is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to "asda"))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_OFF when loop false is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to false))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    @Config(shadows = [SimpleExoplayerShadow::class])
+    fun `Should be REPEAT_MODE_ALL when loop true is passed`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf("loop" to true))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        assertEquals(Player.REPEAT_MODE_ALL, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {

@@ -40,5 +40,10 @@ enum class ClapprOption(val value: String) {
     /**
      * The sequence in which the plugins will be displayed in the media control. Names are separated by commas and are case sensitive.
      */
-    MEDIA_CONTROL_PLUGINS("mediaControlPlugins")
+    MEDIA_CONTROL_PLUGINS("mediaControlPlugins"),
+    /**
+     *  If true the video will be played forever (loop mode).
+     *  If false the video will be stopped when it ends
+     */
+    LOOP("loop")
 }
