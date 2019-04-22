@@ -39,6 +39,7 @@ open class PlayerTest {
 
         PlayerTestPlayback.internalState = Playback.State.NONE
         EventTestPlayback.event = null
+        CoreTestPlugin.event = null
 
         player = Player(playbackEventsToListen = mutableSetOf(playerTestEvent))
     }
@@ -315,100 +316,125 @@ open class PlayerTest {
 
     @Test
     fun shouldListenReadyEventOutOfPlayer() {
-        assertEventWasTriggered(Event.READY.value)
+        assertPlaybackEventWasTriggered(Event.READY.value)
     }
 
     @Test
     fun shouldListenErrorEventOutOfPlayer() {
-        assertEventWasTriggered(Event.ERROR.value)
+        assertPlaybackEventWasTriggered(Event.ERROR.value)
     }
 
     @Test
     fun shouldListenPlayingEventOutOfPlayer() {
-        assertEventWasTriggered(Event.PLAYING.value)
+        assertPlaybackEventWasTriggered(Event.PLAYING.value)
     }
 
     @Test
     fun shouldListenDidCompleteEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_COMPLETE.value)
+        assertPlaybackEventWasTriggered(Event.DID_COMPLETE.value)
     }
 
     @Test
     fun shouldListenDidPauseEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_PAUSE.value)
+        assertPlaybackEventWasTriggered(Event.DID_PAUSE.value)
     }
 
     @Test
     fun shouldListenStallingEventOutOfPlayer() {
-        assertEventWasTriggered(Event.STALLING.value)
+        assertPlaybackEventWasTriggered(Event.STALLING.value)
     }
 
     @Test
     fun shouldListenDidStopEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_STOP.value)
+        assertPlaybackEventWasTriggered(Event.DID_STOP.value)
     }
 
     @Test
     fun shouldListenDidSeekEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_SEEK.value)
+        assertPlaybackEventWasTriggered(Event.DID_SEEK.value)
     }
 
     @Test
     fun shouldListenDidUpdateBufferEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_UPDATE_BUFFER.value)
+        assertPlaybackEventWasTriggered(Event.DID_UPDATE_BUFFER.value)
     }
 
     @Test
     fun shouldListenDidUpdatePositionEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_UPDATE_POSITION.value)
+        assertPlaybackEventWasTriggered(Event.DID_UPDATE_POSITION.value)
     }
 
     @Test
     fun shouldListenWillPlayEventOutOfPlayer() {
-        assertEventWasTriggered(Event.WILL_PLAY.value)
+        assertPlaybackEventWasTriggered(Event.WILL_PLAY.value)
     }
 
     @Test
     fun shouldListenWillPauseEventOutOfPlayer() {
-        assertEventWasTriggered(Event.WILL_PAUSE.value)
+        assertPlaybackEventWasTriggered(Event.WILL_PAUSE.value)
     }
 
     @Test
     fun shouldListenWillSeekEventOutOfPlayer() {
-        assertEventWasTriggered(Event.WILL_SEEK.value)
+        assertPlaybackEventWasTriggered(Event.WILL_SEEK.value)
     }
 
     @Test
     fun shouldListenWillStopEventOutOfPlayer() {
-        assertEventWasTriggered(Event.WILL_STOP.value)
+        assertPlaybackEventWasTriggered(Event.WILL_STOP.value)
     }
 
     @Test
     fun shouldListenDidChangeDVRStatusEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_CHANGE_DVR_STATUS.value)
+        assertPlaybackEventWasTriggered(Event.DID_CHANGE_DVR_STATUS.value)
     }
 
     @Test
     fun shouldListenDidChangeDVRAvailabilityEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_CHANGE_DVR_AVAILABILITY.value)
+        assertPlaybackEventWasTriggered(Event.DID_CHANGE_DVR_AVAILABILITY.value)
     }
 
     @Test
     fun shouldListenDidUpdateBitrateEventOutOfPlayer() {
-        assertEventWasTriggered(Event.DID_UPDATE_BITRATE.value)
-    }
-
-    @Test
-    fun shouldListenMediaOptionSelectedEventOutOfPlayer() {
-        assertEventWasTriggered(Event.MEDIA_OPTIONS_SELECTED.value)
+        assertPlaybackEventWasTriggered(Event.DID_UPDATE_BITRATE.value)
     }
 
     @Test
     fun shouldListenMediaOptionUpdateEventOutOfPlayer() {
-        assertEventWasTriggered(Event.MEDIA_OPTIONS_UPDATE.value)
+        assertPlaybackEventWasTriggered(Event.MEDIA_OPTIONS_UPDATE.value)
     }
 
-    private fun assertEventWasTriggered(event: String){
+    @Test
+    fun shouldListenMediaOptionSelectedEventOutOfPlayerTriggeredByCore() {
+        assertCoreEventWasTriggered(Event.MEDIA_OPTIONS_SELECTED.value)
+    }
+
+    @Test
+    fun shouldListenRequestFullscreenEventOutOfPlayerTriggeredByCore() {
+        assertCoreEventWasTriggered(Event.REQUEST_FULLSCREEN.value)
+    }
+
+    @Test
+    fun shouldListenExitFullscreenEventOutOfPlayerTriggeredByCore() {
+        assertCoreEventWasTriggered(Event.EXIT_FULLSCREEN.value)
+    }
+
+    private fun assertCoreEventWasTriggered(event: String) {
+        var eventWasCalled = false
+
+        CoreTestPlugin.event = event
+
+        player.on(event) { bundle ->
+            eventWasCalled = bundle?.getBoolean(CoreTestPlugin.eventBundle) ?: false
+        }
+
+        player.configure(Options(source = "valid"))
+        player.play()
+
+        assertTrue(eventWasCalled)
+    }
+
+    private fun assertPlaybackEventWasTriggered(event: String){
         var eventWasCalled = false
         Loader.register(EventTestPlayback.entry)
 
@@ -498,23 +524,39 @@ open class PlayerTest {
             override val name = "coreTestPlugin"
 
             val entry = PluginEntry.Core(name = name, factory = { core -> CoreTestPlugin(core) })
+            const val eventBundle = "test-bundle"
+            var event: String? = null
         }
 
         init {
-            listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { bindPlaybackEvents() })
+            listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { bindPlaybackEvents() }
         }
 
         private fun bindPlaybackEvents() {
             core.activePlayback?.let { playback ->
                 listenTo(playback, Event.WILL_PLAY.value) {
-                    playback.trigger("playerTestEvent", Bundle().apply {
-                        putString("source", core.options.source)
-                        putString("mimeType", core.options.mimeType)
-                        putString("coreId", core.id)
-                        core.options.options["test_option"]?.let { testOption ->
-                            putString("option", testOption as String)
-                        }
-                    })
+                    triggerTestEvent(playback)
+                    triggerCoreEvent()
+                }
+            }
+        }
+
+        private fun triggerTestEvent(playback: Playback) {
+            playback.trigger("playerTestEvent", Bundle().apply {
+                putString("source", core.options.source)
+                putString("mimeType", core.options.mimeType)
+                putString("coreId", core.id)
+                core.options.options["test_option"]?.let { testOption ->
+                    putString("option", testOption as String)
+                }
+            })
+        }
+
+        private fun triggerCoreEvent() {
+            event?.let {
+                Bundle().apply {
+                    putBoolean(eventBundle, true)
+                    core.trigger(it, this)
                 }
             }
         }

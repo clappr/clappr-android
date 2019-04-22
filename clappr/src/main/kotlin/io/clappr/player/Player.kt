@@ -81,12 +81,13 @@ open class Player(private val base: BaseObject = BaseObject(),
             field = value
             updateCoreFullScreenStatus()
             core?.let {
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, { _ -> unbindPlaybackEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, { _ -> bindPlaybackEvents() })
-                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value, { _ -> unbindContainerEvents() })
-                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value, { _ -> bindContainerEvents() })
-                it.on(Event.REQUEST_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) })
-                it.on(Event.EXIT_FULLSCREEN.value, { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) })
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value) { unbindPlaybackEvents() }
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { bindPlaybackEvents() }
+                it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) { unbindContainerEvents() }
+                it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { bindContainerEvents() }
+                it.on(Event.REQUEST_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) }
+                it.on(Event.EXIT_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) }
+                it.on(Event.MEDIA_OPTIONS_SELECTED.value) { bundle: Bundle? -> trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle) }
 
                 if (it.activeContainer != null) {
                     bindContainerEvents()
