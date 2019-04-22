@@ -42,7 +42,8 @@ enum class ClapprOption(val value: String) {
      */
     MEDIA_CONTROL_PLUGINS("mediaControlPlugins"),
     /**
-     *  If you want the video to automatically replay after it ends.
+     *  If true the video will be played forever (loop mode).
+     *  If false the video will be stopped when it ends
      */
     LOOP("loop")
 }
