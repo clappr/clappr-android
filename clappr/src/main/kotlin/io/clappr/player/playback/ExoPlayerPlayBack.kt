@@ -332,6 +332,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
+        player?.repeatMode = when (options.options[ClapprOption.LOOP.value]) {
+            true -> Player.REPEAT_MODE_ALL
+            else -> Player.REPEAT_MODE_OFF
+        }
 
         addListeners()
 
