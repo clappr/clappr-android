@@ -23,6 +23,7 @@ enum class InternalEvent (val value: String) {
     ENABLE_MEDIA_CONTROL("enableMediaControl"),
     DISABLE_MEDIA_CONTROL("disableMediaControl"),
     DID_UPDATE_INTERACTING("didUpdateInteracting"),
+    DID_DOUBLE_TOUCH_MEDIA_CONTROL("didDoubleTouchMediaControl"),
 
     OPEN_MODAL_PANEL("openModalPanel"),
     CLOSE_MODAL_PANEL("closeModalPanel"),
