@@ -10,10 +10,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
-import io.clappr.player.base.ClapprOption
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.Plugin.State
@@ -325,8 +322,8 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     }
 
     inner class MediaControlDoubleTapListener : GestureDetector.OnDoubleTapListener {
-        override fun onDoubleTap(e: MotionEvent?): Boolean {
-            core.trigger(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value)
+        override fun onDoubleTap(event: MotionEvent?): Boolean {
+            triggerDoubleTapEvent(event)
             return true
         }
 
@@ -334,6 +331,20 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
             toggleVisibility()
             return true
+        }
+    }
+
+    private fun triggerDoubleTapEvent(event: MotionEvent?) {
+        Bundle().apply {
+            putInt(InternalEventData.HEIGHT.value, view.height)
+            putInt(InternalEventData.WIDTH.value, view.width)
+
+            event?.let {
+                putFloat(InternalEventData.TOUCH_X_AXIS.value, it.x)
+                putFloat(InternalEventData.TOUCH_Y_AXIS.value, it.y)
+            }
+        }.also {
+            core.trigger(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value, it)
         }
     }
 
