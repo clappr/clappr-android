@@ -37,3 +37,13 @@ enum class InternalEvent (val value: String) {
 
     DID_RESIZE("didResize")
 }
+
+/**
+ * Event bundle data keys for selected Events
+ */
+enum class InternalEventData(val value: String) {
+    HEIGHT("height"),
+    WIDTH("width"),
+    TOUCH_X_AXIS("touchXAxis"),
+    TOUCH_Y_AXIS("touchYAxis")
+}
