@@ -129,7 +129,10 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         core.activeContainer?.let {
             containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value) { state = State.ENABLED })
             containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value) { state = State.DISABLED })
-            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) { hide() })
+            containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) {
+                state = State.ENABLED
+                hide()
+            })
         }
     }
 
