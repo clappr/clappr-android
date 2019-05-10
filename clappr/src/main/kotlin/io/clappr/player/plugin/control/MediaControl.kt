@@ -324,6 +324,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     inner class MediaControlDoubleTapListener : GestureDetector.OnDoubleTapListener {
         override fun onDoubleTap(event: MotionEvent?): Boolean {
             triggerDoubleTapEvent(event)
+            hide()
             return true
         }
 
