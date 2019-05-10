@@ -453,6 +453,15 @@ class MediaControlTest {
         assertEventTriggeredWhenShowIsCalled(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
+    @Test
+    fun shouldEnableMediaControlWhenWillLoadSourceIsTriggered() {
+        mediaControl.state = Plugin.State.DISABLED
+
+        container.trigger(InternalEvent.WILL_LOAD_SOURCE.value)
+
+        assertEquals(Plugin.State.ENABLED, mediaControl.state)
+    }
+
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
     private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
     private fun getBottomLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_left_panel)
