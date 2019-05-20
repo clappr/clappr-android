@@ -1,7 +1,5 @@
 package io.clappr.player.base
 
-import android.support.annotation.Keep
-
 enum class InternalEvent (val value: String) {
     WILL_CHANGE_ACTIVE_CONTAINER("willChangeActiveContainer"),
     DID_CHANGE_ACTIVE_CONTAINER("didChangeActiveContainer"),
@@ -43,7 +41,6 @@ enum class InternalEvent (val value: String) {
 /**
  * Event bundle data keys for selected Events
  */
-@Keep
 enum class InternalEventData(val value: String) {
     HEIGHT("height"),
     WIDTH("width"),
