@@ -340,10 +340,9 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     private fun triggerDoubleTapEvent(event: MotionEvent?) {
         Bundle().apply {
-            putInt(InternalEventData.HEIGHT.value, view.height)
-            putInt(InternalEventData.WIDTH.value, view.width)
-
             event?.let {
+                putInt(InternalEventData.HEIGHT.value, view.height)
+                putInt(InternalEventData.WIDTH.value, view.width)
                 putFloat(InternalEventData.TOUCH_X_AXIS.value, it.x)
                 putFloat(InternalEventData.TOUCH_Y_AXIS.value, it.y)
             }
