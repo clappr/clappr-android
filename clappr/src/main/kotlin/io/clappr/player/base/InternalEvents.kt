@@ -23,6 +23,7 @@ enum class InternalEvent (val value: String) {
     ENABLE_MEDIA_CONTROL("enableMediaControl"),
     DISABLE_MEDIA_CONTROL("disableMediaControl"),
     DID_UPDATE_INTERACTING("didUpdateInteracting"),
+    DID_DOUBLE_TOUCH_MEDIA_CONTROL("didDoubleTouchMediaControl"),
 
     OPEN_MODAL_PANEL("openModalPanel"),
     CLOSE_MODAL_PANEL("closeModalPanel"),
@@ -35,4 +36,14 @@ enum class InternalEvent (val value: String) {
     DID_SHOW_MEDIA_CONTROL("didShowMediaControl"),
 
     DID_RESIZE("didResize")
+}
+
+/**
+ * Event bundle data keys for selected Events
+ */
+enum class InternalEventData(val value: String) {
+    HEIGHT("height"),
+    WIDTH("width"),
+    TOUCH_X_AXIS("touchXAxis"),
+    TOUCH_Y_AXIS("touchYAxis")
 }

@@ -1,19 +1,16 @@
 package io.clappr.player.plugin.control
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v4.view.GestureDetectorCompat
+import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
-import io.clappr.player.base.ClapprOption
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.Plugin.State
@@ -106,9 +103,16 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     private val containerListenerIds = mutableListOf<String>()
     private val playbackListenerIds = mutableListOf<String>()
 
+
+    private val doubleTapListener = MediaControlDoubleTapListener()
+    private val gestureDetector = GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
+            .apply {
+                setOnDoubleTapListener(doubleTapListener)
+            }
+
     init {
         setupPanelsVisibility()
-        view.setOnClickListener { toggleVisibility() }
+
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
 
@@ -159,7 +163,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         }
     }
 
-    private fun orderedPlugins(list: List<Plugin>, order: String): List<Plugin>{
+    private fun orderedPlugins(list: List<Plugin>, order: String): List<Plugin> {
         val pluginsOrder = order.replace(" ", "").split(",")
         return list.sortedWith(compareBy { pluginsOrder.indexOf(it.name) })
     }
@@ -257,7 +261,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
     }
 
     private fun closeModal() {
-        if(modalPanel.visibility == View.VISIBLE)
+        if (modalPanel.visibility == View.VISIBLE)
             showDefaultMediaControlPanels()
 
         hideModalPanel()
@@ -273,18 +277,25 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         modalPanel.visibility = View.INVISIBLE
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun render() {
+        super.render()
+
+        view.setOnTouchListener { _, event -> gestureDetector.onTouchEvent(event) }
+
         setupPlugins()
         Handler().post { layoutPlugins() }
         hide()
         hideModalPanel()
     }
 
+
+    @SuppressLint("ClickableViewAccessibility")
     override fun destroy() {
         controlPlugins.clear()
         stopContainerListeners()
         stopPlaybackListeners()
-        view.setOnClickListener(null)
+        view.setOnTouchListener(null)
         handler.removeCallbacksAndMessages(null)
         super.destroy()
     }
@@ -298,4 +309,47 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         playbackListenerIds.forEach(::stopListening)
         playbackListenerIds.clear()
     }
+
+    class MediaControlGestureDetector : GestureDetector.OnGestureListener {
+        override fun onDown(e: MotionEvent?) = true
+
+        override fun onShowPress(e: MotionEvent?) {}
+
+        override fun onSingleTapUp(e: MotionEvent?) = false
+
+        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float) = false
+
+        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float) = false
+
+        override fun onLongPress(e: MotionEvent?) {}
+    }
+
+    inner class MediaControlDoubleTapListener : GestureDetector.OnDoubleTapListener {
+        override fun onDoubleTap(event: MotionEvent?): Boolean {
+            triggerDoubleTapEvent(event)
+            hide()
+            return true
+        }
+
+        override fun onDoubleTapEvent(e: MotionEvent?) = false
+        override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            toggleVisibility()
+            return true
+        }
+    }
+
+    private fun triggerDoubleTapEvent(event: MotionEvent?) {
+        Bundle().apply {
+            putInt(InternalEventData.HEIGHT.value, view.height)
+            putInt(InternalEventData.WIDTH.value, view.width)
+
+            event?.let {
+                putFloat(InternalEventData.TOUCH_X_AXIS.value, it.x)
+                putFloat(InternalEventData.TOUCH_Y_AXIS.value, it.y)
+            }
+        }.also {
+            core.trigger(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value, it)
+        }
+    }
+
 }

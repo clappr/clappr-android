@@ -15,6 +15,7 @@
 | [EventData](-event-data/index.md) | `enum class EventData`<br>Event bundle data keys for selected Events |
 | [EventInterface](-event-interface/index.md) | `interface EventInterface` |
 | [InternalEvent](-internal-event/index.md) | `enum class InternalEvent` |
+| [InternalEventData](-internal-event-data/index.md) | `enum class InternalEventData`<br>Event bundle data keys for selected Events |
 | [NamedType](-named-type/index.md) | `interface NamedType` |
 | [Options](-options/index.md) | `class Options : `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`Any`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)`>` |
 | [UIObject](-u-i-object/index.md) | `open class UIObject : `[`BaseObject`](-base-object/index.md) |
