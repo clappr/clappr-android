@@ -9,6 +9,8 @@
 | Name | Summary |
 |---|---|
 | [Companion](-companion/index.md) | `companion object Companion : `[`NamedType`](../../io.clappr.player.base/-named-type/index.md) |
+| [MediaControlDoubleTapListener](-media-control-double-tap-listener/index.md) | `inner class MediaControlDoubleTapListener : `[`OnDoubleTapListener`](https://developer.android.com/reference/android/view/GestureDetector/OnDoubleTapListener.html) |
+| [MediaControlGestureDetector](-media-control-gesture-detector/index.md) | `class MediaControlGestureDetector : `[`OnGestureListener`](https://developer.android.com/reference/android/view/GestureDetector/OnGestureListener.html) |
 | [Plugin](-plugin/index.md) | `abstract class Plugin : `[`UICorePlugin`](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |
 
 ### Constructors

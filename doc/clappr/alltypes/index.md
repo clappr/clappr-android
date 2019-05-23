@@ -28,6 +28,7 @@
 | [io.clappr.player.playback.ExoPlayerPlayback](../io.clappr.player.playback/-exo-player-playback/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |
+| [io.clappr.player.base.InternalEventData](../io.clappr.player.base/-internal-event-data/index.md) | Event bundle data keys for selected Events |
 | [io.clappr.player.plugin.Loader](../io.clappr.player.plugin/-loader/index.md) |  |
 | [io.clappr.player.plugin.LoadingPlugin](../io.clappr.player.plugin/-loading-plugin/index.md) |  |
 | [io.clappr.player.log.LogLevel](../io.clappr.player.log/-log-level/index.md) |  |
