@@ -2,7 +2,7 @@ package io.clappr.player.playback
 
 import android.media.MediaPlayer
 import android.os.Bundle
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -17,7 +17,6 @@ import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowMediaPlayer
 import org.robolectric.shadows.ShadowSurfaceView
 import org.robolectric.shadows.util.DataSource
@@ -39,7 +38,7 @@ open class MediaPlayerTestShadow : ShadowMediaPlayer() {
 }
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [MediaPlayerTestShadow::class])
+@Config(sdk = [23], shadows = [MediaPlayerTestShadow::class])
 
 open class MediaPlayerPlaybackTest {
     private lateinit var mediaPlayerPlayback: MediaPlayerPlayback
@@ -48,7 +47,7 @@ open class MediaPlayerPlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         ShadowMediaPlayer.setCreateListener { _, shadowMediaPlayer ->
             // Disabling invalid state emulation as it is not compatible with releases newer than KitKat (MediaTimeProvider)

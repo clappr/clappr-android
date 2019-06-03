@@ -1,28 +1,27 @@
 package io.clappr.player;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
-import org.robolectric.shadows.ShadowApplication;
 
-import io.clappr.player.base.BaseObject;
 import io.clappr.player.base.Options;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class, sdk = 23)
+@Config(sdk = 23)
 public class PlayerJavaTest {
     Player player;
 
     @Before
     public void setup() {
-        Player.initialize(ShadowApplication.getInstance().getApplicationContext());
+        Player.initialize(ApplicationProvider.getApplicationContext());
         player = new Player();
     }
 

@@ -1,16 +1,23 @@
 package io.clappr.player.plugin.control
 
 import android.view.View
-import io.clappr.player.BuildConfig
-import io.clappr.player.base.*
-import io.clappr.player.components.*
-import io.clappr.player.plugin.*
+import androidx.test.core.app.ApplicationProvider
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.Options
+import io.clappr.player.components.Container
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportCheck
+import io.clappr.player.plugin.assertHiddenView
+import io.clappr.player.plugin.assertVisibleView
+import io.clappr.player.plugin.setupViewHidden
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowSystemClock
 import org.robolectric.shadows.ShadowView
 import kotlin.test.assertEquals
@@ -18,7 +25,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowSystemClock::class, ShadowView::class])
+@Config(sdk = [23], shadows = [ShadowSystemClock::class, ShadowView::class])
 class FullscreenButtonTest {
 
     private lateinit var fullscreenButton: FullscreenButton
@@ -27,7 +34,7 @@ class FullscreenButtonTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         container = Container(Options())
         core = Core(Options())
         fullscreenButton = FullscreenButton(core)

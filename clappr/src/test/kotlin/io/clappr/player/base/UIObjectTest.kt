@@ -1,19 +1,18 @@
 package io.clappr.player.base
 
-import io.clappr.player.BuildConfig
-import org.junit.Assert.*
+import androidx.test.core.app.ApplicationProvider
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(sdk = [23])
 open class UIObjectTest {
     @Test
     fun shouldHandleEvents() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         val uiObject = UIObject()
         var callbackWasCalled = false
 

@@ -1,6 +1,6 @@
 package io.clappr.player.base
 
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.components.Container
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackEntry
@@ -17,11 +17,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
+@Config(sdk = [23], shadows = [ShadowLog::class])
 open class ContainerTest {
 
     class MP4Playback(source: String, mimeType: String?, options: Options) :
@@ -61,7 +60,7 @@ open class ContainerTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         Loader.clearPlugins()
         Loader.clearPlaybacks()
     }
