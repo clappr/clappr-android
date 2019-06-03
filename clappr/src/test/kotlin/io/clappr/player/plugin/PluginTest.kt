@@ -1,6 +1,6 @@
 package io.clappr.player.plugin
 
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.InternalEvent
 import org.junit.Assert.assertEquals
@@ -11,16 +11,15 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(sdk = [23])
 class PluginTest {
     class TestPlugin: Plugin, BaseObject()
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
     }
 
     @Test

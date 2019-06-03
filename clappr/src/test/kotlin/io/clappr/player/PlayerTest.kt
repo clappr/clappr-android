@@ -1,6 +1,7 @@
 package io.clappr.player
 
 import android.os.Bundle
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
@@ -19,10 +20,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 open class PlayerTest {
 
     private val playerTestEvent = "playerTestEvent"
@@ -31,7 +31,7 @@ open class PlayerTest {
 
     @Before
     fun setup() {
-        Player.initialize(ShadowApplication.getInstance().applicationContext)
+        Player.initialize(ApplicationProvider.getApplicationContext())
 
         Loader.clearPlaybacks()
         Loader.register(CoreTestPlugin.entry)

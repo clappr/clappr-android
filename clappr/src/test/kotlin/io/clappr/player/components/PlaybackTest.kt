@@ -1,6 +1,6 @@
 package io.clappr.player.components
 
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.*
 import io.clappr.player.playback.NoOpPlayback
 import org.json.JSONArray
@@ -12,11 +12,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 open class PlaybackTest {
 
 
@@ -60,7 +59,7 @@ open class PlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
     }
 
     @Test(expected = IllegalArgumentException::class)

@@ -1,18 +1,17 @@
 package io.clappr.player.base
 
 import android.os.Bundle
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class])
+@Config(sdk = [23], shadows = [ShadowLog::class])
 open class BaseObjectTest {
     var baseObject: BaseObject? = null
     var callbackWasCalled = false
@@ -22,7 +21,7 @@ open class BaseObjectTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         baseObject = BaseObject()
         callbackWasCalled = false
     }

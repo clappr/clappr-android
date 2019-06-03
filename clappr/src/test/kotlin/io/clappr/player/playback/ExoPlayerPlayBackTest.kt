@@ -1,10 +1,10 @@
 package io.clappr.player.playback
 
+import androidx.test.core.app.ApplicationProvider
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSourceEventListener
-import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.EventData
@@ -19,12 +19,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class, SubtitleViewShadow::class])
+@Config(sdk = [23], shadows = [ShadowLog::class, SubtitleViewShadow::class])
 class ExoPlayerPlaybackTest {
 
     private lateinit var exoPlayerPlayBack: ExoPlayerPlayback
@@ -34,7 +33,7 @@ class ExoPlayerPlaybackTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         timeInNano = System.nanoTime()
         bitrateHistory = BitrateHistory { timeInNano }

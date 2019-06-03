@@ -5,13 +5,15 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.TextView
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
-import io.clappr.player.components.*
-import io.clappr.player.plugin.Loader
+import io.clappr.player.components.Container
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.assertVisibleView
 import io.clappr.player.plugin.setupViewVisible
@@ -20,12 +22,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 class TimeIndicatorPluginTest {
 
     private lateinit var timeIndicatorPlugin: TimeIndicatorPlugin
@@ -34,7 +35,7 @@ class TimeIndicatorPluginTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         container = Container(Options())
         core = Core(Options())

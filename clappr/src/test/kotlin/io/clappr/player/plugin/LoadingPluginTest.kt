@@ -2,21 +2,23 @@ package io.clappr.player.plugin
 
 import android.view.View
 import android.widget.LinearLayout
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
-import io.clappr.player.components.*
+import io.clappr.player.components.Container
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportCheck
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 class LoadingPluginTest {
 
     private lateinit var loadingPlugin: LoadingPlugin
@@ -25,7 +27,7 @@ class LoadingPluginTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         container = Container(Options())
         core = Core(Options())
