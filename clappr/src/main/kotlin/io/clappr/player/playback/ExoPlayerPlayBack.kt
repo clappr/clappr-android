@@ -685,6 +685,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onPositionDiscontinuity(reason: Int) {
+            if (reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+                trigger(Event.DID_LOOP)
+            }
         }
 
         override fun onTimelineChanged(timeline: Timeline?, manifest: Any?, reason: Int) {

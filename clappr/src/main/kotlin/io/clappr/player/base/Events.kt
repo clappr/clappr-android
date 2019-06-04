@@ -122,7 +122,12 @@ enum class Event(val value: String) {
     /**
      * Bitrate was updated
      */
-    DID_UPDATE_BITRATE("didUpdateBitrate")
+    DID_UPDATE_BITRATE("didUpdateBitrate"),
+
+    /**
+     * There was a video loop
+     */
+    DID_LOOP("didLoop")
 }
 
 /**
