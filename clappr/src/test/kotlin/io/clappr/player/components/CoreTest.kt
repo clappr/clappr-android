@@ -230,7 +230,7 @@ open class CoreTest {
 
         core.destroy()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -305,7 +305,7 @@ open class CoreTest {
 
         core.render()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test

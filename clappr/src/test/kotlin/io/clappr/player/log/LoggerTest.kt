@@ -22,9 +22,9 @@ class LoggerTest {
 
         Logger.debug(scope, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.DEBUG, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.DEBUG, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -34,9 +34,9 @@ class LoggerTest {
 
         Logger.debug(null, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.DEBUG, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.DEBUG, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -47,9 +47,9 @@ class LoggerTest {
 
         Logger.info(scope, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.INFO, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.INFO, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -59,9 +59,9 @@ class LoggerTest {
 
         Logger.info(null, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.INFO, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.INFO, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -72,9 +72,9 @@ class LoggerTest {
 
         Logger.warning(scope, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.WARN, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.WARN, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -84,9 +84,9 @@ class LoggerTest {
 
         Logger.warning(null, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.WARN, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.WARN, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -97,9 +97,9 @@ class LoggerTest {
 
         Logger.error(scope, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.ERROR, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.ERROR, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -109,8 +109,8 @@ class LoggerTest {
 
         Logger.error(null, message)
 
-        assertEquals(tag, ShadowLog.getLogs()[0].tag)
-        assertEquals(Log.ERROR, ShadowLog.getLogs()[0].type)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(tag, ShadowLog.getLogsForTag("Clappr")[0].tag)
+        assertEquals(Log.ERROR, ShadowLog.getLogsForTag("Clappr")[0].type)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 }

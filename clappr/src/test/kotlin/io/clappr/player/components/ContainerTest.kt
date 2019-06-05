@@ -244,7 +244,7 @@ open class ContainerTest {
 
         container.destroy()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -327,7 +327,7 @@ open class ContainerTest {
 
         container.render()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     private fun setupTestContainerPlugin(): Pair<Container, TestContainerPlugin> {
