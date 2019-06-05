@@ -140,7 +140,7 @@ open class BaseObjectTest {
         baseObject?.listenTo(contextObject, eventName, brokenCallback)
         contextObject.trigger(eventName)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test

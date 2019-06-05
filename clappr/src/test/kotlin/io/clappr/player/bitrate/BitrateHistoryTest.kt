@@ -75,7 +75,7 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(90, 2)
         bitrateHistoryUnderTest.addBitrate(100, 1)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -102,7 +102,7 @@ class BitrateHistoryTest {
         val bitrateAverage = bitrateHistoryUnderTest.averageBitrate(-1)
 
         assertEquals(0, bitrateAverage)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -123,6 +123,6 @@ class BitrateHistoryTest {
         
         bitrateHistoryUnderTest.addBitrate(90, -1)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 }
