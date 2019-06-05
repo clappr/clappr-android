@@ -4,14 +4,13 @@ import android.app.Application
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.app.R
-import io.clappr.player.app.plugin.util.FakePlayback
 import io.clappr.player.app.plugin.assertPlugin.assertUiPluginHidden
 import io.clappr.player.app.plugin.assertPlugin.assertUiPluginShown
+import io.clappr.player.app.plugin.util.FakePlayback
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
-import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
@@ -24,12 +23,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], application = Application::class)
+@Config(sdk = [23], application = Application::class)
 class NextVideoPluginTest {
 
     private lateinit var core: Core
@@ -40,7 +38,7 @@ class NextVideoPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         Loader.register(NextVideoPlugin.entry)
         Loader.register(FooUICorePlugin.entry)
