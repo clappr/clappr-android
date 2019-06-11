@@ -46,10 +46,10 @@ bintray {
 
 android {
     publishNonDefault publishAttrs['bintrayPublishNonDefault']
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 28
 
         buildConfigField("String", "CLAPPR_VERSION", "\"$version\"")
     }
