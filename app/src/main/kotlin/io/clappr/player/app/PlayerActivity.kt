@@ -32,7 +32,7 @@ class PlayerActivity : Activity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_player)
 
-        videoUrl.setText("http://clappr.io/highline.mp4")
+        videoUrl.setText("https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8")
         videoTitle.setText(getString(R.string.video_title))
         videoSubtitle.setText(getString(R.string.video_subtitle))
 
