@@ -13,11 +13,11 @@ import org.robolectric.shadows.ShadowLog
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23], shadows = [ShadowLog::class])
 open class BaseObjectTest {
-    var baseObject: BaseObject? = null
-    var callbackWasCalled = false
+    private var baseObject: BaseObject? = null
+    private var callbackWasCalled = false
 
     private val eventName = "some-event"
-    val callback: EventHandler = { callbackWasCalled = true }
+    private val callback: EventHandler = { callbackWasCalled = true }
 
     @Before
     fun setup() {
@@ -184,7 +184,7 @@ open class BaseObjectTest {
     fun stopListeningShouldCancelOnlyOnObject() {
         val anotherObject = BaseObject()
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName, { anotherCallbackWasCalled = true})
+        anotherObject.on(eventName) { anotherCallbackWasCalled = true}
 
         baseObject?.on(eventName, callback)
 

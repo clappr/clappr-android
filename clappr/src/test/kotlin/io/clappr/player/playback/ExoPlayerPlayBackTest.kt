@@ -65,7 +65,7 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should trigger DID_UPDATE_POSITION when seek to live position is called`() {
         var didUpdatePositionWasCalled = false
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_POSITION.value) { bundle ->
+        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_POSITION.value) {
             didUpdatePositionWasCalled = true
         }
         exoPlayerPlayBack.seekToLivePosition()
@@ -279,9 +279,8 @@ class ExoPlayerPlaybackTest {
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
         val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate.toInt(),
                 0, 0, 0, 0f, listOf<ByteArray>(), null)
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(0, trackType, videoFormatMock, 0,
-                null, 0L, 0L)
 
-        return mediaLoadData
+        return MediaSourceEventListener.MediaLoadData(0, trackType, videoFormatMock,
+                0, null, 0L, 0L)
     }
 }

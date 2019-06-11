@@ -152,7 +152,7 @@ open class CoreTest {
         val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
-        var previousActivePlayback: Playback? = core.activePlayback
+        val previousActivePlayback: Playback? = core.activePlayback
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) {
             assertFalse("DID_CHANGE_ACTIVE_PLAYBACK triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActivePlayback, core.activePlayback)

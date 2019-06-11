@@ -1,5 +1,6 @@
 package io.clappr.player.plugin
 
+import android.annotation.SuppressLint
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.InternalEvent
@@ -44,6 +45,7 @@ class PluginTest {
         assertEquals("no trigger", 1, numberOfTriggers)
     }
 
+    @SuppressLint("IgnoreWithoutReason")
     @Test @Ignore
     fun shouldTriggerEventsOnDestroy() {
         val listenObject = BaseObject()

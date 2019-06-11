@@ -244,7 +244,7 @@ class TimeIndicatorPluginTest {
         }
 
         var currentMediaType: MediaType = MediaType.VOD
-        var currentPlaybackState: Playback.State = State.PLAYING
+        var currentPlaybackState: State = State.PLAYING
         var currentDuration: Double = -1.0
 
         override val state: State

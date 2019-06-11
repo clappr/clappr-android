@@ -593,7 +593,7 @@ class MediaControlTest {
 
             var currentPanel: Panel = Panel.NONE
             var currentPosition: Position = Position.NONE
-            val viewId = 12345
+            const val viewId = 12345
         }
 
         override var panel: Panel = currentPanel

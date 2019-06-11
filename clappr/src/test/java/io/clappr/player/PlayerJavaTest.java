@@ -1,5 +1,7 @@
 package io.clappr.player;
 
+import android.annotation.SuppressLint;
+
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
@@ -17,7 +19,7 @@ import static junit.framework.Assert.assertFalse;
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 23)
 public class PlayerJavaTest {
-    Player player;
+    private Player player;
 
     @Before
     public void setup() {
@@ -37,7 +39,7 @@ public class PlayerJavaTest {
         assertFalse("load enabled", player.load(""));
     }
 
-    @Ignore @Test
+    @SuppressLint("IgnoreWithoutReason") @Ignore @Test
     public void shouldHaveInvalidStatesWithUnsupportedMedia() {
         player.configure(new Options());
 

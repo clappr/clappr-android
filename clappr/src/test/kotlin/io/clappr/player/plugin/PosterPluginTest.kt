@@ -38,7 +38,7 @@ class PosterPluginTest {
         posterPlugin = PosterPlugin(container)
 
         core.activeContainer = container
-        container.playback = PosterPluginTest.FakePlayback()
+        container.playback = FakePlayback()
     }
 
     @After
@@ -101,7 +101,7 @@ class PosterPluginTest {
         val oldPlayback = container.playback
         setupViewHidden(posterPlugin)
 
-        val newPlayback = PosterPluginTest.FakePlayback()
+        val newPlayback = FakePlayback()
         container.playback = newPlayback
 
         oldPlayback?.trigger(Event.DID_COMPLETE.value)

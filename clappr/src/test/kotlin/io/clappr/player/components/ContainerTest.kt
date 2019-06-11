@@ -1,10 +1,8 @@
-package io.clappr.player.base
+package io.clappr.player.components
 
+import android.annotation.SuppressLint
 import androidx.test.core.app.ApplicationProvider
-import io.clappr.player.components.Container
-import io.clappr.player.components.Playback
-import io.clappr.player.components.PlaybackEntry
-import io.clappr.player.components.PlaybackSupportCheck
+import io.clappr.player.base.*
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
@@ -191,7 +189,7 @@ open class ContainerTest {
     }
 
     @Test
-    @Ignore
+    @Ignore @SuppressLint("IgnoreWithoutReason")
     fun shouldDestroyPlaybackOnDestroy() {
         Loader.register(MP4Playback.entry)
         val container = Container(Options())
@@ -282,7 +280,7 @@ open class ContainerTest {
         Loader.register(MP4Playback.entry)
         val source = "some_source.mp4"
         val newOptions = Options()
-        newOptions.put(ClapprOption.POSTER.value, "fake-poster-url")
+        newOptions[ClapprOption.POSTER.value] = "fake-poster-url"
 
         val container = Container(options = newOptions).apply { load(source) }
 

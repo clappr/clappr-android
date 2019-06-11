@@ -379,7 +379,7 @@ class SeekbarPluginTest {
         }
 
         var currentMediaType: MediaType = MediaType.VOD
-        var currentPlaybackState: Playback.State = State.PLAYING
+        var currentPlaybackState: State = State.PLAYING
         var currentDuration: Double = 0.0
         var currentPosition: Double = 0.0
         var seekTime: Int = 0

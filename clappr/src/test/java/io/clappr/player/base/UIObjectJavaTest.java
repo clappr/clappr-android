@@ -8,7 +8,7 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.annotation.Config;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = 23)
@@ -21,6 +21,6 @@ public class UIObjectJavaTest {
     @Test
     public void uiObjectCreation() {
         UIObject uo = new UIObject();
-        assertTrue("invalid view", uo.getView() != null);
+        assertNotNull("invalid view", uo.getView());
     }
 }

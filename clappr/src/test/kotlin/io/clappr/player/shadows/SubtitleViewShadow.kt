@@ -10,11 +10,9 @@ import org.robolectric.shadows.ShadowView
  class SubtitleViewShadow : ShadowView() {
 
  @Implementation
- fun setUserDefaultStyle() {
- }
+ fun setUserDefaultStyle() { }
 
  @Implementation
- fun setUserDefaultTextSize(){
- }
+ fun setUserDefaultTextSize() { }
 
 }
