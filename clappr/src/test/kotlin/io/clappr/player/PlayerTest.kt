@@ -164,7 +164,9 @@ open class PlayerTest {
 
         var option = ""
         player.on(playerTestEvent) { bundle ->
-            bundle?.let { option = it.getString("option") }
+            bundle?.let {
+                option = it.getString("option") ?: ""
+            }
         }
 
         player.configure(Options(source = "123", options = hashMapOf("test_option" to expectedFirstOption)))
@@ -191,7 +193,7 @@ open class PlayerTest {
         var mimeType = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                mimeType = it.getString("mimeType")
+                mimeType = it.getString("mimeType") ?: ""
             }
         }
 
@@ -219,7 +221,7 @@ open class PlayerTest {
         var mimeType = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                mimeType = it.getString("mimeType")
+                mimeType = it.getString("mimeType") ?: ""
             }
         }
 
@@ -247,7 +249,7 @@ open class PlayerTest {
         var sourceToPlay = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                sourceToPlay = it.getString("source")
+                sourceToPlay = it.getString("source") ?: ""
             }
         }
 
@@ -275,7 +277,7 @@ open class PlayerTest {
         var sourceToPlay = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                sourceToPlay = it.getString("source")
+                sourceToPlay = it.getString("source") ?: ""
             }
         }
 
@@ -302,7 +304,11 @@ open class PlayerTest {
 
         val coreIdList = mutableSetOf<String>()
         player.on(playerTestEvent) { bundle ->
-            bundle?.let { coreIdList.add(it.getString("coreId")) }
+            bundle?.let {
+                it.getString("coreId")?.let {coreId ->
+                    coreIdList.add(coreId)
+                }
+            }
         }
 
         player.configure(Options(source = "123"))
