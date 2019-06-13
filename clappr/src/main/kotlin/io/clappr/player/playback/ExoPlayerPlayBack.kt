@@ -53,6 +53,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
     }
 
+    private var isVideoCompleted = false
+
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val DEFAULT_MIN_DVR_SIZE = 60
     private val MIN_DVR_LIVE_DRIFT = 5
@@ -144,6 +146,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     override val canSeek: Boolean
         get() = currentState != State.ERROR &&
+                !isVideoCompleted &&
                 when (mediaType) {
                     MediaType.LIVE -> isDvrAvailable
                     else -> duration != 0.0
@@ -232,6 +235,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         trigger(Event.WILL_PLAY)
         player?.playWhenReady = true
+        isVideoCompleted = false
         return true
     }
 
@@ -467,6 +471,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun handleExoplayerEndedState() {
         currentState = State.IDLE
         trigger(Event.DID_COMPLETE)
+        isVideoCompleted = true
         stop()
     }
 
