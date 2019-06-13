@@ -146,7 +146,7 @@ player.on(Event.DID_COMPLETE.value) { Logger.info("App", "Completed") }
 ``` java
 val optionMap = hashMapOf(ClapprOption.START_AT.value to 50)
 
-player.configure(Options(source = "https://devstreaming-cdn.apple.com/videos/streaming/examples/bipbop_4x3/bipbop_4x3_variant.m3u8", options = optionMap))
+player.configure(Options(source = "http://clappr.io/highline.mp4", options = optionMap))
 ```
 
 ### Error Handling
