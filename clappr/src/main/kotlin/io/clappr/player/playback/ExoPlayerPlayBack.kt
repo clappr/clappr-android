@@ -251,6 +251,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         trigger(Event.WILL_STOP)
         player?.stop()
         release()
+        currentState = State.IDLE
         trigger(Event.DID_STOP)
         return true
     }
