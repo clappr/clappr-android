@@ -2,8 +2,8 @@ package io.clappr.player.components
 
 import android.view.View
 import android.widget.FrameLayout
+import androidx.test.core.app.ApplicationProvider
 import com.nhaarman.mockito_kotlin.*
-import io.clappr.player.BuildConfig
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
@@ -16,14 +16,16 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.*
+import org.mockito.ArgumentCaptor
+import org.mockito.Captor
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
+@Config(sdk = [23], shadows = [ShadowLog::class])
 open class CoreTest {
     class CoreTestPlayback(source: String, mimeType: String? = null, options: Options = Options()) :
             Playback(source, mimeType, options, name, supportsSource) {
@@ -71,7 +73,7 @@ open class CoreTest {
     fun setup() {
         MockitoAnnotations.initMocks(this)
 
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
     }
 
     @Test
@@ -150,7 +152,7 @@ open class CoreTest {
         val core = Core(Options()).apply { load() }
 
         var callbackWasCalled = false
-        var previousActivePlayback: Playback? = core.activePlayback
+        val previousActivePlayback: Playback? = core.activePlayback
         core.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) {
             assertFalse("DID_CHANGE_ACTIVE_PLAYBACK triggered before WILL_CHANGE_ACTIVE_CONTAINER", callbackWasCalled)
             assertEquals("container already changed", previousActivePlayback, core.activePlayback)
@@ -228,7 +230,7 @@ open class CoreTest {
 
         core.destroy()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -303,7 +305,7 @@ open class CoreTest {
 
         core.render()
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test

@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
         applicationId 'io.clappr.player.app'
-        minSdkVersion 14
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 28
         versionCode 1
         versionName '1.0'
     }
@@ -60,8 +60,9 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.8"
+    testImplementation "org.robolectric:robolectric:4.3"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "com.android.support:support-v4:$android_support_version"
+    testImplementation 'androidx.test:core:1.2.0'
 }

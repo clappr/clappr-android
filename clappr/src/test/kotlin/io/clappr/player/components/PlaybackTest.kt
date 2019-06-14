@@ -1,6 +1,7 @@
 package io.clappr.player.components
 
-import io.clappr.player.BuildConfig
+import android.annotation.SuppressLint
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.*
 import io.clappr.player.playback.NoOpPlayback
 import org.json.JSONArray
@@ -12,13 +13,11 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 open class PlaybackTest {
-
 
     class SomePlayback(
             source: String, options: Options = Options(),
@@ -27,7 +26,7 @@ open class PlaybackTest {
         companion object {
             const val name = ""
 
-            const val validSource = "valid-source.mp4"
+            private const val validSource = "valid-source.mp4"
 
             val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
 
@@ -60,7 +59,7 @@ open class PlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
     }
 
     @Test(expected = IllegalArgumentException::class)
@@ -161,7 +160,7 @@ open class PlaybackTest {
     }
 
     @Test
-    @Ignore
+    @Ignore @SuppressLint("IgnoreWithoutReason")
     fun shouldTriggerEventsOnDestroy() {
         val listenObject = BaseObject()
         val playback = SomePlayback("valid-source.mp4", Options())
@@ -194,7 +193,7 @@ open class PlaybackTest {
 
         val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
         assertEquals(mediaOptionList.size, addedMediaOptionList.size)
-        for (i in 0..quantity - 1) {
+        for (i in 0 until quantity) {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
 
@@ -403,7 +402,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var callbackWasCalled = false
-        playback.on(InternalEvent.DID_UPDATE_OPTIONS.value, { callbackWasCalled = true })
+        playback.on(InternalEvent.DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
 
         playback.options = Options(source = "new_source")
 

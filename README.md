@@ -23,7 +23,7 @@
 
 ### Dependencies
 
-Clappr is a Kotlin library. If your app is too, be sure Kotlin version is `1.2.71` or bigger, and Android Support version is `27.1.1` or bigger.
+Clappr is a Kotlin library. If your app is too, be sure Kotlin version is `1.2.71` or bigger, and Android Support version is `28.0.0` or bigger.
 
 The minimal API level supported is `16` `(4.1)`.
 
@@ -67,8 +67,8 @@ Following, add following lines to `dependencies` section in `project/build.gradl
 dependencies {
     ...
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.2.71"
-    implementation "com.android.support:appcompat-v7:27.1.1"
-    implementation "com.android.support:support-v4:27.1.1"
+    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation "com.android.support:support-v4:28.0.0"
     implementation 'com.google.android.exoplayer:exoplayer:2.9.2'
 
     implementation "io.clappr.player:clappr:0.12.0"

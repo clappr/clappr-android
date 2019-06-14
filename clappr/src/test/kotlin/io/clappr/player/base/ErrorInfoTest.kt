@@ -2,7 +2,6 @@ package io.clappr.player.base
 
 import android.os.Bundle
 import android.os.Parcel
-import io.clappr.player.BuildConfig
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -10,7 +9,7 @@ import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23))
+@Config(sdk = [23])
 class ErrorInfoTest {
 
     @Test

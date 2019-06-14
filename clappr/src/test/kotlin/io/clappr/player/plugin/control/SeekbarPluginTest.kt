@@ -3,9 +3,15 @@ package io.clappr.player.plugin.control
 import android.os.Bundle
 import android.view.MotionEvent
 import android.view.View
-import io.clappr.player.BuildConfig
-import io.clappr.player.base.*
-import io.clappr.player.components.*
+import androidx.test.core.app.ApplicationProvider
+import io.clappr.player.base.BaseObject
+import io.clappr.player.base.Event
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.Options
+import io.clappr.player.components.Container
+import io.clappr.player.components.Core
+import io.clappr.player.components.Playback
+import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.assertHiddenView
 import io.clappr.player.plugin.assertVisibleView
 import io.clappr.player.plugin.setupViewVisible
@@ -16,13 +22,12 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadow.api.Shadow
-import org.robolectric.shadows.ShadowApplication
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ClapprShadowView::class])
+@Config(sdk = [23], shadows = [ClapprShadowView::class])
 class SeekbarPluginTest {
 
     private lateinit var core: Core
@@ -32,7 +37,7 @@ class SeekbarPluginTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         container = Container(Options())
         core = Core(Options())
@@ -374,7 +379,7 @@ class SeekbarPluginTest {
         }
 
         var currentMediaType: MediaType = MediaType.VOD
-        var currentPlaybackState: Playback.State = State.PLAYING
+        var currentPlaybackState: State = State.PLAYING
         var currentDuration: Double = 0.0
         var currentPosition: Double = 0.0
         var seekTime: Int = 0

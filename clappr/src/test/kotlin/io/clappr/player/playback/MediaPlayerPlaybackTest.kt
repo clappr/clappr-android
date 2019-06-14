@@ -1,8 +1,7 @@
 package io.clappr.player.playback
 
 import android.media.MediaPlayer
-import android.os.Bundle
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
@@ -17,12 +16,12 @@ import org.robolectric.Shadows
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.Implementation
 import org.robolectric.annotation.Implements
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowMediaPlayer
 import org.robolectric.shadows.ShadowSurfaceView
 import org.robolectric.shadows.util.DataSource
 import org.robolectric.util.Scheduler
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 
 @Implements(MediaPlayer::class)
 open class MediaPlayerTestShadow : ShadowMediaPlayer() {
@@ -39,7 +38,7 @@ open class MediaPlayerTestShadow : ShadowMediaPlayer() {
 }
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [MediaPlayerTestShadow::class])
+@Config(sdk = [23], shadows = [MediaPlayerTestShadow::class])
 
 open class MediaPlayerPlaybackTest {
     private lateinit var mediaPlayerPlayback: MediaPlayerPlayback
@@ -48,7 +47,7 @@ open class MediaPlayerPlaybackTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         ShadowMediaPlayer.setCreateListener { _, shadowMediaPlayer ->
             // Disabling invalid state emulation as it is not compatible with releases newer than KitKat (MediaTimeProvider)
@@ -135,7 +134,7 @@ open class MediaPlayerPlaybackTest {
 
         mediaPlayerPlayback.play()
 
-        scheduler.advanceBy(200)
+        scheduler.advanceBy(200, TimeUnit.MILLISECONDS)
         assertEquals("will play triggered", 1, willPlayCount)
         assertEquals("playing not triggered", 1, playingCount)
     }
@@ -143,17 +142,17 @@ open class MediaPlayerPlaybackTest {
     @Test
     fun shouldTriggerEventOnCompletion() {
         var callbackCalled = false
-        mediaPlayerPlayback.on(Event.DID_COMPLETE.value, { _: Bundle? -> callbackCalled = true })
+        mediaPlayerPlayback.on(Event.DID_COMPLETE.value) { callbackCalled = true }
 
         mediaPlayerPlayback.play()
         assertFalse("complete called", callbackCalled)
         assertEquals("not playing", Playback.State.PLAYING, mediaPlayerPlayback.state)
 
-        scheduler.advanceBy(50)
+        scheduler.advanceBy(50, TimeUnit.MILLISECONDS)
         assertFalse("complete called", callbackCalled)
         assertEquals("not playing", Playback.State.PLAYING, mediaPlayerPlayback.state)
 
-        scheduler.advanceBy(950)
+        scheduler.advanceBy(950, TimeUnit.MILLISECONDS)
         assertTrue("complete not called", callbackCalled)
     }
 
@@ -176,14 +175,14 @@ open class MediaPlayerPlaybackTest {
         assertTrue("seek not allowed", mediaPlayerPlayback.canSeek)
         assertTrue("pause not allowed", mediaPlayerPlayback.canPause)
 
-        scheduler.advanceBy(200)
+        scheduler.advanceBy(200, TimeUnit.MILLISECONDS)
         assertFalse("error callback called", callbackCalled)
         assertTrue("play not allowed", mediaPlayerPlayback.canPlay)
         assertTrue("stop not allowed", mediaPlayerPlayback.canStop)
         assertTrue("seek not allowed", mediaPlayerPlayback.canSeek)
         assertTrue("pause not allowed", mediaPlayerPlayback.canPause)
 
-        scheduler.advanceBy(200)
+        scheduler.advanceBy(200, TimeUnit.MILLISECONDS)
         assertTrue("error callback not called", callbackCalled)
         assertFalse("play allowed", mediaPlayerPlayback.canPlay)
         assertFalse("play method allowed", mediaPlayerPlayback.play())
@@ -207,15 +206,15 @@ open class MediaPlayerPlaybackTest {
         mediaPlayerPlayback.play()
         assertFalse("stalling callback called", stallingCallbackCalled)
 
-        scheduler.advanceBy(100)
+        scheduler.advanceBy(100, TimeUnit.MILLISECONDS)
         assertFalse("stalling callback called", stallingCallbackCalled)
 
         playingCallbackCalled = false
-        scheduler.advanceBy(50)
+        scheduler.advanceBy(50, TimeUnit.MILLISECONDS)
         assertTrue("stalling callback not called", stallingCallbackCalled)
         assertFalse("playing callback called", playingCallbackCalled)
 
-        scheduler.advanceBy(100)
+        scheduler.advanceBy(100, TimeUnit.MILLISECONDS)
         assertTrue("playing callback not called", playingCallbackCalled)
     }
 
@@ -226,7 +225,7 @@ open class MediaPlayerPlaybackTest {
         assertEquals("valid position", Double.NaN, mpp.position, 0.0)
 
 
-        scheduler.advanceBy(100)
+        scheduler.advanceBy(100, TimeUnit.MILLISECONDS)
         assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
 
@@ -234,19 +233,19 @@ open class MediaPlayerPlaybackTest {
         assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", 0.0, mediaPlayerPlayback.position, 0.0)
 
-        scheduler.advanceBy(500)
+        scheduler.advanceBy(500, TimeUnit.MILLISECONDS)
         assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", 0.5, mediaPlayerPlayback.position, 0.0)
 
-        scheduler.advanceBy(499)
+        scheduler.advanceBy(499, TimeUnit.MILLISECONDS)
         assertEquals("valid duration", 1.0, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", 0.999, mediaPlayerPlayback.position, 0.0)
 
-        scheduler.advanceBy(1)
+        scheduler.advanceBy(1, TimeUnit.MILLISECONDS)
         assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
 
-        scheduler.advanceBy(1)
+        scheduler.advanceBy(1, TimeUnit.MILLISECONDS)
         assertEquals("valid duration", Double.NaN, mediaPlayerPlayback.duration, 0.0)
         assertEquals("valid position", Double.NaN, mediaPlayerPlayback.position, 0.0)
     }
@@ -274,10 +273,10 @@ open class MediaPlayerPlaybackTest {
 
         mediaPlayerPlayback.play()
 
-        scheduler.advanceBy(99)
+        scheduler.advanceBy(99, TimeUnit.MILLISECONDS)
         assertEquals("buffer update triggered", Double.NaN, bufferPercentage, 0.0)
 
-        scheduler.advanceBy(1)
+        scheduler.advanceBy(1, TimeUnit.MILLISECONDS)
         assertEquals("buffer update triggered", 10.0, bufferPercentage, 0.0)
     }
 }

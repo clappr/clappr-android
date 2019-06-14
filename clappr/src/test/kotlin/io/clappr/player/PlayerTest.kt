@@ -1,6 +1,8 @@
 package io.clappr.player
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
@@ -19,10 +21,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 open class PlayerTest {
 
     private val playerTestEvent = "playerTestEvent"
@@ -31,7 +32,7 @@ open class PlayerTest {
 
     @Before
     fun setup() {
-        Player.initialize(ShadowApplication.getInstance().applicationContext)
+        Player.initialize(ApplicationProvider.getApplicationContext())
 
         Loader.clearPlaybacks()
         Loader.register(CoreTestPlugin.entry)
@@ -56,8 +57,7 @@ open class PlayerTest {
         assertFalse("load enabled", player.load(""))
     }
 
-    @Ignore
-    @Test
+    @SuppressLint("IgnoreWithoutReason") @Ignore @Test
     fun shouldHaveInvalidStatesWithUnsupportedMedia() {
         player.configure(Options(source = ""))
 
@@ -124,8 +124,8 @@ open class PlayerTest {
         var willPauseCalled = false
         var didPauseCalled = false
 
-        player.on(Event.WILL_PAUSE.value, { willPauseCalled = true })
-        player.on(Event.DID_PAUSE.value, { didPauseCalled = true })
+        player.on(Event.WILL_PAUSE.value) { willPauseCalled = true }
+        player.on(Event.DID_PAUSE.value) { didPauseCalled = true }
 
         player.configure(Options(source = "valid"))
         player.pause()
@@ -163,9 +163,11 @@ open class PlayerTest {
         val expectedSecondOption = "second option"
 
         var option = ""
-        player.on(playerTestEvent, { bundle ->
-            bundle?.let { option = it.getString("option") }
-        })
+        player.on(playerTestEvent) { bundle ->
+            bundle?.let {
+                option = it.getString("option") ?: ""
+            }
+        }
 
         player.configure(Options(source = "123", options = hashMapOf("test_option" to expectedFirstOption)))
         player.play()
@@ -191,7 +193,7 @@ open class PlayerTest {
         var mimeType = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                mimeType = it.getString("mimeType")
+                mimeType = it.getString("mimeType") ?: ""
             }
         }
 
@@ -219,7 +221,7 @@ open class PlayerTest {
         var mimeType = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                mimeType = it.getString("mimeType")
+                mimeType = it.getString("mimeType") ?: ""
             }
         }
 
@@ -247,7 +249,7 @@ open class PlayerTest {
         var sourceToPlay = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                sourceToPlay = it.getString("source")
+                sourceToPlay = it.getString("source") ?: ""
             }
         }
 
@@ -275,7 +277,7 @@ open class PlayerTest {
         var sourceToPlay = ""
         player.on(playerTestEvent) { bundle ->
             bundle?.let {
-                sourceToPlay = it.getString("source")
+                sourceToPlay = it.getString("source") ?: ""
             }
         }
 
@@ -302,7 +304,11 @@ open class PlayerTest {
 
         val coreIdList = mutableSetOf<String>()
         player.on(playerTestEvent) { bundle ->
-            bundle?.let { coreIdList.add(it.getString("coreId")) }
+            bundle?.let {
+                it.getString("coreId")?.let {coreId ->
+                    coreIdList.add(coreId)
+                }
+            }
         }
 
         player.configure(Options(source = "123"))
@@ -460,8 +466,8 @@ open class PlayerTest {
             val supportsSource: PlaybackSupportCheck = { source, _ -> source.isNotEmpty() }
 
             val entry = PlaybackEntry(
-                    name = EventTestPlayback.name,
-                    supportsSource = EventTestPlayback.supportsSource,
+                    name = name,
+                    supportsSource = supportsSource,
                     factory = { source, mimeType, options -> EventTestPlayback(source, mimeType, options) })
 
             const val eventBundle = "test-bundle"
@@ -469,7 +475,7 @@ open class PlayerTest {
         }
 
         override fun play(): Boolean {
-            EventTestPlayback.event?.let {
+            event?.let {
                 Bundle().apply {
                     putBoolean(eventBundle, true)
                     trigger(it, this)

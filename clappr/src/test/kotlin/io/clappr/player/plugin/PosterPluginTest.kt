@@ -1,7 +1,7 @@
 package io.clappr.player.plugin
 
 import android.widget.LinearLayout
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event
@@ -18,10 +18,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowUri::class])
+@Config(sdk = [23], shadows = [ShadowUri::class])
 class PosterPluginTest {
 
     private lateinit var posterPlugin: PosterPlugin
@@ -30,7 +29,7 @@ class PosterPluginTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         Loader.register(PosterPlugin.entry)
 
@@ -39,7 +38,7 @@ class PosterPluginTest {
         posterPlugin = PosterPlugin(container)
 
         core.activeContainer = container
-        container.playback = PosterPluginTest.FakePlayback()
+        container.playback = FakePlayback()
     }
 
     @After
@@ -102,7 +101,7 @@ class PosterPluginTest {
         val oldPlayback = container.playback
         setupViewHidden(posterPlugin)
 
-        val newPlayback = PosterPluginTest.FakePlayback()
+        val newPlayback = FakePlayback()
         container.playback = newPlayback
 
         oldPlayback?.trigger(Event.DID_COMPLETE.value)
