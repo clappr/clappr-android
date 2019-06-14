@@ -1,28 +1,27 @@
 package io.clappr.player.base
 
 import android.os.Bundle
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 import org.robolectric.shadows.ShadowLog
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = intArrayOf(23), shadows = [ShadowLog::class])
+@Config(sdk = [23], shadows = [ShadowLog::class])
 open class BaseObjectTest {
-    var baseObject: BaseObject? = null
-    var callbackWasCalled = false
+    private var baseObject: BaseObject? = null
+    private var callbackWasCalled = false
 
     private val eventName = "some-event"
-    val callback: EventHandler = { callbackWasCalled = true }
+    private val callback: EventHandler = { callbackWasCalled = true }
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         baseObject = BaseObject()
         callbackWasCalled = false
     }
@@ -141,7 +140,7 @@ open class BaseObjectTest {
         baseObject?.listenTo(contextObject, eventName, brokenCallback)
         contextObject.trigger(eventName)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -185,7 +184,7 @@ open class BaseObjectTest {
     fun stopListeningShouldCancelOnlyOnObject() {
         val anotherObject = BaseObject()
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName, { anotherCallbackWasCalled = true})
+        anotherObject.on(eventName) { anotherCallbackWasCalled = true}
 
         baseObject?.on(eventName, callback)
 

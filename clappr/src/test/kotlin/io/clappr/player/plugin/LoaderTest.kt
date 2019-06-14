@@ -1,6 +1,6 @@
 package io.clappr.player.plugin
 
-import io.clappr.player.BuildConfig
+import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
@@ -13,10 +13,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowApplication
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23])
+@Config(sdk = [23])
 class LoaderTest {
     class TestPlugin(core: Core) : CorePlugin(core, name = name) {
         companion object : NamedType {
@@ -94,7 +93,7 @@ class LoaderTest {
 
     @Before
     fun setup() {
-        BaseObject.applicationContext = ShadowApplication.getInstance().applicationContext
+        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         Loader.clearPlaybacks()
         Loader.clearPlugins()

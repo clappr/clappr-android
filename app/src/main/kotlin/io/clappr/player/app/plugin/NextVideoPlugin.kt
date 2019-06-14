@@ -30,9 +30,9 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
     private val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
 
     private val videoList = listOf(
-            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),
-            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4"),
-            Pair("http://clappr.io/poster.png", "http://clappr.io/highline.mp4")
+            Pair("http://clappr.io/poster.png", "https://clappr.io/highline.mp4"),
+            Pair("http://clappr.io/poster.png", "https://clappr.io/highline.mp4"),
+            Pair("http://clappr.io/poster.png", "https://clappr.io/highline.mp4")
     )
 
     private val playbackListenerIds = mutableListOf<String>()

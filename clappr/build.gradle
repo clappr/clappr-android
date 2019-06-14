@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.20.0'
+version = '0.21.0'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -46,10 +46,10 @@ bintray {
 
 android {
     publishNonDefault publishAttrs['bintrayPublishNonDefault']
-    compileSdkVersion 27
+    compileSdkVersion 28
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
+        minSdkVersion 16
+        targetSdkVersion 28
 
         buildConfigField("String", "CLAPPR_VERSION", "\"$version\"")
     }
@@ -106,10 +106,11 @@ dependencies {
     implementation 'com.jakewharton.picasso:picasso2-okhttp3-downloader:1.0.2'
 
     testImplementation "junit:junit:4.12"
-    testImplementation "org.robolectric:robolectric:3.8"
+    testImplementation "org.robolectric:robolectric:4.3"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
     testImplementation "com.nhaarman:mockito-kotlin:1.5.0"
+    testImplementation 'androidx.test:core:1.2.0'
 }
 
 tasks.matching {it instanceof Test}.all {

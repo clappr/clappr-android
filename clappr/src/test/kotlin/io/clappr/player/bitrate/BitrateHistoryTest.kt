@@ -1,6 +1,5 @@
 package io.clappr.player.bitrate
 
-import io.clappr.player.BuildConfig
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -10,7 +9,7 @@ import org.robolectric.shadows.ShadowLog
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
-@Config(constants = BuildConfig::class, sdk = [23], shadows = [ShadowLog::class])
+@Config(sdk = [23], shadows = [ShadowLog::class])
 class BitrateHistoryTest {
     private lateinit var bitrateHistoryUnderTest: BitrateHistory
 
@@ -76,7 +75,7 @@ class BitrateHistoryTest {
         bitrateHistoryUnderTest.addBitrate(90, 2)
         bitrateHistoryUnderTest.addBitrate(100, 1)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -103,7 +102,7 @@ class BitrateHistoryTest {
         val bitrateAverage = bitrateHistoryUnderTest.averageBitrate(-1)
 
         assertEquals(0, bitrateAverage)
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
     @Test
@@ -124,6 +123,6 @@ class BitrateHistoryTest {
         
         bitrateHistoryUnderTest.addBitrate(90, -1)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogs()[0].msg)
+        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 }
