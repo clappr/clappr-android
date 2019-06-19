@@ -4,4 +4,4 @@ import android.os.SystemClock
 
 typealias MonotonicClock = () -> Long
 
-val ClapprSystemClock: MonotonicClock = { SystemClock.uptimeMillis() }
+val clapprMonotonicClock: MonotonicClock = { SystemClock.uptimeMillis() }
