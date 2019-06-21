@@ -220,8 +220,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val isRepeatModeEnabled
         get() = player?.let {
-            it.repeatMode == Player.REPEAT_MODE_ONE && options.options.containsKey(ClapprOption.LOOP.value)
-    } ?: false
+            it.repeatMode == Player.REPEAT_MODE_ONE &&
+                    options.options.containsKey(ClapprOption.LOOP.value) &&
+                    mediaType == MediaType.VOD
+        } ?: false
 
     init {
         playerView.useController = false
