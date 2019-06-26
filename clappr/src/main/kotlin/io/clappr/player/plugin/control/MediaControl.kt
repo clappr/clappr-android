@@ -22,7 +22,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
-        enum class Position { LEFT, RIGHT, NONE }
+        enum class Position { LEFT, RIGHT, CENTER, NONE }
 
         open var panel: Panel = Panel.NONE
         open var position: Position = Position.NONE
@@ -62,6 +62,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
+    private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as RelativeLayout }
     private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
     private val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
     private val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
@@ -176,6 +177,7 @@ class MediaControl(core: Core) : UICorePlugin(core, name = name) {
                     when (it.position) {
                         MediaControl.Plugin.Position.LEFT -> topLeftPanel
                         MediaControl.Plugin.Position.RIGHT -> topRightPanel
+                        MediaControl.Plugin.Position.CENTER -> topCenterPanel
                         else -> topPanel
                     }
                 MediaControl.Plugin.Panel.BOTTOM ->
