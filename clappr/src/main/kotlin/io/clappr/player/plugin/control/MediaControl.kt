@@ -151,6 +151,9 @@ open class MediaControl(core: Core, pluginName: String = name) :
         listenTo(core, InternalEvent.CLOSE_MODAL_PANEL.value) { closeModal() }
 
         listenTo(core, Event.DID_RECEIVE_INPUT_KEY.value) { onInputReceived(it) }
+        
+        listenTo(core, Event.DID_ENTER_PIP.value) { state = State.DISABLED }
+        listenTo(core, Event.DID_EXIT_PIP.value) { state = State.ENABLED }
     }
 
     open fun handleDidPauseEvent() {
@@ -202,6 +205,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
                     InternalEvent.DISABLE_MEDIA_CONTROL.value
                 ) { state = State.DISABLED })
             containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) {
+                //TODO: Handle state when in PiP mode
                 state = State.ENABLED
                 hide()
             })

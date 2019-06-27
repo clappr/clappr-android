@@ -168,7 +168,17 @@ enum class Event(val value: String) {
     /**
      * There was a change in screen orientation
      */
-    DID_CHANGE_SCREEN_ORIENTATION("didChangeScreenOrientation")
+    DID_CHANGE_SCREEN_ORIENTATION("didChangeScreenOrientation"),
+     
+    /**
+     * Did Enter Picture in Picture Mode
+     */
+    DID_ENTER_PIP("didEnterPiP"),
+
+    /**
+     * Did Exit Picture in Picture Mode
+     */
+    DID_EXIT_PIP("didExitPiP")
 }
 
 /**
