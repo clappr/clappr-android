@@ -90,8 +90,8 @@ class PlayerActivity : FragmentActivity() {
     }
 
     override fun onUserLeaveHint() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            enterPictureInPictureMode()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            player.enterPictureInPictureMode()
         }
     }
 
