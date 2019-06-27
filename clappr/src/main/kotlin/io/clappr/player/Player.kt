@@ -1,8 +1,10 @@
 package io.clappr.player
 
 import android.content.Context
+import android.content.res.Configuration
 import android.os.Bundle
 import android.view.KeyEvent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -346,5 +348,13 @@ open class Player(
 
     fun holdKeyEvent(event: KeyEvent) {
         externalInputDevice?.holdKeyEvent(event)
+    }
+    
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration?) {
+        Log.d("@@@", "Is in PiP mode: $isInPictureInPictureMode")
+
+        if (isInPictureInPictureMode) { play() }
+
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
     }
 }
