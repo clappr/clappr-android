@@ -140,6 +140,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     else -> true
                 }
 
+    override val viewPort: String
+        get() = player?.videoFormat?.run {
+                "${height}x$width"
+
+            } ?: ""
+
     private fun canPause(state: State) =
             state == State.PLAYING || state == State.STALLING || state == State.IDLE
 

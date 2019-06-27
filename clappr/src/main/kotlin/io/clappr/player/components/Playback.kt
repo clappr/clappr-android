@@ -93,6 +93,9 @@ abstract class Playback(
     open val avgBitrate: Long
         get() = 0
 
+    open val viewPort: String
+        get() = ""
+
     open val currentDate: Long? = null
 
     open val currentTime: Long? = null
