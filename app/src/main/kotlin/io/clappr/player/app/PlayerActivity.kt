@@ -2,6 +2,7 @@ package io.clappr.player.app
 
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
@@ -86,6 +87,12 @@ class PlayerActivity : FragmentActivity() {
 
     private fun changeVideo() {
         loadVideo()
+    }
+
+    override fun onUserLeaveHint() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            enterPictureInPictureMode()
+        }
     }
 
     private fun enterFullscreen() {
