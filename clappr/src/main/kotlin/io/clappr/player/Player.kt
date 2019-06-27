@@ -364,6 +364,7 @@ open class Player(
         Log.d("@@@", "Is in PiP mode: $isInPictureInPictureMode")
 
         if (isInPictureInPictureMode) {
+            core?.trigger(Event.DID_ENTER_PIP.value)
             play()
 
             receiver = object : BroadcastReceiver() {
@@ -387,6 +388,7 @@ open class Player(
 
             requireActivity().registerReceiver(receiver, IntentFilter("media_control"))
         } else {
+            core?.trigger(Event.DID_EXIT_PIP.value)
             receiver?.let { requireActivity().unregisterReceiver(it) }
         }
 
