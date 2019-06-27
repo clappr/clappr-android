@@ -1,10 +1,18 @@
 package io.clappr.player
 
+import android.annotation.TargetApi
+import android.app.PendingIntent
+import android.app.PictureInPictureParams
+import android.app.RemoteAction
+import android.content.BroadcastReceiver
 import android.content.Context
-import android.content.res.Configuration
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.drawable.Icon
+import android.os.Build
 import android.os.Bundle
-import android.view.KeyEvent
 import android.util.Log
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -350,11 +358,52 @@ open class Player(
         externalInputDevice?.holdKeyEvent(event)
     }
     
-    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean, newConfig: Configuration?) {
+    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
         Log.d("@@@", "Is in PiP mode: $isInPictureInPictureMode")
 
-        if (isInPictureInPictureMode) { play() }
+        if (isInPictureInPictureMode) {
+            play()
 
-        super.onPictureInPictureModeChanged(isInPictureInPictureMode, newConfig)
+            val receiver = object : BroadcastReceiver() {
+                override fun onReceive(context: Context, intent: Intent?) {
+                    if (intent == null || "media_control" != intent.action) return
+
+                    when (intent.getIntExtra("control_type", 0)) {
+                        1 -> {
+                            when(state) {
+                                State.PLAYING -> pause()
+                                State.PAUSED, State.IDLE -> play()
+                                else -> {}
+                            }
+                        }
+                        2 -> {
+                            seek(Math.min(duration, position + 10).toInt())
+                        }
+                    }
+                }
+            }
+
+            requireActivity().registerReceiver(receiver, IntentFilter("media_control"))
+        }
+
+        super.onPictureInPictureModeChanged(isInPictureInPictureMode)
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    fun enterPictureInPictureMode() {
+        requireActivity().enterPictureInPictureMode(createPipParameters())
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun createPipParameters() : PictureInPictureParams {
+        val playIntent = Intent("media_control").putExtra("control_type", 1)
+        val playPendingIntent = PendingIntent.getBroadcast(activity, 1, playIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val playAction = RemoteAction(Icon.createWithResource(context, R.drawable.exo_controls_play), "Play", "Play", playPendingIntent)
+
+        val fastForwardIntent = Intent("media_control").putExtra("control_type", 2)
+        val fastForwardPendingIntent = PendingIntent.getBroadcast(activity, 2, fastForwardIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val fastForwardAction = RemoteAction(Icon.createWithResource(context, R.drawable.exo_icon_fastforward), "Fast Forward", "Fast Forward", fastForwardPendingIntent)
+
+        return PictureInPictureParams.Builder().setActions(mutableListOf(playAction, fastForwardAction)).build()
     }
 }
