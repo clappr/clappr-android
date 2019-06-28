@@ -317,10 +317,15 @@ open class Player(
         core?.activePlayback?.let {
             playbackEventsToListen.mapTo(playbackEventsIds) { event ->
                 listenTo(it, event) { bundle: Bundle? ->
-                    trigger(
-                        event,
-                        bundle
-                    )
+                    trigger(event, bundle)
+
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    if (activity.isInPictureInPictureMode) {
+                        when (event) {
+                            Event.DID_STOP.value -> updatePictureInPictureAction(state)
+                            Event.PLAYING.value -> updatePictureInPictureAction(state)
+                        }
+                    }
                 }
             }
         }
@@ -395,8 +400,7 @@ open class Player(
                         }
                         3 -> seek(Math.min(duration, position - 10).toInt()) //TODO: check for miminal duration
                         4 -> seek(Math.min(duration, position + 10).toInt())
-                        else -> {
-                        }
+                        else -> Unit
                     }
                 }
             }
@@ -404,6 +408,7 @@ open class Player(
         } else {
             core?.trigger(Event.DID_EXIT_PIP.value)
             receiver?.let { requireActivity().unregisterReceiver(it) }
+            receiver = null
         }
 
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
