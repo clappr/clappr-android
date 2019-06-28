@@ -200,7 +200,7 @@ open class Player(
 
     private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", 3, 3) }
 
-    private val fastFowardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", 4, 4) }
+    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", 4, 4) }
 
     private val pipParametersBuilder by lazy @RequiresApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
 
@@ -416,7 +416,7 @@ open class Player(
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun createPipParameters(): PictureInPictureParams {
-        return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastFowardAction)).build()
+        return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastForwardAction)).build()
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -433,7 +433,7 @@ open class Player(
             State.PLAYING -> pauseAction
             else -> playAction
         }
-        pipParametersBuilder.setActions(listOf(rewindAction, middleAction, fastFowardAction))
+        pipParametersBuilder.setActions(listOf(rewindAction, middleAction, fastForwardAction))
         requireActivity().setPictureInPictureParams(pipParametersBuilder.build())
     }
 }
