@@ -41,6 +41,14 @@ open class Player(
 ) : Fragment(), EventInterface by base {
 
     companion object {
+        private const val PIP_ACTION_PLAY = 1
+        private const val PIP_ACTION_PAUSE = 2
+        private const val PIP_ACTION_REWIND = 3
+        private const val PIP_ACTION_FAST_FORWARD = 4
+
+        private const val PIP_INTENT_ACTION = "pip_media_control"
+        private const val PIP_INTENT_EXTRA = "control_type"
+
         init {
             PluginConfig.register()
             PlaybackConfig.register()
@@ -194,13 +202,13 @@ open class Player(
     private var playerViewGroup: ViewGroup? = null
 
     //TODO: Update actions when playback ends
-    private val playAction by lazy { createRemoteAction(R.drawable.exo_controls_play, "Play", 1, 1) }
+    private val playAction by lazy { createRemoteAction(R.drawable.exo_controls_play, "Play", PIP_ACTION_PLAY, PIP_ACTION_PLAY) }
 
-    private val pauseAction by lazy { createRemoteAction(R.drawable.exo_icon_pause, "Pause", 2, 2) }
+    private val pauseAction by lazy { createRemoteAction(R.drawable.exo_icon_pause, "Pause", PIP_ACTION_PAUSE, PIP_ACTION_PAUSE) }
 
-    private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", 3, 3) }
+    private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", PIP_ACTION_REWIND, PIP_ACTION_REWIND) }
 
-    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", 4, 4) }
+    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIP_ACTION_FAST_FORWARD, PIP_ACTION_FAST_FORWARD) }
 
     private val pipParametersBuilder by lazy @RequiresApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
 
@@ -387,24 +395,23 @@ open class Player(
 
             receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent?) {
-                    if (intent == null || "media_control" != intent.action) return
+                    if (intent == null || PIP_INTENT_ACTION != intent.action) return
 
-                    when (intent.getIntExtra("control_type", 0)) {
-                        1 -> {
+                    when (intent.getIntExtra(PIP_INTENT_EXTRA, 0)) {
+                        PIP_ACTION_PLAY -> {
                             play()
                             updatePictureInPictureAction(state)
                         }
-                        2 -> {
+                        PIP_ACTION_PAUSE -> {
                             pause()
                             updatePictureInPictureAction(state)
                         }
-                        3 -> seek(Math.min(duration, position - 10).toInt()) //TODO: check for miminal duration
-                        4 -> seek(Math.min(duration, position + 10).toInt())
-                        else -> Unit
+                        PIP_ACTION_REWIND -> seek(Math.min(0.0, position - 10).toInt())
+                        PIP_ACTION_FAST_FORWARD -> seek(Math.min(duration, position + 10).toInt())
                     }
                 }
             }
-            requireActivity().registerReceiver(receiver, IntentFilter("media_control"))
+            requireActivity().registerReceiver(receiver, IntentFilter(PIP_INTENT_ACTION))
         } else {
             core?.trigger(Event.DID_EXIT_PIP.value)
             receiver?.let { requireActivity().unregisterReceiver(it) }
@@ -426,7 +433,7 @@ open class Player(
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun createRemoteAction(@DrawableRes iconId: Int, title: String, controlType: Int, requestCode: Int): RemoteAction {
-        val intent = Intent("media_control").putExtra("control_type", controlType)
+        val intent = Intent(PIP_INTENT_ACTION).putExtra(PIP_INTENT_EXTRA, controlType)
         val pendingIntent = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         return RemoteAction(Icon.createWithResource(context, iconId), title, title, pendingIntent)
