@@ -218,6 +218,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val currentTime: Long?
         get() = currentDate?.plus(position.toLong())
 
+    private val isRepeatModeEnabled
+        get() = player?.let {
+            it.repeatMode == Player.REPEAT_MODE_ONE &&
+                    options.options.containsKey(ClapprOption.LOOP.value) &&
+                    mediaType == MediaType.VOD
+        } ?: false
+
     init {
         playerView.useController = false
         playerView.subtitleView?.setStyle(getSubtitleStyle())
@@ -341,7 +348,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
         player?.playWhenReady = false
         player?.repeatMode = when (options.options[ClapprOption.LOOP.value]) {
-            true -> Player.REPEAT_MODE_ALL
+            true -> Player.REPEAT_MODE_ONE
             else -> Player.REPEAT_MODE_OFF
         }
 
@@ -694,7 +701,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
 
         override fun onPositionDiscontinuity(reason: Int) {
-            if (reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+            if (isRepeatModeEnabled && reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
                 trigger(Event.DID_LOOP)
             }
         }

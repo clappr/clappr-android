@@ -273,7 +273,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        assertEquals(Player.REPEAT_MODE_ALL, SimpleExoplayerShadow.staticRepeatMode)
+        assertEquals(Player.REPEAT_MODE_ONE, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
