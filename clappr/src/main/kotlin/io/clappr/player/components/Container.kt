@@ -11,6 +11,7 @@ import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.container.UIContainerPlugin
+import io.clappr.player.utils.Environment
 
 class Container(options: Options) : UIObject() {
 
@@ -43,6 +44,9 @@ class Container(options: Options) : UIObject() {
 
     override val viewClass: Class<*>
         get() = FrameLayout::class.java
+
+    val environment: Environment
+        get() = Environment()
 
     init {
         internalPlugins = Loader.loadPlugins(this).toMutableList()
