@@ -6,9 +6,9 @@ import org.junit.Test
 class EnvironmentTest {
 
     @Test
-    fun `should have a not empty playerId`() {
+    fun `should have a not empty sessionId`() {
         val environment = Environment()
 
-        assertFalse(environment.playerId.isEmpty())
+        assertFalse(environment.sessionId.isEmpty())
     }
 }
