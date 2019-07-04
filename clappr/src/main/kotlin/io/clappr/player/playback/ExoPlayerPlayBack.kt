@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -345,7 +346,14 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         configureTrackSelector()
 
-        player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
+        val audioAttributes = AudioAttributes.Builder()
+            .setContentType(C.CONTENT_TYPE_MOVIE)
+                .setUsage(C.USAGE_MEDIA)
+                .build()
+
+        player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
+            setAudioAttributes(audioAttributes, true)
+        }
         player?.playWhenReady = false
         player?.repeatMode = when (options.options[ClapprOption.LOOP.value]) {
             true -> Player.REPEAT_MODE_ONE
