@@ -9,6 +9,6 @@ class EnvironmentTest {
     fun `should have a not empty sessionId`() {
         val environment = Environment()
 
-        assertFalse(environment.sessionId.isEmpty())
+        assertFalse(environment.playerId.isEmpty())
     }
 }
