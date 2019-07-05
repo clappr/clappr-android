@@ -230,6 +230,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     mediaType == MediaType.VOD
         } ?: false
 
+    open val handleAudioFocus: Boolean
+        get() = options.options[ClapprOption.HANDLE_AUDIO_FOCUS.value] as? Boolean ?: false
+
     init {
         playerView.useController = false
         playerView.subtitleView?.setStyle(getSubtitleStyle())
@@ -356,8 +359,6 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 .build()
 
         player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
-            val handleAudioFocus = options.options[ClapprOption.HANDLE_AUDIO_FOCUS.value] as? Boolean
-                    ?: false
             setAudioAttributes(audioAttributes, handleAudioFocus)
             playWhenReady = false
             repeatMode = when (options.options[ClapprOption.LOOP.value]) {
