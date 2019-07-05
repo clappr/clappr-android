@@ -356,7 +356,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                 .build()
 
         player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
-            setAudioAttributes(audioAttributes, true)
+            val handleAudioFocus = options.options[ClapprOption.HANDLE_AUDIO_FOCUS.value] as? Boolean
+                    ?: false
+            setAudioAttributes(audioAttributes, handleAudioFocus)
             playWhenReady = false
             repeatMode = when (options.options[ClapprOption.LOOP.value]) {
                 true -> Player.REPEAT_MODE_ONE
