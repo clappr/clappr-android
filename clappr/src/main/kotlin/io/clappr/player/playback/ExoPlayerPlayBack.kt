@@ -353,11 +353,11 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
             setAudioAttributes(audioAttributes, true)
-        }
-        player?.playWhenReady = false
-        player?.repeatMode = when (options.options[ClapprOption.LOOP.value]) {
-            true -> Player.REPEAT_MODE_ONE
-            else -> Player.REPEAT_MODE_OFF
+            playWhenReady = false
+            repeatMode = when (options.options[ClapprOption.LOOP.value]) {
+                true -> Player.REPEAT_MODE_ONE
+                else -> Player.REPEAT_MODE_OFF
+            }
         }
 
         addListeners()
