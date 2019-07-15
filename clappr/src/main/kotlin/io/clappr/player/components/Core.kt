@@ -50,16 +50,16 @@ class Core(options: Options) : UIObject() {
 
                 field = value
 
-                activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                                    { bundle: Bundle? ->
-                                        trigger(
-                                                InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
-                                    })
-                activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                                    { bundle: Bundle? ->
-                                        trigger(
-                                                InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
-                                    })
+                activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value
+                ) { bundle: Bundle? ->
+                    trigger(
+                            InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                }
+                activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value
+                ) { bundle: Bundle? ->
+                    trigger(
+                            InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                }
                 trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
@@ -102,6 +102,8 @@ class Core(options: Options) : UIObject() {
     }
 
     fun load() {
+        trigger(InternalEvent.WILL_LOAD_SOURCE.value)
+
         activeContainer = containers.first()
         options.source?.let {
             activeContainer?.load(it, options.mimeType)
