@@ -32,6 +32,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
 
     private fun getKeyCode(keyCode: Int) = when (keyCode) {
         KeyEvent.KEYCODE_MEDIA_PLAY -> Key.PLAY.value
+        KeyEvent.KEYCODE_MEDIA_PAUSE -> Key.PAUSE.value
         else -> Key.UNDEFINED.value
     }
 
