@@ -1,6 +1,8 @@
 package io.clappr.player.base
 
 import android.support.annotation.Keep
+import io.clappr.player.base.keys.Action
+import io.clappr.player.base.keys.Key
 
 @Keep
 enum class Event(val value: String) {
@@ -127,7 +129,12 @@ enum class Event(val value: String) {
     /**
      * There was a video loop
      */
-    DID_LOOP("didLoop")
+    DID_LOOP("didLoop"),
+
+    /**
+     * A key was pressed from an external device
+     * **/
+    KEY_PRESSED("keyPressed")
 }
 
 /**
@@ -151,5 +158,23 @@ enum class EventData(val value: String) {
      *
      * Bits per second
      */
-    BITRATE("bitrate")
+    BITRATE("bitrate"),
+
+    /**
+     * [Event.KEY_PRESSED] data
+     *
+     * Type: Int
+     *
+     * Pressed key. Can be any of keys specified in [Key] class
+     */
+    PRESSED_KEY_CODE("pressedKeyCode"),
+
+    /**
+     * [Event.KEY_PRESSED] data
+     *
+     * Type: Int
+     *
+     * Pressed key action. Can be [Action.UP] or [Action.DOWN]
+     */
+    PRESSED_KEY_ACTION("pressedKeyAction")
 }
