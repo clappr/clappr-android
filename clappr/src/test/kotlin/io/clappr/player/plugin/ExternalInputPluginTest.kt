@@ -34,15 +34,13 @@ class ExternalInputPluginTest {
 
 
     @Test
-    fun `should trigger KEY_PRESSED event for PLAY button`(){
+    fun `should trigger KEY_PRESSED event for PLAY button`() {
         val expectedKeyCode = Key.PLAY.value
 
         var keyCode: String? = null
 
-        core.on(Event.KEY_PRESSED.value){ bundle ->
-            bundle?.let {
-                keyCode = it.getString(EventData.PRESSED_KEY_CODE.value)
-            }
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
         }
 
         externalInputPlugin.holdKeyEvent(-1, KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PLAY))
@@ -52,15 +50,13 @@ class ExternalInputPluginTest {
 
 
     @Test
-    fun `should trigger KEY_PRESSED event with DOWN action`(){
+    fun `should trigger KEY_PRESSED event with DOWN action`() {
         val expectedActionCode = Action.DOWN.value
 
         var actionCode: String? = null
 
-        core.on(Event.KEY_PRESSED.value){ bundle ->
-            bundle?.let {
-                actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value)
-            }
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
         }
 
         externalInputPlugin.holdKeyEvent(-1, KeyEvent(KeyEvent.ACTION_DOWN, -1))
@@ -69,19 +65,32 @@ class ExternalInputPluginTest {
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event with UP action`(){
+    fun `should trigger KEY_PRESSED event with UP action`() {
         val expectedActionCode = Action.UP.value
 
         var actionCode: String? = null
 
-        core.on(Event.KEY_PRESSED.value){ bundle ->
-            bundle?.let {
-                actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value)
-            }
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
         }
 
         externalInputPlugin.holdKeyEvent(-1, KeyEvent(KeyEvent.ACTION_UP, -1))
 
         assertEquals(expectedActionCode, actionCode)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for PAUSE button`() {
+        val expectedKeyCode = Key.PAUSE.value
+
+        var keyCode: String? = null
+
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
+        }
+
+        externalInputPlugin.holdKeyEvent(-1, KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PAUSE))
+
+        assertEquals(expectedKeyCode, keyCode)
     }
 }
