@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
 import com.google.android.exoplayer2.source.dash.DashMediaSource
@@ -60,7 +61,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val MIN_DVR_LIVE_DRIFT = 5
     private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
 
-    open val minDvrSize by lazy { options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE }
+    open val minDvrSize by lazy {
+        options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
+    }
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
@@ -120,10 +123,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
 
     override val duration: Double
-        get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds } ?: Double.NaN
+        get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds }
+                ?: Double.NaN
 
     override val position: Double
-        get() = player?.currentPosition?.let { min(it.toDouble() / ONE_SECOND_IN_MILLIS, duration) } ?: Double.NaN
+        get() = player?.currentPosition?.let { min(it.toDouble() / ONE_SECOND_IN_MILLIS, duration) }
+                ?: Double.NaN
 
     override val state: State
         get() = currentState
@@ -224,6 +229,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                     options.options.containsKey(ClapprOption.LOOP.value) &&
                     mediaType == MediaType.VOD
         } ?: false
+
+    open val handleAudioFocus: Boolean
+        get() = options.options[ClapprOption.HANDLE_AUDIO_FOCUS.value] as? Boolean ?: false
 
     init {
         playerView.useController = false
@@ -345,11 +353,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         configureTrackSelector()
 
-        player = ExoPlayerFactory.newSimpleInstance(rendererFactory, trackSelector)
-        player?.playWhenReady = false
-        player?.repeatMode = when (options.options[ClapprOption.LOOP.value]) {
-            true -> Player.REPEAT_MODE_ONE
-            else -> Player.REPEAT_MODE_OFF
+        val audioAttributes = AudioAttributes.Builder()
+                .setContentType(C.CONTENT_TYPE_MOVIE)
+                .setUsage(C.USAGE_MEDIA)
+                .build()
+
+        player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
+            setAudioAttributes(audioAttributes, handleAudioFocus)
+            playWhenReady = false
+            repeatMode = when (options.options[ClapprOption.LOOP.value]) {
+                true -> Player.REPEAT_MODE_ONE
+                else -> Player.REPEAT_MODE_OFF
+            }
         }
 
         addListeners()
@@ -390,8 +405,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
                         addListener(mainHandler, drmEventsListeners)
                         drmLicenses?.let { setMode(DefaultDrmSessionManager.MODE_QUERY, it) }
                     }
+        } catch (drmException: UnsupportedDrmException) {
+            handleError(drmException)
         }
-        catch (drmException: UnsupportedDrmException) { handleError(drmException) }
 
         return drmSessionManager
     }
@@ -616,11 +632,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun createAudioMediaOption(format: Format, raw: Any?): MediaOption {
-        return format.language?.let { createAudioMediaOptionFromLanguage(it, raw) } ?: createOriginalOption(raw)
+        return format.language?.let { createAudioMediaOptionFromLanguage(it, raw) }
+                ?: createOriginalOption(raw)
     }
 
     private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
-        return format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) } ?: SUBTITLE_OFF
+        return format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
+                ?: SUBTITLE_OFF
     }
 
     private fun createMediaInfo(renderedTextIndex: Int, trackGroupIndex: Int, formatIndex: Int) =
@@ -684,7 +702,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener: Player.EventListener {
+    inner class ExoplayerEventsListener : Player.EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
