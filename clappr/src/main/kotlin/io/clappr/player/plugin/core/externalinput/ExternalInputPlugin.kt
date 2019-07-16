@@ -31,13 +31,13 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
     }
 
     private fun getKeyCode(keyCode: Int) = when (keyCode) {
-        KeyEvent.KEYCODE_MEDIA_PLAY -> Key.PLAY.name
-        else -> Key.UNDEFINED.name
+        KeyEvent.KEYCODE_MEDIA_PLAY -> Key.PLAY.value
+        else -> Key.UNDEFINED.value
     }
 
     private fun getActionCode(action: Int) = when (action) {
-        KeyEvent.ACTION_UP -> Action.UP.name
-        KeyEvent.ACTION_DOWN -> Action.DOWN.name
-        else -> Action.UNDEFINED.name
+        KeyEvent.ACTION_UP -> Action.UP.value
+        KeyEvent.ACTION_DOWN -> Action.DOWN.value
+        else -> Action.UNDEFINED.value
     }
 }
