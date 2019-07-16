@@ -102,12 +102,11 @@ class Core(options: Options) : UIObject() {
     }
 
     fun load() {
-        trigger(InternalEvent.WILL_LOAD_SOURCE.value)
-
         activeContainer = containers.first()
         options.source?.let {
             activeContainer?.load(it, options.mimeType)
         }
+        trigger(InternalEvent.WILL_LOAD_SOURCE.value)
     }
 
     fun destroy() {
