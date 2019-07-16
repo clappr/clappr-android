@@ -1,5 +1,6 @@
 package io.clappr.player.shared
 
-class SharedData {
-    val storeMap  = mutableMapOf<String, Any>()
-}
+import java.util.HashMap
+
+class SharedData (
+    val sharedData: HashMap<String, Any> = hashMapOf()) : MutableMap<String, Any> by sharedData
