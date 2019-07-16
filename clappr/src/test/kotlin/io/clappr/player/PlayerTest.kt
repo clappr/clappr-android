@@ -2,6 +2,7 @@ package io.clappr.player
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
@@ -14,6 +15,8 @@ import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
+import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
+import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -425,6 +428,26 @@ open class PlayerTest {
         assertCoreEventWasTriggered(Event.EXIT_FULLSCREEN.value)
     }
 
+    @Test
+    fun `should pass key event to external input class`(){
+
+        val expectedKeyCode = 21
+        val expectedKeyEvent = KeyEvent(1, 2, 3, 4, 5)
+
+        ExternalInputPluginTest.keyCode = null
+        ExternalInputPluginTest.keyEvent = null
+
+        Loader.register(ExternalInputPluginTest.entry)
+
+        player = Player()
+        player.configure(Options(source = "valid"))
+
+        player.holdKeyEvent(21, expectedKeyEvent)
+
+        assertEquals(expectedKeyCode, ExternalInputPluginTest.keyCode)
+        assertEquals(expectedKeyEvent, ExternalInputPluginTest.keyEvent)
+    }
+
     private fun assertCoreEventWasTriggered(event: String) {
         var eventWasCalled = false
 
@@ -565,6 +588,23 @@ open class PlayerTest {
                     core.trigger(it, this)
                 }
             }
+        }
+    }
+
+    class ExternalInputPluginTest(core: Core) : CorePlugin(core, name = name), ExternalInputDevice {
+        companion object : NamedType {
+            override val name = ExternalInputPlugin.name
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPluginTest(core) })
+
+            var keyCode: Int? = null
+            var keyEvent: KeyEvent? = null
+        }
+
+        override fun holdKeyEvent(keyCode: Int, event: KeyEvent) {
+            Companion.keyCode = keyCode
+            keyEvent = event
+
         }
     }
 }
