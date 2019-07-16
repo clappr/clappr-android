@@ -3,6 +3,7 @@ package io.clappr.player
 import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
+import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,8 @@ import io.clappr.player.components.Playback
 import io.clappr.player.extensions.context.isRunningInAndroidTvDevice
 import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
+import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
+import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
 
 /**
  *  Main Player class.
@@ -36,6 +39,9 @@ open class Player(private val base: BaseObject = BaseObject(),
             BaseObject.applicationContext = applicationContext
         }
     }
+
+    private val externalInputDevice: ExternalInputDevice?
+        get() = (core?.plugins?.firstOrNull { it.name == ExternalInputPlugin.name }) as? ExternalInputDevice
 
     init {
         Event.values().forEach { playbackEventsToListen.add(it.value) }
@@ -274,5 +280,9 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun updateCoreFullScreenStatus() {
         core?.fullscreenState = if (this.fullscreen) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
+    }
+
+    fun holdKeyEvent(keyCode: Int, event: KeyEvent) {
+        externalInputDevice?.holdKeyEvent(keyCode, event)
     }
 }
