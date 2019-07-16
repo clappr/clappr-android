@@ -45,5 +45,9 @@ enum class ClapprOption(val value: String) {
      *  If true the video will be played forever (loop mode).
      *  If false the video will be stopped when it ends
      */
-    LOOP("loop")
+    LOOP("loop"),
+    /**
+     * Boolean value indicating if Audio Focus should be handled by Clappr. Default value is false.
+     */
+    HANDLE_AUDIO_FOCUS("handleAudioFocus")
 }
