@@ -35,92 +35,56 @@ class ExternalInputPluginTest {
 
     @Test
     fun `should trigger KEY_PRESSED event for PLAY button`() {
-        val expectedKeyCode = Key.PLAY.value
-
-        var keyCode: String? = null
-
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
-        }
-
-        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PLAY))
-
-        assertEquals(expectedKeyCode, keyCode)
+        assertPressedKeyCodeEvent(Key.PLAY, KeyEvent.KEYCODE_MEDIA_PLAY)
     }
 
 
     @Test
     fun `should trigger KEY_PRESSED event with DOWN action`() {
-        val expectedActionCode = Action.DOWN.value
-
-        var actionCode: String? = null
-
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
-        }
-
-        externalInputPlugin.holdKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, -1))
-
-        assertEquals(expectedActionCode, actionCode)
+        assertPressedAction(Action.DOWN, KeyEvent.ACTION_DOWN)
     }
 
     @Test
     fun `should trigger KEY_PRESSED event with UP action`() {
-        val expectedActionCode = Action.UP.value
+        assertPressedAction(Action.UP, KeyEvent.ACTION_UP)
+    }
 
+    @Test
+    fun `should trigger KEY_PRESSED event for PAUSE button`() {
+        assertPressedKeyCodeEvent(Key.PAUSE, KeyEvent.KEYCODE_MEDIA_PAUSE)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for STOP button`() {
+        assertPressedKeyCodeEvent(Key.STOP, KeyEvent.KEYCODE_MEDIA_STOP)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for PLAY_PAUSE button`() {
+        assertPressedKeyCodeEvent(Key.PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
+    }
+
+    private fun assertPressedKeyCodeEvent(expectedKeyCode: Key, keyToHold: Int){
+        var keyCode: String? = null
+
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
+        }
+
+        externalInputPlugin.holdKeyEvent(KeyEvent(-1, keyToHold))
+
+        assertEquals(expectedKeyCode.value, keyCode)
+    }
+
+    private fun assertPressedAction(expectedActionCode: Action, actionKey: Int){
         var actionCode: String? = null
 
         core.on(Event.KEY_PRESSED.value) { bundle ->
             bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(KeyEvent.ACTION_UP, -1))
+        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, -1))
 
-        assertEquals(expectedActionCode, actionCode)
-    }
-
-    @Test
-    fun `should trigger KEY_PRESSED event for PAUSE button`() {
-        val expectedKeyCode = Key.PAUSE.value
-
-        var keyCode: String? = null
-
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
-        }
-
-        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PAUSE))
-
-        assertEquals(expectedKeyCode, keyCode)
-    }
-
-    @Test
-    fun `should trigger KEY_PRESSED event for STOP button`() {
-        val expectedKeyCode = Key.STOP.value
-
-        var keyCode: String? = null
-
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
-        }
-
-        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_STOP))
-
-        assertEquals(expectedKeyCode, keyCode)
-    }
-
-    @Test
-    fun `should trigger KEY_PRESSED event for PLAY_PAUSE button`() {
-        val expectedKeyCode = Key.PLAY_PAUSE.value
-
-        var keyCode: String? = null
-
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
-        }
-
-        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE))
-
-        assertEquals(expectedKeyCode, keyCode)
+        assertEquals(expectedActionCode.value, actionCode)
     }
 }
