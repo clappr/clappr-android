@@ -165,16 +165,16 @@ enum class EventData(val value: String) {
      *
      * Type: Int
      *
-     * Pressed key. Can be any of keys specified in [Key] class
+     * Input key received. Can be any of keys specified in [Key] class
      */
-    PRESSED_KEY_CODE("pressedKeyCode"),
+    INPUT_KEY_CODE("inputKeyCode"),
 
     /**
      * [Event.DID_RECEIVE_INPUT_KEY] data
      *
      * Type: Int
      *
-     * Pressed key action. Can be [Action.UP] or [Action.DOWN]
+     * Input key received. Can be [Action.UP] or [Action.DOWN]
      */
-    PRESSED_KEY_ACTION("pressedKeyAction")
+    INPUT_KEY_ACTION("inputKeyAction")
 }

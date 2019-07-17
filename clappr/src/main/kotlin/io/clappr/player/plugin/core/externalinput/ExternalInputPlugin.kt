@@ -27,8 +27,8 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
     
     override fun holdKeyEvent(event: KeyEvent) {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
-            putString(EventData.PRESSED_KEY_CODE.value, getKeyCode(event.keyCode))
-            putString(EventData.PRESSED_KEY_ACTION.value, getActionCode(event.action))
+            putString(EventData.INPUT_KEY_CODE.value, getKeyCode(event.keyCode))
+            putString(EventData.INPUT_KEY_ACTION.value, getActionCode(event.action))
         })
     }
 
