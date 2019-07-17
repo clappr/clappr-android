@@ -67,8 +67,8 @@ class ExternalInputPluginTest {
     private fun assertPressedKeyCodeEvent(expectedKeyCode: Key, keyToHold: Int){
         var keyCode: String? = null
 
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
+        core.on(Event.DID_RECEIVE_INPUT_KEY.value) { bundle ->
+            bundle?.let { keyCode = it.getString(EventData.INPUT_KEY_CODE.value) }
         }
 
         externalInputPlugin.holdKeyEvent(KeyEvent(-1, keyToHold))
@@ -79,8 +79,8 @@ class ExternalInputPluginTest {
     private fun assertPressedAction(expectedActionCode: Action, actionKey: Int){
         var actionCode: String? = null
 
-        core.on(Event.KEY_PRESSED.value) { bundle ->
-            bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
+        core.on(Event.DID_RECEIVE_INPUT_KEY.value) { bundle ->
+            bundle?.let { actionCode = it.getString(EventData.INPUT_KEY_ACTION.value) }
         }
 
         externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, -1))
