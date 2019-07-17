@@ -43,7 +43,7 @@ class ExternalInputPluginTest {
             bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(-1, KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PLAY))
+        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PLAY))
 
         assertEquals(expectedKeyCode, keyCode)
     }
@@ -59,7 +59,7 @@ class ExternalInputPluginTest {
             bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(-1, KeyEvent(KeyEvent.ACTION_DOWN, -1))
+        externalInputPlugin.holdKeyEvent(KeyEvent(KeyEvent.ACTION_DOWN, -1))
 
         assertEquals(expectedActionCode, actionCode)
     }
@@ -74,7 +74,7 @@ class ExternalInputPluginTest {
             bundle?.let { actionCode = it.getString(EventData.PRESSED_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(-1, KeyEvent(KeyEvent.ACTION_UP, -1))
+        externalInputPlugin.holdKeyEvent(KeyEvent(KeyEvent.ACTION_UP, -1))
 
         assertEquals(expectedActionCode, actionCode)
     }
@@ -89,7 +89,7 @@ class ExternalInputPluginTest {
             bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(-1, KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PAUSE))
+        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_PAUSE))
 
         assertEquals(expectedKeyCode, keyCode)
     }

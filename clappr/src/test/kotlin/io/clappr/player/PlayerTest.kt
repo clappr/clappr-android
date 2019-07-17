@@ -431,10 +431,8 @@ open class PlayerTest {
     @Test
     fun `should pass key event to external input class`(){
 
-        val expectedKeyCode = 21
         val expectedKeyEvent = KeyEvent(1, 2, 3, 4, 5)
 
-        ExternalInputPluginTest.keyCode = null
         ExternalInputPluginTest.keyEvent = null
 
         Loader.register(ExternalInputPluginTest.entry)
@@ -442,9 +440,8 @@ open class PlayerTest {
         player = Player()
         player.configure(Options(source = "valid"))
 
-        player.holdKeyEvent(21, expectedKeyEvent)
+        player.holdKeyEvent(expectedKeyEvent)
 
-        assertEquals(expectedKeyCode, ExternalInputPluginTest.keyCode)
         assertEquals(expectedKeyEvent, ExternalInputPluginTest.keyEvent)
     }
 
@@ -597,12 +594,10 @@ open class PlayerTest {
 
             val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPluginTest(core) })
 
-            var keyCode: Int? = null
             var keyEvent: KeyEvent? = null
         }
 
-        override fun holdKeyEvent(keyCode: Int, event: KeyEvent) {
-            Companion.keyCode = keyCode
+        override fun holdKeyEvent(event: KeyEvent) {
             keyEvent = event
 
         }
