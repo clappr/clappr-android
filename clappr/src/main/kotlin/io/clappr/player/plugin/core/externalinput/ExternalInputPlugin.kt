@@ -19,11 +19,13 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPlugin(core) })
     }
 
-    override fun holdKeyEvent(event: KeyEvent) {
 
-        val keyCode = getKeyCode(event.keyCode)
-        val actionCode = getActionCode(event.action)
-
+    private val supportedKeys = hashMapOf(
+            KeyEvent.KEYCODE_MEDIA_PLAY to Key.PLAY.value,
+            KeyEvent.KEYCODE_MEDIA_PAUSE to Key.PAUSE.value,
+            KeyEvent.KEYCODE_MEDIA_STOP to Key.STOP.value,
+            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to Key.PLAY_PAUSE.value)
+    
     override fun holdKeyEvent(event: KeyEvent) {
         core.trigger(Event.KEY_PRESSED.value, Bundle().apply {
             putString(EventData.PRESSED_KEY_CODE.value, getKeyCode(event.keyCode))
@@ -31,13 +33,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         })
     }
 
-    private fun getKeyCode(keyCode: Int) = when (keyCode) {
-        KeyEvent.KEYCODE_MEDIA_PLAY -> Key.PLAY.value
-        KeyEvent.KEYCODE_MEDIA_PAUSE -> Key.PAUSE.value
-        KeyEvent.KEYCODE_MEDIA_STOP -> Key.STOP.value
-        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> Key.PLAY_PAUSE.value
-        else -> Key.UNDEFINED.value
-    }
+    private fun getKeyCode(keyCode: Int) = supportedKeys[keyCode] ?: Key.UNDEFINED.value
 
     private fun getActionCode(action: Int) = when (action) {
         KeyEvent.ACTION_UP -> Action.UP.value
