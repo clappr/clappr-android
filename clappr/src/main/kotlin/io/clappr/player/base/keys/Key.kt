@@ -8,6 +8,6 @@ enum class Key(val value: String) {
     PLAY_PAUSE("playPause");
 
     companion object {
-        fun getByValue(value: String) = values().firstOrNull { it.value == value }?.let { it }
+        fun getByValue(value: String) = values().firstOrNull { it.value == value }
     }
 }
