@@ -6,6 +6,6 @@ enum class Action(val value: String) {
     DOWN("down");
 
     companion object {
-        fun getByValue(value: String) = values().firstOrNull { it.value == value }?.let { it }
+        fun getByValue(value: String) = values().firstOrNull { it.value == value }
     }
 }
