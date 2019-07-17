@@ -18,6 +18,7 @@
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
 | [io.clappr.player.plugin.CorePluginFactory](../io.clappr.player.plugin/-core-plugin-factory.md) |  |
 | [kotlin.Double](../io.clappr.player.extensions/kotlin.-double/index.md) (extensions in package io.clappr.player.extensions) |  |
+| [io.clappr.player.utils.Environment](../io.clappr.player.utils/-environment/index.md) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |
 | [io.clappr.player.base.ErrorInfo](../io.clappr.player.base/-error-info/index.md) |  |
 | [io.clappr.player.base.ErrorInfoData](../io.clappr.player.base/-error-info-data/index.md) | Event bundle data keys for error info |
@@ -54,6 +55,7 @@
 | [io.clappr.player.plugin.PluginFactory](../io.clappr.player.plugin/-plugin-factory.md) |  |
 | [io.clappr.player.plugin.PosterPlugin](../io.clappr.player.plugin/-poster-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.SeekbarPlugin](../io.clappr.player.plugin.control/-seekbar-plugin/index.md) |  |
+| [io.clappr.player.shared.SharedData](../io.clappr.player.shared/-shared-data/index.md) |  |
 | [io.clappr.player.components.SubtitleLanguage](../io.clappr.player.components/-subtitle-language/index.md) |  |
 | [io.clappr.player.plugin.control.TimeIndicatorPlugin](../io.clappr.player.plugin.control/-time-indicator-plugin/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |

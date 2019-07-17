@@ -16,3 +16,5 @@ io.clappr.player.plugin
 io.clappr.player.plugin.container
 io.clappr.player.plugin.control
 io.clappr.player.plugin.core
+io.clappr.player.shared
+io.clappr.player.utils
