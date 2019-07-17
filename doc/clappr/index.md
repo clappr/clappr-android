@@ -18,6 +18,8 @@
 | [io.clappr.player.plugin.container](io.clappr.player.plugin.container/index.md) |  |
 | [io.clappr.player.plugin.control](io.clappr.player.plugin.control/index.md) |  |
 | [io.clappr.player.plugin.core](io.clappr.player.plugin.core/index.md) |  |
+| [io.clappr.player.shared](io.clappr.player.shared/index.md) |  |
+| [io.clappr.player.utils](io.clappr.player.utils/index.md) |  |
 
 ### Index
 

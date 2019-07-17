@@ -10,6 +10,7 @@ import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
+import io.clappr.player.utils.Environment
 
 class Core(options: Options) : UIObject() {
 
@@ -49,16 +50,16 @@ class Core(options: Options) : UIObject() {
 
                 field = value
 
-                activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value,
-                                    { bundle: Bundle? ->
-                                        trigger(
-                                                InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
-                                    })
-                activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value,
-                                    { bundle: Bundle? ->
-                                        trigger(
-                                                InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
-                                    })
+                activeContainer?.on(InternalEvent.WILL_CHANGE_PLAYBACK.value
+                ) { bundle: Bundle? ->
+                    trigger(
+                            InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                }
+                activeContainer?.on(InternalEvent.DID_CHANGE_PLAYBACK.value
+                ) { bundle: Bundle? ->
+                    trigger(
+                            InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value, bundle)
+                }
                 trigger(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value)
             }
         }
@@ -75,6 +76,8 @@ class Core(options: Options) : UIObject() {
             trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
             updateContainerOptions(options)
         }
+
+    val environment = Environment()
 
     private fun updateContainerOptions(options: Options) {
         containers.forEach { it.options = options }
@@ -100,9 +103,11 @@ class Core(options: Options) : UIObject() {
 
     fun load() {
         activeContainer = containers.first()
+        trigger(InternalEvent.WILL_LOAD_SOURCE.value)
         options.source?.let {
             activeContainer?.load(it, options.mimeType)
         }
+        trigger(InternalEvent.DID_LOAD_SOURCE.value)        
     }
 
     fun destroy() {
