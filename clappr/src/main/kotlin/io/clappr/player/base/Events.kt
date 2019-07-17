@@ -163,7 +163,7 @@ enum class EventData(val value: String) {
     /**
      * [Event.DID_RECEIVE_INPUT_KEY] data
      *
-     * Type: Int
+     * Type: String
      *
      * Input key received. Can be any of keys specified in [Key] class
      */
@@ -172,7 +172,7 @@ enum class EventData(val value: String) {
     /**
      * [Event.DID_RECEIVE_INPUT_KEY] data
      *
-     * Type: Int
+     * Type: String
      *
      * Input key received. Can be [Action.UP] or [Action.DOWN]
      */
