@@ -23,6 +23,7 @@
 | [activeContainer](active-container.md) | `var activeContainer: `[`Container`](../-container/index.md)`?` |
 | [activePlayback](active-playback.md) | `val activePlayback: `[`Playback`](../-playback/index.md)`?` |
 | [containers](containers.md) | `val containers: `[`MutableList`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html)`<`[`Container`](../-container/index.md)`>` |
+| [environment](environment.md) | `val environment: `[`Environment`](../../io.clappr.player.utils/-environment/index.md) |
 | [fullscreenState](fullscreen-state.md) | `var fullscreenState: `[`FullscreenState`](-fullscreen-state/index.md) |
 | [options](options.md) | `var options: `[`Options`](../../io.clappr.player.base/-options/index.md) |
 | [plugins](plugins.md) | `val plugins: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)`>` |
