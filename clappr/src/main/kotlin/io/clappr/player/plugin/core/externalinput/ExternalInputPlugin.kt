@@ -8,7 +8,6 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
-import io.clappr.player.log.Logger
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
 
@@ -27,7 +26,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
             KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to Key.PLAY_PAUSE.value)
     
     override fun holdKeyEvent(event: KeyEvent) {
-        core.trigger(Event.KEY_PRESSED.value, Bundle().apply {
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.PRESSED_KEY_CODE.value, getKeyCode(event.keyCode))
             putString(EventData.PRESSED_KEY_ACTION.value, getActionCode(event.action))
         })

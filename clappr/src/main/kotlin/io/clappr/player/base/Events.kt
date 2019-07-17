@@ -132,9 +132,9 @@ enum class Event(val value: String) {
     DID_LOOP("didLoop"),
 
     /**
-     * A key was pressed from an external device
+     * A input key was received from an external device
      * **/
-    KEY_PRESSED("keyPressed")
+    DID_RECEIVE_INPUT_KEY("didReceiveInputKey")
 }
 
 /**
@@ -161,7 +161,7 @@ enum class EventData(val value: String) {
     BITRATE("bitrate"),
 
     /**
-     * [Event.KEY_PRESSED] data
+     * [Event.DID_RECEIVE_INPUT_KEY] data
      *
      * Type: Int
      *
@@ -170,7 +170,7 @@ enum class EventData(val value: String) {
     PRESSED_KEY_CODE("pressedKeyCode"),
 
     /**
-     * [Event.KEY_PRESSED] data
+     * [Event.DID_RECEIVE_INPUT_KEY] data
      *
      * Type: Int
      *
