@@ -24,9 +24,10 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         val keyCode = getKeyCode(event.keyCode)
         val actionCode = getActionCode(event.action)
 
+    override fun holdKeyEvent(event: KeyEvent) {
         core.trigger(Event.KEY_PRESSED.value, Bundle().apply {
-            putString(EventData.PRESSED_KEY_CODE.value, keyCode)
-            putString(EventData.PRESSED_KEY_ACTION.value, actionCode)
+            putString(EventData.PRESSED_KEY_CODE.value, getKeyCode(event.keyCode))
+            putString(EventData.PRESSED_KEY_ACTION.value, getActionCode(event.action))
         })
     }
 
@@ -34,6 +35,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         KeyEvent.KEYCODE_MEDIA_PLAY -> Key.PLAY.value
         KeyEvent.KEYCODE_MEDIA_PAUSE -> Key.PAUSE.value
         KeyEvent.KEYCODE_MEDIA_STOP -> Key.STOP.value
+        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE -> Key.PLAY_PAUSE.value
         else -> Key.UNDEFINED.value
     }
 
