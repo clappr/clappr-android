@@ -93,4 +93,19 @@ class ExternalInputPluginTest {
 
         assertEquals(expectedKeyCode, keyCode)
     }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for STOP button`() {
+        val expectedKeyCode = Key.STOP.value
+
+        var keyCode: String? = null
+
+        core.on(Event.KEY_PRESSED.value) { bundle ->
+            bundle?.let { keyCode = it.getString(EventData.PRESSED_KEY_CODE.value) }
+        }
+
+        externalInputPlugin.holdKeyEvent(KeyEvent(-1, KeyEvent.KEYCODE_MEDIA_STOP))
+
+        assertEquals(expectedKeyCode, keyCode)
+    }
 }
