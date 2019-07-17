@@ -19,13 +19,13 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPlugin(core) })
     }
 
-    override fun holdKeyEvent(keyCode: Int, event: KeyEvent) {
+    override fun holdKeyEvent(event: KeyEvent) {
 
-        val aKeyCode = getKeyCode(event.keyCode)
+        val keyCode = getKeyCode(event.keyCode)
         val actionCode = getActionCode(event.action)
 
         core.trigger(Event.KEY_PRESSED.value, Bundle().apply {
-            putString(EventData.PRESSED_KEY_CODE.value, aKeyCode)
+            putString(EventData.PRESSED_KEY_CODE.value, keyCode)
             putString(EventData.PRESSED_KEY_ACTION.value, actionCode)
         })
     }

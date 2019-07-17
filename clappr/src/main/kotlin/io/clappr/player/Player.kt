@@ -282,7 +282,7 @@ open class Player(private val base: BaseObject = BaseObject(),
         core?.fullscreenState = if (this.fullscreen) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
     }
 
-    fun holdKeyEvent(keyCode: Int, event: KeyEvent) {
-        externalInputDevice?.holdKeyEvent(keyCode, event)
+    fun holdKeyEvent(event: KeyEvent) {
+        externalInputDevice?.holdKeyEvent(event)
     }
 }
