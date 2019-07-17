@@ -18,7 +18,6 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPlugin(core) })
     }
 
-
     private val supportedKeys = hashMapOf(
             KeyEvent.KEYCODE_MEDIA_PLAY to Key.PLAY.value,
             KeyEvent.KEYCODE_MEDIA_PAUSE to Key.PAUSE.value,
