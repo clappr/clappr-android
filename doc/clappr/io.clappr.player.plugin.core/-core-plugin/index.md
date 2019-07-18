@@ -47,4 +47,5 @@
 
 | Name | Summary |
 |---|---|
+| [ExternalInputPlugin](../../io.clappr.player.plugin.core.externalinput/-external-input-plugin/index.md) | `class ExternalInputPlugin : `[`CorePlugin`](./index.md)`, `[`ExternalInputDevice`](../../io.clappr.player.plugin.core.externalinput/-external-input-device/index.md) |
 | [UICorePlugin](../-u-i-core-plugin/index.md) | `open class UICorePlugin : `[`CorePlugin`](./index.md)`, `[`UIPlugin`](../../io.clappr.player.plugin/-u-i-plugin/index.md) |
