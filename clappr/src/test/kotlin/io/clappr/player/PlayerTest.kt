@@ -2,6 +2,7 @@ package io.clappr.player
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.KeyEvent
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.Event
 import io.clappr.player.base.InternalEvent
@@ -14,6 +15,8 @@ import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
+import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
+import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -46,7 +49,7 @@ open class PlayerTest {
     }
 
     @Test
-    fun shouldHaveInvalidStatesBeforeConfigure() {
+    fun `should have invalid states before configure`() {
         assertEquals("valid duration", Double.NaN, player.duration, 0.0)
         assertEquals("valid position", Double.NaN, player.position, 0.0)
 
@@ -58,7 +61,7 @@ open class PlayerTest {
     }
 
     @SuppressLint("IgnoreWithoutReason") @Ignore @Test
-    fun shouldHaveInvalidStatesWithUnsupportedMedia() {
+    fun `should have invalid states with unsupported media`() {
         player.configure(Options(source = ""))
 
         assertEquals("valid duration", Double.NaN, player.duration, 0.0)
@@ -74,7 +77,7 @@ open class PlayerTest {
     }
 
     @Test
-    fun configuredPlayer() {
+    fun `configured player`() {
         player.configure(Options(source = "valid"))
 
         assertNotEquals("invalid duration", Double.NaN, player.duration, 0.0)
@@ -87,7 +90,7 @@ open class PlayerTest {
     }
 
     @Test
-    fun shouldTriggerEvents() {
+    fun `should trigger events`() {
         var willPauseCalled = false
         var didPauseCalled = false
         player.on(Event.WILL_PAUSE.value) { willPauseCalled = true }
@@ -101,7 +104,7 @@ open class PlayerTest {
     }
 
     @Test
-    fun playerStates() {
+    fun `player states`() {
         assertEquals("invalid state (not NONE)", Player.State.NONE, player.state)
 
         player.configure(Options(source = "valid"))
@@ -120,7 +123,7 @@ open class PlayerTest {
     }
 
     @Test
-    fun shouldUnbindOnConfigure() {
+    fun `should unbind on configure`() {
         var willPauseCalled = false
         var didPauseCalled = false
 
@@ -158,7 +161,7 @@ open class PlayerTest {
      * configure.
      */
     @Test
-    fun shouldCoreChangeOptionsOnPlayerConfigure() {
+    fun `should core change options on player configure`() {
         val expectedFirstOption = "first option"
         val expectedSecondOption = "second option"
 
@@ -186,7 +189,7 @@ open class PlayerTest {
      * configure.
      */
     @Test
-    fun shouldCoreChangeMimeTypeOnPlayerConfigure() {
+    fun `should core change mime type on player configure`() {
         val expectedFirstMimeType = "mimeType"
         val expectedSecondMimeType = "other-mimeType"
 
@@ -214,7 +217,7 @@ open class PlayerTest {
      * configure.
      */
     @Test
-    fun shouldCoreChangeMimeTypeOnPlayerLoad() {
+    fun `should core change mime type on player load`() {
         val expectedFirstMimeType = "mimeType"
         val expectedSecondMimeType = "other-mimeType"
 
@@ -242,7 +245,7 @@ open class PlayerTest {
      * configure.
      */
     @Test
-    fun shouldCoreChangeSourceOnPlayerConfigure() {
+    fun `should core change source on player configure`() {
         val expectedFirstSource = "source"
         val expectedSecondSource = "other-source"
 
@@ -270,7 +273,7 @@ open class PlayerTest {
      * configure.
      */
     @Test
-    fun shouldCoreChangeSourceOnPlayerLoad() {
+    fun `should core change ource on player load`() {
         val expectedFirstSource = "source"
         val expectedSecondSource = "other-source"
 
@@ -299,7 +302,7 @@ open class PlayerTest {
      * trigger a WILL_PLAY event when the Playback play is called using the PlayerTestPlayback.
      */
     @Test
-    fun shouldCoreHaveSameInstanceOnPlayerConfigure() {
+    fun `should core have same instance on player configure`() {
         val expectedDistinctCoreId = 1
 
         val coreIdList = mutableSetOf<String>()
@@ -321,108 +324,124 @@ open class PlayerTest {
     }
 
     @Test
-    fun shouldListenReadyEventOutOfPlayer() {
+    fun `should listen ready event out of player`() {
         assertPlaybackEventWasTriggered(Event.READY.value)
     }
 
     @Test
-    fun shouldListenErrorEventOutOfPlayer() {
+    fun `should listen error event out of player`() {
         assertPlaybackEventWasTriggered(Event.ERROR.value)
     }
 
     @Test
-    fun shouldListenPlayingEventOutOfPlayer() {
+    fun `should listen playing event out of player`() {
         assertPlaybackEventWasTriggered(Event.PLAYING.value)
     }
 
     @Test
-    fun shouldListenDidCompleteEventOutOfPlayer() {
+    fun `should listen did complete event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_COMPLETE.value)
     }
 
     @Test
-    fun shouldListenDidPauseEventOutOfPlayer() {
+    fun `should listen did pause event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_PAUSE.value)
     }
 
     @Test
-    fun shouldListenStallingEventOutOfPlayer() {
+    fun `should listen stalling event out of player`() {
         assertPlaybackEventWasTriggered(Event.STALLING.value)
     }
 
     @Test
-    fun shouldListenDidStopEventOutOfPlayer() {
+    fun `should listen did stop event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_STOP.value)
     }
 
     @Test
-    fun shouldListenDidSeekEventOutOfPlayer() {
+    fun `should listen did seek event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_SEEK.value)
     }
 
     @Test
-    fun shouldListenDidUpdateBufferEventOutOfPlayer() {
+    fun `should listen did update buffer event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_UPDATE_BUFFER.value)
     }
 
     @Test
-    fun shouldListenDidUpdatePositionEventOutOfPlayer() {
+    fun `should listen did update position event outOf player`() {
         assertPlaybackEventWasTriggered(Event.DID_UPDATE_POSITION.value)
     }
 
     @Test
-    fun shouldListenWillPlayEventOutOfPlayer() {
+    fun `should listen will play event out of player`() {
         assertPlaybackEventWasTriggered(Event.WILL_PLAY.value)
     }
 
     @Test
-    fun shouldListenWillPauseEventOutOfPlayer() {
+    fun `should listen will pause event out of player`() {
         assertPlaybackEventWasTriggered(Event.WILL_PAUSE.value)
     }
 
     @Test
-    fun shouldListenWillSeekEventOutOfPlayer() {
+    fun `should listen will week event out of player`() {
         assertPlaybackEventWasTriggered(Event.WILL_SEEK.value)
     }
 
     @Test
-    fun shouldListenWillStopEventOutOfPlayer() {
+    fun `should listen will stop event out of player`() {
         assertPlaybackEventWasTriggered(Event.WILL_STOP.value)
     }
 
     @Test
-    fun shouldListenDidChangeDVRStatusEventOutOfPlayer() {
+    fun `should listen did change DVR status event out fo player`() {
         assertPlaybackEventWasTriggered(Event.DID_CHANGE_DVR_STATUS.value)
     }
 
     @Test
-    fun shouldListenDidChangeDVRAvailabilityEventOutOfPlayer() {
+    fun `should listen did change DVR availability event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_CHANGE_DVR_AVAILABILITY.value)
     }
 
     @Test
-    fun shouldListenDidUpdateBitrateEventOutOfPlayer() {
+    fun `should listen did updaten bitrate event out of player`() {
         assertPlaybackEventWasTriggered(Event.DID_UPDATE_BITRATE.value)
     }
 
     @Test
-    fun shouldListenMediaOptionUpdateEventOutOfPlayer() {
+    fun `should listen media option update event out of player`() {
         assertPlaybackEventWasTriggered(Event.MEDIA_OPTIONS_UPDATE.value)
     }
 
     @Test
-    fun shouldListenMediaOptionSelectedEventOutOfPlayerTriggeredByCore() {
+    fun `should listen media option selected event out of player triggered by core`() {
         assertCoreEventWasTriggered(Event.MEDIA_OPTIONS_SELECTED.value)
     }
 
     @Test
-    fun shouldListenRequestFullscreenEventOutOfPlayerTriggeredByCore() {
+    fun `should listen request fullscreen event out of player triggered by core`() {
         assertCoreEventWasTriggered(Event.REQUEST_FULLSCREEN.value)
     }
 
     @Test
-    fun shouldListenExitFullscreenEventOutOfPlayerTriggeredByCore() {
+    fun `should listen exit fullscreen event out of player triggered by core`() {
         assertCoreEventWasTriggered(Event.EXIT_FULLSCREEN.value)
+    }
+
+    @Test
+    fun `should pass key event to external input class`(){
+        val expectedKeyEvent = KeyEvent(1, 2, 3, 4, 5)
+
+        ExternalInputPluginTest.keyEvent = null
+
+        Loader.register(ExternalInputPluginTest.entry)
+
+        player = Player()
+        player.configure(Options(source = "valid"))
+
+        player.holdKeyEvent(expectedKeyEvent)
+
+        assertEquals(expectedKeyEvent, ExternalInputPluginTest.keyEvent)
     }
 
     private fun assertCoreEventWasTriggered(event: String) {
@@ -565,6 +584,20 @@ open class PlayerTest {
                     core.trigger(it, this)
                 }
             }
+        }
+    }
+
+    class ExternalInputPluginTest(core: Core) : CorePlugin(core, name = name), ExternalInputDevice {
+        companion object : NamedType {
+            override val name = ExternalInputPlugin.name
+
+            val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPluginTest(core) })
+
+            var keyEvent: KeyEvent? = null
+        }
+
+        override fun holdKeyEvent(event: KeyEvent) {
+            keyEvent = event
         }
     }
 }
