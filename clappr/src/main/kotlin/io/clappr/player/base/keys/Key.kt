@@ -4,7 +4,7 @@ enum class Key(val value: String) {
     UNDEFINED("undefined"),
     PLAY("play"),
     PAUSE("pause"),
-    STOP("strop"),
+    STOP("stop"),
     PLAY_PAUSE("playPause");
 
     companion object {
