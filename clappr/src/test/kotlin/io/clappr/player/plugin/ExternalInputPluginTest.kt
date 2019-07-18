@@ -23,7 +23,7 @@ class ExternalInputPluginTest {
 
     lateinit var externalInputPlugin: ExternalInputPlugin
 
-    private val anyIntegerValue = -1
+    private val anyKeyCode = -1
 
     @Before
     fun setUp() {
@@ -71,7 +71,7 @@ class ExternalInputPluginTest {
             bundle?.let { keyCode = it.getString(EventData.INPUT_KEY_CODE.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(anyIntegerValue, keyToHold))
+        externalInputPlugin.holdKeyEvent(KeyEvent(anyKeyCode, keyToHold))
 
         assertEquals(expectedKeyCode.value, keyCode)
     }
@@ -83,7 +83,7 @@ class ExternalInputPluginTest {
             bundle?.let { actionCode = it.getString(EventData.INPUT_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, anyIntegerValue))
+        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, anyKeyCode))
 
         assertEquals(expectedActionCode.value, actionCode)
     }
