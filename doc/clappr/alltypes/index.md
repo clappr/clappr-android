@@ -4,6 +4,7 @@
 
 | Name | Summary |
 |---|---|
+| [io.clappr.player.base.keys.Action](../io.clappr.player.base.keys/-action/index.md) |  |
 | [io.clappr.player.components.AudioLanguage](../io.clappr.player.components/-audio-language/index.md) |  |
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.bitrate.BitrateHistory](../io.clappr.player.bitrate/-bitrate-history/index.md) |  |
@@ -27,9 +28,12 @@
 | [io.clappr.player.base.EventHandler](../io.clappr.player.base/-event-handler.md) |  |
 | [io.clappr.player.base.EventInterface](../io.clappr.player.base/-event-interface/index.md) |  |
 | [io.clappr.player.playback.ExoPlayerPlayback](../io.clappr.player.playback/-exo-player-playback/index.md) |  |
+| [io.clappr.player.plugin.core.externalinput.ExternalInputDevice](../io.clappr.player.plugin.core.externalinput/-external-input-device/index.md) |  |
+| [io.clappr.player.plugin.core.externalinput.ExternalInputPlugin](../io.clappr.player.plugin.core.externalinput/-external-input-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |
 | [io.clappr.player.base.InternalEventData](../io.clappr.player.base/-internal-event-data/index.md) | Event bundle data keys for selected Events |
+| [io.clappr.player.base.keys.Key](../io.clappr.player.base.keys/-key/index.md) |  |
 | [io.clappr.player.plugin.Loader](../io.clappr.player.plugin/-loader/index.md) |  |
 | [io.clappr.player.plugin.LoadingPlugin](../io.clappr.player.plugin/-loading-plugin/index.md) |  |
 | [io.clappr.player.log.LogLevel](../io.clappr.player.log/-log-level/index.md) |  |

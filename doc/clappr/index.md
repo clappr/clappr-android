@@ -6,6 +6,7 @@
 |---|---|
 | [io.clappr.player](io.clappr.player/index.md) |  |
 | [io.clappr.player.base](io.clappr.player.base/index.md) |  |
+| [io.clappr.player.base.keys](io.clappr.player.base.keys/index.md) |  |
 | [io.clappr.player.bitrate](io.clappr.player.bitrate/index.md) |  |
 | [io.clappr.player.components](io.clappr.player.components/index.md) |  |
 | [io.clappr.player.extensions](io.clappr.player.extensions/index.md) |  |
@@ -18,6 +19,7 @@
 | [io.clappr.player.plugin.container](io.clappr.player.plugin.container/index.md) |  |
 | [io.clappr.player.plugin.control](io.clappr.player.plugin.control/index.md) |  |
 | [io.clappr.player.plugin.core](io.clappr.player.plugin.core/index.md) |  |
+| [io.clappr.player.plugin.core.externalinput](io.clappr.player.plugin.core.externalinput/index.md) |  |
 | [io.clappr.player.shared](io.clappr.player.shared/index.md) |  |
 | [io.clappr.player.utils](io.clappr.player.utils/index.md) |  |
 
