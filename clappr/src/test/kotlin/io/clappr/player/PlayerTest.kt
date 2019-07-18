@@ -598,7 +598,6 @@ open class PlayerTest {
 
         override fun holdKeyEvent(event: KeyEvent) {
             keyEvent = event
-
         }
     }
 }

@@ -23,6 +23,8 @@ class ExternalInputPluginTest {
 
     lateinit var externalInputPlugin: ExternalInputPlugin
 
+    private val anyIntegerValue = -1
+
     @Before
     fun setUp() {
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
@@ -32,12 +34,10 @@ class ExternalInputPluginTest {
         externalInputPlugin = ExternalInputPlugin(core)
     }
 
-
     @Test
     fun `should trigger KEY_PRESSED event for PLAY button`() {
         assertPressedKeyCodeEvent(Key.PLAY, KeyEvent.KEYCODE_MEDIA_PLAY)
     }
-
 
     @Test
     fun `should trigger KEY_PRESSED event with DOWN action`() {
@@ -71,7 +71,7 @@ class ExternalInputPluginTest {
             bundle?.let { keyCode = it.getString(EventData.INPUT_KEY_CODE.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(-1, keyToHold))
+        externalInputPlugin.holdKeyEvent(KeyEvent(anyIntegerValue, keyToHold))
 
         assertEquals(expectedKeyCode.value, keyCode)
     }
@@ -83,7 +83,7 @@ class ExternalInputPluginTest {
             bundle?.let { actionCode = it.getString(EventData.INPUT_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, -1))
+        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, anyIntegerValue))
 
         assertEquals(expectedActionCode.value, actionCode)
     }
