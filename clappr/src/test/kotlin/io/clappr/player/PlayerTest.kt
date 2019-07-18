@@ -430,7 +430,6 @@ open class PlayerTest {
 
     @Test
     fun `should pass key event to external input class`(){
-
         val expectedKeyEvent = KeyEvent(1, 2, 3, 4, 5)
 
         ExternalInputPluginTest.keyEvent = null
