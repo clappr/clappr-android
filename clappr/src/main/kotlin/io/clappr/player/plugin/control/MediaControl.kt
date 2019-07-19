@@ -11,6 +11,8 @@ import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import io.clappr.player.R
 import io.clappr.player.base.*
+import io.clappr.player.base.keys.Action
+import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.plugin.Plugin.State
@@ -122,6 +124,8 @@ open class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
         listenTo(core, InternalEvent.OPEN_MODAL_PANEL.value) { openModal() }
         listenTo(core, InternalEvent.CLOSE_MODAL_PANEL.value) { closeModal() }
+
+        listenTo(core, Event.DID_RECEIVE_INPUT_KEY.value) { onInputReceived(it) }
     }
 
     private fun setupPanelsVisibility() {
@@ -277,6 +281,16 @@ open class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     private fun hideModalPanel() {
         modalPanel.visibility = View.INVISIBLE
+    }
+
+    private fun onInputReceived(bundle: Bundle?) {
+        bundle?.let {
+            val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
+            val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
+
+            if (Key.getByValue(keyCode) != Key.UNDEFINED && Action.getByValue(keyAction) == Action.UP)
+                toggleVisibility()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
