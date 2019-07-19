@@ -18,7 +18,7 @@ import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
-class MediaControl(core: Core) : UICorePlugin(core, name = name) {
+open class MediaControl(core: Core) : UICorePlugin(core, name = name) {
 
     abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
