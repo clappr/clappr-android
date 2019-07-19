@@ -173,20 +173,20 @@ open class MediaControl(core: Core) : UICorePlugin(core, name = name) {
         controlPlugins.forEach {
             (it.view?.parent as? ViewGroup)?.removeView(it.view)
             val parent = when (it.panel) {
-                MediaControl.Plugin.Panel.TOP ->
+                Plugin.Panel.TOP ->
                     when (it.position) {
-                        MediaControl.Plugin.Position.LEFT -> topLeftPanel
-                        MediaControl.Plugin.Position.RIGHT -> topRightPanel
-                        MediaControl.Plugin.Position.CENTER -> topCenterPanel
+                        Plugin.Position.LEFT -> topLeftPanel
+                        Plugin.Position.RIGHT -> topRightPanel
+                        Plugin.Position.CENTER -> topCenterPanel
                         else -> topPanel
                     }
-                MediaControl.Plugin.Panel.BOTTOM ->
+                Plugin.Panel.BOTTOM ->
                     when (it.position) {
-                        MediaControl.Plugin.Position.LEFT -> bottomLeftPanel
-                        MediaControl.Plugin.Position.RIGHT -> bottomRightPanel
+                        Plugin.Position.LEFT -> bottomLeftPanel
+                        Plugin.Position.RIGHT -> bottomRightPanel
                         else -> bottomPanel
                     }
-                MediaControl.Plugin.Panel.CENTER ->
+                Plugin.Panel.CENTER ->
                     centerPanel
                 else -> null
             }
