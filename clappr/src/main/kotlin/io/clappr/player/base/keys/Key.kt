@@ -5,7 +5,11 @@ enum class Key(val value: String) {
     PLAY("play"),
     PAUSE("pause"),
     STOP("stop"),
-    PLAY_PAUSE("playPause");
+    PLAY_PAUSE("playPause"),
+    UP("up"),
+    DOWN("down"),
+    RIGHT("right"),
+    LEFT("left");
 
     companion object {
         fun getByValue(value: String) = values().firstOrNull { it.value == value }
