@@ -9,6 +9,8 @@ import android.widget.RelativeLayout
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.R
 import io.clappr.player.base.*
+import io.clappr.player.base.keys.Action
+import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
@@ -473,6 +475,36 @@ class MediaControlTest {
         container.trigger(InternalEvent.WILL_LOAD_SOURCE.value)
 
         assertEquals(Plugin.State.ENABLED, mediaControl.state)
+    }
+
+    @Test
+    fun shouldShowMediaControlWhenKeyReceivedSupportedKeysOnUpAction() {
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun shouldNotShowMediaControlWhenDoesntNotSupportKey() {
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.UNDEFINED.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun shouldNotShowMediaControlWhenReceiveSupportedKeyButWithActionDown() {
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.DOWN.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
