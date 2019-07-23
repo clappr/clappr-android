@@ -509,9 +509,11 @@ class MediaControlTest {
 
     @Test
     fun shouldHaveUndefinedKeyInBlockList() {
-        val expectedKeys = mutableListOf(Key.UNDEFINED)
+        val expectedKeys = listOf(Key.UNDEFINED)
+        val blockListKey = mediaControl.blockListKey
 
-        assertTrue { mediaControl.blockListKey.containsAll(expectedKeys) }
+        assertEquals(expectedKeys.size, blockListKey.size)
+        assertTrue { blockListKey.containsAll(expectedKeys) }
     }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
