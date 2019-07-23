@@ -507,6 +507,13 @@ class MediaControlTest {
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
 
+    @Test
+    fun shouldHaveUndefinedKeyInBlockList() {
+        val expectedKeys = mutableListOf(Key.UNDEFINED)
+
+        assertTrue { mediaControl.blockListKey.containsAll(expectedKeys) }
+    }
+
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
     private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
     private fun getBottomLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_left_panel)
