@@ -64,6 +64,26 @@ class ExternalInputPluginTest {
         assertPressedKeyCodeEvent(Key.PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
     }
 
+    @Test
+    fun `should trigger KEY_PRESSED event for UP button`() {
+        assertPressedKeyCodeEvent(Key.UP, KeyEvent.KEYCODE_DPAD_UP)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for DOWN button`() {
+        assertPressedKeyCodeEvent(Key.DOWN, KeyEvent.KEYCODE_DPAD_DOWN)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for LEFT button`() {
+        assertPressedKeyCodeEvent(Key.LEFT, KeyEvent.KEYCODE_DPAD_LEFT)
+    }
+
+    @Test
+    fun `should trigger KEY_PRESSED event for RIGHT button`() {
+        assertPressedKeyCodeEvent(Key.RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT)
+    }
+
     private fun assertPressedKeyCodeEvent(expectedKeyCode: Key, keyToHold: Int){
         var keyCode: String? = null
 
