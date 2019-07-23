@@ -60,7 +60,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val blockListKey = mutableListOf(Key.UNDEFINED)
+    open val blockListKey = listOf(Key.UNDEFINED)
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
