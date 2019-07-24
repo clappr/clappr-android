@@ -2,7 +2,7 @@
 
 # render
 
-`fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
 
 Overrides [UIPlugin.render](../../io.clappr.player.plugin/-u-i-plugin/render.md)
 

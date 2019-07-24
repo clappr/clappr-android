@@ -2,7 +2,7 @@
 
 # MediaControl
 
-`class MediaControl : `[`UICorePlugin`](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md)
+`open class MediaControl : `[`UICorePlugin`](../../io.clappr.player.plugin.core/-u-i-core-plugin/index.md)
 
 ### Types
 
@@ -17,15 +17,15 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `MediaControl(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`)` |
+| [&lt;init&gt;](-init-.md) | `MediaControl(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`, pluginName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = name)` |
 
 ### Properties
 
 | Name | Summary |
 |---|---|
 | [isEnabled](is-enabled.md) | `val isEnabled: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [state](state.md) | `var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md) |
-| [view](view.md) | `val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
+| [state](state.md) | `open var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md) |
+| [view](view.md) | `open val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 
 ### Inherited Properties
 
@@ -39,10 +39,10 @@
 
 | Name | Summary |
 |---|---|
-| [destroy](destroy.md) | `fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [hide](hide.md) | `fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [render](render.md) | `fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [show](show.md) | `fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [hide](hide.md) | `open fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [show](show.md) | `open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 
