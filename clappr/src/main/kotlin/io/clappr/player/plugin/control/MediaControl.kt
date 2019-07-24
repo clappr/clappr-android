@@ -60,7 +60,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val blockListKey = listOf(Key.UNDEFINED)
+    open val keysThatMediaControlWillNotBeShown = listOf(Key.UNDEFINED)
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -293,9 +293,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val keyIsNotInBlockList = blockListKey.contains(Key.getByValue(keyCode)).not()
+            val isKeyAllowedToShownMediaControl = keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
 
-            if (keyIsNotInBlockList && Action.getByValue(keyAction) == Action.UP)
+            if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
                 toggleVisibility()
         }
     }
