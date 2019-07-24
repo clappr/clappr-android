@@ -2,7 +2,7 @@
 
 # state
 
-`var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md)
+`open var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md)
 
 Overrides [Plugin.state](../../io.clappr.player.plugin/-plugin/state.md)
 
