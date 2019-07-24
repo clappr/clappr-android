@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`MediaControl(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`)`
+`MediaControl(core: `[`Core`](../../io.clappr.player.components/-core/index.md)`, pluginName: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)` = name)`
