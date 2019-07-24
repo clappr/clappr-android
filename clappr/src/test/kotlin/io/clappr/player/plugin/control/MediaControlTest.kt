@@ -488,7 +488,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldNotShowMediaControlWhenDoesntNotSupportKey() {
+    fun shouldNotShowMediaControlWhenDoesNotSupportKey() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, Key.UNDEFINED.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
@@ -505,15 +505,6 @@ class MediaControlTest {
         })
 
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
-    }
-
-    @Test
-    fun shouldHaveUndefinedKeyInBlockList() {
-        val expectedKeys = listOf(Key.UNDEFINED)
-        val blockListKey = mediaControl.blockListKey
-
-        assertEquals(expectedKeys.size, blockListKey.size)
-        assertTrue { blockListKey.containsAll(expectedKeys) }
     }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
