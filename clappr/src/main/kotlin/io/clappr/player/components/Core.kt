@@ -10,6 +10,7 @@ import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.core.UICorePlugin
+import io.clappr.player.shared.SharedData
 import io.clappr.player.utils.Environment
 
 class Core(options: Options) : UIObject() {
@@ -78,6 +79,7 @@ class Core(options: Options) : UIObject() {
         }
 
     val environment = Environment()
+    val sharedData = SharedData()
 
     private fun updateContainerOptions(options: Options) {
         containers.forEach { it.options = options }

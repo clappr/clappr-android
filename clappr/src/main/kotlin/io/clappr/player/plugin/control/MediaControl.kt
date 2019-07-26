@@ -60,6 +60,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
+    open val keysThatMediaControlWillNotBeShown = listOf(Key.UNDEFINED)
+
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
@@ -79,7 +81,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
-    private val controlPlugins = mutableListOf<MediaControl.Plugin>()
+    private val controlPlugins = mutableListOf<Plugin>()
 
     override var state: State = State.ENABLED
         set(value) {
@@ -128,6 +130,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         listenTo(core, Event.DID_RECEIVE_INPUT_KEY.value) { onInputReceived(it) }
     }
 
+    open fun handleDidPauseEvent() {
+        if (!modalPanelIsOpen())
+            show()
+    }
+
     private fun setupPanelsVisibility() {
         modalPanel.visibility = View.INVISIBLE
     }
@@ -150,8 +157,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value) {
-                if (!modalPanelIsOpen())
-                    show()
+               handleDidPauseEvent()
             })
         }
     }
@@ -287,8 +293,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
+            val isKeyAllowedToShownMediaControl = keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
 
-            if (Key.getByValue(keyCode) != Key.UNDEFINED && Action.getByValue(keyAction) == Action.UP)
+            if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
                 toggleVisibility()
         }
     }
