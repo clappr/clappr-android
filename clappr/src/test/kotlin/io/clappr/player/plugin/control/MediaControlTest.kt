@@ -488,7 +488,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldNotShowMediaControlWhenDoesntNotSupportKey() {
+    fun shouldNotShowMediaControlWhenDoesNotSupportKey() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, Key.UNDEFINED.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
