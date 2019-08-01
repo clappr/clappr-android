@@ -233,7 +233,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         show(defaultShowTimeout)
     }
 
-    private fun show(timeout: Long) {
+    open fun show(timeout: Long) {
         core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
         visibility = Visibility.VISIBLE
         backgroundView.visibility = View.VISIBLE
