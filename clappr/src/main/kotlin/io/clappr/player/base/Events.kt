@@ -134,7 +134,12 @@ enum class Event(val value: String) {
     /**
      * A input key was received from an external device
      * **/
-    DID_RECEIVE_INPUT_KEY("didReceiveInputKey")
+    DID_RECEIVE_INPUT_KEY("didReceiveInputKey"),
+
+    /**
+     * There was a change in screen orientation
+     */
+    DID_CHANGE_SCREEN_ORIENTATION("didChangeScreenOrientation")
 }
 
 /**
@@ -176,5 +181,16 @@ enum class EventData(val value: String) {
      *
      * Input key received. Can be [Action.UP] or [Action.DOWN]
      */
-    INPUT_KEY_ACTION("inputKeyAction")
+    INPUT_KEY_ACTION("inputKeyAction"),
+
+    /**
+     * [Event.DID_CHANGE_SCREEN_ORIENTATION] data
+     *
+     * Type: io.clappr.player.components.Orientation
+     *
+     * The screen orientation.
+     */
+    ORIENTATION("orientation")
+
+
 }
