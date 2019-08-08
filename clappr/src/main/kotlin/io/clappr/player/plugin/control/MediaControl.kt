@@ -356,7 +356,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     override fun show() {
-        show(defaultShowTimeout)
+        if(visibility != Visibility.VISIBLE) {
+            show(defaultShowTimeout) 
+        }
     }
 
     class MediaControlGestureDetector : GestureDetector.OnGestureListener {
