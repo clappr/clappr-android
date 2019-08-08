@@ -141,18 +141,20 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         showMediaControlElements()
         showDefaultMediaControlPanels()
 
-        lastInteractionTime = SystemClock.elapsedRealtime()
+        animateFadeIn {
+            lastInteractionTime = SystemClock.elapsedRealtime()
 
-        if (!isPlaybackIdle && timeout > 0) {
-            hideDelayed(timeout)
+            if (!isPlaybackIdle && timeout > 0) {
+                hideDelayed(timeout)
+            }
+
+            core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
         }
-
-        animateFadeIn()
     }
 
-    private fun animateFadeIn() {
+    private fun animateFadeIn(onAnimationEnd: () -> Unit = {}) {
         view.animate(R.anim.anim_media_control_fade_in) {
-            core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
+            onAnimationEnd()
         }
     }
 
@@ -311,9 +313,10 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         playbackListenerIds.clear()
     }
 
-    private fun animateFadeOut() {
-        view.animate(R.anim.anim_media_control_fade_out,
-                onAnimationEnd = {})
+    private fun animateFadeOut(onAnimationEnd: () -> Unit = {}) {
+        view.animate(R.anim.anim_media_control_fade_out) {
+            onAnimationEnd()
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -343,11 +346,13 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
 
-        hideMediaControlElements()
-        hideDefaultMediaControlPanels()
-        hideModalPanel()
+        animateFadeOut {
+            hideMediaControlElements()
+            hideDefaultMediaControlPanels()
+            hideModalPanel()
 
-        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+            core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+        }
     }
 
     override fun show() {
