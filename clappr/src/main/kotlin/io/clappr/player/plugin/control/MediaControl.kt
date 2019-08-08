@@ -15,6 +15,7 @@ import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
+import io.clappr.player.extensions.animate
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
@@ -116,7 +117,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
             }
 
     init {
-        setupPanelsVisibility()
+        hideModalPanel()
 
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
@@ -131,12 +132,28 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     open fun handleDidPauseEvent() {
-        if (!modalPanelIsOpen())
-            show()
+        if (!modalPanelIsOpen()) show()
     }
 
-    private fun setupPanelsVisibility() {
-        modalPanel.visibility = View.INVISIBLE
+    open fun show(timeout: Long) {
+        core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
+
+        showMediaControlElements()
+        showDefaultMediaControlPanels()
+
+        lastInteractionTime = SystemClock.elapsedRealtime()
+
+        if (!isPlaybackIdle && timeout > 0) {
+            hideDelayed(timeout)
+        }
+
+        animateFadeIn()
+    }
+
+    private fun animateFadeIn() {
+        view.animate(R.anim.anim_media_control_fade_in) {
+            core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
+        }
     }
 
     private fun setupMediaControlEvents() {
@@ -157,7 +174,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         core.activePlayback?.let {
             playbackListenerIds.add(listenTo(it, Event.DID_PAUSE.value) {
-               handleDidPauseEvent()
+                handleDidPauseEvent()
             })
         }
     }
@@ -204,16 +221,24 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    override fun hide() {
-        if (isEnabled && isPlaybackIdle) return
+    private fun showDefaultMediaControlPanels() {
+        controlsPanel.visibility = View.VISIBLE
+        foregroundControlsPanel.visibility = View.VISIBLE
+    }
 
-        core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
-        visibility = Visibility.HIDDEN
-        backgroundView.visibility = View.INVISIBLE
+    private fun hideDefaultMediaControlPanels() {
         controlsPanel.visibility = View.INVISIBLE
         foregroundControlsPanel.visibility = View.INVISIBLE
-        hideModalPanel()
-        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+    }
+
+    private fun hideMediaControlElements() {
+        visibility = Visibility.HIDDEN
+        backgroundView.visibility = View.INVISIBLE
+    }
+
+    private fun showMediaControlElements() {
+        visibility = Visibility.VISIBLE
+        backgroundView.visibility = View.VISIBLE
     }
 
     private fun hideDelayed(timeout: Long) {
@@ -227,24 +252,6 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
                 hideDelayed(timeout)
             }
         }, timeout)
-    }
-
-    override fun show() {
-        show(defaultShowTimeout)
-    }
-
-    open fun show(timeout: Long) {
-        core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
-        visibility = Visibility.VISIBLE
-        backgroundView.visibility = View.VISIBLE
-        showDefaultMediaControlPanels()
-
-        lastInteractionTime = SystemClock.elapsedRealtime()
-
-        if (!isPlaybackIdle && timeout > 0) {
-            hideDelayed(timeout)
-        }
-        core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
     private fun updateInteractionTime() {
@@ -262,9 +269,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun openModal() {
-        controlsPanel.visibility = View.INVISIBLE
-        foregroundControlsPanel.visibility = View.INVISIBLE
-        modalPanel.visibility = View.VISIBLE
+        hideDefaultMediaControlPanels()
+
+        showModelPanel()
 
         val bundle = Bundle()
         val map = hashMapOf<String, Any>(modalPanelViewKey to modalPanel)
@@ -273,21 +280,15 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun closeModal() {
-        if (modalPanel.visibility == View.VISIBLE)
-            showDefaultMediaControlPanels()
+        if (modalPanelIsOpen()) showDefaultMediaControlPanels()
 
         hideModalPanel()
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
-    private fun showDefaultMediaControlPanels() {
-        controlsPanel.visibility = View.VISIBLE
-        foregroundControlsPanel.visibility = View.VISIBLE
-    }
+    private fun hideModalPanel() { modalPanel.visibility = View.INVISIBLE }
 
-    private fun hideModalPanel() {
-        modalPanel.visibility = View.INVISIBLE
-    }
+    private fun showModelPanel() {  modalPanel.visibility = View.VISIBLE }
 
     private fun onInputReceived(bundle: Bundle?) {
         bundle?.let {
@@ -298,6 +299,21 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
             if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
                 toggleVisibility()
         }
+    }
+
+    private fun stopContainerListeners() {
+        containerListenerIds.forEach(::stopListening)
+        containerListenerIds.clear()
+    }
+
+    private fun stopPlaybackListeners() {
+        playbackListenerIds.forEach(::stopListening)
+        playbackListenerIds.clear()
+    }
+
+    private fun animateFadeOut() {
+        view.animate(R.anim.anim_media_control_fade_out,
+                onAnimationEnd = {})
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -312,7 +328,6 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         hideModalPanel()
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun destroy() {
         controlPlugins.clear()
@@ -323,14 +338,20 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         super.destroy()
     }
 
-    private fun stopContainerListeners() {
-        containerListenerIds.forEach(::stopListening)
-        containerListenerIds.clear()
+    override fun hide() {
+        if (isEnabled && isPlaybackIdle) return
+
+        core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
+
+        hideMediaControlElements()
+        hideDefaultMediaControlPanels()
+        hideModalPanel()
+
+        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
-    private fun stopPlaybackListeners() {
-        playbackListenerIds.forEach(::stopListening)
-        playbackListenerIds.clear()
+    override fun show() {
+        show(defaultShowTimeout)
     }
 
     class MediaControlGestureDetector : GestureDetector.OnGestureListener {
