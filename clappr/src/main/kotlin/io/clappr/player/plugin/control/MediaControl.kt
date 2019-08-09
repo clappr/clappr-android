@@ -51,7 +51,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private val defaultShowTimeout = 300L
-    private val longShowTimeout = 4000L
+    private val longShowTimeout = 3000L
 
     private val handler = Handler()
 
