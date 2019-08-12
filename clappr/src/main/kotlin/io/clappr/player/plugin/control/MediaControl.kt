@@ -50,8 +50,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
-    private val defaultShowTimeout = 300L
-    private val longShowTimeout = 3000L
+    private val defaultShowDuration = 300L
+    private val longShowDuration = 3000L
 
     private val handler = Handler()
 
@@ -136,7 +136,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         if (!modalPanelIsOpen()) show()
     }
 
-    open fun show(timeout: Long) {
+    open fun show(duration: Long) {
         val shouldAnimate = isVisible.not()
 
         core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
@@ -144,15 +144,15 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         showMediaControlElements()
         showDefaultMediaControlPanels()
 
-        if (shouldAnimate) animateFadeIn { setupShowTimeout(timeout) }
-        else setupShowTimeout(timeout)
+        if (shouldAnimate) animateFadeIn { setupShowDuration(duration) }
+        else setupShowDuration(duration)
     }
 
-    private fun setupShowTimeout(timeout: Long) {
-        lastInteractionTime = SystemClock.elapsedRealtime()
+    private fun setupShowDuration(duration: Long) {
+        updateInteractionTime()
 
-        if (!isPlaybackIdle && timeout > 0) {
-            hideDelayed(timeout)
+        if (!isPlaybackIdle && duration > 0) {
+            hideDelayed(duration)
         }
 
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
@@ -249,17 +249,17 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         backgroundView.visibility = View.VISIBLE
     }
 
-    private fun hideDelayed(timeout: Long) {
+    private fun hideDelayed(duration: Long) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
             val elapsedTime = currentTime - lastInteractionTime
             val playing = (core.activePlayback?.state == Playback.State.PLAYING)
-            if (elapsedTime >= timeout && playing) {
+            if (elapsedTime >= duration && playing) {
                 hide()
             } else {
-                hideDelayed(timeout)
+                hideDelayed(duration)
             }
-        }, timeout)
+        }, duration)
     }
 
     private fun updateInteractionTime() {
@@ -271,7 +271,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
             if (isVisible) {
                 hide()
             } else {
-                show(longShowTimeout)
+                show(longShowDuration)
             }
         }
     }
@@ -361,7 +361,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    override fun show() { show(defaultShowTimeout) }
+    override fun show() { show(defaultShowDuration) }
 
     class MediaControlGestureDetector : GestureDetector.OnGestureListener {
         override fun onDown(e: MotionEvent?) = true
