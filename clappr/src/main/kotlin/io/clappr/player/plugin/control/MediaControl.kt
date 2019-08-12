@@ -96,9 +96,10 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
 
     val isEnabled: Boolean
-        get() {
-            return state == State.ENABLED
-        }
+        get() = state == State.ENABLED
+
+    private val isVisible: Boolean
+        get() = visibility == Visibility.VISIBLE
 
     private val isPlaybackIdle: Boolean
         get() {
@@ -136,20 +137,25 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     open fun show(timeout: Long) {
+        val shouldAnimate = isVisible.not()
+
         core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
 
         showMediaControlElements()
         showDefaultMediaControlPanels()
 
-        animateFadeIn {
-            lastInteractionTime = SystemClock.elapsedRealtime()
+        if (shouldAnimate) animateFadeIn { setupShowTimeout(timeout) }
+        else setupShowTimeout(timeout)
+    }
 
-            if (!isPlaybackIdle && timeout > 0) {
-                hideDelayed(timeout)
-            }
+    private fun setupShowTimeout(timeout: Long) {
+        lastInteractionTime = SystemClock.elapsedRealtime()
 
-            core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
+        if (!isPlaybackIdle && timeout > 0) {
+            hideDelayed(timeout)
         }
+
+        core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
     private fun animateFadeIn(onAnimationEnd: () -> Unit = {}) {
@@ -262,7 +268,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private fun toggleVisibility() {
         if (isEnabled) {
-            if (visibility == Visibility.VISIBLE) {
+            if (isVisible) {
                 hide()
             } else {
                 show(longShowTimeout)
@@ -355,11 +361,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    override fun show() {
-        if(visibility != Visibility.VISIBLE) {
-            show(defaultShowTimeout) 
-        }
-    }
+    override fun show() { show(defaultShowTimeout) }
 
     class MediaControlGestureDetector : GestureDetector.OnGestureListener {
         override fun onDown(e: MotionEvent?) = true
