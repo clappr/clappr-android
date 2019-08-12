@@ -50,8 +50,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
-    private val defaultShowDuration = 300L
-    private val longShowDuration = 3000L
+    protected val defaultShowDuration = 300L
+    protected val longShowDuration = 3000L
 
     private val handler = Handler()
 
