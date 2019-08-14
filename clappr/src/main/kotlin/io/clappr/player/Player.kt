@@ -188,6 +188,10 @@ open class Player(private val base: BaseObject = BaseObject(),
         core = Core(options)
     }
 
+    protected fun destroyCore() {
+        core = null
+    }
+
     /**
      * Load a new media. Always make sure that the stop() method was called before invoking this
      *
