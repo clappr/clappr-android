@@ -113,9 +113,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private val doubleTapListener = MediaControlDoubleTapListener()
     private val gestureDetector = GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
-            .apply {
-                setOnDoubleTapListener(doubleTapListener)
-            }
+        .apply {
+            setOnDoubleTapListener(doubleTapListener)
+        }
 
     init {
         hideModalPanel()
@@ -144,7 +144,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         showMediaControlElements()
         showDefaultMediaControlPanels()
 
-        if (shouldAnimate) animateFadeIn { setupShowDuration(duration) }
+        if (shouldAnimate) animateFadeIn(view) { setupShowDuration(duration) }
         else setupShowDuration(duration)
     }
 
@@ -158,7 +158,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
-    private fun animateFadeIn(onAnimationEnd: () -> Unit = {}) {
+    private fun animateFadeIn(view: View, onAnimationEnd: () -> Unit = {}) {
         view.animate(R.anim.anim_media_control_fade_in) {
             onAnimationEnd()
         }
@@ -279,7 +279,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     private fun openModal() {
         hideDefaultMediaControlPanels()
 
-        showModelPanel()
+        animateFadeIn(modalPanel) { showModalPanel() }
 
         val bundle = Bundle()
         val map = hashMapOf<String, Any>(modalPanelViewKey to modalPanel)
@@ -290,19 +290,24 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     private fun closeModal() {
         if (modalPanelIsOpen()) showDefaultMediaControlPanels()
 
-        hideModalPanel()
+        animateFadeOut(modalPanel) { hideModalPanel() }
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
-    private fun hideModalPanel() { modalPanel.visibility = View.INVISIBLE }
+    private fun hideModalPanel() {
+        modalPanel.visibility = View.INVISIBLE
+    }
 
-    private fun showModelPanel() {  modalPanel.visibility = View.VISIBLE }
+    private fun showModalPanel() {
+        modalPanel.visibility = View.VISIBLE
+    }
 
     private fun onInputReceived(bundle: Bundle?) {
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val isKeyAllowedToShownMediaControl = keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
+            val isKeyAllowedToShownMediaControl =
+                keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
 
             if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
                 toggleVisibility()
@@ -319,7 +324,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         playbackListenerIds.clear()
     }
 
-    private fun animateFadeOut(onAnimationEnd: () -> Unit = {}) {
+    private fun animateFadeOut(view: View, onAnimationEnd: () -> Unit = {}) {
         view.animate(R.anim.anim_media_control_fade_out) {
             onAnimationEnd()
         }
@@ -352,7 +357,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
 
-        animateFadeOut {
+        animateFadeOut(view) {
             hideMediaControlElements()
             hideDefaultMediaControlPanels()
             hideModalPanel()
@@ -361,7 +366,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    override fun show() { show(defaultShowDuration) }
+    override fun show() {
+        show(defaultShowDuration)
+    }
 
     class MediaControlGestureDetector : GestureDetector.OnGestureListener {
         override fun onDown(e: MotionEvent?) = true
