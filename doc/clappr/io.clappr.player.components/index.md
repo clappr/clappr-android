@@ -11,6 +11,8 @@
 | [Core](-core/index.md) | `class Core : `[`UIObject`](../io.clappr.player.base/-u-i-object/index.md) |
 | [MediaOption](-media-option/index.md) | `data class MediaOption` |
 | [MediaOptionType](-media-option-type/index.md) | `enum class MediaOptionType` |
+| [Orientation](-orientation/index.md) | `enum class Orientation` |
+| [OrientationChangeListener](-orientation-change-listener/index.md) | `class OrientationChangeListener : `[`OrientationEventListener`](https://developer.android.com/reference/android/view/OrientationEventListener.html) |
 | [Playback](-playback/index.md) | `abstract class Playback : `[`UIObject`](../io.clappr.player.base/-u-i-object/index.md)`, `[`NamedType`](../io.clappr.player.base/-named-type/index.md) |
 | [PlaybackEntry](-playback-entry/index.md) | `data class PlaybackEntry` |
 | [SubtitleLanguage](-subtitle-language/index.md) | `enum class SubtitleLanguage` |
