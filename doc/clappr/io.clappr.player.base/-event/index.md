@@ -36,6 +36,7 @@
 | [DID_UPDATE_BITRATE](-d-i-d_-u-p-d-a-t-e_-b-i-t-r-a-t-e.md) | Bitrate was updated |
 | [DID_LOOP](-d-i-d_-l-o-o-p.md) | There was a video loop |
 | [DID_RECEIVE_INPUT_KEY](-d-i-d_-r-e-c-e-i-v-e_-i-n-p-u-t_-k-e-y.md) | A input key was received from an external device |
+| [DID_CHANGE_SCREEN_ORIENTATION](-d-i-d_-c-h-a-n-g-e_-s-c-r-e-e-n_-o-r-i-e-n-t-a-t-i-o-n.md) | There was a change in screen orientation |
 
 ### Properties
 
