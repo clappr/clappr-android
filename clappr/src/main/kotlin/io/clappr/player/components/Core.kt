@@ -96,6 +96,8 @@ class Core(options: Options) : UIObject() {
         if (horizontalChange || verticalChange) { trigger(InternalEvent.DID_RESIZE.value) }
     }
 
+    private val orientationChangeListener = OrientationChangeListener(this)
+
     init {
         internalPlugins = Loader.loadPlugins(this).toMutableList()
 
@@ -124,6 +126,7 @@ class Core(options: Options) : UIObject() {
         internalPlugins.clear()
         stopListening()
         frameLayout.removeOnLayoutChangeListener(layoutChangeListener)
+        orientationChangeListener.disable()
         trigger(InternalEvent.DID_DESTROY.value)
     }
 
@@ -143,6 +146,7 @@ class Core(options: Options) : UIObject() {
         frameLayout.removeOnLayoutChangeListener(layoutChangeListener)
         frameLayout.addOnLayoutChangeListener(layoutChangeListener)
 
+        orientationChangeListener.enable()
         return this
     }
 
