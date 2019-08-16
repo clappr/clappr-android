@@ -184,12 +184,12 @@ open class Player(private val base: BaseObject = BaseObject(),
         core?.load()
     }
 
-    private fun createCore(options: Options) {
-        core = Core(options)
+    open fun destroy() {
+        core = null
     }
 
-    protected fun destroyCore() {
-        core = null
+    private fun createCore(options: Options) {
+        core = Core(options)
     }
 
     /**
