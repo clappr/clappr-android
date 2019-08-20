@@ -3,8 +3,7 @@ package io.clappr.player.components
 import android.annotation.SuppressLint
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.ClapprOption.SELECTED_MEDIA_OPTIONS
-import io.clappr.player.base.ClapprOption.START_AT
+import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
@@ -338,6 +337,22 @@ open class PlaybackTest {
     }
 
     @Test
+    fun shouldSetSelectedAudioWithValidAudioOption() {
+        val options = Options(options = hashMapOf(DEFAULT_AUDIO.value to "por"))
+        val playback = setupPlayback(options)
+
+        assertEquals("por", playback.selectedAudio)
+    }
+
+    @Test
+    fun shouldSetSelectedSubtitleWithValidAudioOption() {
+        val options = Options(options = hashMapOf(DEFAULT_SUBTITLE.value to "por"))
+        val playback = setupPlayback(options)
+
+        assertEquals("por", playback.selectedSubtitle)
+    }
+
+    @Test
     fun shouldSelectUpperCasePortugueseAudioFromSelectedMediaOptions() {
         val jsonMediaOptionName = PORTUGUESE.value
         val jsonMediaOptionType = AUDIO
@@ -451,9 +466,23 @@ open class PlaybackTest {
         assertFalse(didSelectedMediaOption)
     }
 
+    private fun setupPlayback(options: Options) =
+        SomePlayback("valid-source.mp4", options).apply {
+            addAvailableMediaOption(mediaOption(ORIGINAL.value, AUDIO))
+            addAvailableMediaOption(mediaOption(PORTUGUESE.value, AUDIO))
+            addAvailableMediaOption(mediaOption(ENGLISH.value, AUDIO))
+            addAvailableMediaOption(SUBTITLE_OFF)
+            addAvailableMediaOption(mediaOption(SubtitleLanguage.PORTUGUESE.value, SUBTITLE))
+
+            setupInitialAudioFromOptions()
+            setupInitialSubtitleFromOptions()
+        }
+
     private fun setupPlaybackWithMediaOptions(mediaOptionJson: String): SomePlayback {
         val options =
-            Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
+            Options(options = hashMapOf(
+                SELECTED_MEDIA_OPTIONS.value to mediaOptionJson
+            ))
         val playback = SomePlayback("valid-source.mp4", options)
 
         with(playback) {

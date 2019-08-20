@@ -1,7 +1,12 @@
 package io.clappr.player.components
 
-import io.clappr.player.base.*
-import io.clappr.player.base.Event.*
+import io.clappr.player.base.ClapprOption.*
+import io.clappr.player.base.Event.MEDIA_OPTIONS_UPDATE
+import io.clappr.player.base.Event.READY
+import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.NamedType
+import io.clappr.player.base.Options
+import io.clappr.player.base.UIObject
 import io.clappr.player.log.Logger
 import org.json.JSONException
 import org.json.JSONObject
@@ -137,6 +142,11 @@ abstract class Playback(
     var selectedSubtitle: String? = null
         private set
 
+    fun clearMedia() {
+        selectedAudio = null
+        selectedSubtitle = null
+    }
+
     companion object {
         const val mediaOptionsArrayJson = "media_option"
         const val mediaOptionsNameJson = "name"
@@ -191,9 +201,17 @@ abstract class Playback(
         trigger(MEDIA_OPTIONS_UPDATE.value)
     }
 
+    fun setupInitialAudioFromOptions() {
+        (options[DEFAULT_AUDIO.value] as? String)?.let { setSelectedAudio(it) }
+    }
+
+    fun setupInitialSubtitleFromOptions() {
+        (options[DEFAULT_SUBTITLE.value] as? String)?.let { setSelectedSubtitle(it) }
+    }
+
     fun setupInitialMediasFromClapprOptions() {
         try {
-            options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
+            options[SELECTED_MEDIA_OPTIONS.value]?.let {
                 val jsonObject = JSONObject(it as? String)
                 val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
                 (0 until jsonArray.length())
@@ -243,12 +261,12 @@ abstract class Playback(
     }
 
     private fun configureStartAt() {
-        if (options.containsKey(ClapprOption.START_AT.value))
+        if (options.containsKey(START_AT.value))
             once(READY.value) {
-                (options[ClapprOption.START_AT.value] as? Number)?.let {
+                (options[START_AT.value] as? Number)?.let {
                     startAt(it.toInt())
                 }
-                options.remove(ClapprOption.START_AT.value)
+                options.remove(START_AT.value)
             }
     }
 }
