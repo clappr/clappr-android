@@ -1,5 +1,6 @@
 $dokka.format:gfm
 $dokka.linkExtension:md
+$dokka.location:io.clappr.player.extensions$animate(android.view.View, kotlin.Int, kotlin.Function0((kotlin.Unit)))io.clappr.player.extensions/android.view.-view/animate.md
 $dokka.location:io.clappr.player.extensions$asTimeInterval(kotlin.Double)io.clappr.player.extensions/kotlin.-double/as-time-interval.md
 $dokka.location:io.clappr.player.extensions.context$isRunningInAndroidTvDevice(android.content.Context)io.clappr.player.extensions.context/android.content.-context/is-running-in-android-tv-device.md
 io.clappr.player
