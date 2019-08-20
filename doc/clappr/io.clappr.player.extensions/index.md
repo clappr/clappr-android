@@ -6,4 +6,5 @@
 
 | Name | Summary |
 |---|---|
+| [android.view.View](android.view.-view/index.md) |  |
 | [kotlin.Double](kotlin.-double/index.md) |  |

@@ -23,8 +23,10 @@
 
 | Name | Summary |
 |---|---|
+| [defaultShowDuration](default-show-duration.md) | `val defaultShowDuration: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [isEnabled](is-enabled.md) | `val isEnabled: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [keysThatMediaControlWillNotBeShown](keys-that-media-control-will-not-be-shown.md) | `open val keysThatMediaControlWillNotBeShown: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Key`](../../io.clappr.player.base.keys/-key/index.md)`>` |
+| [longShowDuration](long-show-duration.md) | `val longShowDuration: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [state](state.md) | `open var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md) |
 | [view](view.md) | `open val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 
@@ -44,7 +46,7 @@
 | [handleDidPauseEvent](handle-did-pause-event.md) | `open fun handleDidPauseEvent(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [hide](hide.md) | `open fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [show](show.md) | `open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [show](show.md) | `open fun show(duration: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>`open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
 

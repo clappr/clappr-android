@@ -61,61 +61,61 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldAddMediaControlPluginInCenterPanel() {
+    fun `should add media control plugin in center panel`() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.NONE)
         assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.NONE)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsLeft() {
+    fun `should add media control plugin in center panel even when position is left`() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.LEFT)
         assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.LEFT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInCenterPanelEvenWhenPositionIsRight() {
+    fun `should add media control plugin in center panel even when position is right`() {
         setupFakeMediaControlPlugin(Panel.CENTER, Position.RIGHT)
         assertMediaControlPanel(getCenterPanel(), Panel.CENTER, Position.RIGHT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInBottomPanel() {
+    fun `should add media control plugin in bottom panel`() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.NONE)
         assertMediaControlPanel(getBottomPanel(), Panel.BOTTOM, Position.NONE)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInBottomLeftPanel() {
+    fun `should add media control plugin in bottom left panel`() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.LEFT)
         assertMediaControlPanel(getBottomLeftPanel(), Panel.BOTTOM, Position.LEFT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInBottomRightPanel() {
+    fun `should add media control plugin in bottom right panel`() {
         setupFakeMediaControlPlugin(Panel.BOTTOM, Position.RIGHT)
         assertMediaControlPanel(getBottomRightPanel(), Panel.BOTTOM, Position.RIGHT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInTopPanel() {
+    fun `should add media control plugin in top panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.NONE)
         assertMediaControlPanel(getTopPanel(), Panel.TOP, Position.NONE)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInTopLeftPanel() {
+    fun `should add media control plugin in top left panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.LEFT)
         assertMediaControlPanel(getTopLeftPanel(), Panel.TOP, Position.LEFT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInTopRightPanel() {
+    fun `should add media control plugin in top right panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.RIGHT)
         assertMediaControlPanel(getTopRightPanel(), Panel.TOP, Position.RIGHT)
     }
 
     @Test
-    fun shouldAddMediaControlPluginInTopCenterPanel() {
+    fun `should add media control plugin in top center panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.CENTER)
 
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
@@ -126,7 +126,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldNotAddMediaControlPluginWhenPanelIsNone() {
+    fun `should not add media control plugin when panel is none`() {
         setupFakeMediaControlPlugin(Panel.NONE, Position.NONE)
 
         assertEquals(0, getCenterPanel().childCount, "Media Control Plugin should not be added to Center panel in Media Control")
@@ -139,14 +139,14 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldSetModalPanelVisibilityToInvisibleWhenMediaControlIsRendered() {
+    fun `should set modal panel visibility to invisible when media control is rendered`() {
         mediaControl.render()
 
         assertEquals(View.INVISIBLE, getModalPanel().visibility, "Modal Panel should be INVISIBLE")
     }
 
     @Test
-    fun shouldOpenModalWhenReceiveOpenModalPanelEvent() {
+    fun `should open modal when receive open modal panel event`() {
         mediaControl.render()
 
         triggerOpenModalPanelEvent()
@@ -155,7 +155,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldCloseModalWhenReceiveCloseModalPanelEvent() {
+    fun `should close modal when receive close modal panel event`() {
         triggerOpenModalPanelEvent()
 
         triggerCloseModalPanelEvent()
@@ -164,7 +164,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowControlsPanelWhenModalWasVisibleAndClosed(){
+    fun `should show controls panel when modal was visible and closed`(){
         triggerOpenModalPanelEvent()
 
         triggerCloseModalPanelEvent()
@@ -173,7 +173,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldKeepControlsPanelVisibilityWhenCloseModalEventWasTriggeredWithHiddenModalPanel(){
+    fun `should keep controls panel visibility when close modal event was triggered with hidden modal panel`(){
         fakePlayback.fakeState = Playback.State.PLAYING
         mediaControl.hide()
 
@@ -183,7 +183,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowForegroundControlsPanelWhenModalWasVisibleAndClosed(){
+    fun `should show foreground controls panel when modal was visible and closed`(){
         triggerOpenModalPanelEvent()
 
         triggerCloseModalPanelEvent()
@@ -193,7 +193,7 @@ class MediaControlTest {
 
 
     @Test
-    fun shouldKeepForegroundControlsPanelVisibilityWhenCloseModalEventWasTriggeredWithHiddenModalPanel(){
+    fun `should keep foreground controls panel visibility when close modal event was triggered with hidden modal panel`(){
         fakePlayback.fakeState = Playback.State.PLAYING
         mediaControl.hide()
 
@@ -204,7 +204,7 @@ class MediaControlTest {
 
 
     @Test
-    fun shouldSendDidOpenModalPanelEventWhenModalPanelWasOpened() {
+    fun `should send did open modal panel event when modal panel was opened`() {
         var didOpenModalPanelEventWasSent = false
 
         var resultBundle: Bundle? = null
@@ -229,14 +229,14 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldHideControlsPanelOnOpenModalEvent() {
+    fun `should hide controls panel on open modal event`() {
         triggerOpenModalPanelEvent()
 
         assertEquals(View.INVISIBLE, getControlsPanel().visibility, "Should make controls panel invisible when modal panel open")
     }
 
     @Test
-    fun shouldShowControlsPanelOnCloseModalEvent() {
+    fun `should show controls panel on close modal event`() {
         triggerOpenModalPanelEvent()
 
         triggerCloseModalPanelEvent()
@@ -245,14 +245,14 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldHideForegroundsControlsPanelOnOpenModalEvent() {
+    fun `should hide foregrounds controls panel on open modal event`() {
         triggerOpenModalPanelEvent()
 
         assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility, "Should make foreground controls panel invisible when panel modal open")
     }
 
     @Test
-    fun shouldShowMediaControlWhenPlaybackIsPaused() {
+    fun `should show media control when playback is paused`() {
         core.activePlayback?.trigger(Event.PLAYING.value)
 
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
@@ -261,12 +261,12 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldInitializeModalPanelInvisibleWhenMediaControlPluginIsCreated() {
+    fun `should initialize modal panel invisible when media control plugin is created`() {
         assertEquals(View.INVISIBLE, getModalPanel().visibility)
     }
 
     @Test
-    fun shouldShowOnlyModalPanelWhenPlaybackIsPausedAndPanelModalIsOpen() {
+    fun `should show only modal panel when playback is paused and panel modal is open`() {
         core.activePlayback?.trigger(Event.PLAYING.value)
 
         triggerOpenModalPanelEvent()
@@ -279,7 +279,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowForegroundsControlsPanelOnCloseModalEvent() {
+    fun `should show foregrounds controls panel on close modal event`() {
         triggerOpenModalPanelEvent()
 
         triggerCloseModalPanelEvent()
@@ -288,7 +288,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldDisableMediaControlOnEvent() {
+    fun `shoul disable media control on event`() {
         assertTrue(mediaControl.isEnabled, "Media control should be enabled by default")
 
         triggerDisableMediaControlEvent()
@@ -297,7 +297,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldEnableMediaControlOnEvent() {
+    fun `should enable media control on event`() {
         mediaControl.state = Plugin.State.DISABLED
 
         triggerEnableMediaControlEvent()
@@ -306,7 +306,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldUnregisterContainerEventsOnContainerChange() {
+    fun `should unregister container events on container change`() {
         mediaControl.state = Plugin.State.DISABLED
 
         val newContainer = Container(Options())
@@ -320,7 +320,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldUnregisterPlaybackEventsOnPlaybackChange() {
+    fun `should unregister playback events on playback change`() {
         val oldPlayback = container.playback!!
         val newPlayback = FakePlayback()
 
@@ -336,7 +336,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldStopListeningOldContainerWhenDidChangeActiveContainerEventIsTriggered() {
+    fun `should stop listening old container when did change active container event is triggered`() {
         val oldContainer = container
 
         assertEquals(Plugin.State.ENABLED, mediaControl.state)
@@ -349,7 +349,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldStopListeningOldPlaybackWhenDidChangeActivePlaybackEventIsTriggered() {
+    fun `should stop listening old playback when did change active playback event is triggered`() {
         val oldPlayback = container.playback
 
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
@@ -362,7 +362,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldStopListeningOldPlaybackAfterDestroy() {
+    fun `should stop listening old playback after destroy`() {
         setupViewHidden(mediaControl)
         val oldPlayback = container.playback
 
@@ -374,7 +374,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowPluginsByOption() {
+    fun `should show plugins by option`() {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
@@ -384,7 +384,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowPluginsByOptionWithDuplicates() {
+    fun `should ahow plugins by option with duplicates`() {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name},${FakePlugin2.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
@@ -394,7 +394,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowPluginsByOptionWithExtraSpaces() {
+    fun `should show plugins by option with extra spaces`() {
         val sequence = " ${FakePlugin3.name}, ${FakePlugin2.name}, ${FakePlugin.name} "
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
@@ -404,7 +404,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowPluginsByOptionWithAWrongName() {
+    fun `should show plugins by option with a wrong name`() {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},nonexistent,${FakePlugin.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
@@ -414,7 +414,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldHideMediaControlWhenWillLoadSource() {
+    fun `should hide media control when will load source`() {
         fakePlayback.fakeState = Playback.State.PAUSED
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
 
@@ -427,7 +427,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldRenderWithHiddenMediaControl() {
+    fun `should render with hidden media control`() {
         fakePlayback.fakeState = Playback.State.PAUSED
 
         mediaControl.render()
@@ -439,37 +439,37 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldTriggerWillHideMediaControlWhenHideIsCalled() {
+    fun `should trigger will hide media control when hide is called`() {
         assertEventTriggeredWhenHideIsCalled(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldTriggerDidHideMediaControlWhenHideIsCalled() {
+    fun `should trigger did hide media control when hide is called`() {
         assertEventTriggeredWhenHideIsCalled(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldNotTriggerWillHideMediaControlWhenHideIsCalledAndIsEnableAndPlaybackIsIdle() {
+    fun `should not trigger will hide media control when hide is called and is enable and playback is idle`() {
         assertEventNotTriggeredWhenHideIsCalled(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldNotTriggerDidHideMediaControlWhenHideIsCalledAndIsEnableAndPlaybackIsIdle() {
+    fun `should not trigger did hide media control when hide is called and is enable and playback is idle`() {
         assertEventNotTriggeredWhenHideIsCalled(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldTriggerWillShowMediaControlWhenShowIsCalled() {
+    fun `should trigger will show media control when show is called`() {
         assertEventTriggeredWhenShowIsCalled(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldTriggerDidShowMediaControlWhenShowIsCalled() {
+    fun `should trigger did show media control when show is called`() {
         assertEventTriggeredWhenShowIsCalled(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
     @Test
-    fun shouldEnableMediaControlWhenWillLoadSourceIsTriggered() {
+    fun `should enable media control when will load source is triggered`() {
         mediaControl.state = Plugin.State.DISABLED
 
         container.trigger(InternalEvent.WILL_LOAD_SOURCE.value)
@@ -478,7 +478,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldShowMediaControlWhenKeyReceivedSupportedKeysOnUpAction() {
+    fun `should show media control when key received supported keys on up action`() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
@@ -488,7 +488,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldNotShowMediaControlWhenDoesNotSupportKey() {
+    fun `should not show media control when does not support key`() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, Key.UNDEFINED.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
@@ -498,7 +498,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun shouldNotShowMediaControlWhenReceiveSupportedKeyButWithActionDown() {
+    fun `should not show media control when receive supported key but with action down`() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.DOWN.value)
