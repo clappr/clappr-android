@@ -1,6 +1,7 @@
 package io.clappr.player.components
 
 import io.clappr.player.base.*
+import io.clappr.player.base.Event.*
 import io.clappr.player.log.Logger
 import org.json.JSONException
 import org.json.JSONObject
@@ -130,6 +131,12 @@ abstract class Playback(
     var selectedMediaOptionList = ArrayList<MediaOption>()
         private set
 
+    var selectedAudio: String? = null
+        private set
+
+    var selectedSubtitle: String? = null
+        private set
+
     companion object {
         const val mediaOptionsArrayJson = "media_option"
         const val mediaOptionsNameJson = "name"
@@ -171,7 +178,17 @@ abstract class Playback(
         selectedMediaOptionList.removeAll { it.type == mediaOption.type }
         selectedMediaOptionList.add(mediaOption)
 
-        trigger(Event.MEDIA_OPTIONS_UPDATE.value)
+        trigger(MEDIA_OPTIONS_UPDATE.value)
+    }
+
+    open fun setSelectedAudio(audio: String) {
+        selectedAudio = audio
+        trigger(MEDIA_OPTIONS_UPDATE.value)
+    }
+
+    open fun setSelectedSubtitle(subtitle: String) {
+        selectedSubtitle = subtitle
+        trigger(MEDIA_OPTIONS_UPDATE.value)
     }
 
     fun setupInitialMediasFromClapprOptions() {
@@ -192,10 +209,16 @@ abstract class Playback(
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
-        mediaOptionList.map { it }.find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }
-                ?.let {
-                    setSelectedMediaOption(it)
-                }
+        mediaOptionList
+            .map {
+                it
+            }
+            .find {
+                it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase()
+            }
+            ?.let {
+                setSelectedMediaOption(it)
+            }
     }
 
     open fun load(source: String, mimeType: String? = null): Boolean {
@@ -210,7 +233,7 @@ abstract class Playback(
     override fun render(): UIObject {
         if (mediaType != MediaType.LIVE) configureStartAt()
 
-        if (!play()) once(Event.READY.value, { play() })
+        if (!play()) once(READY.value, { play() })
 
         return this
     }
@@ -221,7 +244,7 @@ abstract class Playback(
 
     private fun configureStartAt() {
         if (options.containsKey(ClapprOption.START_AT.value))
-            once(Event.READY.value) {
+            once(READY.value) {
                 (options[ClapprOption.START_AT.value] as? Number)?.let {
                     startAt(it.toInt())
                 }
