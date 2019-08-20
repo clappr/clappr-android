@@ -69,3 +69,4 @@
 | [io.clappr.player.base.UIObject](../io.clappr.player.base/-u-i-object/index.md) |  |
 | [io.clappr.player.plugin.UIPlugin](../io.clappr.player.plugin/-u-i-plugin/index.md) |  |
 | [io.clappr.player.base.Utils](../io.clappr.player.base/-utils/index.md) |  |
+| [android.view.View](../io.clappr.player.extensions/android.view.-view/index.md) (extensions in package io.clappr.player.extensions) |  |
