@@ -568,6 +568,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
             setupInitialMediasFromClapprOptions()
         }
+
+        setupInitialAudioFromOptions()
+        setupInitialSubtitleFromOptions()
     }
 
     private fun setupAudioOptions() {

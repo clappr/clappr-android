@@ -6,8 +6,10 @@ import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Event
-import io.clappr.player.base.EventData
+import io.clappr.player.base.ClapprOption.DEFAULT_AUDIO
+import io.clappr.player.base.ClapprOption.DEFAULT_SUBTITLE
+import io.clappr.player.base.Event.*
+import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.shadows.SimpleExoplayerShadow
@@ -39,13 +41,12 @@ class ExoPlayerPlaybackTest {
         bitrateHistory = BitrateHistory { timeInNano }
         listenObject = BaseObject()
         exoPlayerPlayBack = ExoPlayerPlayback(source = "aSource", options = Options(), bitrateHistory = bitrateHistory)
-
     }
 
     @Test
     fun `Should trigger WILL_SEEK when seekToLivePosition() is called`() {
         var willSeekWasCalled = false
-        listenObject.listenTo(exoPlayerPlayBack, Event.WILL_SEEK.value) {
+        listenObject.listenTo(exoPlayerPlayBack, WILL_SEEK.value) {
             willSeekWasCalled = true
         }
         exoPlayerPlayBack.seekToLivePosition()
@@ -55,7 +56,7 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should trigger DID_SEEK when seekToLivePosition() is called`() {
         var didSeekWasCalled = false
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_SEEK.value) {
+        listenObject.listenTo(exoPlayerPlayBack, DID_SEEK.value) {
             didSeekWasCalled = true
         }
         exoPlayerPlayBack.seekToLivePosition()
@@ -65,7 +66,7 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should trigger DID_UPDATE_POSITION when seek to live position is called`() {
         var didUpdatePositionWasCalled = false
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_POSITION.value) {
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_POSITION.value) {
             didUpdatePositionWasCalled = true
         }
         exoPlayerPlayBack.seekToLivePosition()
@@ -100,8 +101,8 @@ class ExoPlayerPlaybackTest {
 
         val exoPlayerPlayback = ExoPlayerPlayback(source = "aSource", options = Options(), bitrateHistory = bitrateHistory)
 
-        listenObject.listenTo(exoPlayerPlayback, Event.DID_UPDATE_BITRATE.value) {
-            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
+        listenObject.listenTo(exoPlayerPlayback, DID_UPDATE_BITRATE.value) {
+            actualBitrate = it?.getLong(BITRATE.value) ?: 0L
 
         }
         exoPlayerPlayback.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
@@ -113,7 +114,7 @@ class ExoPlayerPlaybackTest {
     fun `Should listening DID_UPDATE_BITRATE on different bitrates`() {
         var numberOfTriggers = 0
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(40))
 
@@ -125,7 +126,7 @@ class ExoPlayerPlaybackTest {
         val bitrate = 10L
         var numberOfTriggers = 0
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
 
@@ -137,7 +138,10 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(
+            exoPlayerPlayBack,
+            DID_UPDATE_BITRATE.value
+        ) { didUpdateBitrateCalled = true }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
@@ -148,7 +152,10 @@ class ExoPlayerPlaybackTest {
         val mediaLoadData = null
         var didUpdateBitrateCalled = false
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(
+            exoPlayerPlayBack,
+            DID_UPDATE_BITRATE.value
+        ) { didUpdateBitrateCalled = true }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
@@ -168,7 +175,10 @@ class ExoPlayerPlaybackTest {
                 null, 0L, 0L)
         var didUpdateBitrateCalled = false
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(
+            exoPlayerPlayBack,
+            DID_UPDATE_BITRATE.value
+        ) { didUpdateBitrateCalled = true }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
@@ -179,7 +189,10 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(
+            exoPlayerPlayBack,
+            DID_UPDATE_BITRATE.value
+        ) { didUpdateBitrateCalled = true }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
 
         assertTrue(didUpdateBitrateCalled)
@@ -190,7 +203,10 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(exoPlayerPlayBack, Event.DID_UPDATE_BITRATE.value) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(
+            exoPlayerPlayBack,
+            DID_UPDATE_BITRATE.value
+        ) { didUpdateBitrateCalled = true }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertTrue(didUpdateBitrateCalled)
@@ -274,6 +290,32 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.load(source = source)
 
         assertEquals(Player.REPEAT_MODE_ONE, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    fun `Should set selectedAudio when has DEFAULT_AUDIO option`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf(DEFAULT_AUDIO.value to "por"))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        exoPlayerPlayBack.setupInitialAudioFromOptions()
+
+        assertEquals("por", exoPlayerPlayBack.selectedAudio)
+    }
+
+    @Test
+    fun `Should set selectedSubtitle when has DEFAULT_SUBTITLE option`() {
+        val source = "supported-source.mp4"
+        val options = Options(options = hashMapOf(DEFAULT_SUBTITLE.value to "por"))
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.load(source = source)
+
+        exoPlayerPlayBack.setupInitialSubtitleFromOptions()
+
+        assertEquals("por", exoPlayerPlayBack.selectedSubtitle)
     }
 
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
