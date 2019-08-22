@@ -300,7 +300,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        exoPlayerPlayBack.setupInitialAudioFromOptions()
+        exoPlayerPlayBack.setupInitialMediaFromOptions()
 
         assertEquals("por", exoPlayerPlayBack.selectedAudio)
     }
@@ -313,7 +313,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        exoPlayerPlayBack.setupInitialSubtitleFromOptions()
+        exoPlayerPlayBack.setupInitialMediaFromOptions()
 
         assertEquals("por", exoPlayerPlayBack.selectedSubtitle)
     }

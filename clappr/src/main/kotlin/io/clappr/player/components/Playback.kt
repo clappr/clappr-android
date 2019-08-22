@@ -3,10 +3,15 @@ package io.clappr.player.components
 import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.Event.MEDIA_OPTIONS_UPDATE
 import io.clappr.player.base.Event.READY
-import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.InternalEvent.DID_UPDATE_OPTIONS
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
+import io.clappr.player.components.AudioLanguage.*
+import io.clappr.player.components.MediaOptionType.AUDIO
+import io.clappr.player.components.MediaOptionType.SUBTITLE
+import io.clappr.player.components.Playback.MediaType.LIVE
+import io.clappr.player.components.Playback.MediaType.UNKNOWN
 import io.clappr.player.log.Logger
 import org.json.JSONException
 import org.json.JSONObject
@@ -42,29 +47,23 @@ abstract class Playback(
         }
     }
 
-    open fun destroy() {
-        stopListening()
-    }
-
     var options: Options = options
         set(options) {
             field = options
-            trigger(InternalEvent.DID_UPDATE_OPTIONS.value)
+            trigger(DID_UPDATE_OPTIONS.value)
         }
 
-    private val audioKeys = mapOf(
-            AudioLanguage.ORIGINAL.value to listOf("original", "und"),
-            AudioLanguage.PORTUGUESE.value to listOf("pt", "por"),
-            AudioLanguage.ENGLISH.value to listOf("en", "eng")
-    )
+    var selectedMediaOptionList = ArrayList<MediaOption>()
+        private set
 
-    private val subtitleKeys = mapOf(
-            SubtitleLanguage.OFF.value to listOf("", "off"),
-            SubtitleLanguage.PORTUGUESE.value to listOf("pt", "por")
-    )
+    var selectedAudio: String? = null
+        private set
+
+    var selectedSubtitle: String? = null
+        private set
 
     open val mediaType: MediaType
-        get() = MediaType.UNKNOWN
+        get() = UNKNOWN
 
     open val duration: Double
         get() = Double.NaN
@@ -112,6 +111,31 @@ abstract class Playback(
      */
     open var volume: Float? = null
 
+    protected var mediaOptionList = LinkedList<MediaOption>()
+
+    private val audioKeys = mapOf(
+        ORIGINAL.value to listOf("original", "und"),
+        PORTUGUESE.value to listOf("pt", "por"),
+        ENGLISH.value to listOf("en", "eng")
+    )
+
+    private val subtitleKeys = mapOf(
+        SubtitleLanguage.OFF.value to listOf("", "off"),
+        SubtitleLanguage.PORTUGUESE.value to listOf("pt", "por")
+    )
+
+    override fun render(): UIObject {
+        if (mediaType != LIVE) configureStartAt()
+
+        if (!play()) once(READY.value) { play() }
+
+        return this
+    }
+
+    open fun destroy() {
+        stopListening()
+    }
+
     open fun play(): Boolean {
         return false
     }
@@ -132,25 +156,39 @@ abstract class Playback(
         return false
     }
 
-    protected var mediaOptionList = LinkedList<MediaOption>()
-    var selectedMediaOptionList = ArrayList<MediaOption>()
-        private set
+    open fun setSelectedMediaOption(mediaOption: MediaOption) {
+        selectedMediaOptionList.removeAll { it.type == mediaOption.type }
+        selectedMediaOptionList.add(mediaOption)
 
-    var selectedAudio: String? = null
-        private set
+        trigger(MEDIA_OPTIONS_UPDATE.value)
+    }
 
-    var selectedSubtitle: String? = null
-        private set
+    open fun setSelectedAudio(audio: String) {
+        selectedAudio = audio
+        trigger(MEDIA_OPTIONS_UPDATE.value)
+    }
+
+    open fun setSelectedSubtitle(subtitle: String) {
+        selectedSubtitle = subtitle
+        trigger(MEDIA_OPTIONS_UPDATE.value)
+    }
+
+    open fun load(source: String, mimeType: String? = null): Boolean {
+        val supported = supportsSource(source, mimeType)
+        if (supported) {
+            this.source = source
+            this.mimeType = mimeType
+        }
+        return supported
+    }
+
+    open fun startAt(seconds: Int): Boolean {
+        return false
+    }
 
     fun clearMedia() {
         selectedAudio = null
         selectedSubtitle = null
-    }
-
-    companion object {
-        const val mediaOptionsArrayJson = "media_option"
-        const val mediaOptionsNameJson = "name"
-        const val mediaOptionsTypeJson = "type"
     }
 
     fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
@@ -172,40 +210,20 @@ abstract class Playback(
 
     fun createAudioMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
         return audioKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
-            MediaOption(it.key, MediaOptionType.AUDIO, raw, null)
-        } ?: MediaOption(language, MediaOptionType.AUDIO, raw, null)
+            MediaOption(it.key, AUDIO, raw, null)
+        } ?: MediaOption(language, AUDIO, raw, null)
     }
 
-    fun createOriginalOption(raw: Any?) = MediaOption(AudioLanguage.ORIGINAL.value, MediaOptionType.AUDIO, raw, null)
+    fun createOriginalOption(raw: Any?) = MediaOption(ORIGINAL.value, AUDIO, raw, null)
 
     fun createSubtitleMediaOptionFromLanguage(language: String, raw: Any?): MediaOption {
         return subtitleKeys.entries.find { entry -> entry.value.contains(language.toLowerCase()) }?.let {
-            MediaOption(it.key, MediaOptionType.SUBTITLE, raw, null)
-        } ?: MediaOption(language, MediaOptionType.SUBTITLE, raw, null)
+            MediaOption(it.key, SUBTITLE, raw, null)
+        } ?: MediaOption(language, SUBTITLE, raw, null)
     }
 
-    open fun setSelectedMediaOption(mediaOption: MediaOption) {
-        selectedMediaOptionList.removeAll { it.type == mediaOption.type }
-        selectedMediaOptionList.add(mediaOption)
-
-        trigger(MEDIA_OPTIONS_UPDATE.value)
-    }
-
-    open fun setSelectedAudio(audio: String) {
-        selectedAudio = audio
-        trigger(MEDIA_OPTIONS_UPDATE.value)
-    }
-
-    open fun setSelectedSubtitle(subtitle: String) {
-        selectedSubtitle = subtitle
-        trigger(MEDIA_OPTIONS_UPDATE.value)
-    }
-
-    fun setupInitialAudioFromOptions() {
+    fun setupInitialMediaFromOptions() {
         (options[DEFAULT_AUDIO.value] as? String)?.let { setSelectedAudio(it) }
-    }
-
-    fun setupInitialSubtitleFromOptions() {
         (options[DEFAULT_SUBTITLE.value] as? String)?.let { setSelectedSubtitle(it) }
     }
 
@@ -228,36 +246,9 @@ abstract class Playback(
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList
-            .map {
-                it
-            }
-            .find {
-                it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase()
-            }
-            ?.let {
-                setSelectedMediaOption(it)
-            }
-    }
-
-    open fun load(source: String, mimeType: String? = null): Boolean {
-        val supported = supportsSource(source, mimeType)
-        if (supported) {
-            this.source = source
-            this.mimeType = mimeType
-        }
-        return supported
-    }
-
-    override fun render(): UIObject {
-        if (mediaType != MediaType.LIVE) configureStartAt()
-
-        if (!play()) once(READY.value, { play() })
-
-        return this
-    }
-
-    open fun startAt(seconds: Int): Boolean {
-        return false
+            .map { it }
+            .find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }
+            ?.let { setSelectedMediaOption(it) }
     }
 
     private fun configureStartAt() {
@@ -268,5 +259,11 @@ abstract class Playback(
                 }
                 options.remove(START_AT.value)
             }
+    }
+
+    companion object {
+        const val mediaOptionsArrayJson = "media_option"
+        const val mediaOptionsNameJson = "name"
+        const val mediaOptionsTypeJson = "type"
     }
 }

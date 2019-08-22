@@ -474,8 +474,7 @@ open class PlaybackTest {
             addAvailableMediaOption(SUBTITLE_OFF)
             addAvailableMediaOption(mediaOption(SubtitleLanguage.PORTUGUESE.value, SUBTITLE))
 
-            setupInitialAudioFromOptions()
-            setupInitialSubtitleFromOptions()
+            setupInitialMediaFromOptions()
         }
 
     private fun setupPlaybackWithMediaOptions(mediaOptionJson: String): SomePlayback {
