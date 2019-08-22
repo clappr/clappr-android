@@ -36,11 +36,6 @@ open class PlaybackTest {
             private const val validSource = "valid-source.mp4"
 
             val supportsSource: PlaybackSupportCheck = { source, _ -> source == validSource }
-
-            private val entry = PlaybackEntry(
-                    name = name,
-                    supportsSource = supportsSource,
-                    factory = { source, _, options -> SomePlayback(source, options) })
         }
 
         var playWasCalled = false
