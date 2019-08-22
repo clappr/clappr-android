@@ -8,8 +8,7 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.AudioLanguage.*
-import io.clappr.player.components.MediaOptionType.AUDIO
-import io.clappr.player.components.MediaOptionType.SUBTITLE
+import io.clappr.player.components.MediaOptionType.*
 import io.clappr.player.components.Playback.MediaType.LIVE
 import io.clappr.player.components.Playback.MediaType.UNKNOWN
 import io.clappr.player.log.Logger
@@ -54,12 +53,6 @@ abstract class Playback(
         }
 
     var selectedMediaOptionList = ArrayList<MediaOption>()
-        private set
-
-    var selectedAudio: String? = null
-        private set
-
-    var selectedSubtitle: String? = null
         private set
 
     open val mediaType: MediaType
@@ -163,16 +156,6 @@ abstract class Playback(
         trigger(MEDIA_OPTIONS_UPDATE.value)
     }
 
-    open fun setSelectedAudio(audio: String) {
-        selectedAudio = audio
-        trigger(MEDIA_OPTIONS_UPDATE.value)
-    }
-
-    open fun setSelectedSubtitle(subtitle: String) {
-        selectedSubtitle = subtitle
-        trigger(MEDIA_OPTIONS_UPDATE.value)
-    }
-
     open fun load(source: String, mimeType: String? = null): Boolean {
         val supported = supportsSource(source, mimeType)
         if (supported) {
@@ -184,11 +167,6 @@ abstract class Playback(
 
     open fun startAt(seconds: Int): Boolean {
         return false
-    }
-
-    fun clearMedia() {
-        selectedAudio = null
-        selectedSubtitle = null
     }
 
     fun addAvailableMediaOption(media: MediaOption, index: Int = mediaOptionList.size) {
@@ -222,11 +200,6 @@ abstract class Playback(
         } ?: MediaOption(language, SUBTITLE, raw, null)
     }
 
-    fun setupInitialMediaFromOptions() {
-        (options[DEFAULT_AUDIO.value] as? String)?.let { setSelectedAudio(it) }
-        (options[DEFAULT_SUBTITLE.value] as? String)?.let { setSelectedSubtitle(it) }
-    }
-
     fun setupInitialMediasFromClapprOptions() {
         try {
             options[SELECTED_MEDIA_OPTIONS.value]?.let {
@@ -235,10 +208,13 @@ abstract class Playback(
                 (0 until jsonArray.length())
                         .map { jsonArray.getJSONObject(it) }
                         .forEach {
-                            setSelectedMediaOption(
-                                    it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson))
+                            setSelectedMediaOption(it.getString(mediaOptionsNameJson), it.getString(mediaOptionsTypeJson))
                         }
             }
+
+            (options[DEFAULT_AUDIO.value] as? String)?.let { setSelectedMediaOption(it, AUDIO.name) }
+            (options[DEFAULT_SUBTITLE.value] as? String)?.let { setSelectedMediaOption(it, SUBTITLE.name) }
+
         } catch (jsonException: JSONException) {
             Logger.error(name, "Parser Json Exception ${jsonException.message}")
         }

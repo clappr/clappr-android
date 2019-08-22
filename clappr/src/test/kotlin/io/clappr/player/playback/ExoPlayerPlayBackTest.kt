@@ -292,32 +292,6 @@ class ExoPlayerPlaybackTest {
         assertEquals(Player.REPEAT_MODE_ONE, SimpleExoplayerShadow.staticRepeatMode)
     }
 
-    @Test
-    fun `Should set selectedAudio when has DEFAULT_AUDIO option`() {
-        val source = "supported-source.mp4"
-        val options = Options(options = hashMapOf(DEFAULT_AUDIO.value to "por"))
-
-        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
-        exoPlayerPlayBack.load(source = source)
-
-        exoPlayerPlayBack.setupInitialMediaFromOptions()
-
-        assertEquals("por", exoPlayerPlayBack.selectedAudio)
-    }
-
-    @Test
-    fun `Should set selectedSubtitle when has DEFAULT_SUBTITLE option`() {
-        val source = "supported-source.mp4"
-        val options = Options(options = hashMapOf(DEFAULT_SUBTITLE.value to "por"))
-
-        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
-        exoPlayerPlayBack.load(source = source)
-
-        exoPlayerPlayBack.setupInitialMediaFromOptions()
-
-        assertEquals("por", exoPlayerPlayBack.selectedSubtitle)
-    }
-
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {
         val videoFormatMock = Format.createVideoSampleFormat(null, null, null, bitrate.toInt(),
                 0, 0, 0, 0f, listOf<ByteArray>(), null)
