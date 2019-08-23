@@ -8,8 +8,7 @@ import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.AudioLanguage.*
-import io.clappr.player.components.MediaOptionType.AUDIO
-import io.clappr.player.components.MediaOptionType.SUBTITLE
+import io.clappr.player.components.MediaOptionType.*
 import io.clappr.player.components.Playback.MediaType.LIVE
 import io.clappr.player.components.Playback.MediaType.UNKNOWN
 import io.clappr.player.log.Logger
@@ -201,39 +200,42 @@ abstract class Playback(
         } ?: MediaOption(language, SUBTITLE, raw, null)
     }
 
+    private val defaultAudio: String?
+        get() = options[DEFAULT_AUDIO.value] as? String
+
+    private val defaultSubtitle: String?
+        get() = options[DEFAULT_SUBTITLE.value] as? String
+
+    private fun List<Pair<String, String>>.selected(mediaOptionType: MediaOptionType) =
+            firstOrNull { (_, type) -> type == mediaOptionType.name }?.let { (value, _) -> value }
+
+    private val selectedMediaOptions: List<Pair<String, String>>?
+        get() {
+            try {
+                return options[SELECTED_MEDIA_OPTIONS.value]?.let { selectedMediaOptions ->
+                    val jsonObject = JSONObject(selectedMediaOptions as? String)
+                    val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
+                    (0 until jsonArray.length())
+                            .map { jsonArray.getJSONObject(it) }
+                            .map {
+                                val type = it.getString(mediaOptionsTypeJson)
+                                val name = it.getString(mediaOptionsNameJson)
+                                name to type
+                            }
+                }
+            } catch (jsonException: JSONException) {
+                Logger.error(name, "Parser Json Exception ${jsonException.message}")
+                return null
+            }
+        }
+
     fun setupInitialMediasFromClapprOptions() {
-        try {
-            options[SELECTED_MEDIA_OPTIONS.value]?.let {selectedMediaOptions ->
-                val jsonObject = JSONObject(selectedMediaOptions as? String)
-                val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
-                (0 until jsonArray.length())
-                    .map { jsonArray.getJSONObject(it) }
-                    .forEach {
-                        val name = it.getString(mediaOptionsNameJson)
-                        val type = it.getString(mediaOptionsTypeJson)
+        (defaultAudio ?: selectedMediaOptions?.selected(AUDIO))?.let {
+            setSelectedMediaOption(it, AUDIO.name)
+        }
 
-                        val shouldIgnoreAudioMediaOption =
-                            type == AUDIO.name && options[DEFAULT_AUDIO.value] is String
-
-                        val shouldIgnoreSubtitleMediaOption =
-                            type == SUBTITLE.name && options[DEFAULT_SUBTITLE.value] is String
-
-                        if (shouldIgnoreAudioMediaOption || shouldIgnoreSubtitleMediaOption)
-                            return@forEach
-
-                        setSelectedMediaOption(name, type)
-                    }
-            }
-
-            (options[DEFAULT_AUDIO.value] as? String)?.let {
-                setSelectedMediaOption(it, AUDIO.name)
-            }
-            (options[DEFAULT_SUBTITLE.value] as? String)?.let {
-                setSelectedMediaOption(it, SUBTITLE.name)
-            }
-
-        } catch (jsonException: JSONException) {
-            Logger.error(name, "Parser Json Exception ${jsonException.message}")
+        ((defaultSubtitle) ?: selectedMediaOptions?.selected(SUBTITLE))?.let {
+            setSelectedMediaOption(it, SUBTITLE.name)
         }
     }
 
