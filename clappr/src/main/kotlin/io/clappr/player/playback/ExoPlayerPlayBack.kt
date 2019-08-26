@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C.*
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -51,7 +52,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val supportsSource: PlaybackSupportCheck = { source, _ ->
             val uri = Uri.parse(source)
             val type = Util.inferContentType(uri.lastPathSegment)
-            type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
+            type == TYPE_SS || type == TYPE_HLS || type == TYPE_DASH || type == TYPE_OTHER
         }
 
         val entry = PlaybackEntry(
@@ -93,7 +94,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
     private val drmEventsListeners = ExoplayerDrmEventsListeners()
-    private val drmScheme = C.WIDEVINE_UUID
+    private val drmScheme = WIDEVINE_UUID
     private val drmLicenseUrl: String?
         get() {
             return options.options[DRM_LICENSE_URL.value] as? String
@@ -121,7 +122,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val mediaType: MediaType
         get() {
             player?.let {
-                if (it.isCurrentWindowDynamic || it.duration == C.TIME_UNSET) return MediaType.LIVE else return MediaType.VOD
+                if (it.isCurrentWindowDynamic || it.duration == TIME_UNSET) return MediaType.LIVE else return MediaType.VOD
             }
             return MediaType.UNKNOWN
         }
@@ -347,10 +348,10 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
 
         when (mediaType) {
-            C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_SS -> return SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_HLS -> return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_OTHER -> return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_SS -> return SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_HLS -> return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_OTHER -> return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
             else -> throw IllegalStateException("Unsupported type: " + mediaType)
         }
     }
@@ -361,8 +362,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         configureTrackSelector()
 
         val audioAttributes = AudioAttributes.Builder()
-                .setContentType(C.CONTENT_TYPE_MOVIE)
-                .setUsage(C.USAGE_MEDIA)
+                .setContentType(CONTENT_TYPE_MOVIE)
+                .setUsage(USAGE_MEDIA)
                 .build()
 
         player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
@@ -467,7 +468,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         when (playbackState) {
             STATE_IDLE -> handleExoplayerIdleState()
             STATE_ENDED -> handleExoplayerEndedState()
-            STATE_BUFFERING -> handleExoplayerBufferingState()
+            STATE_BUFFERING -> handleExoPlayerBufferingState()
             STATE_READY -> handleExoplayerReadyState(playWhenReady)
         }
     }
@@ -495,7 +496,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun handleExoplayerBufferingState() {
+    private fun handleExoPlayerBufferingState() {
         if (currentState != State.NONE) {
             currentState = State.STALLING
             trigger(STALLING)
@@ -546,11 +547,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setUpMediaOptions() {
+        setupAudioOptions()
+
         if (useSubtitleFromOptions) {
-            setupAudioOptions()
             setupSubtitleOptionsFromClapprOptions()
         } else {
-            setupAudioAndSubtitleOptions()
+            setupSubtitleOptions()
         }
 
         setDefaultMedias()
@@ -578,25 +580,29 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setupAudioOptions() {
-        trackSelector?.currentMappedTrackInfo?.let {
-            for (index in 0 until it.length) {
-                when (player?.getRendererType(index)) {
-                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
-                        createAudioMediaOption(format, mediaInfo)
+        trackSelector?.currentMappedTrackInfo?.let { trackInfo ->
+
+            player?.let { player ->
+                (0 until trackInfo.rendererCount)
+                    .filter { TRACK_TYPE_AUDIO == player.getRendererType(it) }
+                    .map { index ->
+                        setUpOptions(index, trackInfo) { format, mediaInfo ->
+                            createAudioMediaOption(format, mediaInfo).also {
+                                availableAudios.add(it.name)
+                            }
+                        }
                     }
-                }
+
+                trigger(Event.DID_FIND_AUDIO.value)
             }
         }
     }
 
-    private fun setupAudioAndSubtitleOptions() {
+    private fun setupSubtitleOptions() {
         trackSelector?.currentMappedTrackInfo?.let {
             for (index in 0 until it.length) {
                 when (player?.getRendererType(index)) {
-                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
-                        createAudioMediaOption(format, mediaInfo)
-                    }
-                    C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
+                    TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
                         createSubtitleMediaOption(format, mediaInfo)
                     }
                 }
@@ -607,9 +613,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private fun setupSubtitleOptionsFromClapprOptions() {
         subtitlesFromOptions?.forEach {
             val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
-            val subtitleSource = SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, C.TIME_UNSET)
+            val subtitleSource = SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
 
-            createSubtitleMediaOption(textFormat, subtitleSource)?.let { addAvailableMediaOption(it) }
+            addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
         }
     }
 
@@ -638,10 +644,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun createAudioMediaOption(format: Format, raw: Any?): MediaOption {
-        return format.language?.let { createAudioMediaOptionFromLanguage(it, raw) }
-                ?: createOriginalOption(raw)
-    }
+    private fun createAudioMediaOption(format: Format, raw: Any?) =
+        format.language?.let { createAudioMediaOptionFromLanguage(it, raw) }
+            ?: createOriginalOption(raw)
 
     private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
         return format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
@@ -762,7 +767,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
             mediaLoadData?.let {
-                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO) {
+                if (it.trackType == TRACK_TYPE_DEFAULT || it.trackType == TRACK_TYPE_VIDEO) {
                     it.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
                 }
             }
