@@ -230,18 +230,15 @@ abstract class Playback(
         }
 
     fun setupInitialMediasFromClapprOptions() {
-        (defaultAudio ?: selectedMediaOptions?.selected(AUDIO))?.let {
-            setSelectedMediaOption(it, AUDIO.name)
-        }
+        val audio = defaultAudio ?: selectedMediaOptions?.selected(AUDIO)
+        val subtitle = (defaultSubtitle) ?: selectedMediaOptions?.selected(SUBTITLE)
 
-        ((defaultSubtitle) ?: selectedMediaOptions?.selected(SUBTITLE))?.let {
-            setSelectedMediaOption(it, SUBTITLE.name)
-        }
+        audio?.let { setSelectedMediaOption(it, AUDIO.name) }
+        subtitle?.let { setSelectedMediaOption(it, SUBTITLE.name) }
     }
 
     private fun setSelectedMediaOption(mediaOptionName: String, mediaOptionType: String) {
         mediaOptionList
-            .map { it }
             .find { it.type.name == mediaOptionType && it.name == mediaOptionName.toLowerCase() }
             ?.let { setSelectedMediaOption(it) }
     }

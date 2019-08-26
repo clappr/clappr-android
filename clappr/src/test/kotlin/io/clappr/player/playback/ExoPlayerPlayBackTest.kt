@@ -138,10 +138,9 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(
-            exoPlayerPlayBack,
-            DID_UPDATE_BITRATE.value
-        ) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
@@ -152,10 +151,9 @@ class ExoPlayerPlaybackTest {
         val mediaLoadData = null
         var didUpdateBitrateCalled = false
 
-        listenObject.listenTo(
-            exoPlayerPlayBack,
-            DID_UPDATE_BITRATE.value
-        ) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
@@ -175,10 +173,9 @@ class ExoPlayerPlaybackTest {
                 null, 0L, 0L)
         var didUpdateBitrateCalled = false
 
-        listenObject.listenTo(
-            exoPlayerPlayBack,
-            DID_UPDATE_BITRATE.value
-        ) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
@@ -189,10 +186,9 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(
-            exoPlayerPlayBack,
-            DID_UPDATE_BITRATE.value
-        ) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
 
         assertTrue(didUpdateBitrateCalled)
@@ -203,10 +199,9 @@ class ExoPlayerPlaybackTest {
         var didUpdateBitrateCalled = false
         val bitrate = 40L
 
-        listenObject.listenTo(
-            exoPlayerPlayBack,
-            DID_UPDATE_BITRATE.value
-        ) { didUpdateBitrateCalled = true }
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
         exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertTrue(didUpdateBitrateCalled)
