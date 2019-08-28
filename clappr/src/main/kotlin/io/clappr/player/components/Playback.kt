@@ -1,14 +1,14 @@
 package io.clappr.player.components
 
 import io.clappr.player.base.ClapprOption.*
-import io.clappr.player.base.Event.MEDIA_OPTIONS_UPDATE
-import io.clappr.player.base.Event.READY
+import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.DID_UPDATE_OPTIONS
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.AudioLanguage.*
-import io.clappr.player.components.MediaOptionType.*
+import io.clappr.player.components.MediaOptionType.AUDIO
+import io.clappr.player.components.MediaOptionType.SUBTITLE
 import io.clappr.player.components.Playback.MediaType.LIVE
 import io.clappr.player.components.Playback.MediaType.UNKNOWN
 import io.clappr.player.log.Logger
@@ -152,6 +152,11 @@ abstract class Playback(
     open fun setSelectedMediaOption(mediaOption: MediaOption) {
         selectedMediaOptionList.removeAll { it.type == mediaOption.type }
         selectedMediaOptionList.add(mediaOption)
+
+        when (mediaOption.type) {
+            AUDIO -> trigger(DID_SELECT_AUDIO.value)
+            SUBTITLE -> trigger(DID_SELECT_SUBTITLE.value)
+        }
 
         trigger(MEDIA_OPTIONS_UPDATE.value)
     }
