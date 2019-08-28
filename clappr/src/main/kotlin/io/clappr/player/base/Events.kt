@@ -119,7 +119,7 @@ enum class Event(val value: String) {
     /**
      * Available Subtitles Update. Triggered when the Playback load subtitles
      */
-    DID_FIND_SUBTITLE("didFindAudio"),
+    DID_FIND_SUBTITLE("didFindSubtitle"),
 
     /**
      * There was a change in DVR status

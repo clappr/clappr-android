@@ -106,9 +106,6 @@ abstract class Playback(
 
     protected var mediaOptionList = LinkedList<MediaOption>()
 
-    protected val availableAudios = mutableListOf<String>()
-    protected val availableSubtitles = mutableListOf<String>()
-
     private val audioKeys = mapOf(
         ORIGINAL.value to listOf("original", "und"),
         PORTUGUESE.value to listOf("pt", "por"),

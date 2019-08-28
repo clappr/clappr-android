@@ -569,54 +569,64 @@ open class ExoPlayerPlayback(
     }
 
     private fun setupAudioOptions() {
-        setupMedia(TRACK_TYPE_AUDIO, availableAudios, DID_FIND_AUDIO.value)
+        setupMedia(TRACK_TYPE_AUDIO)
     }
 
     private fun setupSubtitleOptions() {
-        setupMedia(TRACK_TYPE_TEXT, availableSubtitles, DID_FIND_SUBTITLE.value)
+        setupMedia(TRACK_TYPE_TEXT)
     }
 
-    private fun setupMedia(type: Int, availableMedia: MutableList<String>, event: String) {
+    private fun setupMedia(type: Int) {
         trackSelector?.currentMappedTrackInfo?.let { trackInfo ->
 
             (0 until trackInfo.rendererCount)
                 .filter { type == player?.getRendererType(it) }
                 .map { index ->
-                    setUpOptions(index, trackInfo) { format, mediaInfo ->
-                        createAudioMediaOption(format, mediaInfo).also {
-                            availableMedia.add(it.name)
-                        }
+                    setUpOptions(index, trackInfo, type) { format, mediaInfo ->
+                        createAudioMediaOption(format, mediaInfo)
                     }
                 }
-
-            trigger(event)
         }
     }
 
     private fun setupSubtitleOptionsFromClapprOptions() {
         subtitlesFromOptions?.forEach {
-            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
-            val subtitleSource = SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
+            val textFormat =
+                Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
+
+            val subtitleSource =
+                SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
 
             addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
+            trigger(DID_FIND_SUBTITLE.value)
         }
     }
 
-    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, createMediaOption: (format: Format, raw: Any?) -> MediaOption?) {
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
         trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
-            addOptions(renderedIndex, index, trackGroup, createMediaOption)
+            addOptions(renderedIndex, index, trackGroup, type, createMediaOption)
         }
     }
 
-    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, createMediaOption: (format: Format, raw: Any?) -> MediaOption?) {
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
+        var mediaOptionListWasUpdated = false
+
         trackGroup.forEachFormatIndexed { index, format ->
             val rawInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
             val mediaOption = createMediaOption(format, rawInfo)
 
-            mediaOption?.let {
-                addAvailableMediaOption(mediaOption)
-                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
-            }
+            addAvailableMediaOption(mediaOption)
+            selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+            mediaOptionListWasUpdated = true
+        }
+
+        if (mediaOptionListWasUpdated) triggerMediaEvent(type)
+    }
+
+    private fun triggerMediaEvent(type: Int) {
+        when (type) {
+            TRACK_TYPE_AUDIO -> trigger(DID_FIND_AUDIO)
+            TRACK_TYPE_TEXT -> trigger(DID_FIND_SUBTITLE)
         }
     }
 
