@@ -8,9 +8,9 @@
 
 | Name | Summary |
 |---|---|
-| [ExoplayerBitrateLogger](-exoplayer-bitrate-logger/index.md) | `inner class ExoplayerBitrateLogger : EventLogger` |
-| [ExoplayerDrmEventsListeners](-exoplayer-drm-events-listeners/index.md) | `inner class ExoplayerDrmEventsListeners : EventListener` |
-| [ExoplayerEventsListener](-exoplayer-events-listener/index.md) | `inner class ExoplayerEventsListener : EventListener` |
+| [ExoPlayerBitrateLogger](-exo-player-bitrate-logger/index.md) | `inner class ExoPlayerBitrateLogger : EventLogger` |
+| [ExoPlayerDrmEventsListeners](-exo-player-drm-events-listeners/index.md) | `inner class ExoPlayerDrmEventsListeners : EventListener` |
+| [ExoPlayerEventsListener](-exo-player-events-listener/index.md) | `inner class ExoPlayerEventsListener : EventListener` |
 
 ### Constructors
 
