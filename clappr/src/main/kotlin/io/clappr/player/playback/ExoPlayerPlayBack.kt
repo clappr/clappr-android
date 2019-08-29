@@ -593,8 +593,6 @@ open class ExoPlayerPlayback(
     }
 
     private fun setupSubtitleOptionsFromClapprOptions() {
-        var mediaOptionsWasUpdated = false
-
         subtitlesFromOptions?.forEach {
             val textFormat =
                 Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
@@ -603,10 +601,9 @@ open class ExoPlayerPlayback(
                 SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
 
             addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
-            mediaOptionsWasUpdated = true
         }
 
-        if (mediaOptionsWasUpdated) trigger(DID_FIND_SUBTITLE.value)
+        subtitlesFromOptions?.let { if (it.isNotEmpty()) trigger(DID_FIND_SUBTITLE.value) }
     }
 
     private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
@@ -616,18 +613,15 @@ open class ExoPlayerPlayback(
     }
 
     private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
-        var mediaOptionListWasUpdated = false
-
         trackGroup.forEachFormatIndexed { index, format ->
             val rawInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
             val mediaOption = createMediaOption(format, rawInfo)
 
             addAvailableMediaOption(mediaOption)
             selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
-            mediaOptionListWasUpdated = true
         }
 
-        if (mediaOptionListWasUpdated) triggerMediaEvent(type)
+        if (trackGroup.length != 0) triggerMediaEvent(type)
     }
 
     private fun triggerMediaEvent(type: Int) {
