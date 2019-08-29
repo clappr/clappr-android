@@ -262,7 +262,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }, duration)
     }
 
-    private fun updateInteractionTime() {
+    fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
