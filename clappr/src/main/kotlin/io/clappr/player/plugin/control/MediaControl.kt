@@ -98,7 +98,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     val isEnabled: Boolean
         get() = state == State.ENABLED
 
-    private val isVisible: Boolean
+    val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
     private val isPlaybackIdle: Boolean
