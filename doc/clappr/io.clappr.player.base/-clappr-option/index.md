@@ -18,6 +18,8 @@
 | [MEDIA_CONTROL_PLUGINS](-m-e-d-i-a_-c-o-n-t-r-o-l_-p-l-u-g-i-n-s.md) | The sequence in which the plugins will be displayed in the media control. Names are separated by commas and are case sensitive. |
 | [LOOP](-l-o-o-p.md) | If true the video will be played forever (loop mode). If false the video will be stopped when it ends |
 | [HANDLE_AUDIO_FOCUS](-h-a-n-d-l-e_-a-u-d-i-o_-f-o-c-u-s.md) | Boolean value indicating if Audio Focus should be handled by Clappr. Default value is false. |
+| [DEFAULT_AUDIO](-d-e-f-a-u-l-t_-a-u-d-i-o.md) | String that represents default audio |
+| [DEFAULT_SUBTITLE](-d-e-f-a-u-l-t_-s-u-b-t-i-t-l-e.md) | String that represents default subtitle |
 
 ### Properties
 

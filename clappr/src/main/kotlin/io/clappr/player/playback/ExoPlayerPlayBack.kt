@@ -1,12 +1,16 @@
 package io.clappr.player.playback
 
 import android.annotation.SuppressLint
-import android.graphics.Color
+import android.graphics.Color.TRANSPARENT
+import android.graphics.Color.WHITE
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.view.View
 import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.C.*
+import com.google.android.exoplayer2.DefaultLoadControl.*
+import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.*
@@ -17,6 +21,7 @@ import com.google.android.exoplayer2.source.hls.HlsMediaSource
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource
 import com.google.android.exoplayer2.text.CaptionStyleCompat
+import com.google.android.exoplayer2.text.CaptionStyleCompat.EDGE_TYPE_NONE
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
@@ -27,51 +32,47 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
-import com.google.android.exoplayer2.util.Util
+import com.google.android.exoplayer2.util.Util.*
 import io.clappr.player.base.*
+import io.clappr.player.base.ClapprOption.*
+import io.clappr.player.base.ErrorInfoData.EXCEPTION
+import io.clappr.player.base.Event.*
+import io.clappr.player.base.Event.DID_LOAD_SOURCE
+import io.clappr.player.base.Event.WILL_LOAD_SOURCE
+import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.*
+import io.clappr.player.components.MediaOptionType.*
+import io.clappr.player.components.Playback.MediaType.*
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import kotlin.math.min
 
 
-open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: Options = Options(), private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
-    companion object {
-        private const val tag: String = "ExoPlayerPlayback"
-
-        const val name = "exoplayerplayback"
-
-        val supportsSource: PlaybackSupportCheck = { source, _ ->
-            val uri = Uri.parse(source)
-            val type = Util.inferContentType(uri.lastPathSegment)
-            type == C.TYPE_SS || type == C.TYPE_HLS || type == C.TYPE_DASH || type == C.TYPE_OTHER
-        }
-
-        val entry = PlaybackEntry(
-                name = name,
-                supportsSource = supportsSource,
-                factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
-    }
+open class ExoPlayerPlayback(
+    source: String,
+    mimeType: String? = null,
+    options: Options = Options(),
+    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }
+) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
 
     private var isVideoCompleted = false
-
     private val ONE_SECOND_IN_MILLIS: Int = 1000
     private val DEFAULT_MIN_DVR_SIZE = 60
     private val MIN_DVR_LIVE_DRIFT = 5
-    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DefaultLoadControl.DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
+    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
 
     open val minDvrSize by lazy {
-        options[ClapprOption.MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
+        options[MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
     }
 
     protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
 
     private val mainHandler = Handler()
-    private val eventsListener = ExoplayerEventsListener()
-    private val bitrateEventsListener = ExoplayerBitrateLogger()
-    private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L, { checkPeriodicUpdates() })
+    private val eventsListener = ExoPlayerEventsListener()
+    private val bitrateEventsListener = ExoPlayerBitrateLogger()
+    private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
     private var lastPositionSent = 0.0
@@ -86,18 +87,18 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
     private var mediaSource: MediaSource? = null
-    private val drmEventsListeners = ExoplayerDrmEventsListeners()
-    private val drmScheme = C.WIDEVINE_UUID
+    private val drmEventsListeners = ExoPlayerDrmEventsListeners()
+    private val drmScheme = WIDEVINE_UUID
     private val drmLicenseUrl: String?
         get() {
-            return options.options[ClapprOption.DRM_LICENSE_URL.value] as? String
+            return options.options[DRM_LICENSE_URL.value] as? String
         }
     private val drmLicenses: ByteArray?
         get() {
-            return options.options[ClapprOption.DRM_LICENSES.value] as? ByteArray
+            return options.options[DRM_LICENSES.value] as? ByteArray
         }
 
-    private val subtitlesFromOptions = options.options[ClapprOption.SUBTITLES.value] as? HashMap<String, String>
+    private val subtitlesFromOptions = options.options[SUBTITLES.value] as? HashMap<String, String>
 
     private val useSubtitleFromOptions = subtitlesFromOptions?.isNotEmpty() ?: false
 
@@ -107,7 +108,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     private val playerView: PlayerView
         get() = view as PlayerView
 
-    private var dvrStartTimeinSeconds: Long? = null
+    private var dvrStartTimeInSeconds: Long? = null
 
     override val viewClass: Class<*>
         get() = PlayerView::class.java
@@ -115,12 +116,12 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val mediaType: MediaType
         get() {
             player?.let {
-                if (it.isCurrentWindowDynamic || it.duration == C.TIME_UNSET) return MediaType.LIVE else return MediaType.VOD
+                return if (it.isCurrentWindowDynamic || it.duration == TIME_UNSET) LIVE else VOD
             }
-            return MediaType.UNKNOWN
+            return UNKNOWN
         }
 
-    private val syncBufferInSeconds = if (mediaType == MediaType.LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
+    private val syncBufferInSeconds = if (mediaType == LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
 
     override val duration: Double
         get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds }
@@ -141,7 +142,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override val canPause: Boolean
         get() = canPause(currentState) &&
                 when (mediaType) {
-                    MediaType.LIVE -> isDvrAvailable
+                    LIVE -> isDvrAvailable
                     else -> true
                 }
 
@@ -156,7 +157,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private val canSeekByMediaType: Boolean
         get() = when (mediaType) {
-            MediaType.LIVE -> isDvrAvailable
+            LIVE -> isDvrAvailable
             else -> duration != 0.0
         }
 
@@ -170,7 +171,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() {
             val videoHasMinimumDurationForDvr = duration >= minDvrSize
             val isCurrentWindowSeekable = player?.isCurrentWindowSeekable ?: false
-            return mediaType == MediaType.LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
+            return mediaType == LIVE && videoHasMinimumDurationForDvr && isCurrentWindowSeekable
         }
 
     override val isDvrInUse: Boolean
@@ -183,7 +184,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             field = value
 
             if (oldValue != field) {
-                trigger(Event.DID_CHANGE_DVR_STATUS.value, Bundle().apply {
+                trigger(DID_CHANGE_DVR_STATUS.value, Bundle().apply {
                     putBoolean("inUse", field ?: false)
                 })
             }
@@ -205,7 +206,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             }
 
             if (oldValue != field) {
-                trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply {
+                trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
                     putLong(EventData.BITRATE.value, field ?: 0)
                 })
             }
@@ -218,20 +219,20 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         get() = bitrateHistory.averageBitrate()
 
     override val currentDate: Long?
-        get() = dvrStartTimeinSeconds
+        get() = dvrStartTimeInSeconds
 
     override val currentTime: Long?
         get() = currentDate?.plus(position.toLong())
 
     private val isRepeatModeEnabled
         get() = player?.let {
-            it.repeatMode == Player.REPEAT_MODE_ONE &&
-                    options.options.containsKey(ClapprOption.LOOP.value) &&
-                    mediaType == MediaType.VOD
+            it.repeatMode == REPEAT_MODE_ONE &&
+                    options.options.containsKey(LOOP.value) &&
+                    mediaType == VOD
         } ?: false
 
     open val handleAudioFocus: Boolean
-        get() = options.options[ClapprOption.HANDLE_AUDIO_FOCUS.value] as? Boolean ?: false
+        get() = options.options[HANDLE_AUDIO_FOCUS.value] as? Boolean ?: false
 
     init {
         playerView.useController = false
@@ -239,7 +240,8 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
 
-    open fun getSubtitleStyle() = CaptionStyleCompat(Color.WHITE, Color.TRANSPARENT, Color.TRANSPARENT, CaptionStyleCompat.EDGE_TYPE_NONE, Color.WHITE, null)
+    open fun getSubtitleStyle() =
+        CaptionStyleCompat(WHITE, TRANSPARENT, TRANSPARENT, EDGE_TYPE_NONE, WHITE, null)
 
     override fun destroy() {
         release()
@@ -251,7 +253,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         if (!canPlay && player != null) return false
 
-        trigger(Event.WILL_PLAY)
+        trigger(WILL_PLAY)
         player?.playWhenReady = true
         isVideoCompleted = false
         return true
@@ -260,17 +262,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override fun pause(): Boolean {
         if (!canPause) return false
 
-        trigger(Event.WILL_PAUSE)
+        trigger(WILL_PAUSE)
         player?.playWhenReady = false
         return true
     }
 
     override fun stop(): Boolean {
-        trigger(Event.WILL_STOP)
+        trigger(WILL_STOP)
         player?.stop()
         release()
         currentState = State.IDLE
-        trigger(Event.DID_STOP)
+        trigger(DID_STOP)
         return true
     }
 
@@ -299,9 +301,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override fun seek(seconds: Int): Boolean {
         if (!canSeek) return false
 
-        trigger(Event.WILL_SEEK)
+        trigger(WILL_SEEK)
         player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
-        trigger(Event.DID_SEEK)
+        trigger(DID_SEEK)
         triggerPositionUpdateEvent()
 
         return true
@@ -318,33 +320,33 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     override fun seekToLivePosition(): Boolean {
         if (!canSeek) return false
 
-        trigger(Event.WILL_SEEK)
+        trigger(WILL_SEEK)
         player?.seekToDefaultPosition()
-        trigger(Event.DID_SEEK)
+        trigger(DID_SEEK)
         triggerPositionUpdateEvent()
         return true
     }
 
     override fun load(source: String, mimeType: String?): Boolean {
-        trigger(Event.WILL_LOAD_SOURCE)
+        trigger(WILL_LOAD_SOURCE)
         this.source = source
         this.mimeType = mimeType
         stop()
         setupPlayer()
-        trigger(Event.DID_LOAD_SOURCE)
+        trigger(DID_LOAD_SOURCE)
         return true
     }
 
     private fun mediaSource(uri: Uri): MediaSource {
-        val mediaType = Util.inferContentType(uri.lastPathSegment)
+        val mediaType = inferContentType(uri.lastPathSegment)
         val dataSourceFactory = DefaultDataSourceFactory(applicationContext, "agent", bandwidthMeter)
 
-        when (mediaType) {
-            C.TYPE_DASH -> return DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_SS -> return SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_HLS -> return HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            C.TYPE_OTHER -> return ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
-            else -> throw IllegalStateException("Unsupported type: " + mediaType)
+        return when (mediaType) {
+            TYPE_DASH -> DashMediaSource.Factory(DefaultDashChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_SS -> SsMediaSource.Factory(DefaultSsChunkSource.Factory(dataSourceFactory), dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_HLS -> HlsMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            TYPE_OTHER -> ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(uri, mainHandler, null)
+            else -> throw IllegalStateException("Unsupported type: $mediaType")
         }
     }
 
@@ -354,16 +356,16 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         configureTrackSelector()
 
         val audioAttributes = AudioAttributes.Builder()
-                .setContentType(C.CONTENT_TYPE_MOVIE)
-                .setUsage(C.USAGE_MEDIA)
+                .setContentType(CONTENT_TYPE_MOVIE)
+                .setUsage(USAGE_MEDIA)
                 .build()
 
         player = ExoPlayerFactory.newSimpleInstance(applicationContext, rendererFactory, trackSelector).apply {
             setAudioAttributes(audioAttributes, handleAudioFocus)
             playWhenReady = false
-            repeatMode = when (options.options[ClapprOption.LOOP.value]) {
-                true -> Player.REPEAT_MODE_ONE
-                else -> Player.REPEAT_MODE_OFF
+            repeatMode = when (options.options[LOOP.value]) {
+                true -> REPEAT_MODE_ONE
+                else -> REPEAT_MODE_OFF
             }
         }
 
@@ -383,19 +385,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         player?.addAnalyticsListener(bitrateEventsListener)
     }
 
-    private fun setUpRendererFactory(): DefaultRenderersFactory {
-        val rendererFactory = DefaultRenderersFactory(applicationContext,
-                buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
-        return rendererFactory
-    }
+    private fun setUpRendererFactory() = DefaultRenderersFactory(
+        applicationContext,
+        buildDrmSessionManager(), DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER)
 
     @SuppressLint("NewApi")
     private fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
-        if (Util.SDK_INT < 18 || drmLicenseUrl == null) {
+        if (SDK_INT < 18 || drmLicenseUrl == null) {
             return null
         }
 
-        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(Util.getUserAgent(applicationContext, applicationContext.packageName), bandwidthMeter)
+        val defaultHttpDataSourceFactory = DefaultHttpDataSourceFactory(getUserAgent(applicationContext, applicationContext.packageName), bandwidthMeter)
         val drmMediaCallback = HttpMediaDrmCallback(drmLicenseUrl, defaultHttpDataSourceFactory)
         var drmSessionManager: DrmSessionManager<FrameworkMediaCrypto>? = null
 
@@ -425,7 +425,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val currentBufferPercentage = bufferPercentage
 
         bundle.putDouble("percentage", currentBufferPercentage)
-        trigger(Event.DID_UPDATE_BUFFER.value, bundle)
+        trigger(DID_UPDATE_BUFFER.value, bundle)
         lastBufferPercentageSent = currentBufferPercentage
     }
 
@@ -436,7 +436,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         bundle.putDouble("percentage", percentage)
         bundle.putDouble("time", currentPosition)
-        trigger(Event.DID_UPDATE_POSITION.value, bundle)
+        trigger(DID_UPDATE_POSITION.value, bundle)
         lastPositionSent = currentPosition
     }
 
@@ -444,7 +444,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         if (isDvrAvailable == lastDrvAvailableCheck) return
 
         lastDrvAvailableCheck = isDvrAvailable
-        trigger(Event.DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
+        trigger(DID_CHANGE_DVR_AVAILABILITY.value, Bundle().apply {
             putBoolean("available", isDvrAvailable)
         })
         Logger.info(tag, "DVR Available: $isDvrAvailable")
@@ -458,17 +458,17 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
     private fun updateState(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
-            Player.STATE_IDLE -> handleExoplayerIdleState()
-            Player.STATE_ENDED -> handleExoplayerEndedState()
-            Player.STATE_BUFFERING -> handleExoplayerBufferingState()
-            Player.STATE_READY -> handleExoplayerReadyState(playWhenReady)
+            STATE_IDLE -> handleExoPlayerIdleState()
+            STATE_ENDED -> handleExoPlayerEndedState()
+            STATE_BUFFERING -> handleExoPlayerBufferingState()
+            STATE_READY -> handleExoPlayerReadyState(playWhenReady)
         }
     }
 
-    private fun handleExoplayerReadyState(playWhenReady: Boolean) {
+    private fun handleExoPlayerReadyState(playWhenReady: Boolean) {
         if (currentState == State.NONE) {
             currentState = State.IDLE
-            trigger(Event.READY)
+            trigger(READY)
 
             if (!playWhenReady) return
         }
@@ -480,29 +480,29 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
 
         if (playWhenReady) {
             currentState = State.PLAYING
-            trigger(Event.PLAYING)
+            trigger(PLAYING)
             timeElapsedHandler.start()
         } else {
             currentState = State.PAUSED
-            trigger(Event.DID_PAUSE)
+            trigger(DID_PAUSE)
         }
     }
 
-    private fun handleExoplayerBufferingState() {
+    private fun handleExoPlayerBufferingState() {
         if (currentState != State.NONE) {
             currentState = State.STALLING
-            trigger(Event.STALLING)
+            trigger(STALLING)
         }
     }
 
-    private fun handleExoplayerEndedState() {
+    private fun handleExoPlayerEndedState() {
         currentState = State.IDLE
-        trigger(Event.DID_COMPLETE)
+        trigger(DID_COMPLETE)
         isVideoCompleted = true
         stop()
     }
 
-    private fun handleExoplayerIdleState() {
+    private fun handleExoPlayerIdleState() {
         timeElapsedHandler.cancel()
         if (!recoveredFromBehindLiveWindowException) {
             currentState = State.NONE
@@ -532,95 +532,102 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         val message = error?.message ?: "Exoplayer Error"
 
         val errorExtra = Bundle()
-        error?.let { errorExtra.putSerializable(ErrorInfoData.EXCEPTION.value, it) }
+        error?.let { errorExtra.putSerializable(EXCEPTION.value, it) }
 
-        bundle.putParcelable(Event.ERROR.value, ErrorInfo(message, ErrorCode.PLAYBACK_ERROR, errorExtra))
-        trigger(Event.ERROR.value, bundle)
+        bundle.putParcelable(ERROR.value, ErrorInfo(message, ErrorCode.PLAYBACK_ERROR, errorExtra))
+        trigger(ERROR.value, bundle)
     }
 
     private fun setUpMediaOptions() {
+        setupAudioOptions()
+
         if (useSubtitleFromOptions) {
-            setupAudioOptions()
             setupSubtitleOptionsFromClapprOptions()
         } else {
-            setupAudioAndSubtitleOptions()
+            setupSubtitleOptions()
         }
 
         setDefaultMedias()
         checkInitialMedias()
-        trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        trigger(MEDIA_OPTIONS_READY.value)
         Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
     private fun setDefaultMedias() {
-        if (availableMediaOptions(MediaOptionType.SUBTITLE).isNotEmpty()) {
+        if (availableMediaOptions(SUBTITLE).isNotEmpty()) {
             addAvailableMediaOption(SUBTITLE_OFF, 0)
-            if (selectedMediaOption(MediaOptionType.SUBTITLE) == null)
+            if (selectedMediaOption(SUBTITLE) == null)
                 setSelectedMediaOption(SUBTITLE_OFF)
         }
-        if (availableMediaOptions(MediaOptionType.AUDIO).isNotEmpty()) {
-            if (selectedMediaOption(MediaOptionType.AUDIO) == null)
-                setSelectedMediaOption(availableMediaOptions(MediaOptionType.AUDIO).first())
+        if (availableMediaOptions(AUDIO).isNotEmpty()) {
+            if (selectedMediaOption(AUDIO) == null)
+                setSelectedMediaOption(availableMediaOptions(AUDIO).first())
         }
     }
 
     private fun checkInitialMedias() {
-        options.options[ClapprOption.SELECTED_MEDIA_OPTIONS.value]?.let {
+        options.options[SELECTED_MEDIA_OPTIONS.value]?.let {
             setupInitialMediasFromClapprOptions()
         }
     }
 
     private fun setupAudioOptions() {
-        trackSelector?.currentMappedTrackInfo?.let {
-            for (index in 0 until it.length) {
-                when (player?.getRendererType(index)) {
-                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
-                        createAudioMediaOption(format, mediaInfo)
-                    }
-                }
-            }
-        }
+        setupMedia(TRACK_TYPE_AUDIO)
     }
 
-    private fun setupAudioAndSubtitleOptions() {
-        trackSelector?.currentMappedTrackInfo?.let {
-            for (index in 0 until it.length) {
-                when (player?.getRendererType(index)) {
-                    C.TRACK_TYPE_AUDIO -> setUpOptions(index, it) { format, mediaInfo ->
+    private fun setupSubtitleOptions() {
+        setupMedia(TRACK_TYPE_TEXT)
+    }
+
+    private fun setupMedia(type: Int) {
+        trackSelector?.currentMappedTrackInfo?.let { trackInfo ->
+
+            (0 until trackInfo.rendererCount)
+                .filter { type == player?.getRendererType(it) }
+                .map { index ->
+                    setUpOptions(index, trackInfo, type) { format, mediaInfo ->
                         createAudioMediaOption(format, mediaInfo)
                     }
-                    C.TRACK_TYPE_TEXT -> setUpOptions(index, it) { format, mediaInfo ->
-                        createSubtitleMediaOption(format, mediaInfo)
-                    }
                 }
-            }
         }
     }
 
     private fun setupSubtitleOptionsFromClapprOptions() {
         subtitlesFromOptions?.forEach {
-            val textFormat = Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
-            val subtitleSource = SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, C.TIME_UNSET)
+            val textFormat =
+                Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
 
-            createSubtitleMediaOption(textFormat, subtitleSource)?.let { addAvailableMediaOption(it) }
+            val subtitleSource =
+                SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
+
+            addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
         }
+
+        subtitlesFromOptions?.let { if (it.isNotEmpty()) trigger(DID_FIND_SUBTITLE.value) }
     }
 
-    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, createMediaOption: (format: Format, raw: Any?) -> MediaOption?) {
+    private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
         trackGroups.forEachGroupIndexed(renderedIndex) { index, trackGroup ->
-            addOptions(renderedIndex, index, trackGroup, createMediaOption)
+            addOptions(renderedIndex, index, trackGroup, type, createMediaOption)
         }
     }
 
-    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, createMediaOption: (format: Format, raw: Any?) -> MediaOption?) {
+    private fun addOptions(renderedIndex: Int, trackGroupIndex: Int, trackGroup: TrackGroup, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
         trackGroup.forEachFormatIndexed { index, format ->
             val rawInfo = createMediaInfo(renderedIndex, trackGroupIndex, index)
             val mediaOption = createMediaOption(format, rawInfo)
 
-            mediaOption?.let {
-                addAvailableMediaOption(mediaOption)
-                selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
-            }
+            addAvailableMediaOption(mediaOption)
+            selectActualSelectedMediaOption(renderedIndex, format, mediaOption)
+        }
+
+        if (trackGroup.length != 0) triggerMediaEvent(type)
+    }
+
+    private fun triggerMediaEvent(type: Int) {
+        when (type) {
+            TRACK_TYPE_AUDIO -> trigger(DID_FIND_AUDIO.value)
+            TRACK_TYPE_TEXT -> trigger(DID_FIND_SUBTITLE.value)
         }
     }
 
@@ -631,10 +638,9 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    private fun createAudioMediaOption(format: Format, raw: Any?): MediaOption {
-        return format.language?.let { createAudioMediaOptionFromLanguage(it, raw) }
-                ?: createOriginalOption(raw)
-    }
+    private fun createAudioMediaOption(format: Format, raw: Any?) =
+        format.language?.let { createAudioMediaOptionFromLanguage(it, raw) }
+            ?: createOriginalOption(raw)
 
     private fun createSubtitleMediaOption(format: Format, raw: Any?): MediaOption {
         return format.language?.let { createSubtitleMediaOptionFromLanguage(it, raw) }
@@ -660,7 +666,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
     }
 
     private fun setMediaOptionOnPlayback(mediaOption: MediaOption, mappedTrackInfo: MappingTrackSelector.MappedTrackInfo) {
-        if (useSubtitleFromOptions && mediaOption.type == MediaOptionType.SUBTITLE)
+        if (useSubtitleFromOptions && mediaOption.type == SUBTITLE)
             setSubtitleFromOptions(mediaOption)
         else
             setMediaOptionFromTracks(mediaOption, mappedTrackInfo)
@@ -702,7 +708,7 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         }
     }
 
-    inner class ExoplayerEventsListener : Player.EventListener {
+    inner class ExoPlayerEventsListener : EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
         }
@@ -714,13 +720,13 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
         override fun onLoadingChanged(isLoading: Boolean) {
             if (isLoading && currentState == State.NONE) {
                 currentState = State.IDLE
-                trigger(Event.READY.value)
+                trigger(READY.value)
             }
         }
 
         override fun onPositionDiscontinuity(reason: Int) {
-            if (isRepeatModeEnabled && reason == Player.DISCONTINUITY_REASON_PERIOD_TRANSITION) {
-                trigger(Event.DID_LOOP)
+            if (isRepeatModeEnabled && reason == DISCONTINUITY_REASON_PERIOD_TRANSITION) {
+                trigger(DID_LOOP)
             }
         }
 
@@ -728,52 +734,61 @@ open class ExoPlayerPlayback(source: String, mimeType: String? = null, options: 
             timeline?.takeIf { isDvrAvailable && it.windowCount > 0 }?.let {
                 var currentWindow = Timeline.Window()
                 currentWindow = it.getWindow(0, currentWindow)
-                dvrStartTimeinSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
+                dvrStartTimeInSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
             }
         }
 
-        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {
-        }
+        override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters?) {}
 
         override fun onTracksChanged(trackGroups: TrackGroupArray?, trackSelections: TrackSelectionArray?) {
             Logger.info(tag, "onTracksChanged")
         }
 
-        override fun onSeekProcessed() {
-        }
+        override fun onSeekProcessed() {}
 
-        override fun onRepeatModeChanged(repeatMode: Int) {
-        }
+        override fun onRepeatModeChanged(repeatMode: Int) {}
 
-        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-        }
-
+        override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
     }
 
-    inner class ExoplayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
+    inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null) : EventLogger(trackSelector) {
         override fun onLoadCompleted(eventTime: AnalyticsListener.EventTime?, loadEventInfo: MediaSourceEventListener.LoadEventInfo?, mediaLoadData: MediaSourceEventListener.MediaLoadData?) {
             super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
 
-            mediaLoadData?.let {
-                if (it.trackType == C.TRACK_TYPE_DEFAULT || it.trackType == C.TRACK_TYPE_VIDEO) {
-                    it.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
+            mediaLoadData?.let { mediaLoadData ->
+                if (mediaLoadData.trackType == TRACK_TYPE_DEFAULT || mediaLoadData.trackType == TRACK_TYPE_VIDEO) {
+                    mediaLoadData.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
                 }
             }
         }
     }
 
-    inner class ExoplayerDrmEventsListeners : DefaultDrmSessionManager.EventListener {
-        override fun onDrmKeysRestored() {
-        }
+    inner class ExoPlayerDrmEventsListeners : DefaultDrmSessionManager.EventListener {
+        override fun onDrmKeysRestored() {}
 
-        override fun onDrmKeysLoaded() {
-        }
+        override fun onDrmKeysLoaded() {}
 
-        override fun onDrmKeysRemoved() {
-        }
+        override fun onDrmKeysRemoved() {}
 
         override fun onDrmSessionManagerError(error: java.lang.Exception?) {
             handleError(error)
         }
+    }
+
+    companion object {
+        private const val tag: String = "ExoPlayerPlayback"
+
+        const val name = "exoplayerplayback"
+
+        val supportsSource: PlaybackSupportCheck = { source, _ ->
+            val uri = Uri.parse(source)
+            val type = inferContentType(uri.lastPathSegment)
+            type == TYPE_SS || type == TYPE_HLS || type == TYPE_DASH || type == TYPE_OTHER
+        }
+
+        val entry = PlaybackEntry(
+            name = name,
+            supportsSource = supportsSource,
+            factory = { source, mimeType, options -> ExoPlayerPlayback(source, mimeType, options) })
     }
 }

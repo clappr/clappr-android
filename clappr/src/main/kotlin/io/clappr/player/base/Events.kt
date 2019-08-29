@@ -112,6 +112,16 @@ enum class Event(val value: String) {
     MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
 
     /**
+     * Triggered when an audio is selected
+     */
+    DID_SELECT_AUDIO("didSelectAudio"),
+
+    /**
+     * Triggered when a subtitle is selected
+     */
+    DID_SELECT_SUBTITLE("didSelectSubtitle"),
+
+    /**
      * There was a change in DVR status
      */
     DID_CHANGE_DVR_STATUS("didChangeDvrStatus"),

@@ -49,5 +49,16 @@ enum class ClapprOption(val value: String) {
     /**
      * Boolean value indicating if Audio Focus should be handled by Clappr. Default value is false.
      */
-    HANDLE_AUDIO_FOCUS("handleAudioFocus")
+    HANDLE_AUDIO_FOCUS("handleAudioFocus"),
+
+    /**
+     * String that represents default audio
+     */
+    DEFAULT_AUDIO("defaultAudio"),
+
+    /**
+     * String that represents default subtitle
+     */
+    DEFAULT_SUBTITLE("defaultSubtitle")
+
 }
