@@ -37,6 +37,9 @@ import io.clappr.player.base.*
 import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.ErrorInfoData.EXCEPTION
 import io.clappr.player.base.Event.*
+import io.clappr.player.base.Event.DID_LOAD_SOURCE
+import io.clappr.player.base.Event.WILL_LOAD_SOURCE
+import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.*
 import io.clappr.player.components.MediaOptionType.*
@@ -546,7 +549,7 @@ open class ExoPlayerPlayback(
 
         setDefaultMedias()
         checkInitialMedias()
-        trigger(InternalEvent.MEDIA_OPTIONS_READY.value)
+        trigger(MEDIA_OPTIONS_READY.value)
         Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
@@ -590,6 +593,8 @@ open class ExoPlayerPlayback(
     }
 
     private fun setupSubtitleOptionsFromClapprOptions() {
+        var mediaOptionsWasUpdated = false
+
         subtitlesFromOptions?.forEach {
             val textFormat =
                 Format.createTextSampleFormat(null, MimeTypes.APPLICATION_SUBRIP, Format.NO_VALUE, it.key, null)
@@ -598,8 +603,10 @@ open class ExoPlayerPlayback(
                 SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(it.value), textFormat, TIME_UNSET)
 
             addAvailableMediaOption(createSubtitleMediaOption(textFormat, subtitleSource))
-            trigger(DID_FIND_SUBTITLE.value)
+            mediaOptionsWasUpdated = true
         }
+
+        if (mediaOptionsWasUpdated) trigger(DID_FIND_SUBTITLE.value)
     }
 
     private fun setUpOptions(renderedIndex: Int, trackGroups: MappingTrackSelector.MappedTrackInfo, type: Int, createMediaOption: (format: Format, raw: Any?) -> MediaOption) {
@@ -625,8 +632,8 @@ open class ExoPlayerPlayback(
 
     private fun triggerMediaEvent(type: Int) {
         when (type) {
-            TRACK_TYPE_AUDIO -> trigger(DID_FIND_AUDIO)
-            TRACK_TYPE_TEXT -> trigger(DID_FIND_SUBTITLE)
+            TRACK_TYPE_AUDIO -> trigger(DID_FIND_AUDIO.value)
+            TRACK_TYPE_TEXT -> trigger(DID_FIND_SUBTITLE.value)
         }
     }
 

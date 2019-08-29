@@ -87,9 +87,9 @@ class ExoPlayerPlaybackTest {
     fun `Should return last reported bitrate`() {
         val expectedBitrate = 40L
 
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20))
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
         assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
     }
@@ -105,7 +105,7 @@ class ExoPlayerPlaybackTest {
             actualBitrate = it?.getLong(BITRATE.value) ?: 0L
 
         }
-        exoPlayerPlayback.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
+        exoPlayerPlayback.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
         assertEquals(expectedBitrate, actualBitrate)
     }
@@ -115,8 +115,8 @@ class ExoPlayerPlaybackTest {
         var numberOfTriggers = 0
 
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(40))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(10))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(40))
 
         assertEquals(2, numberOfTriggers)
     }
@@ -127,8 +127,8 @@ class ExoPlayerPlaybackTest {
         var numberOfTriggers = 0
 
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
 
         assertEquals(1, numberOfTriggers)
     }
@@ -141,7 +141,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -154,7 +154,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -163,7 +163,7 @@ class ExoPlayerPlaybackTest {
     fun `Should handle wrong time interval exception on add bitrate on history`() {
         timeInNano = -1
 
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
     }
 
     @Test
@@ -176,7 +176,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -189,7 +189,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
 
         assertTrue(didUpdateBitrateCalled)
     }
@@ -202,7 +202,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoplayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
+        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertTrue(didUpdateBitrateCalled)
     }

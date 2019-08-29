@@ -112,16 +112,6 @@ enum class Event(val value: String) {
     MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
 
     /**
-     * Available Audios Update. Triggered when the Playback load audios
-     */
-    DID_FIND_AUDIO("didFindAudio"),
-
-    /**
-     * Available Subtitles Update. Triggered when the Playback load subtitles
-     */
-    DID_FIND_SUBTITLE("didFindSubtitle"),
-
-    /**
      * There was a change in DVR status
      */
     DID_CHANGE_DVR_STATUS("didChangeDvrStatus"),
