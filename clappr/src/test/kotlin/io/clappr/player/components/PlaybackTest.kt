@@ -216,21 +216,47 @@ open class PlaybackTest {
 
     @Test
     fun shouldSetSelectedMediaOptionAudio() {
-        testSetSelectedMediaOption(AUDIO)
+        val playback = SomePlayback("valid-source.mp4")
+        val mediaOptions = insertMedia(playback, AUDIO, 3)
+
+        var mediaOptionsUpdateTriggered = false
+        var didSelectAudioTriggered = false
+
+        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
+        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioTriggered = true }
+
+        mediaOptions.forEach {
+            playback.setSelectedMediaOption(it)
+
+            assertEquals(it, playback.selectedMediaOption(AUDIO))
+            assertTrue(mediaOptionsUpdateTriggered)
+            assertTrue(didSelectAudioTriggered)
+
+            mediaOptionsUpdateTriggered = false
+            didSelectAudioTriggered = false
+        }
     }
 
     @Test
     fun shouldSetSelectedMediaOptionSubtitle() {
-        testSetSelectedMediaOption(SUBTITLE)
-    }
-
-    private fun testSetSelectedMediaOption(mediaOptionType: MediaOptionType) {
         val playback = SomePlayback("valid-source.mp4")
-        val mediaOptionList = insertMedia(playback, mediaOptionType, 3)
+        val mediaOptions = insertMedia(playback, SUBTITLE, 3)
 
-        mediaOptionList.forEach {
+        var mediaOptionsUpdateTriggered = false
+        var didSelectSubtitleTriggered = false
+
+        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
+        playback.on(DID_SELECT_SUBTITLE.value) { didSelectSubtitleTriggered = true }
+
+        mediaOptions.forEach {
             playback.setSelectedMediaOption(it)
-            assertEquals(it, playback.selectedMediaOption(mediaOptionType))
+
+            assertEquals(it, playback.selectedMediaOption(SUBTITLE))
+            assertTrue(mediaOptionsUpdateTriggered)
+            assertTrue(didSelectSubtitleTriggered)
+
+            mediaOptionsUpdateTriggered = false
+            didSelectSubtitleTriggered = false
         }
     }
 
