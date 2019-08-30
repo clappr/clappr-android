@@ -52,8 +52,30 @@ abstract class Playback(
             trigger(DID_UPDATE_OPTIONS.value)
         }
 
+    val availableAudios = mutableListOf<String>()
+
+    val availableSubtitles = mutableListOf<String>()
+
+    var selectedAudio = ""
+        set(value) {
+            if (value !in availableAudios) return
+
+            changeAudioTrack(value)
+
+            field = value
+            trigger(DID_SELECT_AUDIO.value)
+        }
+
+    var selectedSubtitle = "off"
+
+    open fun changeAudioTrack(name: String) {}
+
+    @Deprecated("")
     var selectedMediaOptionList = ArrayList<MediaOption>()
         private set
+
+    @Deprecated("")
+    protected var mediaOptionList = LinkedList<MediaOption>()
 
     open val mediaType: MediaType
         get() = UNKNOWN
@@ -103,8 +125,6 @@ abstract class Playback(
      * PS.: If you set a volume greater than 1.0f we'll set the volume to 1.0f
      */
     open var volume: Float? = null
-
-    protected var mediaOptionList = LinkedList<MediaOption>()
 
     private val audioKeys = mapOf(
         ORIGINAL.value to listOf("original", "und"),

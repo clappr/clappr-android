@@ -5,7 +5,7 @@ import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.Event.*
-import io.clappr.player.base.InternalEvent
+import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.base.Options
 import io.clappr.player.components.AudioLanguage.*
 import io.clappr.player.components.MediaOptionType.AUDIO
@@ -169,8 +169,8 @@ open class PlaybackTest {
 
         var willDestroyCalled = false
         var didDestroyCalled = false
-        listenObject.listenTo(playback, InternalEvent.WILL_DESTROY.value) { willDestroyCalled = true }
-        listenObject.listenTo(playback, InternalEvent.DID_DESTROY.value) { didDestroyCalled = true }
+        listenObject.listenTo(playback, WILL_DESTROY.value) { willDestroyCalled = true }
+        listenObject.listenTo(playback, DID_DESTROY.value) { didDestroyCalled = true }
 
         playback.destroy()
 
@@ -469,7 +469,7 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         var callbackWasCalled = false
-        playback.on(InternalEvent.DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
+        playback.on(DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
 
         playback.options = Options(source = "new_source")
 
@@ -514,4 +514,32 @@ open class PlaybackTest {
     }
 
     private fun mediaOption(name: String, type: MediaOptionType) = MediaOption(name, type, null, null)
+
+    @Test
+    fun shouldTriggerDidSelectAudioWhenAudioIsSet() {
+        val playback = SomePlayback("valid-source.mp4", Options())
+
+        playback.availableAudios += listOf("eng", "por")
+
+        var didSelectAudioWasTriggered = false
+        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioWasTriggered = true }
+
+        playback.selectedAudio = "eng"
+
+        assertTrue(didSelectAudioWasTriggered)
+    }
+
+    @Test
+    fun shouldNotTriggerDidSelectAudioWhenUnavailableAudioIsSet() {
+        val playback = SomePlayback("valid-source.mp4", Options())
+
+        playback.availableAudios += listOf("eng", "por")
+
+        var didSelectAudioWasTriggered = false
+        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioWasTriggered = true }
+
+        playback.selectedAudio = "fr"
+
+        assertFalse(didSelectAudioWasTriggered)
+    }
 }
