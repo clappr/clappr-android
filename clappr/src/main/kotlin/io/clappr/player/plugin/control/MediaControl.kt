@@ -98,7 +98,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     val isEnabled: Boolean
         get() = state == State.ENABLED
 
-    val isVisible: Boolean
+    protected val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
     private val isPlaybackIdle: Boolean
@@ -262,7 +262,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }, duration)
     }
 
-    fun updateInteractionTime() {
+    protected fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
