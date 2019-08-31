@@ -21,14 +21,19 @@ typealias PlaybackSupportCheck = (String, String?) -> Boolean
 
 typealias PlaybackFactory = (String, String?, Options) -> Playback
 
-data class PlaybackEntry(val name: String = "", val supportsSource: PlaybackSupportCheck, val factory: PlaybackFactory)
+data class PlaybackEntry(
+    val name: String = "",
+    val supportsSource: PlaybackSupportCheck,
+    val factory: PlaybackFactory
+)
 
 abstract class Playback(
-        var source: String,
-        var mimeType: String? = null,
-        options: Options = Options(),
-        override val name: String = "",
-        val supportsSource: PlaybackSupportCheck = { _, _ -> false }) : UIObject(), NamedType {
+    var source: String,
+    var mimeType: String? = null,
+    options: Options = Options(),
+    override val name: String = "",
+    val supportsSource: PlaybackSupportCheck = { _, _ -> false }
+) : UIObject(), NamedType {
 
     enum class MediaType {
         UNKNOWN,
@@ -41,8 +46,8 @@ abstract class Playback(
     }
 
     init {
-        if (!supportsSource(source, mimeType)) {
-            throw IllegalArgumentException("Attempt to initialize a playback with an unsupported source")
+        require(supportsSource(source, mimeType)) {
+            "Attempt to initialize a playback with an unsupported source"
         }
     }
 
@@ -51,24 +56,6 @@ abstract class Playback(
             field = options
             trigger(DID_UPDATE_OPTIONS.value)
         }
-
-    val availableAudios = mutableListOf<String>()
-
-    val availableSubtitles = mutableListOf<String>()
-
-    var selectedAudio = ""
-        set(value) {
-            if (value !in availableAudios) return
-
-            changeAudioTrack(value)
-
-            field = value
-            trigger(DID_SELECT_AUDIO.value)
-        }
-
-    var selectedSubtitle = "off"
-
-    open fun changeAudioTrack(name: String) {}
 
     @Deprecated("")
     var selectedMediaOptionList = ArrayList<MediaOption>()
@@ -232,7 +219,7 @@ abstract class Playback(
         get() = options[DEFAULT_SUBTITLE.value] as? String
 
     private fun List<Pair<String, String>>.selected(mediaOptionType: MediaOptionType) =
-            firstOrNull { (_, type) -> type == mediaOptionType.name }?.let { (value, _) -> value }
+        firstOrNull { (_, type) -> type == mediaOptionType.name }?.let { (value, _) -> value }
 
     private val selectedMediaOptions: List<Pair<String, String>>?
         get() {
@@ -241,12 +228,12 @@ abstract class Playback(
                     val jsonObject = JSONObject(selectedMediaOptions as? String)
                     val jsonArray = jsonObject.getJSONArray(mediaOptionsArrayJson)
                     (0 until jsonArray.length())
-                            .map { jsonArray.getJSONObject(it) }
-                            .map {
-                                val type = it.getString(mediaOptionsTypeJson)
-                                val name = it.getString(mediaOptionsNameJson)
-                                name to type
-                            }
+                        .map { jsonArray.getJSONObject(it) }
+                        .map {
+                            val type = it.getString(mediaOptionsTypeJson)
+                            val name = it.getString(mediaOptionsNameJson)
+                            name to type
+                        }
                 }
             } catch (jsonException: JSONException) {
                 Logger.error(name, "Parser Json Exception ${jsonException.message}")
@@ -277,6 +264,34 @@ abstract class Playback(
                 options.remove(START_AT.value)
             }
     }
+
+    val availableAudios = mutableListOf<String>()
+
+    val availableSubtitles = mutableListOf<String>()
+
+    var selectedAudio = "off"
+        set(value) {
+            if (value !in availableAudios) return
+
+            changeAudioTrack(value)
+
+            field = value
+            trigger(DID_SELECT_AUDIO.value)
+        }
+
+    var selectedSubtitle = "off"
+        set(value) {
+            if (value !in availableSubtitles) return
+
+            changeSubtitleTrack(value)
+
+            field = value
+            trigger(DID_SELECT_SUBTITLE.value)
+        }
+
+    open fun changeAudioTrack(name: String) {}
+
+    open fun changeSubtitleTrack(name: String) {}
 
     companion object {
         const val mediaOptionsArrayJson = "media_option"
