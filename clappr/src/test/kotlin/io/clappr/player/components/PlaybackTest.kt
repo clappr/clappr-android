@@ -40,8 +40,6 @@ open class PlaybackTest {
 
         var playWasCalled = false
         var startAtWasCalled = false
-        var changeAudioTrackCalled = false
-        var changeSubtitleTrackCalled = false
         var startAtValueInSeconds: Int = 0
 
         override val mediaType: MediaType
@@ -58,15 +56,7 @@ open class PlaybackTest {
             return super.startAt(seconds)
         }
 
-        val hasSelectedMediaOption = selectedMediaOptionList.isNotEmpty()
-
-        override fun changeAudioTrack(name: String) {
-            changeAudioTrackCalled = true
-        }
-
-        override fun changeSubtitleTrack(name: String) {
-            changeSubtitleTrackCalled = true
-        }
+        val hasSelectedMediaOption = selectedMediaOptions.isNotEmpty()
     }
 
     @Before
@@ -222,7 +212,7 @@ open class PlaybackTest {
             assertEquals(mediaOptionList[i], addedMediaOptionList[i])
         }
 
-        assertTrue(playback.hasMediaOptionAvailable)
+        assertTrue(playback.hasAnyMediaOptionAvailable)
     }
 
     private fun insertMedia(
@@ -230,7 +220,7 @@ open class PlaybackTest {
     ): MutableList<MediaOption> {
         val mediaOptionList: MutableList<MediaOption> = ArrayList()
         for (i in 1..quantity) {
-            val mediaOption = MediaOption("Name $i", mediaOptionType, i, null)
+            val mediaOption = MediaOption("Name $i", mediaOptionType)
             playback.addAvailableMediaOption(mediaOption)
             mediaOptionList.add(mediaOption)
         }
@@ -288,7 +278,7 @@ open class PlaybackTest {
     fun shouldReturnNoOneSelectedMediaOption() {
         val playback = SomePlayback("valid-source.mp4", Options())
 
-        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE, "name", null))
+        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE))
         val mediaSelectedAudio = playback.selectedMediaOption(AUDIO)
 
         assertNull(mediaSelectedAudio)
@@ -306,7 +296,7 @@ open class PlaybackTest {
             mediaOptionsUpdateCalled = true
         }
 
-        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE, "name", null))
+        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE))
 
         assertTrue("Media_Options_Update was not called", mediaOptionsUpdateCalled)
     }
@@ -525,7 +515,7 @@ open class PlaybackTest {
     fun shouldNotSentMediaOptionSelectedWhenOptionIsUpdated() {
         var didSelectedMediaOption = false
         val playback = SomePlayback("valid-source.mp4", Options())
-        val option = MediaOption(ORIGINAL.value, AUDIO, null, null)
+        val option = MediaOption(ORIGINAL.value, AUDIO)
 
         playback.on(MEDIA_OPTIONS_SELECTED.value) {
             didSelectedMediaOption = true
@@ -540,20 +530,17 @@ open class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4", options)
 
         with(playback) {
-            addAvailableMediaOption(mediaOption(ORIGINAL.value, AUDIO))
-            addAvailableMediaOption(mediaOption(PORTUGUESE.value, AUDIO))
-            addAvailableMediaOption(mediaOption(ENGLISH.value, AUDIO))
+            addAvailableMediaOption(MediaOption(ORIGINAL.value, AUDIO))
+            addAvailableMediaOption(MediaOption(PORTUGUESE.value, AUDIO))
+            addAvailableMediaOption(MediaOption(ENGLISH.value, AUDIO))
             addAvailableMediaOption(SUBTITLE_OFF)
-            addAvailableMediaOption(mediaOption(SubtitleLanguage.PORTUGUESE.value, SUBTITLE))
+            addAvailableMediaOption(MediaOption(PORTUGUESE.value, SUBTITLE))
 
             setupInitialMediasFromClapprOptions()
         }
 
         return playback
     }
-
-    private fun mediaOption(name: String, type: MediaOptionType) =
-        MediaOption(name, type, null, null)
 
     @Test
     fun shouldTriggerEventAndChangeTrackWhenAudioIsSet() {
@@ -567,22 +554,15 @@ open class PlaybackTest {
         playback.selectedAudio = "eng"
 
         assertTrue(didSelectAudioWasTriggered)
-        assertTrue(playback.changeAudioTrackCalled)
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableAudioIsSet() {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.availableAudios += listOf("eng", "por")
 
-        var didSelectAudioWasTriggered = false
-        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioWasTriggered = true }
-
         playback.selectedAudio = "fr"
-
-        assertFalse(didSelectAudioWasTriggered)
-        assertFalse(playback.changeAudioTrackCalled)
     }
 
     @Test
@@ -597,21 +577,14 @@ open class PlaybackTest {
         playback.selectedSubtitle = "eng"
 
         assertTrue(didSelectSubtitleWasTriggered)
-        assertTrue(playback.changeSubtitleTrackCalled)
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableSubtitleIsSet() {
         val playback = SomePlayback("valid-source.mp4", Options())
 
         playback.availableSubtitles += listOf("eng", "por")
 
-        var didSelectSubtitleWasTriggered = false
-        playback.on(DID_SELECT_SUBTITLE.value) { didSelectSubtitleWasTriggered = true }
-
         playback.selectedSubtitle = "fr"
-
-        assertFalse(didSelectSubtitleWasTriggered)
-        assertFalse(playback.changeSubtitleTrackCalled)
     }
 }
