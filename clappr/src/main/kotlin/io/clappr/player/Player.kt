@@ -93,7 +93,8 @@ open class Player(private val base: BaseObject = BaseObject(),
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { bindContainerEvents() }
                 it.on(Event.REQUEST_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) }
                 it.on(Event.EXIT_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) }
-                it.on(Event.MEDIA_OPTIONS_SELECTED.value) { bundle: Bundle? -> trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle) }
+                it.on(Event.DID_SELECT_AUDIO.value) { bundle: Bundle? -> trigger(Event.DID_SELECT_AUDIO.value, bundle) }
+                it.on(Event.DID_SELECT_SUBTITLE.value) { bundle: Bundle? -> trigger(Event.DID_SELECT_SUBTITLE.value, bundle) }
 
                 if (it.activeContainer != null) {
                     bindContainerEvents()

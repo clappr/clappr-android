@@ -37,15 +37,11 @@ import io.clappr.player.base.*
 import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.ErrorInfoData.EXCEPTION
 import io.clappr.player.base.Event.*
-import io.clappr.player.base.Event.DID_LOAD_SOURCE
-import io.clappr.player.base.Event.WILL_LOAD_SOURCE
-import io.clappr.player.base.InternalEvent.*
+import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
+import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.*
-import io.clappr.player.components.MediaOptionType.AUDIO
-import io.clappr.player.components.MediaOptionType.SUBTITLE
 import io.clappr.player.components.Playback.MediaType.*
-import io.clappr.player.components.SubtitleLanguage.OFF
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
 import kotlin.math.min
@@ -284,8 +280,10 @@ open class ExoPlayerPlayback(
         exoplayerIsDvrInUse = null
 
         shouldInitializeAudioAndSubtitles = true
-        availableMediaOptions.clear()
-        selectedMediaOptions.clear()
+        availableAudios.clear()
+        availableSubtitles.clear()
+        internalSelectedAudio = AudioLanguage.UNSET.value
+        internalSelectedSubtitle = SubtitleLanguage.OFF.value
         bitrateHistory.clear()
 
         removeListeners()
@@ -577,101 +575,89 @@ open class ExoPlayerPlayback(
             setupBuiltInSubtitles()
         }
 
-        setupAndSelectFirstAudioIfEmpty()
+        selectFirstAudioIfAvailableAndUnset()
 
         setupInitialMediasFromClapprOptions()
-
-        trigger(MEDIA_OPTIONS_READY.value)
-        Logger.info(tag, "MEDIA_OPTIONS_READY")
     }
 
-    private fun setupAndSelectFirstAudioIfEmpty() {
-        if (availableMediaOptions(AUDIO).isNotEmpty() && selectedMediaOption(AUDIO) == null) {
-            setSelectedMediaOption(availableMediaOptions(AUDIO).first())
-        }
+    private fun selectFirstAudioIfAvailableAndUnset() {
+        if (availableAudios.isNotEmpty() && selectedAudio == AudioLanguage.UNSET.value)
+            selectedAudio = availableAudios.first()
     }
 
     private fun setupBuiltInAudios() {
-        val trackSelector = trackSelector ?: return
+        val player = player ?: return
+        val audioTracks = trackSelector?.audioTracks() ?: return
 
-        val audioTracks = trackSelector.audioTracks()
+        availableAudios += audioTracks.map { it.language }
 
-        audioTracks.forEach {
-            val mediaOption = createAudioMediaOptionFromLanguage(it.language)
-
-            addAvailableMediaOption(mediaOption)
-
-            if (player?.selectedAudio == it.language) setSelectedMediaOption(mediaOption)
-        }
+        internalSelectedAudio = player.selectedAudio
 
         if (audioTracks.any()) trigger(DID_FIND_AUDIO.value)
     }
 
     private fun setupBuiltInSubtitles() {
-        val trackSelector = trackSelector ?: return
+        val player = player ?: return
+        val subtitleTracks = trackSelector?.subtitleTracks() ?: return
 
-        val subtitleTracks = trackSelector.subtitleTracks()
+        availableSubtitles += listOf(SubtitleLanguage.OFF.value) + subtitleTracks.map { it.language }
 
-        val languages = listOf(OFF.value) + subtitleTracks.map { it.language }
-
-        languages.forEach {
-
-            val mediaOption = createSubtitleMediaOptionFromLanguage(it)
-
-            addAvailableMediaOption(mediaOption)
-
-            if (player?.selectedSubtitle == it) setSelectedMediaOption(mediaOption)
-        }
+        internalSelectedSubtitle = player.selectedSubtitle
 
         if (subtitleTracks.any()) trigger(DID_FIND_SUBTITLE.value)
     }
 
     private fun setupExternalSubtitles() {
 
-        val languages = listOf(OFF.value) + subtitlesFromOptions.map { it.key }
+        availableSubtitles += listOf(SubtitleLanguage.OFF.value) + subtitlesFromOptions.map { it.key }
 
-        languages.forEach {
-            val mediaOption = createSubtitleMediaOptionFromLanguage(it)
-            addAvailableMediaOption(mediaOption)
-        }
+        internalSelectedSubtitle = SubtitleLanguage.OFF.value
 
         if (subtitlesFromOptions.any()) trigger(DID_FIND_SUBTITLE.value)
     }
 
-    override fun setSelectedMediaOption(mediaOption: MediaOption) {
-        playerView.subtitleView.visibility =
-            if (mediaOption == SUBTITLE_OFF) View.GONE else View.VISIBLE
-
-        trackSelector?.currentMappedTrackInfo?.let {
-            setMediaOptionOnPlayback(mediaOption, it)
-            super.setSelectedMediaOption(mediaOption)
+    override var selectedAudio: String
+        get() = super.selectedAudio
+        set(value) {
+            setAudioOnPlayback(value)
+            super.selectedAudio = value
+            Logger.info(tag, "selectedAudio")
         }
 
-        Logger.info(tag, "setSelectedMediaOption")
-    }
+    override var selectedSubtitle: String
+        get() = super.selectedSubtitle
+        set(value) {
+            playerView.subtitleView.visibility =
+                if (value == SubtitleLanguage.OFF.value) View.GONE else View.VISIBLE
 
-    private fun setMediaOptionOnPlayback(
-        mediaOption: MediaOption,
-        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo
-    ) = when {
-        mediaOption.type == SUBTITLE && mediaOption.name == OFF.value -> {
-            player?.prepare(mediaSource, false, false)
+            setSubtitleOnPlayback(value)
+            super.selectedSubtitle = value
+            Logger.info(tag, "selectedSubtitle")
         }
-        shouldUseExternalSubtitles && mediaOption.type == SUBTITLE -> {
-            setSubtitleFromOptions(mediaOption)
-        }
-        else -> setMediaOptionFromTracks(mediaOption, mappedTrackInfo)
+
+    private fun setAudioOnPlayback(language: String) = setAudioFromTracks(language)
+
+    private fun setSubtitleOnPlayback(language: String) = when {
+        language == SubtitleLanguage.OFF.value -> turnOffSubtitle()
+        shouldUseExternalSubtitles -> selectExternalSubtitle(language)
+        else -> selectSubtitleFromTracks(language)
     }
 
-    private fun setSubtitleFromOptions(mediaOption: MediaOption) {
-        val uri = subtitlesFromOptions[mediaOption.name] ?: return
-        val subtitleMediaSource = createSubtitleMediaSource(mediaOption.name, uri)
-
-        val mergedSource = MergingMediaSource(mediaSource, subtitleMediaSource)
-        player?.prepare(mergedSource, false, false)
+    private fun turnOffSubtitle() {
+        player?.prepare(mediaSource, false, false)
     }
 
-    private fun createSubtitleMediaSource(language: String, uri: String): MediaSource {
+    private fun selectExternalSubtitle(language: String) {
+        val player = player ?: return
+        val uri = subtitlesFromOptions[language] ?: return
+
+        val subtitleMediaSource = createExternalSubtitleMediaSource(language, uri)
+        val mergingMediaSource = MergingMediaSource(mediaSource, subtitleMediaSource)
+
+        player.prepare(mergingMediaSource, false, false)
+    }
+
+    private fun createExternalSubtitleMediaSource(language: String, uri: String): MediaSource {
         val textFormat = Format.createTextSampleFormat(
             null,
             MimeTypes.APPLICATION_SUBRIP,
@@ -679,41 +665,57 @@ open class ExoPlayerPlayback(
             language,
             null
         )
-        return SingleSampleMediaSource.Factory(dataSourceFactory)
-            .createMediaSource(Uri.parse(uri), textFormat, TIME_UNSET)
+        return SingleSampleMediaSource.Factory(dataSourceFactory).createMediaSource(
+            Uri.parse(uri),
+            textFormat,
+            TIME_UNSET
+        )
     }
 
-    private fun setMediaOptionFromTracks(
-        mediaOption: MediaOption,
-        mappedTrackInfo: MappingTrackSelector.MappedTrackInfo
-    ) {
+    private fun setAudioFromTracks(language: String) {
         val trackSelector = trackSelector ?: return
+        val currentMappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return
 
-        val rendererType = when (mediaOption.type) {
-            AUDIO -> TRACK_TYPE_AUDIO
-            SUBTITLE -> TRACK_TYPE_TEXT
-        }
+        val targetTrack = trackSelector.audioTracks().first { it.language == language }
 
-        val track = trackSelector.tracks().first {
-            trackSelector.currentMappedTrackInfo?.getRendererType(it.rendererIndex) == rendererType
-        }
+        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+            .setRendererDisabled(targetTrack.rendererIndex, false)
+            .build()
 
-        trackSelector.setParameters(
-            DefaultTrackSelector.ParametersBuilder().setRendererDisabled(track.rendererIndex, false)
+        val selectionOverride = DefaultTrackSelector.SelectionOverride(
+            targetTrack.trackGroupIndex,
+            targetTrack.formatIndex
         )
+
+        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+            .setSelectionOverride(
+                targetTrack.rendererIndex,
+                currentMappedTrackInfo.getTrackGroups(targetTrack.rendererIndex),
+                selectionOverride
+            ).build()
+    }
+
+    private fun selectSubtitleFromTracks(language: String) {
+        val trackSelector = trackSelector ?: return
+        val currentMappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return
+
+        val track = trackSelector.subtitleTracks().first { it.language == language }
+
+        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+            .setRendererDisabled(track.rendererIndex, false)
+            .build()
 
         val selectionOverride = DefaultTrackSelector.SelectionOverride(
             track.trackGroupIndex,
             track.formatIndex
         )
 
-        trackSelector.setParameters(
-            DefaultTrackSelector.ParametersBuilder().setSelectionOverride(
+        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
+            .setSelectionOverride(
                 track.rendererIndex,
-                mappedTrackInfo.getTrackGroups(track.rendererIndex),
+                currentMappedTrackInfo.getTrackGroups(track.rendererIndex),
                 selectionOverride
-            )
-        )
+            ).build()
     }
 
     inner class ExoPlayerEventsListener : EventListener {

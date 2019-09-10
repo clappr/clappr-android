@@ -16,7 +16,6 @@ enum class InternalEvent (val value: String) {
     DID_NOT_LOAD_SOURCE("didNotLoadSource"),
     WILL_DESTROY("willDestroy"),
     DID_DESTROY("didDestroy"),
-    MEDIA_OPTIONS_READY("mediaOptionsReady"),
     DID_FIND_AUDIO("didFindAudio"),
     DID_FIND_SUBTITLE("didFindSubtitle"),
     DID_UPDATE_OPTIONS("didUpdateOptions"),

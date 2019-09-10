@@ -7,12 +7,7 @@ import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.base.Options
-import io.clappr.player.components.AudioLanguage.*
-import io.clappr.player.components.MediaOptionType.AUDIO
-import io.clappr.player.components.MediaOptionType.SUBTITLE
 import io.clappr.player.playback.NoOpPlayback
-import org.json.JSONArray
-import org.json.JSONObject
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Ignore
@@ -20,11 +15,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23])
-open class PlaybackTest {
+class PlaybackTest {
 
     class SomePlayback(
         source: String, options: Options = Options(),
@@ -55,8 +49,6 @@ open class PlaybackTest {
             startAtValueInSeconds = seconds
             return super.startAt(seconds)
         }
-
-        val hasSelectedMediaOption = selectedMediaOptions.isNotEmpty()
     }
 
     @Before
@@ -83,7 +75,7 @@ open class PlaybackTest {
 
     @Test
     fun shouldCallPlayWhenOptionsHaveAutoplayOn() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
         playback.render()
         assertTrue("play should be called when autoplay is on", playback.playWasCalled)
     }
@@ -160,7 +152,7 @@ open class PlaybackTest {
     @Test
     fun shouldStopListeningOnDestroy() {
         val triggerObject = BaseObject()
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
         var numberOfTriggers = 0
         playback.listenTo(triggerObject, "playbackTest") { numberOfTriggers++ }
@@ -178,7 +170,7 @@ open class PlaybackTest {
     @SuppressLint("IgnoreWithoutReason")
     fun shouldTriggerEventsOnDestroy() {
         val listenObject = BaseObject()
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
         var willDestroyCalled = false
         var didDestroyCalled = false
@@ -192,310 +184,63 @@ open class PlaybackTest {
     }
 
     @Test
-    fun shouldReturnAllAvailableMediaOptionSubtitle() {
-        checkAvailableMedia(SUBTITLE)
-    }
-
-    @Test
-    fun shouldReturnAllAvailableMediaOptionAudio() {
-        checkAvailableMedia(AUDIO)
-    }
-
-    private fun checkAvailableMedia(mediaOptionType: MediaOptionType) {
-        val playback = SomePlayback("valid-source.mp4", Options())
-        val quantity = 10
-        val mediaOptionList = insertMedia(playback, mediaOptionType, quantity)
-
-        val addedMediaOptionList = playback.availableMediaOptions(mediaOptionType)
-        assertEquals(mediaOptionList.size, addedMediaOptionList.size)
-        for (i in 0 until quantity) {
-            assertEquals(mediaOptionList[i], addedMediaOptionList[i])
-        }
-
-        assertTrue(playback.hasAnyMediaOptionAvailable)
-    }
-
-    private fun insertMedia(
-        playback: Playback, mediaOptionType: MediaOptionType, quantity: Int
-    ): MutableList<MediaOption> {
-        val mediaOptionList: MutableList<MediaOption> = ArrayList()
-        for (i in 1..quantity) {
-            val mediaOption = MediaOption("Name $i", mediaOptionType)
-            playback.addAvailableMediaOption(mediaOption)
-            mediaOptionList.add(mediaOption)
-        }
-
-        return mediaOptionList
-    }
-
-    @Test
     fun shouldSetSelectedMediaOptionAudio() {
         val playback = SomePlayback("valid-source.mp4")
-        val mediaOptions = insertMedia(playback, AUDIO, 3)
 
-        var mediaOptionsUpdateTriggered = false
-        var didSelectAudioTriggered = false
+        val languages = (1..3).map { "Name $it" }
+        playback.availableAudios += languages
 
-        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
-        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioTriggered = true }
+        var didUpdateAudioTriggered = false
 
-        mediaOptions.forEach {
-            playback.setSelectedMediaOption(it)
+        playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioTriggered = true }
 
-            assertEquals(it, playback.selectedMediaOption(AUDIO))
-            assertTrue(mediaOptionsUpdateTriggered)
-            assertTrue(didSelectAudioTriggered)
+        languages.forEach {
+            playback.selectedAudio = it
 
-            mediaOptionsUpdateTriggered = false
-            didSelectAudioTriggered = false
+            assertEquals(it, playback.selectedAudio)
+            assertTrue(didUpdateAudioTriggered)
+
+            didUpdateAudioTriggered = false
         }
     }
 
     @Test
     fun shouldSetSelectedMediaOptionSubtitle() {
         val playback = SomePlayback("valid-source.mp4")
-        val mediaOptions = insertMedia(playback, SUBTITLE, 3)
 
-        var mediaOptionsUpdateTriggered = false
-        var didSelectSubtitleTriggered = false
+        val languages = (1..3).map { "Name $it" }
+        playback.availableSubtitles += languages
 
-        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
-        playback.on(DID_SELECT_SUBTITLE.value) { didSelectSubtitleTriggered = true }
+        var didUpdateSubtitleTriggered = false
 
-        mediaOptions.forEach {
-            playback.setSelectedMediaOption(it)
+        playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleTriggered = true }
 
-            assertEquals(it, playback.selectedMediaOption(SUBTITLE))
-            assertTrue(mediaOptionsUpdateTriggered)
-            assertTrue(didSelectSubtitleTriggered)
+        languages.forEach {
+            playback.selectedSubtitle = it
 
-            mediaOptionsUpdateTriggered = false
-            didSelectSubtitleTriggered = false
+            assertEquals(it, playback.selectedSubtitle)
+            assertTrue(didUpdateSubtitleTriggered)
+
+            didUpdateSubtitleTriggered = false
         }
     }
 
     @Test
     fun shouldReturnNoOneSelectedMediaOption() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
-        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE))
-        val mediaSelectedAudio = playback.selectedMediaOption(AUDIO)
+        playback.availableSubtitles += "Name"
 
-        assertNull(mediaSelectedAudio)
-    }
+        playback.selectedSubtitle = "Name"
 
-    @Test
-    fun shouldTriggerMediaOptionsUpdateEvents() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val selectedAudio = playback.selectedAudio
 
-        val listenObject = BaseObject()
-
-        var mediaOptionsUpdateCalled = false
-
-        listenObject.listenTo(playback, MEDIA_OPTIONS_UPDATE.value) {
-            mediaOptionsUpdateCalled = true
-        }
-
-        playback.setSelectedMediaOption(MediaOption("Name", SUBTITLE))
-
-        assertTrue("Media_Options_Update was not called", mediaOptionsUpdateCalled)
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithEmptySelectedMediaOptions() {
-        val mediaOptionJson = ""
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithInvalidSelectedMediaOptions() {
-        val mediaOptionJson = "error"
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithInvalidArraySelectedMediaOptions() {
-        val mediaOptionJson = """{"invalid_array_name":[{"name":"por","type":"AUDIO"}]}"""
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithInvalidNameInSelectedMediaOptions() {
-        val mediaOptionJson = convertMediaOptionsToJson(AUDIO.name, "invalid_name")
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithEmptyNameInSelectedMediaOptions() {
-        val mediaOptionJson = convertMediaOptionsToJson(AUDIO.name, "")
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldNotSelectedMediaOptionWithInvalidTypeInSelectedMediaOptions() {
-        val mediaOptionJson = convertMediaOptionsToJson("invalid_type", "por")
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to mediaOptionJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertNoSelectedMediaOption(this)
-        }
-    }
-
-    @Test
-    fun shouldSelectUpperCasePortugueseAudioFromSelectedMediaOptions() {
-
-        val jsonMediaOptionName = PORTUGUESE.value
-        val jsonMediaOptionType = AUDIO
-        val validJsonWithUpperCase =
-            convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
-
-        val options =
-            Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to validJsonWithUpperCase))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
-        }
-    }
-
-    @Test
-    fun shouldSelectUpperCaseSubtitleFromSelectedMediaOptions() {
-        val jsonMediaOptionName = SubtitleLanguage.PORTUGUESE.value
-        val jsonMediaOptionType = SUBTITLE
-        val validJsonWithUpperCase =
-            convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName.toUpperCase())
-        val options =
-            Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to validJsonWithUpperCase))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, jsonMediaOptionName)
-        }
-    }
-
-    @Test
-    fun `shouldPrioritizeDefaultAudioWhenHasBothDefaultAudioAndSelectedMediaOptions`() {
-        val jsonMediaOptionName = AudioLanguage.ORIGINAL.value
-        val jsonMediaOptionType = AUDIO
-        val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
-
-        val options = Options(
-            options = hashMapOf(
-                SELECTED_MEDIA_OPTIONS.value to validJson,
-                DEFAULT_AUDIO.value to "por"
-            )
-        )
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, "por")
-        }
-    }
-
-    @Test
-    fun `shouldPrioritizeDefaultSubtitleWhenHasBothDefaultSubtitleAndSelectedMediaOptions`() {
-        val jsonMediaOptionName = AudioLanguage.PORTUGUESE.value
-        val jsonMediaOptionType = SUBTITLE
-        val validJson = convertMediaOptionsToJson(jsonMediaOptionType.name, jsonMediaOptionName)
-
-        val options = Options(
-            options = hashMapOf(
-                SELECTED_MEDIA_OPTIONS.value to validJson,
-                DEFAULT_SUBTITLE.value to "off"
-            )
-        )
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertSelectedMediaOption(this, jsonMediaOptionType, "off")
-        }
-    }
-
-    @Test
-    fun shouldSelectAudioAndSubtitleFromSelectedMediaOptions() {
-        val jsonMediaOptionNameAudio = PORTUGUESE.value
-        val jsonMediaOptionTypeAudio = AUDIO
-        val jsonMediaOptionNameSubtitle = SubtitleLanguage.PORTUGUESE.value
-        val jsonMediaOptionTypeSubtitle = SUBTITLE
-        val validJson = convertMediaOptionsToJson(
-            jsonMediaOptionTypeAudio.name, jsonMediaOptionNameAudio,
-            jsonMediaOptionTypeSubtitle.name, jsonMediaOptionNameSubtitle
-        )
-
-        val options = Options(options = hashMapOf(SELECTED_MEDIA_OPTIONS.value to validJson))
-
-        setupPlaybackWithMediaOptions(options).run {
-            assertSelectedMediaOption(this, jsonMediaOptionTypeAudio, jsonMediaOptionNameAudio)
-            assertSelectedMediaOption(
-                this,
-                jsonMediaOptionTypeSubtitle,
-                jsonMediaOptionNameSubtitle
-            )
-        }
-    }
-
-    private fun assertSelectedMediaOption(
-        playback: SomePlayback, expectedType: MediaOptionType, expectedValue: String
-    ) {
-        val optionSelected = playback.selectedMediaOption(expectedType)
-        assertEquals(expectedValue, optionSelected?.name)
-        assertEquals(expectedType.name, optionSelected?.type?.name)
-    }
-
-    private fun assertNoSelectedMediaOption(playback: SomePlayback) {
-        assertFalse(playback.hasSelectedMediaOption)
-        assertNull(playback.selectedMediaOption(AUDIO))
-        assertNull(playback.selectedMediaOption(SUBTITLE))
-    }
-
-    private fun convertMediaOptionsToJson(
-        jsonMediaOptionTypeAudio: String? = null, jsonMediaOptionNameAudio: String? = null,
-        jsonMediaOptionTypeSubtitle: String? = null, jsonMediaOptionNameSubtitle: String? = null
-    ): String {
-        val mediaOptionsArrayJson = "media_option"
-        val mediaOptionsNameJson = "name"
-        val mediaOptionsTypeJson = "type"
-
-        val result = JSONObject()
-        val jsonArray = JSONArray()
-
-        jsonMediaOptionTypeAudio?.let {
-            val jsonObject = JSONObject()
-            jsonObject.put(mediaOptionsNameJson, jsonMediaOptionNameAudio)
-            jsonObject.put(mediaOptionsTypeJson, jsonMediaOptionTypeAudio)
-            jsonArray.put(jsonObject)
-        }
-
-        jsonMediaOptionTypeSubtitle?.let {
-            val jsonObject = JSONObject()
-            jsonObject.put(mediaOptionsNameJson, jsonMediaOptionNameSubtitle)
-            jsonObject.put(mediaOptionsTypeJson, jsonMediaOptionTypeSubtitle)
-            jsonArray.put(jsonObject)
-        }
-
-        result.put(mediaOptionsArrayJson, jsonArray)
-        return result.toString()
+        assertEquals(AudioLanguage.UNSET.value, selectedAudio)
     }
 
     @Test
     fun shouldTriggerUpdateOptionOnSetOptions() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
         var callbackWasCalled = false
         playback.on(DID_UPDATE_OPTIONS.value) { callbackWasCalled = true }
@@ -507,84 +252,77 @@ open class PlaybackTest {
 
     @Test
     fun shouldNotSeekToLivePositionByDefault() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
         assertFalse(playback.seekToLivePosition())
     }
 
     @Test
-    fun shouldNotSentMediaOptionSelectedWhenOptionIsUpdated() {
-        var didSelectedMediaOption = false
-        val playback = SomePlayback("valid-source.mp4", Options())
-        val option = MediaOption(ORIGINAL.value, AUDIO)
+    fun shouldNotSentDidSelectAudioWhenAudioIsUpdated() {
+        var didSelectAudio = false
+        val playback = SomePlayback("valid-source.mp4")
+        val language = AudioLanguage.ORIGINAL.value
 
-        playback.on(MEDIA_OPTIONS_SELECTED.value) {
-            didSelectedMediaOption = true
+        playback.on(DID_SELECT_AUDIO.value) {
+            didSelectAudio = true
         }
 
-        playback.setSelectedMediaOption(option)
+        playback.availableAudios += language
 
-        assertFalse(didSelectedMediaOption)
-    }
+        playback.selectedAudio = language
 
-    private fun setupPlaybackWithMediaOptions(options: Options): SomePlayback {
-        val playback = SomePlayback("valid-source.mp4", options)
-
-        with(playback) {
-            addAvailableMediaOption(MediaOption(ORIGINAL.value, AUDIO))
-            addAvailableMediaOption(MediaOption(PORTUGUESE.value, AUDIO))
-            addAvailableMediaOption(MediaOption(ENGLISH.value, AUDIO))
-            addAvailableMediaOption(SUBTITLE_OFF)
-            addAvailableMediaOption(MediaOption(PORTUGUESE.value, SUBTITLE))
-
-            setupInitialMediasFromClapprOptions()
-        }
-
-        return playback
+        assertFalse(didSelectAudio)
     }
 
     @Test
     fun shouldTriggerEventAndChangeTrackWhenAudioIsSet() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableAudios += listOf("eng", "por")
+        playback.availableAudios += setOf("eng", "por")
 
-        var didSelectAudioWasTriggered = false
-        playback.on(DID_SELECT_AUDIO.value) { didSelectAudioWasTriggered = true }
+        var didUpdateAudioWasTriggered = false
+        playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioWasTriggered = true }
 
         playback.selectedAudio = "eng"
 
-        assertTrue(didSelectAudioWasTriggered)
+        assertTrue(didUpdateAudioWasTriggered)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableAudioIsSet() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableAudios += listOf("eng", "por")
+        playback.availableAudios += setOf("eng", "por")
 
         playback.selectedAudio = "fr"
     }
 
     @Test
     fun shouldTriggerEventAndChangeTrackWhenSubtitleIsSet() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableSubtitles += listOf("eng", "por")
+        playback.availableSubtitles += setOf("eng", "por")
 
-        var didSelectSubtitleWasTriggered = false
-        playback.on(DID_SELECT_SUBTITLE.value) { didSelectSubtitleWasTriggered = true }
+        var didUpdateSubtitleWasTriggered = false
+        playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleWasTriggered = true }
 
         playback.selectedSubtitle = "eng"
 
-        assertTrue(didSelectSubtitleWasTriggered)
+        assertTrue(didUpdateSubtitleWasTriggered)
     }
 
     @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableSubtitleIsSet() {
-        val playback = SomePlayback("valid-source.mp4", Options())
+        val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableSubtitles += listOf("eng", "por")
+        playback.availableSubtitles += setOf("eng", "por")
 
         playback.selectedSubtitle = "fr"
+    }
+
+    @Test
+    fun shouldStartSetWithUnset() {
+        val playback = SomePlayback("valid-source.mp4")
+
+        assertEquals(emptySet<String>(), playback.availableSubtitles)
     }
 }

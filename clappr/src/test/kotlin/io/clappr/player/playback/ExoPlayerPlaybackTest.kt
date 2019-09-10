@@ -6,8 +6,6 @@ import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.ClapprOption.DEFAULT_AUDIO
-import io.clappr.player.base.ClapprOption.DEFAULT_SUBTITLE
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.Options

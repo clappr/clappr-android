@@ -101,25 +101,26 @@ enum class Event(val value: String) {
     DID_UPDATE_POSTER("didUpdatePoster"),
 
     /**
-     * Media Options Selected. Triggered when the user select a Media Option.
-     * Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
-     */
-    MEDIA_OPTIONS_SELECTED("mediaOptionsSelected"),
-
-    /**
-     * Media Options Update. Triggered when the Playback load a media option
-     */
-    MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
-
-    /**
-     * Triggered when an audio is selected
+     * Triggered when an audio is selected.
+     * Data provided with the [EventData.SELECTED_AUDIO] key.
      */
     DID_SELECT_AUDIO("didSelectAudio"),
 
     /**
-     * Triggered when a subtitle is selected
+     * Triggered when a subtitle is selected.
+     * Data provided with the [EventData.SELECTED_SUBTITLE] key.
      */
     DID_SELECT_SUBTITLE("didSelectSubtitle"),
+
+    /**
+     * Triggered when an audio is updated
+     */
+    DID_UPDATE_AUDIO("didUpdateAudio"),
+
+    /**
+     * Triggered when a subtitle is updated
+     */
+    DID_UPDATE_SUBTITLE("didUpdateSubtitle"),
 
     /**
      * There was a change in DVR status
@@ -158,13 +159,22 @@ enum class Event(val value: String) {
 @Keep
 enum class EventData(val value: String) {
     /**
-     * [Event.MEDIA_OPTIONS_SELECTED] data
+     * [Event.DID_SELECT_AUDIO] data
      *
      * Type: String
      *
-     * Selected media options.
+     * Selected audio language
      */
-    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse"),
+    SELECTED_AUDIO("selectedAudio"),
+
+    /**
+     * [Event.DID_SELECT_SUBTITLE] data
+     *
+     * Type: String
+     *
+     * Selected subtitle language
+     */
+    SELECTED_SUBTITLE("selectedSubtitle"),
 
     /**
      * [Event.DID_UPDATE_BITRATE] data

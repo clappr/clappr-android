@@ -409,13 +409,13 @@ open class PlayerTest {
     }
 
     @Test
-    fun `should listen media option update event out of player`() {
-        assertPlaybackEventWasTriggered(Event.MEDIA_OPTIONS_UPDATE.value)
+    fun `should listen did select audio event out of player triggered by core`() {
+        assertCoreEventWasTriggered(Event.DID_SELECT_AUDIO.value)
     }
 
     @Test
-    fun `should listen media option selected event out of player triggered by core`() {
-        assertCoreEventWasTriggered(Event.MEDIA_OPTIONS_SELECTED.value)
+    fun `should listen did select subtitle event out of player triggered by core`() {
+        assertCoreEventWasTriggered(Event.DID_SELECT_SUBTITLE.value)
     }
 
     @Test
