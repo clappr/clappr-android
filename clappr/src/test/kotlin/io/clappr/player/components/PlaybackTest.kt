@@ -3,7 +3,7 @@ package io.clappr.player.components
 import android.annotation.SuppressLint
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
-import io.clappr.player.base.ClapprOption.*
+import io.clappr.player.base.ClapprOption.START_AT
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.base.Options
@@ -277,12 +277,15 @@ class PlaybackTest {
     fun shouldTriggerEventAndChangeTrackWhenAudioIsSet() {
         val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableAudios += setOf("eng", "por")
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
 
         var didUpdateAudioWasTriggered = false
         playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioWasTriggered = true }
 
-        playback.selectedAudio = "eng"
+        playback.selectedAudio = AudioLanguage.ENGLISH.value
 
         assertTrue(didUpdateAudioWasTriggered)
     }
@@ -291,7 +294,10 @@ class PlaybackTest {
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableAudioIsSet() {
         val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableAudios += setOf("eng", "por")
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
 
         playback.selectedAudio = "fr"
     }
@@ -300,12 +306,15 @@ class PlaybackTest {
     fun shouldTriggerEventAndChangeTrackWhenSubtitleIsSet() {
         val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableSubtitles += setOf("eng", "por")
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
 
         var didUpdateSubtitleWasTriggered = false
         playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleWasTriggered = true }
 
-        playback.selectedSubtitle = "eng"
+        playback.selectedSubtitle = AudioLanguage.ENGLISH.value
 
         assertTrue(didUpdateSubtitleWasTriggered)
     }
@@ -314,7 +323,10 @@ class PlaybackTest {
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableSubtitleIsSet() {
         val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableSubtitles += setOf("eng", "por")
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
 
         playback.selectedSubtitle = "fr"
     }
