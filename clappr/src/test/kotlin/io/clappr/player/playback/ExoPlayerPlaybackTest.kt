@@ -3,13 +3,19 @@ package io.clappr.player.playback
 import androidx.test.core.app.ApplicationProvider
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.source.MediaSourceEventListener
+import com.nhaarman.mockito_kotlin.any
 import io.clappr.player.base.BaseObject
+import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData.BITRATE
+import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
+import io.clappr.player.components.AudioLanguage
+import io.clappr.player.components.Playback.State
+import io.clappr.player.components.SubtitleLanguage
 import io.clappr.player.shadows.SimpleExoplayerShadow
 import io.clappr.player.shadows.SubtitleViewShadow
 import org.junit.Assert.assertFalse
@@ -246,7 +252,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = Options())
         exoPlayerPlayBack.load(source = source)
 
-        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+        assertEquals(REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     @Test
@@ -258,7 +264,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+        assertEquals(REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     @Test
@@ -270,7 +276,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        assertEquals(Player.REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
+        assertEquals(REPEAT_MODE_OFF, SimpleExoplayerShadow.staticRepeatMode)
     }
 
     @Test
@@ -282,7 +288,316 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
         exoPlayerPlayBack.load(source = source)
 
-        assertEquals(Player.REPEAT_MODE_ONE, SimpleExoplayerShadow.staticRepeatMode)
+        assertEquals(REPEAT_MODE_ONE, SimpleExoplayerShadow.staticRepeatMode)
+    }
+
+    @Test
+    fun `Should trigger WILL_LOAD_SOURCE when load is called`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, WILL_LOAD_SOURCE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.load(source = source)
+
+        assertTrue(
+            "WILL_LOAD_SOURCE event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_LOAD_SOURCE when load is called`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_LOAD_SOURCE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.load(source = source)
+
+        assertTrue(
+            "DID_LOAD_SOURCE event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger WILL_STOP when stop is called`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, WILL_STOP.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.stop()
+
+        assertTrue(
+            "WILL_STOP event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_STOP when stop is called`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_STOP.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.stop()
+
+        assertTrue(
+            "WILL_STOP event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should have an IDLE state after stop is called`() {
+        val source = "supported-source.mp4"
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        exoPlayerPlayBack.stop()
+
+        assertFalse(exoPlayerPlayBack.isDvrInUse)
+        assertEquals(State.IDLE, exoPlayerPlayBack.state)
+        assertEquals(mutableSetOf(), exoPlayerPlayBack.availableAudios)
+        assertEquals(mutableSetOf(), exoPlayerPlayBack.availableSubtitles)
+        assertEquals(AudioLanguage.UNSET.value, exoPlayerPlayBack.selectedAudio)
+        assertEquals(SubtitleLanguage.OFF.value, exoPlayerPlayBack.selectedSubtitle)
+    }
+
+    @Test
+    fun `Should trigger DID_COMPLETE when ExoPlayer reaches end state`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_COMPLETE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(any(), STATE_ENDED)
+
+        assertEquals(State.IDLE, exoPlayerPlayBack.state)
+        assertTrue(
+            "DID_COMPLETE event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger STALLING when ExoPlayer reaches buffering state`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(any(), STATE_BUFFERING)
+
+        assertEquals(State.STALLING, exoPlayerPlayBack.state)
+        assertTrue(
+            "STALLING event wasn't triggered when load method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger READY when ExoPlayer reaches ready state`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, READY.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+
+        assertEquals(State.IDLE, exoPlayerPlayBack.state)
+        assertTrue(
+            "READY event wasn't triggered when handleExoPlayerReadyState method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger READY when ExoPlayer load changes`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, READY.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
+
+        assertEquals(State.IDLE, exoPlayerPlayBack.state)
+        assertTrue(
+            "READY event wasn't triggered when onLoadingChanged method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger PLAYING when ExoPlayer reaches ready state and play is ready`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, PLAYING.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
+
+        assertEquals(State.PLAYING, exoPlayerPlayBack.state)
+        assertTrue(
+            "PLAYING event wasn't triggered when handleExoPlayerReadyState method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_PAUSE when ExoPlayer reaches ready state and play is not ready`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_PAUSE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+
+        assertEquals(State.PAUSED, exoPlayerPlayBack.state)
+        assertTrue(
+            "DID_PAUSE event wasn't triggered when handleExoPlayerReadyState method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger ERROR event when ExoPlayer receive an error`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+
+        listenObject.listenTo(exoPlayerPlayBack, ERROR.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onPlayerError(any())
+
+        assertEquals(State.ERROR, exoPlayerPlayBack.state)
+        assertTrue(
+            "ERROR event wasn't triggered when handleError method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_FIND_SUBTITLE when ExoPlayer load available external subtitles`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+        val options = Options(
+            options = hashMapOf(ClapprOption.SUBTITLES.value to hashMapOf("por" to "url"))
+        )
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_FIND_SUBTITLE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+
+        assertEquals("off", exoPlayerPlayBack.selectedSubtitle)
+        assertTrue(
+            "DID_FIND_SUBTITLE event wasn't triggered when setupExternalSubtitles method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_AUDIO when ExoPlayer receive default audio from Clappr`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+        val options = Options(
+            options = hashMapOf(ClapprOption.DEFAULT_AUDIO.value to AudioLanguage.PORTUGUESE.value)
+        )
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.availableAudios += setOf(AudioLanguage.PORTUGUESE.value)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_AUDIO.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+
+        assertEquals(AudioLanguage.PORTUGUESE.value, exoPlayerPlayBack.selectedAudio)
+        assertTrue(
+            "DID_UPDATE_AUDIO event wasn't triggered when setupInitialMediasFromClapprOptions method was called",
+            eventCalled
+        )
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_SUBTITLE when ExoPlayer receive default subtitle from Clappr`() {
+        val source = "supported-source.mp4"
+        var eventCalled = false
+        val options = Options(
+            options = hashMapOf(ClapprOption.DEFAULT_SUBTITLE.value to AudioLanguage.PORTUGUESE.value)
+        )
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source, options = options)
+        exoPlayerPlayBack.availableSubtitles += setOf(AudioLanguage.PORTUGUESE.value)
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_SUBTITLE.value) {
+            eventCalled = true
+        }
+
+        exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+
+        assertEquals(AudioLanguage.PORTUGUESE.value, exoPlayerPlayBack.selectedSubtitle)
+        assertTrue(
+            "DID_UPDATE_SUBTITLE event wasn't triggered when setupInitialMediasFromClapprOptions method was called",
+            eventCalled
+        )
     }
 
     private fun addBitrateMediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT): MediaSourceEventListener.MediaLoadData {

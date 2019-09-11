@@ -54,10 +54,6 @@ open class ExoPlayerPlayback(
 ) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
 
     private var isVideoCompleted = false
-    private val ONE_SECOND_IN_MILLIS: Int = 1000
-    private val DEFAULT_MIN_DVR_SIZE = 60
-    private val MIN_DVR_LIVE_DRIFT = 5
-    private val DEFAULT_SYNC_BUFFER_IN_SECONDS = DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
 
     open val minDvrSize by lazy {
         options[MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
@@ -67,7 +63,7 @@ open class ExoPlayerPlayback(
     protected val bandwidthMeter = DefaultBandwidthMeter()
 
     private val mainHandler = Handler()
-    private val eventsListener = ExoPlayerEventsListener()
+    val eventsListener = ExoPlayerEventsListener()
     private val bitrateEventsListener = ExoPlayerBitrateLogger()
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
@@ -118,14 +114,14 @@ open class ExoPlayerPlayback(
         }
 
     private val syncBufferInSeconds =
-        if (mediaType == LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
+        if (mediaType == LIVE) Companion.DEFAULT_SYNC_BUFFER_IN_SECONDS + Companion.MIN_DVR_LIVE_DRIFT else 0
 
     override val duration: Double
-        get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds }
+        get() = player?.duration?.let { (it.toDouble() / Companion.ONE_SECOND_IN_MILLIS) - syncBufferInSeconds }
             ?: Double.NaN
 
     override val position: Double
-        get() = player?.currentPosition?.let { min(it.toDouble() / ONE_SECOND_IN_MILLIS, duration) }
+        get() = player?.currentPosition?.let { min(it.toDouble() / Companion.ONE_SECOND_IN_MILLIS, duration) }
             ?: Double.NaN
 
     override val state: State
@@ -301,7 +297,7 @@ open class ExoPlayerPlayback(
         if (!canSeek) return false
 
         trigger(WILL_SEEK)
-        player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
+        player?.seekTo((seconds * Companion.ONE_SECOND_IN_MILLIS).toLong())
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
 
@@ -310,7 +306,7 @@ open class ExoPlayerPlayback(
 
     override fun startAt(seconds: Int): Boolean {
         if (!canSeek) return false
-        player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
+        player?.seekTo((seconds * Companion.ONE_SECOND_IN_MILLIS).toLong())
         triggerPositionUpdateEvent()
 
         return true
@@ -744,7 +740,7 @@ open class ExoPlayerPlayback(
             timeline?.takeIf { isDvrAvailable && it.windowCount > 0 }?.let {
                 var currentWindow = Timeline.Window()
                 currentWindow = it.getWindow(0, currentWindow)
-                dvrStartTimeInSeconds = currentWindow.windowStartTimeMs / ONE_SECOND_IN_MILLIS
+                dvrStartTimeInSeconds = currentWindow.windowStartTimeMs / Companion.ONE_SECOND_IN_MILLIS
             }
         }
 
@@ -798,12 +794,16 @@ open class ExoPlayerPlayback(
 
         const val name = "exoplayerplayback"
 
+        private const val ONE_SECOND_IN_MILLIS: Int = 1000
+        private const val DEFAULT_MIN_DVR_SIZE = 60
+        private const val MIN_DVR_LIVE_DRIFT = 5
+        private const val DEFAULT_SYNC_BUFFER_IN_SECONDS = DEFAULT_MIN_BUFFER_MS / ONE_SECOND_IN_MILLIS
+
         val supportsSource: PlaybackSupportCheck = { source, _ ->
             val uri = Uri.parse(source)
             val type = inferContentType(uri.lastPathSegment)
             type == TYPE_SS || type == TYPE_HLS || type == TYPE_DASH || type == TYPE_OTHER
         }
-
         val entry = PlaybackEntry(
             name = name,
             supportsSource = supportsSource,
