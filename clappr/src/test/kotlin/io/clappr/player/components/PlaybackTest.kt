@@ -306,7 +306,7 @@ class PlaybackTest {
     fun shouldTriggerEventAndChangeTrackWhenSubtitleIsSet() {
         val playback = SomePlayback("valid-source.mp4")
 
-        playback.availableAudios += setOf(
+        playback.availableSubtitles += setOf(
             AudioLanguage.ENGLISH.value,
             AudioLanguage.PORTUGUESE.value
         )
@@ -322,12 +322,6 @@ class PlaybackTest {
     @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableSubtitleIsSet() {
         val playback = SomePlayback("valid-source.mp4")
-
-        playback.availableAudios += setOf(
-            AudioLanguage.ENGLISH.value,
-            AudioLanguage.PORTUGUESE.value
-        )
-
         playback.selectedSubtitle = "fr"
     }
 
