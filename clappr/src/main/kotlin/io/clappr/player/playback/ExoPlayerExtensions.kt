@@ -8,27 +8,27 @@ import io.clappr.player.components.AudioLanguage
 import io.clappr.player.components.SubtitleLanguage
 import java.util.*
 
-private val audioStandardMap = mapOf(
-    AudioLanguage.ORIGINAL.value to listOf("original", "und"),
-    AudioLanguage.PORTUGUESE.value to listOf("pt", "por"),
-    AudioLanguage.ENGLISH.value to listOf("en", "eng")
-)
+fun Player.getSelectedAudio(trackSelector: MappingTrackSelector): String {
+    val rendererIndex = trackSelector.audioTracks()
+        .firstOrNull()?.rendererIndex ?: return AudioLanguage.UNSET.value
 
-private val subtitleStandardMap = mapOf(
-    SubtitleLanguage.OFF.value to listOf("", "off"),
-    SubtitleLanguage.PORTUGUESE.value to listOf("pt", "por")
-)
+    val selectedFormat = currentTrackSelections.get(rendererIndex)?.selectedFormat
+        ?: return AudioLanguage.UNSET.value
 
-val Player.selectedAudio: String
-    get() {
-        val selectedFormat = currentTrackSelections.get(TRACK_TYPE_AUDIO)?.selectedFormat
-            ?: return AudioLanguage.UNSET.value
+    return selectedFormat.language.toStandardAudioLanguage()
+}
 
-        return selectedFormat.language.toStandardAudioLanguage()
-    }
+fun Player.getSelectedSubtitle(trackSelector: MappingTrackSelector): String {
+    val rendererIndex = trackSelector.subtitleTracks()
+        .firstOrNull()?.rendererIndex ?: return SubtitleLanguage.OFF.value
 
-val Player.selectedSubtitle: String
-    get() = currentTrackSelections.get(TRACK_TYPE_TEXT)?.selectedFormat?.language.toStandardSubtitleLanguage()
+    return currentTrackSelections.get(rendererIndex)
+        ?.selectedFormat?.language.toStandardSubtitleLanguage()
+}
+
+fun MappingTrackSelector.audioTracks() = tracks().filter { it.rendererType == TRACK_TYPE_AUDIO }
+
+fun MappingTrackSelector.subtitleTracks() = tracks().filter { it.rendererType == TRACK_TYPE_TEXT }
 
 private fun MappingTrackSelector.tracks(): List<TrackInfo> {
 
@@ -69,10 +69,6 @@ private fun MappingTrackSelector.tracks(): List<TrackInfo> {
     return tracks
 }
 
-fun MappingTrackSelector.audioTracks() = tracks().filter { it.rendererType == TRACK_TYPE_AUDIO }
-
-fun MappingTrackSelector.subtitleTracks() = tracks().filter { it.rendererType == TRACK_TYPE_TEXT }
-
 private fun String?.toStandardAudioLanguage() = audioStandardMap.entries
     .firstOrNull { this?.toLowerCase(Locale.getDefault()) in it.value }?.key
     ?: this?.toLowerCase(Locale.getDefault())
@@ -82,6 +78,17 @@ private fun String?.toStandardSubtitleLanguage() = subtitleStandardMap.entries
     .firstOrNull { this?.toLowerCase(Locale.getDefault()) in it.value }?.key
     ?: this?.toLowerCase(Locale.getDefault())
     ?: SubtitleLanguage.OFF.value
+
+private val audioStandardMap = mapOf(
+    AudioLanguage.ORIGINAL.value to listOf("original", "und"),
+    AudioLanguage.PORTUGUESE.value to listOf("pt", "por"),
+    AudioLanguage.ENGLISH.value to listOf("en", "eng")
+)
+
+private val subtitleStandardMap = mapOf(
+    SubtitleLanguage.OFF.value to listOf("", "off"),
+    SubtitleLanguage.PORTUGUESE.value to listOf("pt", "por")
+)
 
 data class TrackInfo(
     val rendererType: Int,
