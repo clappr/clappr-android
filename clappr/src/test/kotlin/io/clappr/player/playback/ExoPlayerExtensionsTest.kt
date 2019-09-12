@@ -142,6 +142,75 @@ class ExoPlayerExtensionsTest {
         assertEquals(expectedTracks, trackSelector.audioTracks())
     }
 
+    @Test
+    fun `should return the selected audio language based on selected audio track`() {
+        val trackSelector = buildTrackSelector(
+            mapOf(
+                TRACK_TYPE_AUDIO to listOf("por", "eng", "und")
+            )
+        )
+
+        val player = mock<Player>()
+
+        val trackSelectionArray = buildTrackSelectionArray(trackSelector, TRACK_TYPE_AUDIO, 1)
+
+        whenever(player.currentTrackSelections).doReturn(trackSelectionArray)
+
+        assertEquals("eng", player.getSelectedAudio(trackSelector))
+    }
+
+    @Test
+    fun `should return the selected subtitle language based on selected subtitle track`() {
+        val trackSelector = buildTrackSelector(
+            mapOf(
+                TRACK_TYPE_TEXT to listOf("por", "eng")
+            )
+        )
+
+        val player = mock<Player>()
+
+        val trackSelectionArray = buildTrackSelectionArray(trackSelector, TRACK_TYPE_TEXT, 0)
+
+        whenever(player.currentTrackSelections).doReturn(trackSelectionArray)
+
+        assertEquals("por", player.getSelectedSubtitle(trackSelector))
+    }
+
+    @Test
+    fun `should return the default audio language when there is no audios available`() {
+        val trackSelector = buildTrackSelector(emptyMap())
+
+        val player = mock<Player>()
+
+        assertEquals("", player.getSelectedAudio(trackSelector))
+    }
+
+    @Test
+    fun `should return the default subtitle language when there is no subtitles available`() {
+        val trackSelector = buildTrackSelector(emptyMap())
+
+        val player = mock<Player>()
+
+        assertEquals("off", player.getSelectedSubtitle(trackSelector))
+    }
+
+    private fun buildTrackSelectionArray(
+        trackSelector: MappingTrackSelector,
+        rendererType: Int,
+        selectedIndex: Int
+    ): TrackSelectionArray {
+
+        val rendererIndex = (0 until trackSelector.currentMappedTrackInfo!!.rendererCount)
+            .first { trackSelector.currentMappedTrackInfo!!.getRendererType(it) == rendererType }
+
+        val mappedTrackInfo = trackSelector.currentMappedTrackInfo!!
+        val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
+        val trackGroup = trackGroupArray.get(selectedIndex)
+        val trackSelection = FixedTrackSelection(trackGroup, 0)
+
+        return TrackSelectionArray(trackSelection)
+    }
+
     private fun buildTrackSelector(rendererMap: Map<Int, List<String?>>): MappingTrackSelector {
         val trackSelector = mock<DefaultTrackSelector>()
         val mappedTrackInfo = mock<MappingTrackSelector.MappedTrackInfo>()
@@ -175,30 +244,12 @@ class ExoPlayerExtensionsTest {
         else -> createSampleFormat()
     }
 
-    private fun createAudioFormat(language: String?) = Format.createAudioSampleFormat(
-        null,
-        null,
-        null,
-        0,
-        0,
-        0,
-        0,
-        null,
-        null,
-        0,
-        language
-    )
+    private fun createAudioFormat(language: String?) =
+        Format.createAudioSampleFormat(null, null, null, 0, 0, 0, 0, null, null, 0, language)
 
-    private fun createTextFormat(language: String?) = Format.createTextSampleFormat(
-        null,
-        null,
-        0,
-        language
-    )
+    private fun createTextFormat(language: String?) =
+        Format.createTextSampleFormat(null, null, 0, language)
 
-    private fun createSampleFormat() = Format.createSampleFormat(
-        null,
-        null,
-        0
-    )
+    private fun createSampleFormat() =
+        Format.createSampleFormat(null, null, 0)
 }

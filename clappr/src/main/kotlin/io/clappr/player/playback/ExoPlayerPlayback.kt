@@ -572,9 +572,9 @@ open class ExoPlayerPlayback(
             setupBuiltInSubtitles()
         }
 
-        selectFirstAudioIfAvailableAndUnset()
-
         setupInitialMediasFromClapprOptions()
+
+        selectFirstAudioIfAvailableAndUnset()
     }
 
     private fun selectFirstAudioIfAvailableAndUnset() {

@@ -9,8 +9,8 @@ import io.clappr.player.components.SubtitleLanguage
 import java.util.*
 
 fun Player.getSelectedAudio(trackSelector: MappingTrackSelector): String {
-    val rendererIndex = trackSelector.audioTracks()
-        .firstOrNull()?.rendererIndex ?: return AudioLanguage.UNSET.value
+    val rendererIndex = trackSelector.audioTracks().firstOrNull()?.rendererIndex
+        ?: return AudioLanguage.UNSET.value
 
     val selectedFormat = currentTrackSelections.get(rendererIndex)?.selectedFormat
         ?: return AudioLanguage.UNSET.value
