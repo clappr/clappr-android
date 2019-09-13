@@ -279,7 +279,7 @@ open class ExoPlayerPlayback(
         shouldInitializeAudioAndSubtitles = true
         availableAudios.clear()
         availableSubtitles.clear()
-        internalSelectedAudio = AudioLanguage.UNSET.value
+        internalSelectedAudio = null
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
         bitrateHistory.clear()
 
@@ -578,7 +578,7 @@ open class ExoPlayerPlayback(
     }
 
     private fun selectFirstAudioIfAvailableAndUnset() {
-        if (availableAudios.isNotEmpty() && selectedAudio == AudioLanguage.UNSET.value)
+        if (availableAudios.isNotEmpty() && selectedAudio == null)
             selectedAudio = availableAudios.first()
     }
 
@@ -615,10 +615,11 @@ open class ExoPlayerPlayback(
         if (subtitlesFromOptions.any()) trigger(DID_FIND_SUBTITLE.value)
     }
 
-    override var selectedAudio: String
+    override var selectedAudio: String?
         get() = super.selectedAudio
         set(value) {
-            setAudioOnPlayback(value)
+            if (value != null)
+                setAudioOnPlayback(value)
             super.selectedAudio = value
             Logger.info(tag, "selectedAudio")
         }

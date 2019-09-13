@@ -235,7 +235,7 @@ class PlaybackTest {
 
         val selectedAudio = playback.selectedAudio
 
-        assertEquals(AudioLanguage.UNSET.value, selectedAudio)
+        assertEquals(null, selectedAudio)
     }
 
     @Test

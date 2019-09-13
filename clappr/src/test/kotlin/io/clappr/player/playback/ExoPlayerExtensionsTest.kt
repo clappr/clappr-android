@@ -134,7 +134,7 @@ class ExoPlayerExtensionsTest {
 
         val player = mock<Player>()
 
-        assertEquals("", player.getSelectedAudio(trackSelector))
+        assertEquals(null, player.getSelectedAudio(trackSelector))
     }
 
     @Test

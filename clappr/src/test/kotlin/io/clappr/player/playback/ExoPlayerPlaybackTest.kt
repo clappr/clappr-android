@@ -379,7 +379,7 @@ class ExoPlayerPlaybackTest {
         assertEquals(State.IDLE, exoPlayerPlayBack.state)
         assertEquals(mutableSetOf(), exoPlayerPlayBack.availableAudios)
         assertEquals(mutableSetOf(), exoPlayerPlayBack.availableSubtitles)
-        assertEquals(AudioLanguage.UNSET.value, exoPlayerPlayBack.selectedAudio)
+        assertEquals(null, exoPlayerPlayBack.selectedAudio)
         assertEquals(SubtitleLanguage.OFF.value, exoPlayerPlayBack.selectedSubtitle)
     }
 

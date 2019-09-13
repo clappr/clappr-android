@@ -99,8 +99,8 @@ abstract class Playback(
 
     val availableSubtitles = mutableSetOf<String>()
 
-    protected var internalSelectedAudio = AudioLanguage.UNSET.value
-    open var selectedAudio: String
+    protected var internalSelectedAudio: String? = null
+    open var selectedAudio: String?
         /**
          * @throws IllegalArgumentException when audio is not available
          */
