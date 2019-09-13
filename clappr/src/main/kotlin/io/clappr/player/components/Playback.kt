@@ -175,8 +175,13 @@ abstract class Playback(
         get() = options[DEFAULT_SUBTITLE.value] as? String
 
     fun setupInitialMediasFromClapprOptions() {
-        defaultAudio?.takeIf { it.toLowerCase() in availableAudios }?.let { selectedAudio = it }
-        defaultSubtitle?.takeIf { it.toLowerCase() in availableSubtitles }?.let { selectedSubtitle = it }
+        defaultAudio?.toLowerCase()
+            .takeIf { it in availableAudios }
+            ?.let { selectedAudio = it }
+
+        defaultSubtitle?.toLowerCase()
+            .takeIf { it in availableSubtitles }
+            ?.let { selectedSubtitle = it }
     }
 
     private fun configureStartAt() {
