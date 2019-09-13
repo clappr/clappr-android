@@ -306,10 +306,10 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val isKeyAllowedToShownMediaControl =
+            val isKeyAllowedToShowMediaControl =
                 keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
 
-            if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
+            if (isKeyAllowedToShowMediaControl && Action.getByValue(keyAction) == Action.UP)
                 toggleVisibility()
         }
     }
