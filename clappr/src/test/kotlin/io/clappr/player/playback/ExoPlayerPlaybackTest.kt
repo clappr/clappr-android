@@ -4,11 +4,11 @@ import androidx.test.core.app.ApplicationProvider
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
 import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
+import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.nhaarman.mockito_kotlin.any
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
@@ -30,6 +30,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
+import java.io.IOException
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -175,7 +176,7 @@ class ExoPlayerPlaybackTest {
             didUpdateBitrateCalled = true
         }
         exoPlayerPlayBack.ExoPlayerBitrateLogger()
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
+            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -429,7 +430,7 @@ class ExoPlayerPlaybackTest {
             eventCalled = true
         }
 
-        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(any(), STATE_ENDED)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_ENDED)
 
         assertEquals(State.IDLE, exoPlayerPlayBack.state)
         assertTrue(
@@ -450,7 +451,7 @@ class ExoPlayerPlaybackTest {
         }
 
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
-        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(any(), STATE_BUFFERING)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_BUFFERING)
 
         assertEquals(State.STALLING, exoPlayerPlayBack.state)
         assertTrue(
@@ -552,7 +553,8 @@ class ExoPlayerPlaybackTest {
             eventCalled = true
         }
 
-        exoPlayerPlayBack.eventsListener.onPlayerError(any())
+        val exception = ExoPlaybackException.createForSource(IOException())
+        exoPlayerPlayBack.eventsListener.onPlayerError(exception)
 
         assertEquals(State.ERROR, exoPlayerPlayBack.state)
         assertTrue(
