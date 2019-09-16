@@ -101,6 +101,19 @@ enum class Event(val value: String) {
     DID_UPDATE_POSTER("didUpdatePoster"),
 
     /**
+     * Media Options Selected. Triggered when the user select a Media Option.
+     * Data provided with the [EventData.MEDIA_OPTIONS_SELECTED_RESPONSE] key.
+     */
+    @Deprecated("Event.DID_SELECT_AUDIO and Event.DID_SELECT_SUBTITLE should be used instead.")
+    MEDIA_OPTIONS_SELECTED("mediaOptionsSelected"),
+
+    /**
+     * Media Options Update. Triggered when the Playback load a media option
+     */
+    @Deprecated("Event.DID_UPDATE_AUDIO and Event.DID_UPDATE_SUBTITLE should be used instead.")
+    MEDIA_OPTIONS_UPDATE("mediaOptionsUpdate"),
+
+    /**
      * Triggered when an audio is selected.
      * Data provided with the [EventData.SELECTED_AUDIO] key.
      */
@@ -158,6 +171,15 @@ enum class Event(val value: String) {
  */
 @Keep
 enum class EventData(val value: String) {
+    /**
+     * [Event.MEDIA_OPTIONS_SELECTED] data
+     *
+     * Type: String
+     *
+     * Selected media options.
+     */
+    MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse"),
+
     /**
      * [Event.DID_SELECT_AUDIO] data
      *

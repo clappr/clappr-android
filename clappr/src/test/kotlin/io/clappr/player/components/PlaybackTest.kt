@@ -3,6 +3,7 @@ package io.clappr.player.components
 import android.annotation.SuppressLint
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
+import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.ClapprOption.START_AT
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.*
@@ -191,16 +192,20 @@ class PlaybackTest {
         playback.availableAudios += languages
 
         var didUpdateAudioTriggered = false
+        var mediaOptionsUpdateTriggered = false
 
         playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioTriggered = true }
+        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
 
         languages.forEach {
             playback.selectedAudio = it
 
             assertEquals(it, playback.selectedAudio)
             assertTrue(didUpdateAudioTriggered)
+            assertTrue(mediaOptionsUpdateTriggered)
 
             didUpdateAudioTriggered = false
+            mediaOptionsUpdateTriggered = false
         }
     }
 
@@ -212,16 +217,20 @@ class PlaybackTest {
         playback.availableSubtitles += languages
 
         var didUpdateSubtitleTriggered = false
+        var mediaOptionsUpdateTriggered = false
 
         playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleTriggered = true }
+        playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
 
         languages.forEach {
             playback.selectedSubtitle = it
 
             assertEquals(it, playback.selectedSubtitle)
             assertTrue(didUpdateSubtitleTriggered)
+            assertTrue(mediaOptionsUpdateTriggered)
 
             didUpdateSubtitleTriggered = false
+            mediaOptionsUpdateTriggered = false
         }
     }
 
@@ -330,5 +339,115 @@ class PlaybackTest {
         val playback = SomePlayback("valid-source.mp4")
 
         assertEquals(emptySet<String>(), playback.availableSubtitles)
+    }
+
+    @Test
+    fun shouldUpdateSelectedAudioWhenDefaultAudioIsPassed() {
+        val options = Options(
+            options = hashMapOf(
+                ClapprOption.DEFAULT_AUDIO.value to AudioLanguage.PORTUGUESE.value
+            )
+        )
+
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        assertEquals(AudioLanguage.PORTUGUESE.value, playback.selectedAudio)
+    }
+
+    @Test
+    fun shouldUpdateSelectedSubtitleWhenDefaultSubtitleIsPassed() {
+        val options = Options(
+            options = hashMapOf(
+                ClapprOption.DEFAULT_SUBTITLE.value to SubtitleLanguage.PORTUGUESE.value
+            )
+        )
+
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.availableSubtitles += setOf(
+            SubtitleLanguage.OFF.value,
+            SubtitleLanguage.PORTUGUESE.value
+        )
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        assertEquals(SubtitleLanguage.PORTUGUESE.value, playback.selectedSubtitle)
+    }
+
+    @Test
+    fun shouldUpdateSelectedAudioAndSelectedSubtitleWhenSelectedMediaOptionsIsPassed() {
+        val options = Options(
+            options = hashMapOf(
+                ClapprOption.SELECTED_MEDIA_OPTIONS.value to """{"media_option":[{"name":"por","type":"SUBTITLE"},{"name":"por","type":"AUDIO"}]}}"""
+            )
+        )
+
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.availableAudios += setOf(
+            AudioLanguage.ENGLISH.value,
+            AudioLanguage.PORTUGUESE.value
+        )
+
+        playback.availableSubtitles += setOf(
+            SubtitleLanguage.OFF.value,
+            SubtitleLanguage.PORTUGUESE.value
+        )
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        assertEquals(AudioLanguage.PORTUGUESE.value, playback.selectedAudio)
+        assertEquals(SubtitleLanguage.PORTUGUESE.value, playback.selectedSubtitle)
+    }
+
+    @Test
+    fun shouldPreferDefaultSubtitleWhenBothOptionsArePassed() {
+        val options = Options(
+            options = hashMapOf(
+                ClapprOption.DEFAULT_SUBTITLE.value to SubtitleLanguage.PORTUGUESE.value,
+                ClapprOption.SELECTED_MEDIA_OPTIONS.value to """{"media_option":[{"name":"eng","type":"SUBTITLE"}]}}"""
+            )
+        )
+
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.availableSubtitles += setOf(
+            SubtitleLanguage.OFF.value,
+            SubtitleLanguage.PORTUGUESE.value,
+            "eng"
+        )
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        assertEquals(SubtitleLanguage.PORTUGUESE.value, playback.selectedSubtitle)
+    }
+
+    @Test
+    fun shouldPreferDefaultAudioWhenBothOptionsArePassed() {
+        val options = Options(
+            options = hashMapOf(
+                ClapprOption.DEFAULT_AUDIO.value to AudioLanguage.PORTUGUESE.value,
+                ClapprOption.SELECTED_MEDIA_OPTIONS.value to """{"media_option":[{"name":"eng","type":"AUDIO"}]}}"""
+            )
+        )
+
+        val playback = SomePlayback("valid-source.mp4", options)
+
+        playback.availableAudios += setOf(
+            AudioLanguage.ORIGINAL.value,
+            AudioLanguage.PORTUGUESE.value,
+            "eng"
+        )
+
+        playback.setupInitialMediasFromClapprOptions()
+
+        assertEquals(AudioLanguage.PORTUGUESE.value, playback.selectedAudio)
     }
 }

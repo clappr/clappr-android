@@ -8,6 +8,9 @@ import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
 import io.clappr.player.components.Playback.MediaType.LIVE
 import io.clappr.player.components.Playback.MediaType.UNKNOWN
+import io.clappr.player.log.Logger
+import org.json.JSONException
+import org.json.JSONObject
 
 typealias PlaybackSupportCheck = (String, String?) -> Boolean
 
@@ -109,6 +112,7 @@ abstract class Playback(
 
             internalSelectedAudio = value
             trigger(DID_UPDATE_AUDIO.value)
+            trigger(MEDIA_OPTIONS_UPDATE.value)
         }
         get() = internalSelectedAudio
 
@@ -122,6 +126,7 @@ abstract class Playback(
 
             internalSelectedSubtitle = value
             trigger(DID_UPDATE_SUBTITLE.value)
+            trigger(MEDIA_OPTIONS_UPDATE.value)
         }
         get() = internalSelectedSubtitle
 
@@ -174,12 +179,42 @@ abstract class Playback(
     private val defaultSubtitle: String?
         get() = options[DEFAULT_SUBTITLE.value] as? String
 
+    private val selectedAudioFromMediaOptions
+        get() = selectedMediaOptions
+            ?.firstOrNull { (_, type) -> type == AUDIO_TYPE }?.let { (value, _) -> value }
+
+    private val selectedSubtitleFromMediaOptions
+        get() = selectedMediaOptions
+            ?.firstOrNull { (_, type) -> type == SUBTITLE_TYPE }?.let { (value, _) -> value }
+
+    private val selectedMediaOptions: List<Pair<String, String>>?
+        get() = try {
+            options[SELECTED_MEDIA_OPTIONS.value]?.let { selectedMediaOptions ->
+                val jsonObject = JSONObject(selectedMediaOptions as? String)
+                val jsonArray = jsonObject.getJSONArray(MEDIA_OPTIONS_ARRAY_KEY)
+                (0 until jsonArray.length())
+                    .map { jsonArray.getJSONObject(it) }
+                    .map {
+                        val type = it.getString(MEDIA_OPTIONS_TYPE_KEY)
+                        val name = it.getString(MEDIA_OPTIONS_NAME_KEY)
+                        name to type
+                    }
+            }
+        } catch (jsonException: JSONException) {
+            Logger.error(name, "Parser Json Exception ${jsonException.message}")
+            null
+        }
+
     fun setupInitialMediasFromClapprOptions() {
-        defaultAudio?.toLowerCase()
+        val audio = defaultAudio ?: selectedAudioFromMediaOptions
+
+        audio?.toLowerCase()
             .takeIf { it in availableAudios }
             ?.let { selectedAudio = it }
 
-        defaultSubtitle?.toLowerCase()
+        val subtitle = defaultSubtitle ?: selectedSubtitleFromMediaOptions
+
+        subtitle?.toLowerCase()
             .takeIf { it in availableSubtitles }
             ?.let { selectedSubtitle = it }
     }
@@ -192,5 +227,13 @@ abstract class Playback(
                 }
                 options.remove(START_AT.value)
             }
+    }
+
+    companion object {
+        private const val MEDIA_OPTIONS_ARRAY_KEY = "media_option"
+        private const val MEDIA_OPTIONS_NAME_KEY = "name"
+        private const val MEDIA_OPTIONS_TYPE_KEY = "type"
+        private const val AUDIO_TYPE = "AUDIO"
+        private const val SUBTITLE_TYPE = "SUBTITLE"
     }
 }
