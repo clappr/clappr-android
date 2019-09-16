@@ -266,7 +266,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
-    private fun toggleVisibility() {
+    protected fun toggleVisibility() {
         if (isEnabled) {
             if (isVisible) {
                 hide()
