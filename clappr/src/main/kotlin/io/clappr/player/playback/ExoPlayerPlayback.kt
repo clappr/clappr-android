@@ -39,6 +39,7 @@ import io.clappr.player.base.ErrorInfoData.EXCEPTION
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
+import io.clappr.player.base.InternalEventData.*
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.Playback
 import io.clappr.player.components.Playback.MediaType.*
@@ -593,7 +594,7 @@ open class ExoPlayerPlayback(
 
         internalSelectedAudio = player.getSelectedAudio(trackSelector)
 
-        if (audioTracks.any()) trigger(DID_FIND_AUDIO.value)
+        if (audioTracks.any()) triggerDidFindAudio()
     }
 
     private fun setupBuiltInSubtitles() {
@@ -605,7 +606,7 @@ open class ExoPlayerPlayback(
 
         internalSelectedSubtitle = player.getSelectedSubtitle(trackSelector)
 
-        if (subtitleTracks.any()) trigger(DID_FIND_SUBTITLE.value)
+        if (subtitleTracks.any()) triggerDidFindSubtitle()
     }
 
     private fun setupExternalSubtitles() {
@@ -614,7 +615,21 @@ open class ExoPlayerPlayback(
 
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
 
-        if (subtitlesFromOptions.any()) trigger(DID_FIND_SUBTITLE.value)
+        if (subtitlesFromOptions.any()) triggerDidFindSubtitle()
+    }
+
+    private fun triggerDidFindAudio() {
+        val data = Bundle().apply {
+            putStringArrayList(FOUND_AUDIOS.value, ArrayList(availableAudios.toList()))
+        }
+        trigger(DID_FIND_AUDIO.value, data)
+    }
+
+    private fun triggerDidFindSubtitle() {
+        val data = Bundle().apply {
+            putStringArrayList(FOUND_SUBTITLES.value, ArrayList(availableSubtitles.toList()))
+        }
+        trigger(DID_FIND_SUBTITLE.value, data)
     }
 
     override var selectedAudio: String?
@@ -637,12 +652,12 @@ open class ExoPlayerPlayback(
             Logger.info(tag, "selectedSubtitle")
         }
 
-    private fun setAudioOnPlayback(language: String) = setAudioFromTracks(language)
+    private fun setAudioOnPlayback(language: String) = trackSelector?.setAudioFromTracks(language)
 
     private fun setSubtitleOnPlayback(language: String) = when {
         language == SubtitleLanguage.OFF.value -> turnOffSubtitle()
         shouldUseExternalSubtitles -> selectExternalSubtitle(language)
-        else -> selectSubtitleFromTracks(language)
+        else -> trackSelector?.selectSubtitleFromTracks(language)
     }
 
     private fun turnOffSubtitle() {
@@ -672,52 +687,6 @@ open class ExoPlayerPlayback(
             textFormat,
             TIME_UNSET
         )
-    }
-
-    private fun setAudioFromTracks(language: String) {
-        val trackSelector = trackSelector ?: return
-        val currentMappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return
-
-        val targetTrack = trackSelector.audioTracks().first { it.language == language }
-
-        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-            .setRendererDisabled(targetTrack.rendererIndex, false)
-            .build()
-
-        val selectionOverride = DefaultTrackSelector.SelectionOverride(
-            targetTrack.trackGroupIndex,
-            targetTrack.formatIndex
-        )
-
-        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-            .setSelectionOverride(
-                targetTrack.rendererIndex,
-                currentMappedTrackInfo.getTrackGroups(targetTrack.rendererIndex),
-                selectionOverride
-            ).build()
-    }
-
-    private fun selectSubtitleFromTracks(language: String) {
-        val trackSelector = trackSelector ?: return
-        val currentMappedTrackInfo = trackSelector.currentMappedTrackInfo ?: return
-
-        val track = trackSelector.subtitleTracks().first { it.language == language }
-
-        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-            .setRendererDisabled(track.rendererIndex, false)
-            .build()
-
-        val selectionOverride = DefaultTrackSelector.SelectionOverride(
-            track.trackGroupIndex,
-            track.formatIndex
-        )
-
-        trackSelector.parameters = DefaultTrackSelector.ParametersBuilder()
-            .setSelectionOverride(
-                track.rendererIndex,
-                currentMappedTrackInfo.getTrackGroups(track.rendererIndex),
-                selectionOverride
-            ).build()
     }
 
     inner class ExoPlayerEventsListener : EventListener {

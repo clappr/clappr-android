@@ -15,6 +15,8 @@ import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
+import io.clappr.player.base.InternalEventData
+import io.clappr.player.base.InternalEventData.*
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.AudioLanguage
@@ -640,7 +642,7 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should trigger DID_FIND_AUDIO when ExoPlayer load default audios`() {
         val source = "supported-source.mp4"
-        var eventCalled = false
+        var foundAudios: List<String>? = null
 
         val trackSelector = buildAvailableTracks(
             TRACK_TYPE_AUDIO to listOf(
@@ -657,27 +659,29 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.load(source = source)
 
         listenObject.listenTo(exoPlayerPlayBack, DID_FIND_AUDIO.value) {
-            eventCalled = true
+            foundAudios = it!!.getStringArrayList(FOUND_AUDIOS.value)
         }
 
         exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
 
-        assertTrue(
-            "DID_FIND_AUDIO event wasn't triggered when setupBuiltInAudios method was called",
-            eventCalled
+        val expectedAudios = listOf(
+            AudioLanguage.PORTUGUESE.value,
+            AudioLanguage.ENGLISH.value
         )
+
+        assertEquals(expectedAudios, foundAudios)
     }
 
     @Test
     fun `Should trigger DID_FIND_SUBTITLE when ExoPlayer load default subtitles`() {
         val source = "supported-source.mp4"
-        var eventCalled = false
+        var foundSubtitles: List<String>? = null
 
         val trackSelector = buildAvailableTracks(
             TRACK_TYPE_TEXT to listOf(
-                AudioLanguage.PORTUGUESE.value,
-                AudioLanguage.ENGLISH.value
+                SubtitleLanguage.OFF.value,
+                SubtitleLanguage.PORTUGUESE.value
             )
         ) as DefaultTrackSelector
 
@@ -689,16 +693,18 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.load(source = source)
 
         listenObject.listenTo(exoPlayerPlayBack, DID_FIND_SUBTITLE.value) {
-            eventCalled = true
+            foundSubtitles = it!!.getStringArrayList(FOUND_SUBTITLES.value)
         }
 
         exoPlayerPlayBack.eventsListener.onLoadingChanged(true)
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
 
-        assertTrue(
-            "DID_FIND_SUBTITLE event wasn't triggered when setupBuiltInAudios method was called",
-            eventCalled
+        val expectedSubtitles = listOf(
+            SubtitleLanguage.OFF.value,
+            SubtitleLanguage.PORTUGUESE.value
         )
+
+        assertEquals(expectedSubtitles, foundSubtitles)
     }
 
     private fun addBitrateMediaLoadData(

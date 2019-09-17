@@ -1,7 +1,9 @@
 package io.clappr.player.components
 
+import android.os.Bundle
 import io.clappr.player.base.ClapprOption.*
 import io.clappr.player.base.Event.*
+import io.clappr.player.base.EventData
 import io.clappr.player.base.InternalEvent.DID_UPDATE_OPTIONS
 import io.clappr.player.base.NamedType
 import io.clappr.player.base.Options
@@ -111,7 +113,8 @@ abstract class Playback(
             require(value in availableAudios) { "Audio not available" }
 
             internalSelectedAudio = value
-            trigger(DID_UPDATE_AUDIO.value)
+            val data = Bundle().apply { putString(EventData.UPDATED_AUDIO.value, value) }
+            trigger(DID_UPDATE_AUDIO.value, data)
             trigger(MEDIA_OPTIONS_UPDATE.value)
         }
         get() = internalSelectedAudio
@@ -125,7 +128,8 @@ abstract class Playback(
             require(value in availableSubtitles) { "Subtitle not available" }
 
             internalSelectedSubtitle = value
-            trigger(DID_UPDATE_SUBTITLE.value)
+            val data = Bundle().apply { putString(EventData.UPDATED_SUBTITLE.value, value) }
+            trigger(DID_UPDATE_SUBTITLE.value, data)
             trigger(MEDIA_OPTIONS_UPDATE.value)
         }
         get() = internalSelectedSubtitle

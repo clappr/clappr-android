@@ -3,6 +3,7 @@ package io.clappr.player.playback
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
 import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import io.clappr.player.components.AudioLanguage
 import io.clappr.player.components.SubtitleLanguage
@@ -67,6 +68,50 @@ private fun MappingTrackSelector.tracks(): List<TrackInfo> {
     }
 
     return tracks
+}
+
+fun DefaultTrackSelector.setAudioFromTracks(language: String) {
+    val currentMappedTrackInfo = currentMappedTrackInfo ?: return
+
+    val targetTrack = audioTracks().first { it.language == language }
+
+    parameters = DefaultTrackSelector.ParametersBuilder()
+        .setRendererDisabled(targetTrack.rendererIndex, false)
+        .build()
+
+    val selectionOverride = DefaultTrackSelector.SelectionOverride(
+        targetTrack.trackGroupIndex,
+        targetTrack.formatIndex
+    )
+
+    parameters = DefaultTrackSelector.ParametersBuilder()
+        .setSelectionOverride(
+            targetTrack.rendererIndex,
+            currentMappedTrackInfo.getTrackGroups(targetTrack.rendererIndex),
+            selectionOverride
+        ).build()
+}
+
+fun DefaultTrackSelector.selectSubtitleFromTracks(language: String) {
+    val currentMappedTrackInfo = currentMappedTrackInfo ?: return
+
+    val track = subtitleTracks().first { it.language == language }
+
+    parameters = DefaultTrackSelector.ParametersBuilder()
+        .setRendererDisabled(track.rendererIndex, false)
+        .build()
+
+    val selectionOverride = DefaultTrackSelector.SelectionOverride(
+        track.trackGroupIndex,
+        track.formatIndex
+    )
+
+    parameters = DefaultTrackSelector.ParametersBuilder()
+        .setSelectionOverride(
+            track.rendererIndex,
+            currentMappedTrackInfo.getTrackGroups(track.rendererIndex),
+            selectionOverride
+        ).build()
 }
 
 private fun String?.toStandardAudioLanguage() = audioStandardMap.entries

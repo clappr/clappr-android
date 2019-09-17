@@ -200,6 +200,24 @@ enum class EventData(val value: String) {
     SELECTED_SUBTITLE("selectedSubtitle"),
 
     /**
+     * [Event.DID_UPDATE_AUDIO] data
+     *
+     * Type: String
+     *
+     * Updated audio language
+     */
+    UPDATED_AUDIO("updatedAudio"),
+
+    /**
+     * [Event.DID_UPDATE_SUBTITLE] data
+     *
+     * Type: String
+     *
+     * Updated subtitle language
+     */
+    UPDATED_SUBTITLE("updatedSubtitle"),
+
+    /**
      * [Event.DID_UPDATE_BITRATE] data
      *
      * Type: Long

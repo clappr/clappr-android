@@ -45,5 +45,7 @@ enum class InternalEventData(val value: String) {
     HEIGHT("height"),
     WIDTH("width"),
     TOUCH_X_AXIS("touchXAxis"),
-    TOUCH_Y_AXIS("touchYAxis")
+    TOUCH_Y_AXIS("touchYAxis"),
+    FOUND_AUDIOS("foundAudios"),
+    FOUND_SUBTITLES("foundSubtitles")
 }

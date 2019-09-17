@@ -6,6 +6,7 @@ import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.ClapprOption.START_AT
 import io.clappr.player.base.Event.*
+import io.clappr.player.base.EventData
 import io.clappr.player.base.InternalEvent.*
 import io.clappr.player.base.Options
 import io.clappr.player.playback.NoOpPlayback
@@ -185,51 +186,53 @@ class PlaybackTest {
     }
 
     @Test
-    fun shouldSetSelectedMediaOptionAudio() {
+    fun shouldTriggerDidUpdateAudioAndMediaOptionsUpdateWhenAudioIsChanged() {
         val playback = SomePlayback("valid-source.mp4")
 
         val languages = (1..3).map { "Name $it" }
         playback.availableAudios += languages
 
-        var didUpdateAudioTriggered = false
+        var updatedAudio: String? = null
         var mediaOptionsUpdateTriggered = false
 
-        playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioTriggered = true }
+        playback.on(DID_UPDATE_AUDIO.value) {
+            updatedAudio = it?.getString(EventData.UPDATED_AUDIO.value)
+        }
         playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
 
         languages.forEach {
             playback.selectedAudio = it
 
-            assertEquals(it, playback.selectedAudio)
-            assertTrue(didUpdateAudioTriggered)
+            assertEquals(it, updatedAudio)
             assertTrue(mediaOptionsUpdateTriggered)
 
-            didUpdateAudioTriggered = false
+            updatedAudio = null
             mediaOptionsUpdateTriggered = false
         }
     }
 
     @Test
-    fun shouldSetSelectedMediaOptionSubtitle() {
+    fun shouldTriggerDidUpdateSubtitleAndMediaOptionsUpdateWhenSubtitleIsChanged() {
         val playback = SomePlayback("valid-source.mp4")
 
         val languages = (1..3).map { "Name $it" }
         playback.availableSubtitles += languages
 
-        var didUpdateSubtitleTriggered = false
+        var updatedSubtitle: String? = null
         var mediaOptionsUpdateTriggered = false
 
-        playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleTriggered = true }
+        playback.on(DID_UPDATE_SUBTITLE.value) {
+            updatedSubtitle = it?.getString(EventData.UPDATED_SUBTITLE.value)
+        }
         playback.on(MEDIA_OPTIONS_UPDATE.value) { mediaOptionsUpdateTriggered = true }
 
         languages.forEach {
             playback.selectedSubtitle = it
 
-            assertEquals(it, playback.selectedSubtitle)
-            assertTrue(didUpdateSubtitleTriggered)
+            assertEquals(it, updatedSubtitle)
             assertTrue(mediaOptionsUpdateTriggered)
 
-            didUpdateSubtitleTriggered = false
+            updatedSubtitle = null
             mediaOptionsUpdateTriggered = false
         }
     }
@@ -282,23 +285,6 @@ class PlaybackTest {
         assertFalse(didSelectAudio)
     }
 
-    @Test
-    fun shouldTriggerEventAndChangeTrackWhenAudioIsSet() {
-        val playback = SomePlayback("valid-source.mp4")
-
-        playback.availableAudios += setOf(
-            AudioLanguage.ENGLISH.value,
-            AudioLanguage.PORTUGUESE.value
-        )
-
-        var didUpdateAudioWasTriggered = false
-        playback.on(DID_UPDATE_AUDIO.value) { didUpdateAudioWasTriggered = true }
-
-        playback.selectedAudio = AudioLanguage.ENGLISH.value
-
-        assertTrue(didUpdateAudioWasTriggered)
-    }
-
     @Test(expected = IllegalArgumentException::class)
     fun shouldNotTriggerEventAndChangeTrackWhenUnavailableAudioIsSet() {
         val playback = SomePlayback("valid-source.mp4")
@@ -309,23 +295,6 @@ class PlaybackTest {
         )
 
         playback.selectedAudio = "fr"
-    }
-
-    @Test
-    fun shouldTriggerEventAndChangeTrackWhenSubtitleIsSet() {
-        val playback = SomePlayback("valid-source.mp4")
-
-        playback.availableSubtitles += setOf(
-            AudioLanguage.ENGLISH.value,
-            AudioLanguage.PORTUGUESE.value
-        )
-
-        var didUpdateSubtitleWasTriggered = false
-        playback.on(DID_UPDATE_SUBTITLE.value) { didUpdateSubtitleWasTriggered = true }
-
-        playback.selectedSubtitle = AudioLanguage.ENGLISH.value
-
-        assertTrue(didUpdateSubtitleWasTriggered)
     }
 
     @Test(expected = IllegalArgumentException::class)
