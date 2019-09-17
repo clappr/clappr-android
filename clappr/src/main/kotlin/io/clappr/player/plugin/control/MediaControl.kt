@@ -62,6 +62,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     open val invalidActivationKeys = listOf(Key.UNDEFINED)
+    private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -306,13 +307,19 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val isValidActivationKey =
-                invalidActivationKeys.contains(Key.getByValue(keyCode)).not()
+            val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
+            val action = Action.getByValue(keyAction)
 
-            if (isValidActivationKey && Action.getByValue(keyAction) == Action.UP)
-                toggleVisibility()
+            if (isValidActivationKey(key) && action == Action.UP) {
+                when (isVisible) {
+                    true -> if (navigationKeys.contains(key)) updateInteractionTime()
+                    else -> if (isValidActivationKey(key)) toggleVisibility()
+                }
+            }
         }
     }
+
+    private fun isValidActivationKey(key: Key) = invalidActivationKeys.contains(key).not()
 
     private fun stopContainerListeners() {
         containerListenerIds.forEach(::stopListening)
