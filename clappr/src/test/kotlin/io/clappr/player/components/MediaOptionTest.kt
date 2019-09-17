@@ -1,13 +1,28 @@
 package io.clappr.player.components
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import org.junit.Assert.assertEquals
+import org.junit.Before
 import org.junit.Test
 
 class MediaOptionTest {
 
+    private lateinit var playback: Playback
+
+    @Before
+    fun setUp() {
+        playback = mock()
+    }
+
     @Test
     fun `should create media options json with audio and subtitle`() {
-        val mediaOptionsJson = buildMediaOptionsJson("por", "eng")
+
+        whenever(playback.selectedAudio) doReturn "eng"
+        whenever(playback.selectedSubtitle) doReturn "por"
+
+        val mediaOptionsJson = playback.buildMediaOptionsJson()
         val expectedJson = """{"media_option":[{"name":"por","type":"SUBTITLE"},{"name":"eng","type":"AUDIO"}]}}"""
 
         assertEquals(expectedJson, mediaOptionsJson)
@@ -15,7 +30,9 @@ class MediaOptionTest {
 
     @Test
     fun `should create media options json only with subtitle`() {
-        val mediaOptionsJson = buildMediaOptionsJson("por", null)
+        whenever(playback.selectedSubtitle) doReturn "por"
+
+        val mediaOptionsJson = playback.buildMediaOptionsJson()
         val expectedJson = """{"media_option":[{"name":"por","type":"SUBTITLE"}]}}"""
 
         assertEquals(expectedJson, mediaOptionsJson)

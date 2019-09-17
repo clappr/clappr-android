@@ -178,6 +178,7 @@ enum class EventData(val value: String) {
      *
      * Selected media options.
      */
+    @Deprecated("EventData.SELECTED_AUDIO and EventData.SELECTED_SUBTITLE should be used instead.")
     MEDIA_OPTIONS_SELECTED_RESPONSE("mediaOptionsSelectedResponse"),
 
     /**

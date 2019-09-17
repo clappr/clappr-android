@@ -12,7 +12,7 @@ enum class SubtitleLanguage(val value: String) {
 }
 
 @Deprecated("ClapprOption.DEFAULT_AUDIO and ClapprOption.DEFAULT_SUBTITLE should be used instead.")
-fun buildMediaOptionsJson(selectedSubtitle: String, selectedAudio: String?) = when (selectedAudio) {
+fun Playback.buildMediaOptionsJson() = when (selectedAudio) {
     null -> """{"media_option":[{"name":"$selectedSubtitle","type":"SUBTITLE"}]}}"""
     else -> """{"media_option":[{"name":"$selectedSubtitle","type":"SUBTITLE"},{"name":"$selectedAudio","type":"AUDIO"}]}}"""
 }
