@@ -70,32 +70,23 @@ private fun MappingTrackSelector.tracks(): List<TrackInfo> {
     return tracks
 }
 
-fun DefaultTrackSelector.setAudioFromTracks(language: String) {
+fun DefaultTrackSelector.setAudioFromTracks(language: String) = selectAudio(language)
+
+fun DefaultTrackSelector.selectSubtitleFromTracks(language: String) = selectSubtitle(language)
+
+private fun DefaultTrackSelector.selectAudio(language: String) =
+    selectTrack(audioTracks(), language)
+
+private fun DefaultTrackSelector.selectSubtitle(language: String) =
+    selectTrack(subtitleTracks(), language)
+
+private fun DefaultTrackSelector.selectTrack(
+    tracks: List<TrackInfo>,
+    language: String
+) {
     val currentMappedTrackInfo = currentMappedTrackInfo ?: return
 
-    val targetTrack = audioTracks().first { it.language == language }
-
-    parameters = DefaultTrackSelector.ParametersBuilder()
-        .setRendererDisabled(targetTrack.rendererIndex, false)
-        .build()
-
-    val selectionOverride = DefaultTrackSelector.SelectionOverride(
-        targetTrack.trackGroupIndex,
-        targetTrack.formatIndex
-    )
-
-    parameters = DefaultTrackSelector.ParametersBuilder()
-        .setSelectionOverride(
-            targetTrack.rendererIndex,
-            currentMappedTrackInfo.getTrackGroups(targetTrack.rendererIndex),
-            selectionOverride
-        ).build()
-}
-
-fun DefaultTrackSelector.selectSubtitleFromTracks(language: String) {
-    val currentMappedTrackInfo = currentMappedTrackInfo ?: return
-
-    val track = subtitleTracks().first { it.language == language }
+    val track = tracks.first { it.language == language }
 
     parameters = DefaultTrackSelector.ParametersBuilder()
         .setRendererDisabled(track.rendererIndex, false)
