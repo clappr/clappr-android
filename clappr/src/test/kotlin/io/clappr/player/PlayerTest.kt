@@ -419,6 +419,16 @@ open class PlayerTest {
     }
 
     @Test
+    fun `should listen did select audio event out of player triggered by core`() {
+        assertCoreEventWasTriggered(Event.DID_SELECT_AUDIO.value)
+    }
+
+    @Test
+    fun `should listen did select subtitle event out of player triggered by core`() {
+        assertCoreEventWasTriggered(Event.DID_SELECT_SUBTITLE.value)
+    }
+
+    @Test
     fun `should listen request fullscreen event out of player triggered by core`() {
         assertCoreEventWasTriggered(Event.REQUEST_FULLSCREEN.value)
     }
