@@ -23,7 +23,6 @@
 | [DID_NOT_LOAD_SOURCE](-d-i-d_-n-o-t_-l-o-a-d_-s-o-u-r-c-e.md) |  |
 | [WILL_DESTROY](-w-i-l-l_-d-e-s-t-r-o-y.md) |  |
 | [DID_DESTROY](-d-i-d_-d-e-s-t-r-o-y.md) |  |
-| [MEDIA_OPTIONS_READY](-m-e-d-i-a_-o-p-t-i-o-n-s_-r-e-a-d-y.md) |  |
 | [DID_FIND_AUDIO](-d-i-d_-f-i-n-d_-a-u-d-i-o.md) |  |
 | [DID_FIND_SUBTITLE](-d-i-d_-f-i-n-d_-s-u-b-t-i-t-l-e.md) |  |
 | [DID_UPDATE_OPTIONS](-d-i-d_-u-p-d-a-t-e_-o-p-t-i-o-n-s.md) |  |

@@ -3,6 +3,12 @@ $dokka.linkExtension:md
 $dokka.location:io.clappr.player.extensions$animate(android.view.View, kotlin.Int, kotlin.Function0((kotlin.Unit)))io.clappr.player.extensions/android.view.-view/animate.md
 $dokka.location:io.clappr.player.extensions$asTimeInterval(kotlin.Double)io.clappr.player.extensions/kotlin.-double/as-time-interval.md
 $dokka.location:io.clappr.player.extensions.context$isRunningInAndroidTvDevice(android.content.Context)io.clappr.player.extensions.context/android.content.-context/is-running-in-android-tv-device.md
+$dokka.location:io.clappr.player.playback$audioTracks(com.google.android.exoplayer2.trackselection.MappingTrackSelector)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-mapping-track-selector/audio-tracks.md
+$dokka.location:io.clappr.player.playback$getSelectedAudio(com.google.android.exoplayer2.Player, com.google.android.exoplayer2.trackselection.MappingTrackSelector)io.clappr.player.playback/com.google.android.exoplayer2.-player/get-selected-audio.md
+$dokka.location:io.clappr.player.playback$getSelectedSubtitle(com.google.android.exoplayer2.Player, com.google.android.exoplayer2.trackselection.MappingTrackSelector)io.clappr.player.playback/com.google.android.exoplayer2.-player/get-selected-subtitle.md
+$dokka.location:io.clappr.player.playback$selectSubtitleFromTracks(com.google.android.exoplayer2.trackselection.DefaultTrackSelector, kotlin.String)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-default-track-selector/select-subtitle-from-tracks.md
+$dokka.location:io.clappr.player.playback$setAudioFromTracks(com.google.android.exoplayer2.trackselection.DefaultTrackSelector, kotlin.String)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-default-track-selector/set-audio-from-tracks.md
+$dokka.location:io.clappr.player.playback$subtitleTracks(com.google.android.exoplayer2.trackselection.MappingTrackSelector)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-mapping-track-selector/subtitle-tracks.md
 io.clappr.player
 io.clappr.player.base
 io.clappr.player.base.keys
