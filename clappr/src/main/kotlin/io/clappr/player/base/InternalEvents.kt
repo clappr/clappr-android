@@ -16,7 +16,6 @@ enum class InternalEvent (val value: String) {
     DID_NOT_LOAD_SOURCE("didNotLoadSource"),
     WILL_DESTROY("willDestroy"),
     DID_DESTROY("didDestroy"),
-    MEDIA_OPTIONS_READY("mediaOptionsReady"),
     DID_FIND_AUDIO("didFindAudio"),
     DID_FIND_SUBTITLE("didFindSubtitle"),
     DID_UPDATE_OPTIONS("didUpdateOptions"),
@@ -46,5 +45,7 @@ enum class InternalEventData(val value: String) {
     HEIGHT("height"),
     WIDTH("width"),
     TOUCH_X_AXIS("touchXAxis"),
-    TOUCH_Y_AXIS("touchYAxis")
+    TOUCH_Y_AXIS("touchYAxis"),
+    FOUND_AUDIOS("foundAudios"),
+    FOUND_SUBTITLES("foundSubtitles")
 }

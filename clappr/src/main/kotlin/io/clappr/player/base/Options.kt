@@ -3,9 +3,10 @@ package io.clappr.player.base
 import java.util.*
 
 class Options(
-        var source: String? = null,
-        var mimeType: String? = null,
-        val options: HashMap<String, Any> = hashMapOf<String, Any>()) : MutableMap<String, Any> by options
+    var source: String? = null,
+    var mimeType: String? = null,
+    val options: HashMap<String, Any> = hashMapOf()
+) : MutableMap<String, Any> by options
 
 enum class ClapprOption(val value: String) {
     /**
@@ -24,11 +25,6 @@ enum class ClapprOption(val value: String) {
      * Map from subtitles URL`s with name and URL to each one
      */
     SUBTITLES("subtitles"),
-    /**
-     * String List to selected MediaOptions.
-     */
-    @Deprecated("This option is deprecated and can be changed in the near future.", level = DeprecationLevel.WARNING)
-    SELECTED_MEDIA_OPTIONS("selectedMediaOptions"),
     /**
      * Byte Array of drm licenses
      */
@@ -50,12 +46,15 @@ enum class ClapprOption(val value: String) {
      * Boolean value indicating if Audio Focus should be handled by Clappr. Default value is false.
      */
     HANDLE_AUDIO_FOCUS("handleAudioFocus"),
-
+    /**
+     * String List to selected MediaOptions.
+     */
+    @Deprecated("ClapprOption.DEFAULT_AUDIO and ClapprOption.DEFAULT_SUBTITLE should be used instead.")
+    SELECTED_MEDIA_OPTIONS("selectedMediaOptions"),
     /**
      * String that represents default audio
      */
     DEFAULT_AUDIO("defaultAudio"),
-
     /**
      * String that represents default subtitle
      */

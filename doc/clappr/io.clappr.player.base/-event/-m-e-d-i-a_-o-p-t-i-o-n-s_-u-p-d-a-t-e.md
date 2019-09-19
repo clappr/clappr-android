@@ -3,6 +3,7 @@
 # MEDIA_OPTIONS_UPDATE
 
 `MEDIA_OPTIONS_UPDATE`
+**Deprecated:** Event.DID_UPDATE_AUDIO and Event.DID_UPDATE_SUBTITLE should be used instead.
 
 Media Options Update. Triggered when the Playback load a media option
 

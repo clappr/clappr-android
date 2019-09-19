@@ -1,9 +1,5 @@
 package io.clappr.player.components
 
-data class MediaOption(val name: String, val type: MediaOptionType, val raw: Any?, val info: Map<String, Any>?)
-
-val SUBTITLE_OFF = MediaOption(SubtitleLanguage.OFF.value, MediaOptionType.SUBTITLE, null, null)
-
 enum class AudioLanguage(val value: String) {
     ORIGINAL("und"),
     PORTUGUESE("por"),
@@ -15,7 +11,8 @@ enum class SubtitleLanguage(val value: String) {
     PORTUGUESE("por")
 }
 
-enum class MediaOptionType {
-    SUBTITLE,
-    AUDIO;
+@Deprecated("ClapprOption.DEFAULT_AUDIO and ClapprOption.DEFAULT_SUBTITLE should be used instead.")
+fun Playback.buildMediaOptionsJson() = when (selectedAudio) {
+    null -> """{"media_option":[{"name":"$selectedSubtitle","type":"SUBTITLE"}]}}"""
+    else -> """{"media_option":[{"name":"$selectedSubtitle","type":"SUBTITLE"},{"name":"$selectedAudio","type":"AUDIO"}]}}"""
 }

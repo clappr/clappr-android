@@ -18,6 +18,7 @@
 | [io.clappr.player.components.Core](../io.clappr.player.components/-core/index.md) |  |
 | [io.clappr.player.plugin.core.CorePlugin](../io.clappr.player.plugin.core/-core-plugin/index.md) |  |
 | [io.clappr.player.plugin.CorePluginFactory](../io.clappr.player.plugin/-core-plugin-factory.md) |  |
+| [com.google.android.exoplayer2.trackselection.DefaultTrackSelector](../io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-default-track-selector/index.md) (extensions in package io.clappr.player.playback) |  |
 | [kotlin.Double](../io.clappr.player.extensions/kotlin.-double/index.md) (extensions in package io.clappr.player.extensions) |  |
 | [io.clappr.player.utils.Environment](../io.clappr.player.utils/-environment/index.md) |  |
 | [io.clappr.player.base.ErrorCode](../io.clappr.player.base/-error-code/index.md) |  |
@@ -38,9 +39,8 @@
 | [io.clappr.player.plugin.LoadingPlugin](../io.clappr.player.plugin/-loading-plugin/index.md) |  |
 | [io.clappr.player.log.LogLevel](../io.clappr.player.log/-log-level/index.md) |  |
 | [io.clappr.player.log.Logger](../io.clappr.player.log/-logger/index.md) |  |
+| [com.google.android.exoplayer2.trackselection.MappingTrackSelector](../io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-mapping-track-selector/index.md) (extensions in package io.clappr.player.playback) |  |
 | [io.clappr.player.plugin.control.MediaControl](../io.clappr.player.plugin.control/-media-control/index.md) |  |
-| [io.clappr.player.components.MediaOption](../io.clappr.player.components/-media-option/index.md) |  |
-| [io.clappr.player.components.MediaOptionType](../io.clappr.player.components/-media-option-type/index.md) |  |
 | [io.clappr.player.playback.MediaPlayerPlayback](../io.clappr.player.playback/-media-player-playback/index.md) |  |
 | [io.clappr.player.base.NamedType](../io.clappr.player.base/-named-type/index.md) |  |
 | [io.clappr.player.playback.NoOpPlayback](../io.clappr.player.playback/-no-op-playback/index.md) |  |
@@ -55,6 +55,7 @@
 | [io.clappr.player.components.PlaybackFactory](../io.clappr.player.components/-playback-factory.md) |  |
 | [io.clappr.player.components.PlaybackSupportCheck](../io.clappr.player.components/-playback-support-check.md) |  |
 | [io.clappr.player.Player](../io.clappr.player/-player/index.md) | Main Player class. |
+| [com.google.android.exoplayer2.Player](../io.clappr.player.playback/com.google.android.exoplayer2.-player/index.md) (extensions in package io.clappr.player.playback) |  |
 | [io.clappr.player.plugin.Plugin](../io.clappr.player.plugin/-plugin/index.md) |  |
 | [io.clappr.player.plugin.PluginConfig](../io.clappr.player.plugin/-plugin-config/index.md) |  |
 | [io.clappr.player.plugin.PluginEntry](../io.clappr.player.plugin/-plugin-entry/index.md) |  |
@@ -64,6 +65,7 @@
 | [io.clappr.player.shared.SharedData](../io.clappr.player.shared/-shared-data/index.md) |  |
 | [io.clappr.player.components.SubtitleLanguage](../io.clappr.player.components/-subtitle-language/index.md) |  |
 | [io.clappr.player.plugin.control.TimeIndicatorPlugin](../io.clappr.player.plugin.control/-time-indicator-plugin/index.md) |  |
+| [io.clappr.player.playback.TrackInfo](../io.clappr.player.playback/-track-info/index.md) |  |
 | [io.clappr.player.plugin.container.UIContainerPlugin](../io.clappr.player.plugin.container/-u-i-container-plugin/index.md) |  |
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |
 | [io.clappr.player.base.UIObject](../io.clappr.player.base/-u-i-object/index.md) |  |
