@@ -3,6 +3,7 @@
 # MEDIA_OPTIONS_SELECTED_RESPONSE
 
 `MEDIA_OPTIONS_SELECTED_RESPONSE`
+**Deprecated:** EventData.SELECTED_AUDIO and EventData.SELECTED_SUBTITLE should be used instead.
 
 [Event.MEDIA_OPTIONS_SELECTED](../-event/-m-e-d-i-a_-o-p-t-i-o-n-s_-s-e-l-e-c-t-e-d.md) data
 

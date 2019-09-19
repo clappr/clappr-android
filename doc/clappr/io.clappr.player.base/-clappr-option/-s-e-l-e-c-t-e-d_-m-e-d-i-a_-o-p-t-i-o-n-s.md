@@ -3,7 +3,7 @@
 # SELECTED_MEDIA_OPTIONS
 
 `SELECTED_MEDIA_OPTIONS`
-**Deprecated:** This option is deprecated and can be changed in the near future.
+**Deprecated:** ClapprOption.DEFAULT_AUDIO and ClapprOption.DEFAULT_SUBTITLE should be used instead.
 
 String List to selected MediaOptions.
 
