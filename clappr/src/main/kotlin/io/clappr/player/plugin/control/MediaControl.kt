@@ -57,6 +57,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private var lastInteractionTime = 0L
 
+    var hideAnimationEnded = false
+
     override val view by lazy {
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
@@ -102,7 +104,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     protected val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
-    private val isPlaybackIdle: Boolean
+    val isPlaybackIdle: Boolean
         get() {
             return core.activePlayback?.state == Playback.State.IDLE ||
                     core.activePlayback?.state == Playback.State.NONE
@@ -360,6 +362,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     override fun hide() {
+        hideAnimationEnded = false
+
         if (isEnabled && isPlaybackIdle) return
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
@@ -368,6 +372,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
             hideMediaControlElements()
             hideDefaultMediaControlPanels()
             hideModalPanel()
+            hideAnimationEnded = true
 
             core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
         }
