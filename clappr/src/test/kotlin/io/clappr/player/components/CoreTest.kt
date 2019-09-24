@@ -3,7 +3,7 @@ package io.clappr.player.components
 import android.view.View
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockitokotlin2.*
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
