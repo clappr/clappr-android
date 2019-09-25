@@ -277,6 +277,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun openModal() {
+        core.activePlayback?.pause()
+
         hideDefaultMediaControlPanels()
 
         animateFadeIn(modalPanel) { showModalPanel() }
