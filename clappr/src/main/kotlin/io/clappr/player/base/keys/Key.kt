@@ -9,7 +9,8 @@ enum class Key(val value: String) {
     UP("up"),
     DOWN("down"),
     RIGHT("right"),
-    LEFT("left");
+    LEFT("left"),
+    BACK("back");
 
     companion object {
         fun getByValue(value: String) = values().firstOrNull { it.value == value }

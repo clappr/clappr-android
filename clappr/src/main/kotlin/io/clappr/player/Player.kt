@@ -21,9 +21,12 @@ import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
  *
  * Once instantiated it should be [configured][configure] and added to a view hierarchy before playback can begin.
  */
-open class Player(private val base: BaseObject = BaseObject(),
-                  private val playbackEventsToListen: MutableSet<String> = mutableSetOf(),
-                  private val containerEventsToListen: MutableSet<String> = mutableSetOf()) : Fragment(), EventInterface by base {
+open class Player(
+    private val base: BaseObject = BaseObject(),
+    private val coreEventsToListen: MutableSet<String> = mutableSetOf(),
+    private val playbackEventsToListen: MutableSet<String> = mutableSetOf(),
+    private val containerEventsToListen: MutableSet<String> = mutableSetOf()
+) : Fragment(), EventInterface by base {
 
     companion object {
         init {
@@ -45,6 +48,13 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     init {
         Event.values().forEach { playbackEventsToListen.add(it.value) }
+        coreEventsToListen.addAll(
+            listOf(
+                Event.REQUEST_FULLSCREEN.value,
+                Event.EXIT_FULLSCREEN.value,
+                Event.MEDIA_OPTIONS_SELECTED.value
+            )
+        )
     }
 
     /**
@@ -82,20 +92,38 @@ open class Player(private val base: BaseObject = BaseObject(),
             playerViewGroup?.removeView(core?.view)
             unbindPlaybackEvents()
             unbindContainerEvents()
+            unbindCoreEvents()
             core?.destroy()
 
             field = value
             updateCoreFullScreenStatus()
+            bindCoreEvents()
+
             core?.let {
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_PLAYBACK.value) { unbindPlaybackEvents() }
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { bindPlaybackEvents() }
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) { unbindContainerEvents() }
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { bindContainerEvents() }
-                it.on(Event.REQUEST_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.REQUEST_FULLSCREEN.value, bundle) }
+                it.on(Event.REQUEST_FULLSCREEN.value) { bundle: Bundle? ->
+                    trigger(
+                        Event.REQUEST_FULLSCREEN.value,
+                        bundle
+                    )
+                }
                 it.on(Event.EXIT_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) }
-                it.on(Event.MEDIA_OPTIONS_SELECTED.value) { bundle: Bundle? -> trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle) }
+                it.on(Event.MEDIA_OPTIONS_SELECTED.value) { bundle: Bundle? ->
+                    trigger(
+                        Event.MEDIA_OPTIONS_SELECTED.value,
+                        bundle
+                    )
+                }
                 it.on(Event.DID_SELECT_AUDIO.value) { bundle: Bundle? -> trigger(Event.DID_SELECT_AUDIO.value, bundle) }
-                it.on(Event.DID_SELECT_SUBTITLE.value) { bundle: Bundle? -> trigger(Event.DID_SELECT_SUBTITLE.value, bundle) }
+                it.on(Event.DID_SELECT_SUBTITLE.value) { bundle: Bundle? ->
+                    trigger(
+                        Event.DID_SELECT_SUBTITLE.value,
+                        bundle
+                    )
+                }
 
                 if (it.activeContainer != null) {
                     bindContainerEvents()
@@ -146,6 +174,8 @@ open class Player(private val base: BaseObject = BaseObject(),
     private val playbackEventsIds = mutableSetOf<String>()
 
     private val containerEventsIds = mutableSetOf<String>()
+
+    private val coreEventsIds = mutableSetOf<String>()
 
     private var playerViewGroup: ViewGroup? = null
 
@@ -260,28 +290,54 @@ open class Player(private val base: BaseObject = BaseObject(),
 
     private fun bindPlaybackEvents() {
         core?.activePlayback?.let {
-            playbackEventsToListen.mapTo(playbackEventsIds) { event -> listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) } }
+            playbackEventsToListen.mapTo(playbackEventsIds) { event ->
+                listenTo(it, event) { bundle: Bundle? ->
+                    trigger(
+                        event,
+                        bundle
+                    )
+                }
+            }
         }
     }
 
     private fun unbindPlaybackEvents() {
-        playbackEventsIds.forEach {
-            stopListening(it)
-        }
+        playbackEventsIds.forEach(::stopListening)
         playbackEventsIds.clear()
     }
 
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
-            containerEventsToListen.mapTo(containerEventsIds) { event -> listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) } }
+            containerEventsToListen.mapTo(containerEventsIds) { event ->
+                listenTo(
+                    it,
+                    event
+                ) { bundle: Bundle? -> trigger(event, bundle) }
+            }
         }
     }
 
     private fun unbindContainerEvents() {
-        containerEventsIds.forEach {
-            stopListening(it)
-        }
+        containerEventsIds.forEach(::stopListening)
         containerEventsIds.clear()
+    }
+
+    private fun bindCoreEvents() {
+        core?.let {
+            coreEventsToListen.mapTo(coreEventsIds) { event ->
+                listenTo(it, event) { bundle: Bundle? ->
+                    trigger(
+                        event,
+                        bundle
+                    )
+                }
+            }
+        }
+    }
+
+    private fun unbindCoreEvents() {
+        coreEventsIds.forEach(::stopListening)
+        coreEventsIds.clear()
     }
 
     private fun updateCoreFullScreenStatus() {

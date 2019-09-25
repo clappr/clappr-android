@@ -57,11 +57,14 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private var lastInteractionTime = 0L
 
+    var hideAnimationEnded = false
+
     override val view by lazy {
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val keysThatMediaControlWillNotBeShown = listOf(Key.UNDEFINED)
+    open val invalidActivationKeys = listOf(Key.UNDEFINED)
+    private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -98,7 +101,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     val isEnabled: Boolean
         get() = state == State.ENABLED
 
-    private val isVisible: Boolean
+    protected val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
     private val isPlaybackIdle: Boolean
@@ -262,11 +265,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }, duration)
     }
 
-    private fun updateInteractionTime() {
+    protected fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
-    private fun toggleVisibility() {
+    protected fun toggleVisibility() {
         if (isEnabled) {
             if (isVisible) {
                 hide()
@@ -306,13 +309,19 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         bundle?.let {
             val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
             val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val isKeyAllowedToShownMediaControl =
-                keysThatMediaControlWillNotBeShown.contains(Key.getByValue(keyCode)).not()
+            val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
+            val action = Action.getByValue(keyAction)
 
-            if (isKeyAllowedToShownMediaControl && Action.getByValue(keyAction) == Action.UP)
-                toggleVisibility()
+            if (isValidActivationKey(key) && action == Action.UP) {
+                when (isVisible) {
+                    true -> if (navigationKeys.contains(key)) updateInteractionTime()
+                    else -> if (isValidActivationKey(key)) toggleVisibility()
+                }
+            }
         }
     }
+
+    private fun isValidActivationKey(key: Key) = invalidActivationKeys.contains(key).not()
 
     private fun stopContainerListeners() {
         containerListenerIds.forEach(::stopListening)
@@ -353,6 +362,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     override fun hide() {
+        hideAnimationEnded = false
+
         if (isEnabled && isPlaybackIdle) return
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
@@ -361,6 +372,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
             hideMediaControlElements()
             hideDefaultMediaControlPanels()
             hideModalPanel()
+            hideAnimationEnded = true
 
             core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
         }

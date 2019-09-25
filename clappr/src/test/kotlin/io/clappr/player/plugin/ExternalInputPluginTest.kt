@@ -84,6 +84,11 @@ class ExternalInputPluginTest {
         assertPressedKeyCodeEvent(Key.RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT)
     }
 
+    @Test
+    fun `should trigger KEY_PRESSED event for BACK button`() {
+        assertPressedKeyCodeEvent(Key.BACK, KeyEvent.KEYCODE_BACK)
+    }
+
     private fun assertPressedKeyCodeEvent(expectedKeyCode: Key, keyToHold: Int){
         var keyCode: String? = null
 
