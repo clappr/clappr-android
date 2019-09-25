@@ -277,9 +277,7 @@ open class Player(private val base: BaseObject = BaseObject(),
     }
 
     private fun unbindPlaybackEvents() {
-        playbackEventsIds.forEach {
-            stopListening(it)
-        }
+        playbackEventsIds.forEach(::stopListening)
         playbackEventsIds.clear()
     }
 
@@ -290,9 +288,7 @@ open class Player(private val base: BaseObject = BaseObject(),
     }
 
     private fun unbindContainerEvents() {
-        containerEventsIds.forEach {
-            stopListening(it)
-        }
+        containerEventsIds.forEach(::stopListening)
         containerEventsIds.clear()
     }
 
@@ -303,9 +299,7 @@ open class Player(private val base: BaseObject = BaseObject(),
     }
 
     private fun unbindCoreEvents(){
-        coreEventsIds.forEach {
-            stopListening(it)
-        }
+        coreEventsIds.forEach(::stopListening)
         coreEventsIds.clear()
     }
 
