@@ -18,7 +18,7 @@ Once instantiated it should be [configured](configure.md) and added to a view hi
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf(), containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf())`<br>Main Player class. |
+| [&lt;init&gt;](-init-.md) | `Player(base: `[`BaseObject`](../../io.clappr.player.base/-base-object/index.md)` = BaseObject(), coreEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf(), playbackEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf(), containerEventsToListen: `[`MutableSet`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-set/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`> = mutableSetOf())`<br>Main Player class. |
 
 ### Properties
 
