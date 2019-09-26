@@ -2,4 +2,4 @@
 
 # updateInteractionTime
 
-`open fun updateInteractionTime(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
+`protected fun updateInteractionTime(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)
