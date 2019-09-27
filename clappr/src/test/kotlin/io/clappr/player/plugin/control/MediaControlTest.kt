@@ -229,6 +229,15 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should pause playback on open modal event`() {
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        triggerOpenModalPanelEvent()
+
+        assertEquals(Playback.State.PAUSED, core.activePlayback?.state)
+    }
+
+    @Test
     fun `should hide controls panel on open modal event`() {
         triggerOpenModalPanelEvent()
 
@@ -621,6 +630,11 @@ class MediaControlTest {
         companion object {
             const val name = "fakePlayback"
             val supportsSource: PlaybackSupportCheck = { _, _ -> true }
+        }
+
+        override fun pause(): Boolean {
+            fakeState = State.PAUSED
+            return true
         }
 
         override val state: State
