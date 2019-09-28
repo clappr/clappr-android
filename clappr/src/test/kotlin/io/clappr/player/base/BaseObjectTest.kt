@@ -1,59 +1,59 @@
 package io.clappr.player.base
 
 import android.os.Bundle
-import androidx.test.core.app.ApplicationProvider
+import io.clappr.player.log.Logger
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
-import org.robolectric.annotation.Config
-import org.robolectric.shadows.ShadowLog
 
-@RunWith(RobolectricTestRunner::class)
-@Config(sdk = [23], shadows = [ShadowLog::class])
-open class BaseObjectTest {
-    private var baseObject: BaseObject? = null
+class BaseObjectTest {
+    private lateinit var baseObject: BaseObject
     private var callbackWasCalled = false
 
     private val eventName = "some-event"
     private val callback: EventHandler = { callbackWasCalled = true }
 
+    private lateinit var logger: Logger
+
     @Before
     fun setup() {
-        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
-        baseObject = BaseObject()
+        logger = mockk(relaxUnitFun = true)
+        baseObject = BaseObject(logger)
         callbackWasCalled = false
     }
 
     @Test
     fun onCallbackShouldBeCalledOnEventTrigger() {
-        baseObject?.on(eventName, callback)
-        baseObject?.trigger(eventName)
+        baseObject.on(eventName, callback)
+        baseObject.trigger(eventName)
 
         assertTrue("event not triggered", callbackWasCalled)
     }
 
     @Test
     fun onCallbackShouldReceiveUserInfo() {
-        var value = "Not Expected"
+        var value: String? = null
 
-        baseObject?.on(eventName) { bundle -> value = bundle?.getString("value")!! }
-        val userData = Bundle()
-        userData.putString("value", "Expected")
-        baseObject?.trigger(eventName, userData)
+        val userData = mockk<Bundle>()
+        every { userData.getString("value") } returns "Expected"
+
+        baseObject.on(eventName) { value = it?.getString("value") }
+        baseObject.trigger(eventName, userData)
 
         assertTrue("userInfo not received", value == "Expected")
     }
 
     @Test
     fun onCallbackShouldBeCalledForEveryCallback() {
-        baseObject?.on(eventName, callback)
+        baseObject.on(eventName, callback)
 
         var secondCallbackCalled = false
-        baseObject?.on(eventName) { secondCallbackCalled = true }
+        baseObject.on(eventName) { secondCallbackCalled = true }
 
-        baseObject?.trigger(eventName)
+        baseObject.trigger(eventName)
 
         assertTrue("event not triggered", callbackWasCalled)
         assertTrue("second event not triggered", secondCallbackCalled)
@@ -63,28 +63,28 @@ open class BaseObjectTest {
     fun onCallbackShouldOnlyBeRegisteredOnce() {
         var numberOfCalls = 0
         val localCallback: EventHandler = { numberOfCalls += 1 }
-        baseObject?.on(eventName, localCallback)
-        baseObject?.on(eventName, localCallback)
+        baseObject.on(eventName, localCallback)
+        baseObject.on(eventName, localCallback)
 
-        baseObject?.trigger(eventName)
+        baseObject.trigger(eventName)
 
-        assertEquals("event handler should only be called once", numberOfCalls, 1)
+        assertEquals("event handler should only be called once", 1, numberOfCalls)
     }
 
     @Test
     fun onCallbackShouldNotBeCalledforAnotherTrigger() {
-        baseObject?.on(eventName, callback)
+        baseObject.on(eventName, callback)
 
-        baseObject?.trigger("another-event")
+        baseObject.trigger("another-event")
 
         assertFalse("event triggered", callbackWasCalled)
     }
 
     @Test
     fun onCallbackShouldNotBeCalledforAnotherObject() {
-        val anotherObject = BaseObject()
+        val anotherObject = BaseObject(logger)
 
-        baseObject?.on(eventName, callback)
+        baseObject.on(eventName, callback)
 
         anotherObject.trigger(eventName)
 
@@ -93,37 +93,37 @@ open class BaseObjectTest {
 
     @Test
     fun onceCallbackShouldBeCalledOnEvent() {
-        baseObject?.once(eventName, callback)
-        baseObject?.trigger(eventName)
+        baseObject.once(eventName, callback)
+        baseObject.trigger(eventName)
 
         assertTrue("event not triggered", callbackWasCalled)
     }
 
     @Test
     fun onceCallbackShouldNotBeCalledTwice() {
-        baseObject?.once(eventName, callback)
+        baseObject.once(eventName, callback)
 
-        baseObject?.trigger(eventName)
+        baseObject.trigger(eventName)
         callbackWasCalled = false
-        baseObject?.trigger(eventName)
+        baseObject.trigger(eventName)
 
         assertFalse("event triggered", callbackWasCalled)
     }
 
     @Test
     fun onceCallbackShouldNotBeCalledIfRemoved() {
-        val listenId = baseObject?.once(eventName, callback)
-        baseObject?.off(listenId!!)
-        baseObject?.trigger(eventName)
+        val listenId = baseObject.once(eventName, callback)
+        baseObject.off(listenId)
+        baseObject.trigger(eventName)
 
         assertFalse("event triggered", callbackWasCalled)
     }
 
     @Test
     fun listenToShouldFireAnEvent() {
-        val contextObject = BaseObject()
+        val contextObject = BaseObject(logger)
 
-        baseObject?.listenTo(contextObject, eventName, callback)
+        baseObject.listenTo(contextObject, eventName, callback)
         contextObject.trigger(eventName)
 
         assertTrue("event not triggered", callbackWasCalled)
@@ -131,23 +131,26 @@ open class BaseObjectTest {
 
     @Test
     fun listenToShouldHandleCallbackException() {
-        val brokenCallback: EventHandler = { throw NullPointerException() }
-        val expectedLogMessage = "[BaseObject] Plugin ${brokenCallback.javaClass.name} " +
-                "crashed during invocation of event $eventName"
+        val exception = NullPointerException()
+        val brokenCallback: EventHandler = { throw exception }
+        val expectedLogMessage =
+            "Plugin ${brokenCallback.javaClass.name} crashed during invocation of event $eventName"
 
-        val contextObject = BaseObject()
+        val contextObject = BaseObject(logger)
 
-        baseObject?.listenTo(contextObject, eventName, brokenCallback)
+        baseObject.listenTo(contextObject, eventName, brokenCallback)
         contextObject.trigger(eventName)
 
-        assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
+        verify {
+            logger.error(BaseObject::class.java.simpleName, expectedLogMessage, exception)
+        }
     }
 
     @Test
     fun offCallbackNotCalledIfRemoved() {
-        val listenId = baseObject?.on(eventName, callback)
-        baseObject?.off(listenId!!)
-        baseObject?.trigger(eventName)
+        val listenId = baseObject.on(eventName, callback)
+        baseObject.off(listenId)
+        baseObject.trigger(eventName)
 
         assertFalse("event triggered", callbackWasCalled)
     }
@@ -155,13 +158,13 @@ open class BaseObjectTest {
     @Test
     fun offOtherShouldBeCalledAfterRemoval() {
         var anotherCallbackWasCalled = false
-        val anotherCallback: EventHandler = { anotherCallbackWasCalled = true}
+        val anotherCallback: EventHandler = { anotherCallbackWasCalled = true }
 
-        val listenId = baseObject?.on(eventName, callback)
-        baseObject?.on(eventName, anotherCallback)
+        val listenId = baseObject.on(eventName, callback)
+        baseObject.on(eventName, anotherCallback)
 
-        baseObject?.off(listenId!!)
-        baseObject?.trigger(eventName)
+        baseObject.off(listenId)
+        baseObject.trigger(eventName)
 
         assertFalse("event triggered", callbackWasCalled)
         assertTrue("event not triggered", anotherCallbackWasCalled)
@@ -169,28 +172,28 @@ open class BaseObjectTest {
 
     @Test
     fun stopListeningShouldCancelAllHandlers() {
-        baseObject?.on(eventName, callback)
-        baseObject?.on("another-event", callback)
+        baseObject.on(eventName, callback)
+        baseObject.on("another-event", callback)
 
-        baseObject?.stopListening()
+        baseObject.stopListening()
 
-        baseObject?.trigger(eventName)
-        baseObject?.trigger("another-event")
+        baseObject.trigger(eventName)
+        baseObject.trigger("another-event")
 
         assertFalse("event triggered", callbackWasCalled)
     }
 
     @Test
     fun stopListeningShouldCancelOnlyOnObject() {
-        val anotherObject = BaseObject()
+        val anotherObject = BaseObject(logger)
         var anotherCallbackWasCalled = false
-        anotherObject.on(eventName) { anotherCallbackWasCalled = true}
+        anotherObject.on(eventName) { anotherCallbackWasCalled = true }
 
-        baseObject?.on(eventName, callback)
+        baseObject.on(eventName, callback)
 
-        baseObject?.stopListening()
+        baseObject.stopListening()
 
-        baseObject?.trigger(eventName)
+        baseObject.trigger(eventName)
         anotherObject.trigger(eventName)
 
         assertFalse("event triggered", callbackWasCalled)
@@ -199,10 +202,10 @@ open class BaseObjectTest {
 
     @Test
     fun stopListeningShouldCancelOnBaseObject() {
-        val contextObject = BaseObject()
+        val contextObject = BaseObject(logger)
 
-        val listenId = baseObject?.listenTo(contextObject, eventName, callback)
-        baseObject?.stopListening(listenId!!)
+        val listenId = baseObject.listenTo(contextObject, eventName, callback)
+        baseObject.stopListening(listenId)
 
         contextObject.trigger(eventName)
 
