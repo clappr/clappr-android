@@ -18,6 +18,7 @@ import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.animate
+import io.clappr.player.extensions.extractInputKey
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
@@ -331,10 +332,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private fun onInputReceived(bundle: Bundle?) {
         bundle?.let {
-            val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
-            val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
-            val action = Action.getByValue(keyAction)
+            val (key, action) = it.extractInputKey()
 
             if (isValidActivationKey(key) && action == Action.UP) {
                 when (isVisible) {
