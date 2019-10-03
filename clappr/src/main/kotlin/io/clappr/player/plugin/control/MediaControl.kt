@@ -293,9 +293,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun closeModal() {
-        if (modalPanelIsOpen()) showDefaultMediaControlPanels()
+        if (modalPanelIsOpen()) {
+            showDefaultMediaControlPanels()
+            animateFadeOut(modalPanel) { hideModalPanel() }
+        } else hideModalPanel()
 
-        animateFadeOut(modalPanel) { hideModalPanel() }
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
