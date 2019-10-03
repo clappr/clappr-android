@@ -155,6 +155,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         updateInteractionTime()
 
         if (!isPlaybackIdle && duration > 0) {
+            handler.removeCallbacksAndMessages(null)
             hideDelayed(duration)
         }
 
