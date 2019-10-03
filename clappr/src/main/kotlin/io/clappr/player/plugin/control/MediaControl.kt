@@ -162,7 +162,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private fun setupShowDuration(duration: Long) {
         updateInteractionTime()
 
-        if (!isPlaybackIdle && duration > 0) {
+        if (duration > 0) {
             hideDelayedWithCleanHandler(duration)
         }
 
