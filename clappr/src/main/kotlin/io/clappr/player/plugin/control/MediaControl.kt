@@ -66,7 +66,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     open val invalidActivationKeys = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
 
-    private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
+    open val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
