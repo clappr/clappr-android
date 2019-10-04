@@ -155,8 +155,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         updateInteractionTime()
 
         if (!isPlaybackIdle && duration > 0) {
-            handler.removeCallbacksAndMessages(null)
-            hideDelayed(duration)
+            hideDelayedWithCleanHandler(duration)
         }
 
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
@@ -251,6 +250,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     private fun showMediaControlElements() {
         visibility = Visibility.VISIBLE
         backgroundView.visibility = View.VISIBLE
+    }
+
+    private fun hideDelayedWithCleanHandler(duration: Long) {
+        handler.removeCallbacksAndMessages(null)
+        hideDelayed(duration)
     }
 
     private fun hideDelayed(duration: Long) {
