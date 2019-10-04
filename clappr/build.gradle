@@ -78,6 +78,7 @@ android {
     testOptions {
         unitTests.all {
             jvmArgs '-XX:MaxPermSize=256m'
+            maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
         }
         unitTests {
             includeAndroidResources = true
