@@ -155,7 +155,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         updateInteractionTime()
 
         if (!isPlaybackIdle && duration > 0) {
-            hideDelayed(duration)
+            hideDelayedWithCleanHandler(duration)
         }
 
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
@@ -252,6 +252,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         backgroundView.visibility = View.VISIBLE
     }
 
+    private fun hideDelayedWithCleanHandler(duration: Long) {
+        handler.removeCallbacksAndMessages(null)
+        hideDelayed(duration)
+    }
+
     private fun hideDelayed(duration: Long) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
@@ -293,9 +298,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun closeModal() {
-        if (modalPanelIsOpen()) showDefaultMediaControlPanels()
+        if (modalPanelIsOpen()) {
+            showDefaultMediaControlPanels()
+            animateFadeOut(modalPanel) { hideModalPanel() }
+        } else hideModalPanel()
 
-        animateFadeOut(modalPanel) { hideModalPanel() }
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
@@ -364,20 +371,23 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     override fun hide() {
-        hideAnimationEnded = false
-
         if (isEnabled && isPlaybackIdle) return
+
+        hideAnimationEnded = false
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
 
-        animateFadeOut(view) {
-            hideMediaControlElements()
-            hideDefaultMediaControlPanels()
-            hideModalPanel()
-            hideAnimationEnded = true
+        if (isVisible) animateFadeOut(view) { hideMediaControl() }
+        else hideMediaControl()
+    }
 
-            core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
-        }
+    private fun hideMediaControl() {
+        hideMediaControlElements()
+        hideDefaultMediaControlPanels()
+        hideModalPanel()
+        hideAnimationEnded = true
+
+        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
     override fun show() {
