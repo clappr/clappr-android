@@ -20,7 +20,7 @@ apply plugin: 'org.jetbrains.dokka-android'
 apply from: 'versioning.gradle'
 
 group = 'io.clappr.player'
-version = '0.33.0'
+version = '0.33.1'
 
 def publishAttrs = buildPublishAttrs(version)
 
@@ -78,6 +78,7 @@ android {
     testOptions {
         unitTests.all {
             jvmArgs '-XX:MaxPermSize=256m'
+            maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
         }
         unitTests {
             includeAndroidResources = true
