@@ -211,7 +211,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private fun setupPlugins() {
         controlPlugins.clear()
 
-        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+        with(core.plugins.filterIsInstance(Plugin::class.java)) {
             core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
                 controlPlugins.addAll(orderedPlugins(this, it.toString()))
             } ?: controlPlugins.addAll(this)
