@@ -54,8 +54,8 @@ open class MediaControl(core: Core, pluginName: String = name) :
         val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
-    protected val defaultShowDuration = 300L
-    protected val longShowDuration = 3000L
+    private val defaultShowDuration = 300L
+    private val longShowDuration = 3000L
 
     private val handler = Handler()
 
@@ -286,7 +286,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }, duration)
     }
 
-    protected fun updateInteractionTime() {
+    private fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
