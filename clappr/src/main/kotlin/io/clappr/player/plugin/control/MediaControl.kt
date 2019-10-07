@@ -1,6 +1,8 @@
 package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
+import android.annotation.TargetApi
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -341,7 +343,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    @SuppressLint("NewApi")
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected fun setBackground(resource : Int) {
         backgroundView.background = applicationContext.getDrawable(resource)
     }
