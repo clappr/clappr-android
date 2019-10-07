@@ -1,6 +1,8 @@
 package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
+import android.content.res.Resources
+import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -66,7 +68,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     open val invalidActivationKeys = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
 
-    open val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
+    protected val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
@@ -339,6 +341,14 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         view.animate(R.anim.anim_media_control_fade_out) {
             onAnimationEnd()
         }
+    }
+
+    @SuppressLint("NewApi")
+    protected fun setBackground(resource : Int, theme: Theme? = null) {
+        backgroundView.background = applicationContext.resources?.getDrawable(
+            resource,
+            theme
+        )
     }
 
     @SuppressLint("ClickableViewAccessibility")
