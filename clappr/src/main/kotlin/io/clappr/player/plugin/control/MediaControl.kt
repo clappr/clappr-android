@@ -1,8 +1,6 @@
 package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
-import android.content.res.Resources
-import android.content.res.Resources.Theme
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
@@ -344,11 +342,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     @SuppressLint("NewApi")
-    protected fun setBackground(resource : Int, theme: Theme? = null) {
-        backgroundView.background = applicationContext.resources?.getDrawable(
-            resource,
-            theme
-        )
+    protected fun setBackground(resource : Int) {
+        backgroundView.background = applicationContext.getDrawable(resource)
     }
 
     @SuppressLint("ClickableViewAccessibility")
