@@ -1,9 +1,7 @@
 package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
-import android.annotation.TargetApi
 import android.content.Context
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
