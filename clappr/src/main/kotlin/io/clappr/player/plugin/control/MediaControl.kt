@@ -2,10 +2,12 @@ package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
 import android.annotation.TargetApi
+import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.GestureDetectorCompat
 import android.view.*
 import android.widget.FrameLayout
@@ -23,7 +25,8 @@ import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
-open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(core, name = pluginName) {
+open class MediaControl(core: Core, pluginName: String = name) :
+    UICorePlugin(core, name = pluginName) {
 
     abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
@@ -117,15 +120,19 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
 
     private val doubleTapListener = MediaControlDoubleTapListener()
-    private val gestureDetector = GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
-        .apply {
-            setOnDoubleTapListener(doubleTapListener)
-        }
+    private val gestureDetector =
+        GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
+            .apply {
+                setOnDoubleTapListener(doubleTapListener)
+            }
 
     init {
         hideModalPanel()
 
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
+        listenTo(
+            core,
+            InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value
+        ) { setupMediaControlEvents() }
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
 
         listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { updateInteractionTime() }
@@ -173,8 +180,16 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         stopContainerListeners()
 
         core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value) { state = State.ENABLED })
-            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value) { state = State.DISABLED })
+            containerListenerIds.add(
+                listenTo(
+                    it,
+                    InternalEvent.ENABLE_MEDIA_CONTROL.value
+                ) { state = State.ENABLED })
+            containerListenerIds.add(
+                listenTo(
+                    it,
+                    InternalEvent.DISABLE_MEDIA_CONTROL.value
+                ) { state = State.DISABLED })
             containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) {
                 state = State.ENABLED
                 hide()
@@ -343,9 +358,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    protected fun setBackground(resource : Int) {
-        backgroundView.background = applicationContext.getDrawable(resource)
+    protected fun setBackground(context: Context, resource: Int) {
+        backgroundView.background = ContextCompat.getDrawable(context, resource)
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -398,9 +412,19 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         override fun onSingleTapUp(e: MotionEvent?) = false
 
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float) = false
+        override fun onFling(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            velocityX: Float,
+            velocityY: Float
+        ) = false
 
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float) = false
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            distanceX: Float,
+            distanceY: Float
+        ) = false
 
         override fun onLongPress(e: MotionEvent?) {}
     }
