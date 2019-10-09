@@ -9,6 +9,7 @@ import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class BundleExtensionsTest {
     @Test
@@ -18,35 +19,31 @@ class BundleExtensionsTest {
         whenever(bundle.getString(EventData.INPUT_KEY_CODE.value)) doReturn Key.BACK.value
         whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn Action.UP.value
 
-        val (key, action) = bundle.extractInputKey()
+        val inputKey = bundle.extractInputKey()
 
-        assertEquals(Key.BACK, key)
-        assertEquals(Action.UP, action)
+        assertEquals(Key.BACK, inputKey?.key)
+        assertEquals(Action.UP, inputKey?.action)
     }
 
     @Test
-    fun `should return undefined key and action when there is no key and action available`() {
+    fun `should return null key and action when there is no key available`() {
         val bundle = mock<Bundle>()
 
         whenever(bundle.getString(EventData.INPUT_KEY_CODE.value)) doReturn null
-        whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn null
 
-        val (key, action) = bundle.extractInputKey()
+        val inputKey = bundle.extractInputKey()
 
-        assertEquals(Key.UNDEFINED, key)
-        assertEquals(Action.UNDEFINED, action)
+        assertNull(inputKey?.key)
     }
 
     @Test
-    fun `should return undefined key and action when the key and action are not mapped`() {
+    fun `should return null action when the action are not mapped`() {
         val bundle = mock<Bundle>()
 
-        whenever(bundle.getString(EventData.INPUT_KEY_CODE.value)) doReturn "unknown"
-        whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn "unknown"
+        whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn null
 
-        val (key, action) = bundle.extractInputKey()
+        val inputKey = bundle.extractInputKey()
 
-        assertEquals(Key.UNDEFINED, key)
-        assertEquals(Action.UNDEFINED, action)
+        assertNull(inputKey?.action)
     }
 }
