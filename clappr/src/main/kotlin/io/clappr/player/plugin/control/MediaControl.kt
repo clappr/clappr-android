@@ -331,9 +331,11 @@ open class MediaControl(core: Core, pluginName: String = name) :
     }
 
     private fun onInputReceived(bundle: Bundle?) {
-        bundle?.let {
-            val (key, action) = it.extractInputKey()
+        bundle?.let { handleInputKey(it) }
+    }
 
+    private fun handleInputKey(bundle: Bundle) {
+        bundle.extractInputKey()?.apply {
             if (isValidActivationKey(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()

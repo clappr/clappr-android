@@ -5,12 +5,17 @@ import io.clappr.player.base.EventData
 import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 
-fun Bundle.extractInputKey(): Pair<Key, Action> {
+data class InputKey(val key: Key, val action: Action)
+
+fun Bundle.extractInputKey(): InputKey? {
     val keyCode = getString(EventData.INPUT_KEY_CODE.value).orEmpty()
     val keyAction = getString(EventData.INPUT_KEY_ACTION.value).orEmpty()
 
-    val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
-    val action = Action.getByValue(keyAction) ?: Action.UNDEFINED
+    val key = Key.getByValue(keyCode)
+    val action = Action.getByValue(keyAction)
 
-    return key to action
+    return when {
+        key != null && action != null -> InputKey(key, action)
+        else -> null
+    }
 }
