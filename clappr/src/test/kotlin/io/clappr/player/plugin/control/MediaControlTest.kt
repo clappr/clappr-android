@@ -521,8 +521,7 @@ class MediaControlTest {
 
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
-
-
+    
     @Test
     fun `should hide media control when show is called with a duration in greater than zero`(){
 
