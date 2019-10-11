@@ -26,24 +26,26 @@ class BundleExtensionsTest {
     }
 
     @Test
-    fun `should return null key and action when there is no key available`() {
+    fun `should return null when there is no key available`() {
         val bundle = mock<Bundle>()
 
         whenever(bundle.getString(EventData.INPUT_KEY_CODE.value)) doReturn null
+        whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn Action.UP.value
 
         val inputKey = bundle.extractInputKey()
 
-        assertNull(inputKey?.key)
+        assertNull(inputKey)
     }
 
     @Test
-    fun `should return null action when the action are not mapped`() {
+    fun `should return null when there is no action available`() {
         val bundle = mock<Bundle>()
 
+        whenever(bundle.getString(EventData.INPUT_KEY_CODE.value)) doReturn Key.BACK.value
         whenever(bundle.getString(EventData.INPUT_KEY_ACTION.value)) doReturn null
 
         val inputKey = bundle.extractInputKey()
 
-        assertNull(inputKey?.action)
+        assertNull(inputKey)
     }
 }
