@@ -18,6 +18,7 @@ import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.animate
+import io.clappr.player.extensions.extractInputKey
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
@@ -53,8 +54,8 @@ open class MediaControl(core: Core, pluginName: String = name) :
         val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
-    protected val defaultShowDuration = 300L
-    protected val longShowDuration = 3000L
+    private val defaultShowDuration = 300L
+    private val longShowDuration = 3000L
 
     private val handler = Handler()
 
@@ -161,7 +162,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private fun setupShowDuration(duration: Long) {
         updateInteractionTime()
 
-        if (!isPlaybackIdle && duration > 0) {
+        if (duration > 0) {
             hideDelayedWithCleanHandler(duration)
         }
 
@@ -210,7 +211,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private fun setupPlugins() {
         controlPlugins.clear()
 
-        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+        with(core.plugins.filterIsInstance(Plugin::class.java)) {
             core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
                 controlPlugins.addAll(orderedPlugins(this, it.toString()))
             } ?: controlPlugins.addAll(this)
@@ -285,7 +286,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }, duration)
     }
 
-    protected fun updateInteractionTime() {
+    private fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
@@ -330,12 +331,11 @@ open class MediaControl(core: Core, pluginName: String = name) :
     }
 
     private fun onInputReceived(bundle: Bundle?) {
-        bundle?.let {
-            val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
-            val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
-            val action = Action.getByValue(keyAction)
+        bundle?.let { handleInputKey(it) }
+    }
 
+    private fun handleInputKey(bundle: Bundle) {
+        bundle.extractInputKey()?.apply {
             if (isValidActivationKey(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()
