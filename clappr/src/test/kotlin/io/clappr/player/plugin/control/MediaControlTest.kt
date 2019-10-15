@@ -41,8 +41,7 @@ class MediaControlTest {
     private lateinit var core: Core
     private lateinit var container: Container
     private lateinit var fakePlayback: FakePlayback
-    lateinit var scheduler: Scheduler
-
+    private lateinit var scheduler: Scheduler
 
     @Before
     fun setUp() {
