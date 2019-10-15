@@ -22,10 +22,12 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowSystemClock
 import org.robolectric.shadows.ShadowView
+import org.robolectric.util.Scheduler
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -39,10 +41,13 @@ class MediaControlTest {
     private lateinit var core: Core
     private lateinit var container: Container
     private lateinit var fakePlayback: FakePlayback
+    private lateinit var scheduler: Scheduler
 
     @Before
     fun setUp() {
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
+        scheduler = Robolectric.getForegroundThreadScheduler()
+
         container = Container(Options())
 
         core = Core(Options())
@@ -514,6 +519,28 @@ class MediaControlTest {
         })
 
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+    
+    @Test
+    fun `should hide media control when show is called with a duration greater than zero`(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.show(1)
+
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not hide media control when show is called with a duration less or equal to zero`(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.show(0)
+
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
     }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
