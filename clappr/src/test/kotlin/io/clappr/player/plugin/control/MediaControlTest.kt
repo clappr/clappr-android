@@ -523,7 +523,7 @@ class MediaControlTest {
     }
     
     @Test
-    fun `should hide media control when show is called with a duration in greater than zero`(){
+    fun `should hide media control when show is called with a duration greater than zero`(){
         fakePlayback.fakeState = Playback.State.PLAYING
 
         mediaControl.show(1)
