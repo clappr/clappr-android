@@ -8,6 +8,7 @@
 | [io.clappr.player.components.AudioLanguage](../io.clappr.player.components/-audio-language/index.md) |  |
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.bitrate.BitrateHistory](../io.clappr.player.bitrate/-bitrate-history/index.md) |  |
+| [android.os.Bundle](../io.clappr.player.extensions/android.os.-bundle/index.md) (extensions in package io.clappr.player.extensions) |  |
 | [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
 | [io.clappr.player.interop.Callback](../io.clappr.player.interop/-callback.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
@@ -32,6 +33,7 @@
 | [io.clappr.player.plugin.core.externalinput.ExternalInputDevice](../io.clappr.player.plugin.core.externalinput/-external-input-device/index.md) |  |
 | [io.clappr.player.plugin.core.externalinput.ExternalInputPlugin](../io.clappr.player.plugin.core.externalinput/-external-input-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
+| [io.clappr.player.extensions.InputKey](../io.clappr.player.extensions/-input-key/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |
 | [io.clappr.player.base.InternalEventData](../io.clappr.player.base/-internal-event-data/index.md) | Event bundle data keys for selected Events |
 | [io.clappr.player.base.keys.Key](../io.clappr.player.base.keys/-key/index.md) |  |
