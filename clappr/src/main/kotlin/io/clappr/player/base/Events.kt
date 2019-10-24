@@ -1,6 +1,6 @@
 package io.clappr.player.base
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 
