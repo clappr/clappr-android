@@ -5,12 +5,12 @@ import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
-import android.support.v4.content.ContextCompat
-import android.support.v4.view.GestureDetectorCompat
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.GestureDetectorCompat
 import io.clappr.player.R
 import io.clappr.player.base.*
 import io.clappr.player.base.keys.Action

@@ -1,6 +1,6 @@
 package io.clappr.player.app.plugin
 
-import android.support.annotation.Keep
+import androidx.annotation.Keep
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout

@@ -1,10 +1,10 @@
 package io.clappr.player.plugin
 
-import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.ProgressBar
+import androidx.core.content.ContextCompat
 import io.clappr.player.base.Event
 import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
