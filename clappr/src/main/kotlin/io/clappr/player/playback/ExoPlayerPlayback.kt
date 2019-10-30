@@ -67,7 +67,7 @@ open class ExoPlayerPlayback(
     }
 
     protected var player: SimpleExoPlayer? = null
-    protected val bandwidthMeter = DefaultBandwidthMeter()
+    protected val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
