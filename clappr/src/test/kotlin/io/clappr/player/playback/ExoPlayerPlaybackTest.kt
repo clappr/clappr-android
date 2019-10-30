@@ -7,15 +7,17 @@ import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player.*
+import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.nhaarman.mockitokotlin2.mock
+import com.nhaarman.mockitokotlin2.whenever
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
-import io.clappr.player.base.InternalEventData
 import io.clappr.player.base.InternalEventData.*
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
@@ -705,6 +707,42 @@ class ExoPlayerPlaybackTest {
         )
 
         assertEquals(expectedSubtitles, foundSubtitles)
+    }
+
+    @Test
+    fun `duration should not discount sync buffer time VOD`() {
+        val source = "supported-source.mp4"
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+        exoPlayerPlayBack.player = playerWithVODDuration(120_000)
+
+        assertEquals(120.0, exoPlayerPlayBack.duration)
+
+    }
+
+    @Test
+    fun `duration should discount sync buffer time of 20s for live videos with DVR`() {
+        val source = "supported-source.mp4"
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = source)
+        exoPlayerPlayBack.player = playerWithDVRAndDuration(120_000)
+
+        assertEquals(100.0, exoPlayerPlayBack.duration)
+
+    }
+
+    private fun playerWithDVRAndDuration(millis: Long): SimpleExoPlayer {
+        val player = mock<SimpleExoPlayer>()
+        whenever(player.isCurrentWindowDynamic).thenReturn(true)
+        whenever(player.duration).thenReturn(millis)
+        return player
+    }
+
+    private fun playerWithVODDuration(millis: Long): SimpleExoPlayer {
+        val player = mock<SimpleExoPlayer>()
+        whenever(player.isCurrentWindowDynamic).thenReturn(false)
+        whenever(player.duration).thenReturn(millis)
+        return player
     }
 
     private fun addBitrateMediaLoadData(

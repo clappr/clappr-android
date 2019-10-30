@@ -66,7 +66,7 @@ open class ExoPlayerPlayback(
         options[MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
     }
 
-    protected var player: SimpleExoPlayer? = null
+    var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
 
     private val mainHandler = Handler()
@@ -120,8 +120,8 @@ open class ExoPlayerPlayback(
             return UNKNOWN
         }
 
-    private val syncBufferInSeconds =
-        if (mediaType == LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
+    private val syncBufferInSeconds
+        get() = if (mediaType == LIVE) DEFAULT_SYNC_BUFFER_IN_SECONDS + MIN_DVR_LIVE_DRIFT else 0
 
     override val duration: Double
         get() = player?.duration?.let { (it.toDouble() / ONE_SECOND_IN_MILLIS) - syncBufferInSeconds }
