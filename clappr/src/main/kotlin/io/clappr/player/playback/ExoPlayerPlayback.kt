@@ -357,7 +357,7 @@ open class ExoPlayerPlayback(
             TYPE_HLS -> HlsMediaSource.Factory(
                 dataSourceFactory
             ).createMediaSource(uri)
-            TYPE_OTHER -> ExtractorMediaSource.Factory(
+            TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 dataSourceFactory
             ).createMediaSource(uri)
             else -> throw IllegalStateException("Unsupported type: $mediaType")
