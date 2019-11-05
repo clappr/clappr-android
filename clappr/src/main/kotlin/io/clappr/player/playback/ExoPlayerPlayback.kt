@@ -66,7 +66,7 @@ open class ExoPlayerPlayback(
         options[MIN_DVR_SIZE.value] as? Int ?: DEFAULT_MIN_DVR_SIZE
     }
 
-    var player: SimpleExoPlayer? = null
+    protected var player: SimpleExoPlayer? = null
     protected val bandwidthMeter = DefaultBandwidthMeter()
 
     private val mainHandler = Handler()

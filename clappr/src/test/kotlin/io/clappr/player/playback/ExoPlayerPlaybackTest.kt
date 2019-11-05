@@ -10,15 +10,14 @@ import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
-import io.clappr.player.base.InternalEventData.*
+import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
+import io.clappr.player.base.InternalEventData.FOUND_SUBTITLES
 import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.AudioLanguage
@@ -26,6 +25,8 @@ import io.clappr.player.components.Playback.State
 import io.clappr.player.components.SubtitleLanguage
 import io.clappr.player.shadows.SimpleExoplayerShadow
 import io.clappr.player.shadows.SubtitleViewShadow
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -714,7 +715,7 @@ class ExoPlayerPlaybackTest {
         val source = "supported-source.mp4"
 
         exoPlayerPlayBack = ExoPlayerPlayback(source = source)
-        exoPlayerPlayBack.player = playerWithVODDuration(120_000)
+        exoPlayerPlayBack.setPlayer(playerWithVODDuration(120_000))
 
         assertEquals(120.0, exoPlayerPlayBack.duration)
 
@@ -725,24 +726,27 @@ class ExoPlayerPlaybackTest {
         val source = "supported-source.mp4"
 
         exoPlayerPlayBack = ExoPlayerPlayback(source = source)
-        exoPlayerPlayBack.player = playerWithDVRAndDuration(120_000)
+        exoPlayerPlayBack.setPlayer(playerWithDVRAndDuration(120_000))
 
         assertEquals(100.0, exoPlayerPlayBack.duration)
 
     }
 
-    private fun playerWithDVRAndDuration(millis: Long): SimpleExoPlayer {
-        val player = mock<SimpleExoPlayer>()
-        whenever(player.isCurrentWindowDynamic).thenReturn(true)
-        whenever(player.duration).thenReturn(millis)
-        return player
+    private fun playerWithDVRAndDuration(millis: Long) = mockk<SimpleExoPlayer>().apply {
+        every { isCurrentWindowDynamic } returns true
+        every { duration } returns millis
     }
 
-    private fun playerWithVODDuration(millis: Long): SimpleExoPlayer {
-        val player = mock<SimpleExoPlayer>()
-        whenever(player.isCurrentWindowDynamic).thenReturn(false)
-        whenever(player.duration).thenReturn(millis)
-        return player
+    private fun playerWithVODDuration(millis: Long) = mockk<SimpleExoPlayer>().apply {
+        every { isCurrentWindowDynamic } returns false
+        every { duration } returns millis
+    }
+
+    private fun ExoPlayerPlayback.setPlayer(player: SimpleExoPlayer) {
+        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "player" }.apply {
+            isAccessible  = true
+            set(this@setPlayer, player)
+        }
     }
 
     private fun addBitrateMediaLoadData(
