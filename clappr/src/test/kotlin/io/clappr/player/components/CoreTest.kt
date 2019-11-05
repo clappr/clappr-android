@@ -3,7 +3,6 @@ package io.clappr.player.components
 import android.view.View
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
-import com.nhaarman.mockitokotlin2.*
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
@@ -12,14 +11,14 @@ import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.CorePlugin
 import io.clappr.player.plugin.core.UICorePlugin
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
+import io.mockk.verifyOrder
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import org.mockito.ArgumentCaptor
-import org.mockito.Captor
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
@@ -63,15 +62,11 @@ open class CoreTest {
         }
     }
 
-    @Mock
     private lateinit var frameLayoutMock: FrameLayout
-
-    @Captor
-    private lateinit var onLayoutChangeListenerCapture: ArgumentCaptor<View.OnLayoutChangeListener>
 
     @Before
     fun setup() {
-        MockitoAnnotations.initMocks(this)
+        frameLayoutMock = mockk(relaxUnitFun = true)
 
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
     }
@@ -314,7 +309,7 @@ open class CoreTest {
 
         core.destroy()
 
-        verify(frameLayoutMock).removeOnLayoutChangeListener(any())
+        verify { frameLayoutMock.removeOnLayoutChangeListener(any()) }
     }
 
     @Test
@@ -323,7 +318,7 @@ open class CoreTest {
 
         core.render()
 
-        verify(frameLayoutMock).addOnLayoutChangeListener(any())
+        verify { frameLayoutMock.addOnLayoutChangeListener(any()) }
     }
 
     @Test
@@ -332,9 +327,9 @@ open class CoreTest {
 
         core.render()
 
-        with(inOrder(frameLayoutMock)) {
-            verify(frameLayoutMock).removeOnLayoutChangeListener(any())
-            verify(frameLayoutMock).addOnLayoutChangeListener(any())
+        verifyOrder {
+            frameLayoutMock.removeOnLayoutChangeListener(any())
+            frameLayoutMock.addOnLayoutChangeListener(any())
         }
     }
 
@@ -344,8 +339,9 @@ open class CoreTest {
 
         core.render()
 
-        verify(frameLayoutMock).removeOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
-        verify(frameLayoutMock).addOnLayoutChangeListener(onLayoutChangeListenerCapture.value)
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.removeOnLayoutChangeListener(capture(capturingSlot)) }
+        verify { frameLayoutMock.addOnLayoutChangeListener(capturingSlot.captured) }
     }
 
     @Test
@@ -353,11 +349,12 @@ open class CoreTest {
         val core = Core(options = Options(source = "source")).apply { view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
         core.destroy()
-        verify(frameLayoutMock, times(2))
-                .removeOnLayoutChangeListener(onLayoutChangeListenerCapture.value)
+        verify(exactly = 2) { frameLayoutMock.removeOnLayoutChangeListener(capturingSlot.captured) }
     }
 
     @Test
@@ -365,12 +362,13 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
         val right = 1920
         val oldRight = 1080
-        onLayoutChangeListenerCapture.value.onLayoutChange(
-                frameLayoutMock, 0, 0, right, 0, 0, 0, oldRight, 0)
+        capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, 0, right, 0, 0, 0, oldRight, 0)
 
         assertTrue(testPlugin.didResizeWasCalled)
     }
@@ -380,12 +378,13 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
         val left = 1920
         val oldLeft = 1080
-        onLayoutChangeListenerCapture.value.onLayoutChange(
-                frameLayoutMock, left, 0, 0, 0, oldLeft, 0, 0, 0)
+        capturingSlot.captured.onLayoutChange(frameLayoutMock, left, 0, 0, 0, oldLeft, 0, 0, 0)
 
         assertTrue(testPlugin.didResizeWasCalled)
     }
@@ -395,12 +394,13 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
         val top = 1920
         val oldTop = 1080
-        onLayoutChangeListenerCapture.value.onLayoutChange(
-                frameLayoutMock, 0, top, 0, 0, 0, oldTop, 0, 0)
+        capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, top, 0, 0, 0, oldTop, 0, 0)
 
         assertTrue(testPlugin.didResizeWasCalled)
     }
@@ -410,12 +410,12 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
         val bottom = 1920
         val oldBottom = 1080
-        onLayoutChangeListenerCapture.value.onLayoutChange(
-                frameLayoutMock, 0, 0, 0, bottom, 0, 0, 0, oldBottom)
+        capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, 0, 0, bottom, 0, 0, 0, oldBottom)
 
         assertTrue(testPlugin.didResizeWasCalled)
     }
@@ -425,10 +425,10 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin().apply { first.view = frameLayoutMock }
 
         core.render()
-        verify(frameLayoutMock).addOnLayoutChangeListener(capture(onLayoutChangeListenerCapture))
+        val capturingSlot = slot<View.OnLayoutChangeListener>()
+        verify { frameLayoutMock.addOnLayoutChangeListener(capture(capturingSlot)) }
 
-        onLayoutChangeListenerCapture.value.onLayoutChange(
-                frameLayoutMock, 100, 100, 100, 100, 100, 100, 100, 100)
+        capturingSlot.captured.onLayoutChange(frameLayoutMock, 100, 100, 100, 100, 100, 100, 100, 100)
 
         assertFalse(testPlugin.didResizeWasCalled)
     }
