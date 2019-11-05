@@ -543,6 +543,21 @@ class MediaControlTest {
         assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
     }
 
+    @Test
+    fun `should remove scheduled hide when show is called and hide is executed`(){
+        val expectedHideEventsTriggered = 1
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        var eventTriggeredCount = 0
+        core.on(InternalEvent.DID_HIDE_MEDIA_CONTROL.value) { eventTriggeredCount += 1 }
+
+        mediaControl.show(1)
+        mediaControl.hide()
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(expectedHideEventsTriggered, eventTriggeredCount)
+    }
+
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
     private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
     private fun getBottomLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_left_panel)
