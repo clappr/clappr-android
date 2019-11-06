@@ -43,12 +43,16 @@
                         android:id="@+id/top_left_panel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentStart="true"
+                        android:layout_alignParentLeft="true"
                         android:orientation="horizontal" />
 
                     <LinearLayout
                         android:id="@+id/top_right_panel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
                         android:orientation="horizontal" />
                 </RelativeLayout>
 
