@@ -19,11 +19,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginEnd="@dimen/media_control_right_margin"
-            android:layout_marginLeft="@dimen/media_control_left_margin"
-            android:layout_marginRight="@dimen/media_control_right_margin"
             android:layout_marginStart="@dimen/media_control_left_margin"
+            android:layout_marginLeft="@dimen/media_control_left_margin"
             android:layout_marginTop="@dimen/media_control_top_margin"
+            android:layout_marginEnd="@dimen/media_control_right_margin"
+            android:layout_marginRight="@dimen/media_control_right_margin"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:orientation="vertical">
@@ -71,11 +71,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginBottom="@dimen/media_control_bottom_margin"
-            android:layout_marginEnd="@dimen/media_control_right_margin"
-            android:layout_marginLeft="@dimen/media_control_left_margin"
-            android:layout_marginRight="@dimen/media_control_right_margin"
             android:layout_marginStart="@dimen/media_control_left_margin"
+            android:layout_marginLeft="@dimen/media_control_left_margin"
+            android:layout_marginEnd="@dimen/media_control_right_margin"
+            android:layout_marginRight="@dimen/media_control_right_margin"
+            android:layout_marginBottom="@dimen/media_control_bottom_margin"
             android:clipChildren="false"
             android:clipToPadding="false"
             android:gravity="bottom"
@@ -92,8 +92,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:baselineAligned="false">
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/bottom_left_panel"
@@ -118,12 +118,12 @@
         android:id="@+id/foreground_controls_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/media_control_bottom_margin"
-        android:layout_marginEnd="@dimen/media_control_right_margin"
-        android:layout_marginLeft="@dimen/media_control_left_margin"
-        android:layout_marginRight="@dimen/media_control_right_margin"
         android:layout_marginStart="@dimen/media_control_left_margin"
-        android:layout_marginTop="@dimen/media_control_top_margin">
+        android:layout_marginLeft="@dimen/media_control_left_margin"
+        android:layout_marginTop="@dimen/media_control_top_margin"
+        android:layout_marginEnd="@dimen/media_control_right_margin"
+        android:layout_marginRight="@dimen/media_control_right_margin"
+        android:layout_marginBottom="@dimen/media_control_bottom_margin">
 
         <LinearLayout
             android:id="@+id/center_panel"
@@ -138,7 +138,7 @@
         android:id="@+id/modal_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:clickable="true"
         android:background="@color/media_control_background"
+        android:clickable="true"
         android:focusable="true" />
 </FrameLayout>
