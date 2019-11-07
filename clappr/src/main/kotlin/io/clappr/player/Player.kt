@@ -19,6 +19,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
 import androidx.fragment.app.Fragment
+import io.clappr.player.Player.PIPAction.Companion.PIP_INTENT_ACTION
+import io.clappr.player.Player.PIPAction.Companion.PIP_INTENT_EXTRA
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
@@ -27,6 +29,7 @@ import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
 import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
 import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
+import kotlin.math.min
 
 /**
  *  Main Player class.
@@ -40,14 +43,21 @@ open class Player(
     private val containerEventsToListen: MutableSet<String> = mutableSetOf()
 ) : Fragment(), EventInterface by base {
 
-    companion object {
-        private const val PIP_ACTION_PLAY = 1
-        private const val PIP_ACTION_PAUSE = 2
-        private const val PIP_ACTION_REWIND = 3
-        private const val PIP_ACTION_FAST_FORWARD = 4
 
-        private const val PIP_INTENT_ACTION = "pip_media_control"
-        private const val PIP_INTENT_EXTRA = "control_type"
+    private enum class PIPAction {
+        PLAY,
+        PAUSE,
+        REWIND,
+        FAST_FORWARD;
+
+        companion object {
+            const val PIP_INTENT_ACTION = "pip_media_control"
+            const val PIP_INTENT_EXTRA = "control_type"
+        }
+    }
+
+    companion object {
+
 
         init {
             PluginConfig.register()
@@ -201,14 +211,10 @@ open class Player(
 
     private var playerViewGroup: ViewGroup? = null
 
-    //TODO: Update actions when playback ends
-    private val playAction by lazy { createRemoteAction(R.drawable.exo_controls_play, "Play", PIP_ACTION_PLAY, PIP_ACTION_PLAY) }
-
-    private val pauseAction by lazy { createRemoteAction(R.drawable.exo_icon_pause, "Pause", PIP_ACTION_PAUSE, PIP_ACTION_PAUSE) }
-
-    private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", PIP_ACTION_REWIND, PIP_ACTION_REWIND) }
-
-    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIP_ACTION_FAST_FORWARD, PIP_ACTION_FAST_FORWARD) }
+    private val playAction by lazy { createRemoteAction(R.drawable.exo_controls_play, "Play", PIPAction.PLAY) }
+    private val pauseAction by lazy { createRemoteAction(R.drawable.exo_icon_pause, "Pause", PIPAction.PAUSE) }
+    private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", PIPAction.REWIND) }
+    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIPAction.FAST_FORWARD) }
 
     private val pipParametersBuilder by lazy @TargetApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
 
@@ -396,17 +402,19 @@ open class Player(
                 override fun onReceive(context: Context, intent: Intent?) {
                     if (intent == null || PIP_INTENT_ACTION != intent.action) return
 
-                    when (intent.getIntExtra(PIP_INTENT_EXTRA, 0)) {
-                        PIP_ACTION_PLAY -> {
+
+                    val action = PIPAction.valueOf(intent.getStringExtra(PIP_INTENT_EXTRA))
+                    when (action) {
+                        PIPAction.PLAY -> {
                             play()
                             updatePictureInPictureAction(state)
                         }
-                        PIP_ACTION_PAUSE -> {
+                        PIPAction.PAUSE -> {
                             pause()
                             updatePictureInPictureAction(state)
                         }
-                        PIP_ACTION_REWIND -> seek(Math.min(0.0, position - 10).toInt())
-                        PIP_ACTION_FAST_FORWARD -> seek(Math.min(duration, position + 10).toInt())
+                        PIPAction.REWIND -> seek(min(0.0, position - 10).toInt())
+                        PIPAction.FAST_FORWARD -> seek(min(duration, position + 10).toInt())
                     }
                 }
             }
@@ -434,9 +442,9 @@ open class Player(
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    private fun createRemoteAction(@DrawableRes iconId: Int, title: String, controlType: Int, requestCode: Int): RemoteAction {
-        val intent = Intent(PIP_INTENT_ACTION).putExtra(PIP_INTENT_EXTRA, controlType)
-        val pendingIntent = PendingIntent.getBroadcast(activity, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+    private fun createRemoteAction(@DrawableRes iconId: Int, title: String, action: PIPAction): RemoteAction {
+        val intent = Intent(PIP_INTENT_ACTION).putExtra(PIP_INTENT_EXTRA, action.name)
+        val pendingIntent = PendingIntent.getBroadcast(activity, action.ordinal, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         return RemoteAction(Icon.createWithResource(context, iconId), title, title, pendingIntent)
     }
