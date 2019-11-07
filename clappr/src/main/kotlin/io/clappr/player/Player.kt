@@ -226,7 +226,9 @@ open class Player(
 
     override fun onPause() {
         super.onPause()
-        activity?.takeUnless { it.isRunningInAndroidTvDevice() }?.let {
+        activity?.takeUnless { it.isRunningInAndroidTvDevice()}?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && it.isInPictureInPictureMode) return
+
             val playerIsNotPaused = core?.activePlayback?.state != Playback.State.PAUSED
             if (playerIsNotPaused && !pause())
                 stop()
