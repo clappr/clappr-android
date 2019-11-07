@@ -61,33 +61,23 @@ open class Player(
                 it.on(InternalEvent.WILL_CHANGE_ACTIVE_CONTAINER.value) { unbindContainerEvents() }
                 it.on(InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { bindContainerEvents() }
                 it.on(Event.REQUEST_FULLSCREEN.value) { bundle: Bundle? ->
-                    trigger(
-                        Event.REQUEST_FULLSCREEN.value,
-                        bundle
-                    )
+                    trigger(Event.REQUEST_FULLSCREEN.value, bundle)
                 }
-                it.on(Event.EXIT_FULLSCREEN.value) { bundle: Bundle? -> trigger(Event.EXIT_FULLSCREEN.value, bundle) }
+                it.on(Event.EXIT_FULLSCREEN.value) { bundle: Bundle? ->
+                    trigger(Event.EXIT_FULLSCREEN.value, bundle)
+                }
                 it.on(Event.MEDIA_OPTIONS_SELECTED.value) { bundle: Bundle? ->
-                    trigger(
-                        Event.MEDIA_OPTIONS_SELECTED.value,
-                        bundle
-                    )
+                    trigger(Event.MEDIA_OPTIONS_SELECTED.value, bundle)
                 }
-                it.on(Event.DID_SELECT_AUDIO.value) { bundle: Bundle? -> trigger(Event.DID_SELECT_AUDIO.value, bundle) }
+                it.on(Event.DID_SELECT_AUDIO.value) { bundle: Bundle? ->
+                    trigger(Event.DID_SELECT_AUDIO.value, bundle)
+                }
                 it.on(Event.DID_SELECT_SUBTITLE.value) { bundle: Bundle? ->
-                    trigger(
-                        Event.DID_SELECT_SUBTITLE.value,
-                        bundle
-                    )
+                    trigger(Event.DID_SELECT_SUBTITLE.value, bundle)
                 }
 
-                if (it.activeContainer != null) {
-                    bindContainerEvents()
-                }
-
-                if (it.activePlayback != null) {
-                    bindPlaybackEvents()
-                }
+                if (it.activeContainer != null) bindContainerEvents()
+                if (it.activePlayback != null) bindPlaybackEvents()
 
                 playerViewGroup?.addView(it.render().view)
             }
@@ -164,7 +154,11 @@ open class Player(
         )
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
         core?.let { playerViewGroup?.addView(it.render().view) }
         return (playerViewGroup as View)
@@ -172,7 +166,7 @@ open class Player(
 
     override fun onPause() {
         super.onPause()
-        activity?.takeUnless { it.isRunningInAndroidTvDevice()}?.let {
+        activity?.takeUnless { it.isRunningInAndroidTvDevice() }?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && it.isInPictureInPictureMode) return
 
             val playerIsNotPaused = core?.activePlayback?.state != Playback.State.PAUSED
@@ -300,10 +294,7 @@ open class Player(
     private fun bindContainerEvents() {
         core?.activeContainer?.let {
             containerEventsToListen.mapTo(containerEventsIds) { event ->
-                listenTo(
-                    it,
-                    event
-                ) { bundle: Bundle? -> trigger(event, bundle) }
+                listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) }
             }
         }
     }
@@ -316,12 +307,7 @@ open class Player(
     private fun bindCoreEvents() {
         core?.let {
             coreEventsToListen.mapTo(coreEventsIds) { event ->
-                listenTo(it, event) { bundle: Bundle? ->
-                    trigger(
-                        event,
-                        bundle
-                    )
-                }
+                listenTo(it, event) { bundle: Bundle? -> trigger(event, bundle) }
             }
         }
     }
@@ -332,7 +318,8 @@ open class Player(
     }
 
     private fun updateCoreFullScreenStatus() {
-        core?.fullscreenState = if (this.fullscreen) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
+        core?.fullscreenState =
+            if (this.fullscreen) Core.FullscreenState.FULLSCREEN else Core.FullscreenState.EMBEDDED
     }
 
     fun holdKeyEvent(event: KeyEvent) {
@@ -340,7 +327,9 @@ open class Player(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
+    override fun onPictureInPictureModeChanged(
+        isInPictureInPictureMode: Boolean
+    ) {
         Log.d("@@@", "Is in PiP mode: $isInPictureInPictureMode")
 
         if (isInPictureInPictureMode) {
@@ -377,21 +366,31 @@ open class Player(
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPictureMode(): Boolean =
-            if (isPIPSupported())
-                requireActivity().enterPictureInPictureMode(createPipParameters())
-            else false
+        if (isPIPSupported())
+            requireActivity().enterPictureInPictureMode(createPipParameters())
+        else false
 
-    private fun isPIPSupported() = requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
+    private fun isPIPSupported() =
+        requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createPipParameters(): PictureInPictureParams {
-        return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastForwardAction)).build()
+        return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastForwardAction))
+            .build()
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createRemoteAction(@DrawableRes iconId: Int, title: String, action: PIPAction): RemoteAction {
+    private fun createRemoteAction(
+        @DrawableRes iconId: Int, title: String,
+        action: PIPAction
+    ): RemoteAction {
         val intent = Intent(PIP_INTENT_ACTION).putExtra(PIP_INTENT_EXTRA, action.name)
-        val pendingIntent = PendingIntent.getBroadcast(activity, action.ordinal, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(
+            activity,
+            action.ordinal,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
 
         return RemoteAction(Icon.createWithResource(context, iconId), title, title, pendingIntent)
     }
