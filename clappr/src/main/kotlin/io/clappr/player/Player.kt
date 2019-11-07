@@ -277,8 +277,8 @@ open class Player(
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         when (event) {
-                            Event.DID_STOP.value -> updatePictureInPictureAction(state)
-                            Event.PLAYING.value -> updatePictureInPictureAction(state)
+                            Event.DID_STOP.value -> updateRemoteActions(state)
+                            Event.PLAYING.value -> updateRemoteActions(state)
                         }
                     }
                 }
@@ -343,11 +343,11 @@ open class Player(
                     when (action) {
                         PIPAction.PLAY -> {
                             play()
-                            updatePictureInPictureAction(state)
+                            updateRemoteActions(state)
                         }
                         PIPAction.PAUSE -> {
                             pause()
-                            updatePictureInPictureAction(state)
+                            updateRemoteActions(state)
                         }
                         PIPAction.REWIND -> seek(min(0.0, position - 10).toInt())
                         PIPAction.FAST_FORWARD -> seek(min(duration, position + 10).toInt())
@@ -367,14 +367,14 @@ open class Player(
     @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPictureMode(): Boolean =
         if (isPIPSupported())
-            requireActivity().enterPictureInPictureMode(createPipParameters())
+            requireActivity().enterPictureInPictureMode(createPIPDefaultParameters())
         else false
 
     private fun isPIPSupported() =
         requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createPipParameters(): PictureInPictureParams {
+    private fun createPIPDefaultParameters(): PictureInPictureParams {
         return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastForwardAction))
             .build()
     }
@@ -396,7 +396,7 @@ open class Player(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updatePictureInPictureAction(state: State) {
+    private fun updateRemoteActions(state: State) {
         val middleAction = when (state) {
             State.PLAYING -> pauseAction
             else -> playAction
