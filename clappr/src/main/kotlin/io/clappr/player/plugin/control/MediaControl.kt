@@ -22,6 +22,7 @@ import io.clappr.player.extensions.extractInputKey
 import io.clappr.player.extensions.unlessChromeless
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.PluginEntry
+import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -102,11 +103,16 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     override var state: State = State.ENABLED
         set(value) {
-            if (value == State.ENABLED)
+            if (value == State.ENABLED) {
+                setupPlaybackEvents()
                 view.visibility = View.VISIBLE
+                visibility = Visibility.VISIBLE
+            }
             else {
                 hide()
+                stopPlaybackListeners()
                 view.visibility = View.GONE
+                visibility = Visibility.HIDDEN
             }
             field = value
         }
