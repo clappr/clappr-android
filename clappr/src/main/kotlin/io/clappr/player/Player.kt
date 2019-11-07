@@ -1,6 +1,5 @@
 package io.clappr.player
 
-import android.annotation.TargetApi
 import android.app.PendingIntent
 import android.app.PictureInPictureParams
 import android.app.RemoteAction
@@ -18,6 +17,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import io.clappr.player.Player.PIPAction.Companion.PIP_INTENT_ACTION
 import io.clappr.player.Player.PIPAction.Companion.PIP_INTENT_EXTRA
@@ -211,12 +211,20 @@ open class Player(
 
     private var playerViewGroup: ViewGroup? = null
 
-    private val playAction by lazy { createRemoteAction(R.drawable.exo_controls_play, "Play", PIPAction.PLAY) }
-    private val pauseAction by lazy { createRemoteAction(R.drawable.exo_icon_pause, "Pause", PIPAction.PAUSE) }
-    private val rewindAction by lazy { createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", PIPAction.REWIND) }
-    private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIPAction.FAST_FORWARD) }
+    private val playAction by lazy @RequiresApi(Build.VERSION_CODES.O) {
+        createRemoteAction(R.drawable.exo_controls_play, "Play", PIPAction.PLAY)
+    }
+    private val pauseAction by lazy @RequiresApi(Build.VERSION_CODES.O) {
+        createRemoteAction(R.drawable.exo_icon_pause, "Pause", PIPAction.PAUSE)
+    }
+    private val rewindAction by lazy @RequiresApi(Build.VERSION_CODES.O) {
+        createRemoteAction(R.drawable.exo_icon_rewind, "Rewind", PIPAction.REWIND)
+    }
+    private val fastForwardAction by lazy @RequiresApi(Build.VERSION_CODES.O) {
+        createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIPAction.FAST_FORWARD)
+    }
 
-    private val pipParametersBuilder by lazy @TargetApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
+    private val pipParametersBuilder by lazy @RequiresApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
@@ -392,7 +400,8 @@ open class Player(
     fun holdKeyEvent(event: KeyEvent) {
         externalInputDevice?.holdKeyEvent(event)
     }
-    
+
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
         Log.d("@@@", "Is in PiP mode: $isInPictureInPictureMode")
 
@@ -402,7 +411,6 @@ open class Player(
             receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent?) {
                     if (intent == null || PIP_INTENT_ACTION != intent.action) return
-
 
                     val action = PIPAction.valueOf(intent.getStringExtra(PIP_INTENT_EXTRA))
                     when (action) {
@@ -429,7 +437,7 @@ open class Player(
         super.onPictureInPictureModeChanged(isInPictureInPictureMode)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPictureMode(): Boolean =
             if (isPIPSupported())
                 requireActivity().enterPictureInPictureMode(createPipParameters())
@@ -437,12 +445,12 @@ open class Player(
 
     private fun isPIPSupported() = requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createPipParameters(): PictureInPictureParams {
         return pipParametersBuilder.setActions(listOf(rewindAction, pauseAction, fastForwardAction)).build()
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun createRemoteAction(@DrawableRes iconId: Int, title: String, action: PIPAction): RemoteAction {
         val intent = Intent(PIP_INTENT_ACTION).putExtra(PIP_INTENT_EXTRA, action.name)
         val pendingIntent = PendingIntent.getBroadcast(activity, action.ordinal, intent, PendingIntent.FLAG_UPDATE_CURRENT)
@@ -450,7 +458,7 @@ open class Player(
         return RemoteAction(Icon.createWithResource(context, iconId), title, title, pendingIntent)
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePictureInPictureAction(state: State) {
         val middleAction = when (state) {
             State.PLAYING -> pauseAction
