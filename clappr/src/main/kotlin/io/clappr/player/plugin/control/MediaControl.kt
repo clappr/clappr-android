@@ -9,6 +9,7 @@ import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.GestureDetectorCompat
 import io.clappr.player.R
@@ -72,7 +73,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
-    private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
+    private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as ConstraintLayout }
 
     private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as RelativeLayout }
     private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
@@ -83,7 +84,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private val bottomLeftPanel by lazy { view.findViewById(R.id.bottom_left_panel) as LinearLayout }
     private val bottomRightPanel by lazy { view.findViewById(R.id.bottom_right_panel) as LinearLayout }
 
-    private val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as FrameLayout }
+    private val foregroundControlsPanel by lazy { view.findViewById(R.id.foreground_controls_panel) as ConstraintLayout }
 
     private val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
 

@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.R
 import io.clappr.player.base.*
@@ -125,9 +126,9 @@ class MediaControlTest {
 
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
 
-        assertEquals(3, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
-        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(2).id, "Media Control Plugin should be added to Media Control")
-        assertEquals(plugin.view, getTopCenterPanel().getChildAt(2))
+        assertEquals(1, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
+        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(0).id, "Media Control Plugin should be added to Media Control")
+        assertEquals(plugin.view, getTopCenterPanel().getChildAt(0))
     }
 
     @Test
@@ -567,8 +568,8 @@ class MediaControlTest {
     private fun getTopRightPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_right_panel)
     private fun getTopCenterPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.top_center)
     private fun getModalPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.modal_panel)
-    private fun getControlsPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.controls_panel)
-    private fun getForegroundControlsPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.foreground_controls_panel)
+    private fun getControlsPanel() = mediaControl.view.findViewById<ConstraintLayout>(R.id.controls_panel)
+    private fun getForegroundControlsPanel() = mediaControl.view.findViewById<ConstraintLayout>(R.id.foreground_controls_panel)
     private fun getBackgroundView() = mediaControl.view.findViewById<View>(R.id.background_view)
 
     private fun setupFakeMediaControlPlugins(panel: Panel, position: Position, sequenceOption: String? = null) {
