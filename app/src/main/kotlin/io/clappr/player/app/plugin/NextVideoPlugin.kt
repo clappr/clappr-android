@@ -1,6 +1,7 @@
 package io.clappr.player.app.plugin
 
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
@@ -8,6 +9,7 @@ import com.squareup.picasso.Picasso
 import io.clappr.player.app.R
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
+import io.clappr.player.plugin.Plugin
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -26,6 +28,17 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
     override val view by lazy {
         LayoutInflater.from(applicationContext).inflate(R.layout.next_video_plugin, null) as RelativeLayout
     }
+
+    override var state: Plugin.State = Plugin.State.ENABLED
+        set(value) {
+            if (value == Plugin.State.ENABLED) {
+                bindPlaybackEvents()
+            } else {
+                stopPlaybackListeners()
+                hide()
+            }
+            field = value
+        }
 
     private val videoListView by lazy { view.findViewById(R.id.video_list) as LinearLayout }
 
@@ -59,6 +72,12 @@ class NextVideoPlugin(core: Core) : UICorePlugin(core, name = name) {
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) {
             hide()
             bindPlaybackEvents()
+        }
+        listenTo(core, Event.DID_ENTER_PIP.value) {
+            state = Plugin.State.DISABLED
+        }
+        listenTo(core, Event.DID_EXIT_PIP.value) {
+            state = Plugin.State.ENABLED
         }
     }
 
