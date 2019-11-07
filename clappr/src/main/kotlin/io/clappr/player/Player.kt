@@ -8,6 +8,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.os.Bundle
@@ -17,7 +18,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.DrawableRes
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
@@ -210,7 +210,7 @@ open class Player(
 
     private val fastForwardAction by lazy { createRemoteAction(R.drawable.exo_icon_fastforward, "Fast Foward", PIP_ACTION_FAST_FORWARD, PIP_ACTION_FAST_FORWARD) }
 
-    private val pipParametersBuilder by lazy @RequiresApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
+    private val pipParametersBuilder by lazy @TargetApi(Build.VERSION_CODES.O) { PictureInPictureParams.Builder() }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         playerViewGroup = inflater.inflate(R.layout.player_fragment, container, false) as ViewGroup
@@ -327,8 +327,7 @@ open class Player(
                 listenTo(it, event) { bundle: Bundle? ->
                     trigger(event, bundle)
 
-                    @RequiresApi(Build.VERSION_CODES.O)
-                    if (activity.isInPictureInPictureMode) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         when (event) {
                             Event.DID_STOP.value -> updatePictureInPictureAction(state)
                             Event.PLAYING.value -> updatePictureInPictureAction(state)
@@ -422,9 +421,12 @@ open class Player(
     }
 
     @TargetApi(Build.VERSION_CODES.O)
-    fun enterPictureInPictureMode() {
-        requireActivity().enterPictureInPictureMode(createPipParameters())
-    }
+    fun enterPictureInPictureMode(): Boolean =
+            if (isPIPSupported())
+                requireActivity().enterPictureInPictureMode(createPipParameters())
+            else false
+
+    private fun isPIPSupported() = requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
     @TargetApi(Build.VERSION_CODES.O)
     private fun createPipParameters(): PictureInPictureParams {
