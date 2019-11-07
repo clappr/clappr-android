@@ -396,7 +396,6 @@ open class Player(
 
         if (isInPictureInPictureMode) {
             core?.trigger(Event.DID_ENTER_PIP.value)
-            play()
 
             receiver = object : BroadcastReceiver() {
                 override fun onReceive(context: Context, intent: Intent?) {
