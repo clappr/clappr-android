@@ -29,6 +29,7 @@ import io.clappr.player.plugin.PlaybackConfig
 import io.clappr.player.plugin.PluginConfig
 import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
 import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
+import kotlin.math.max
 import kotlin.math.min
 
 /**
@@ -414,7 +415,7 @@ open class Player(
                     pause()
                     updatePIPParameters()
                 }
-                REWIND -> seek(min(0.0, position - SEEK_DEFAULT_JUMP_IN_SECONDS).toInt())
+                REWIND -> seek(max(0.0, position - SEEK_DEFAULT_JUMP_IN_SECONDS).toInt())
                 FAST_FORWARD -> seek(min(duration, position + SEEK_DEFAULT_JUMP_IN_SECONDS).toInt())
             }
         }
