@@ -264,11 +264,8 @@ open class Player(
                 listenTo(it, event) { bundle: Bundle? ->
                     trigger(event, bundle)
 
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        when (event) {
-                            Event.DID_STOP.value -> updateRemoteActions(state)
-                            Event.PLAYING.value -> updateRemoteActions(state)
-                        }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && requireActivity().isInPictureInPictureMode) when (event) {
+                        Event.DID_STOP.value, Event.DID_COMPLETE.value, Event.PLAYING.value -> updatePIPParameters()
                     }
                 }
             }
@@ -318,15 +315,15 @@ open class Player(
     @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPictureMode(): Boolean =
         if (isPIPSupported())
-            requireActivity().enterPictureInPictureMode(createPIPDefaultParameters())
+            requireActivity().enterPictureInPictureMode(createPIPParameters())
         else false
 
     private fun isPIPSupported() =
         requireActivity().packageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun createPIPDefaultParameters(): PictureInPictureParams {
-        createRemoteActions()
+    private fun createPIPParameters(): PictureInPictureParams {
+        if (remoteActions.isEmpty()) createRemoteActions()
         return PictureInPictureParams.Builder().setActions(
             remoteActionsFor(state)
         ).build()
@@ -387,11 +384,11 @@ open class Player(
                     when (action) {
                         PLAY -> {
                             play()
-                            updateRemoteActions(state)
+                            updatePIPParameters()
                         }
                         PAUSE -> {
                             pause()
-                            updateRemoteActions(state)
+                            updatePIPParameters()
                         }
                         REWIND -> seek(min(0.0, position - 10).toInt())
                         FAST_FORWARD -> seek(min(duration, position + 10).toInt())
@@ -409,13 +406,7 @@ open class Player(
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateRemoteActions(state: State) {
-        requireActivity().setPictureInPictureParams(
-            PictureInPictureParams.Builder()
-                .setActions(remoteActionsFor(state))
-                .build()
-        )
-    }
+    private fun updatePIPParameters() = requireActivity().setPictureInPictureParams(createPIPParameters())
 
     private enum class PIPAction {
         PLAY,
