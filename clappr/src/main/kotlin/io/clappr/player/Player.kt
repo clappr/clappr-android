@@ -76,6 +76,8 @@ open class Player(
                 it.on(Event.DID_SELECT_SUBTITLE.value) { bundle: Bundle? ->
                     trigger(Event.DID_SELECT_SUBTITLE.value, bundle)
                 }
+                it.on(Event.DID_ENTER_PIP.value) { trigger(Event.DID_ENTER_PIP.value) }
+                it.on(Event.DID_EXIT_PIP.value) { trigger(Event.DID_EXIT_PIP.value) }
 
                 if (it.activeContainer != null) bindContainerEvents()
                 if (it.activePlayback != null) bindPlaybackEvents()
