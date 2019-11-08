@@ -315,6 +315,13 @@ open class Player(
         externalInputDevice?.holdKeyEvent(event)
     }
 
+    /**
+     * Prepares Player to enter picture-in-picture mode and calls the corresponding method
+     * on the Activity.
+     *
+     * @return true if the system successfully entered picture-in-picture mode or was already in
+     * picture-in-picture mode. If the device does not support picture-in-picture, return false.
+     */
     @RequiresApi(Build.VERSION_CODES.O)
     fun enterPictureInPictureMode(): Boolean =
         if (isPIPSupported())
