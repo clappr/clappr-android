@@ -773,6 +773,24 @@ class MediaControlTest {
         assertEquals(expectedHideEventsTriggered, eventTriggeredCount)
     }
 
+    @Test
+    fun `should disable media control when did enter pip is triggered`() {
+        mediaControl.state = Plugin.State.ENABLED
+
+        core.trigger(Event.DID_ENTER_PIP.value)
+
+        assertEquals(Plugin.State.DISABLED, mediaControl.state, "Media Control should be disabled")
+    }
+
+    @Test
+    fun `should enable media control when did exit pip is triggered`() {
+        mediaControl.state = Plugin.State.DISABLED
+
+        core.trigger(Event.DID_EXIT_PIP.value)
+
+        assertEquals(Plugin.State.ENABLED, mediaControl.state, "Media Control should be enabled")
+    }
+
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
     private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
     private fun getBottomLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_left_panel)
