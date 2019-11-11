@@ -205,7 +205,6 @@ class MediaControlTest {
         assertEquals(View.VISIBLE, getForegroundControlsPanel().visibility)
     }
 
-
     @Test
     fun `should keep foreground controls panel visibility when close modal event was triggered with hidden modal panel`(){
         fakePlayback.fakeState = Playback.State.PLAYING
@@ -215,7 +214,6 @@ class MediaControlTest {
 
         assertEquals(View.INVISIBLE, getForegroundControlsPanel().visibility)
     }
-
 
     @Test
     fun `should send did open modal panel event when modal panel was opened`() {
@@ -471,7 +469,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun `shoul disable media control on event`() {
+    fun `should disable media control on event`() {
         assertTrue(mediaControl.isEnabled, "Media control should be enabled by default")
 
         triggerDisableMediaControlEvent()
@@ -567,7 +565,7 @@ class MediaControlTest {
     }
 
     @Test
-    fun `should ahow plugins by option with duplicates`() {
+    fun `should show plugins by option with duplicates`() {
         val sequence = "${FakePlugin3.name},${FakePlugin2.name},${FakePlugin.name},${FakePlugin2.name}"
         setupFakeMediaControlPlugins(Panel.BOTTOM, Position.RIGHT, sequence)
 
