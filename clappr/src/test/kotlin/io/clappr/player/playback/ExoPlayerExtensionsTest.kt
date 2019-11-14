@@ -6,9 +6,8 @@ import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.nhaarman.mockitokotlin2.doReturn
-import com.nhaarman.mockitokotlin2.mock
-import com.nhaarman.mockitokotlin2.whenever
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -128,7 +127,7 @@ class ExoPlayerExtensionsTest {
     fun `should return the default audio language when there is no audios available`() {
         val trackSelector = buildAvailableTracks()
 
-        val player = mock<Player>()
+        val player = mockk<Player>()
 
         assertEquals(null, player.getSelectedAudio(trackSelector))
     }
@@ -137,7 +136,7 @@ class ExoPlayerExtensionsTest {
     fun `should return the default subtitle language when there is no subtitles available`() {
         val trackSelector = buildAvailableTracks()
 
-        val player = mock<Player>()
+        val player = mockk<Player>()
 
         assertEquals("off", player.getSelectedSubtitle(trackSelector))
     }
@@ -149,14 +148,14 @@ class ExoPlayerExtensionsTest {
             TRACK_TYPE_AUDIO to listOf("por", "eng", "und")
         )
 
-        val player = mock<Player>()
+        val player = mockk<Player>()
 
         val trackSelections = buildSelectedTracks(
             trackSelector,
             TRACK_TYPE_AUDIO to "eng"
         )
 
-        whenever(player.currentTrackSelections).doReturn(trackSelections)
+        every { player.currentTrackSelections } returns trackSelections
 
         assertEquals("eng", player.getSelectedAudio(trackSelector))
     }
@@ -167,14 +166,14 @@ class ExoPlayerExtensionsTest {
             TRACK_TYPE_TEXT to listOf("por", "eng")
         )
 
-        val player = mock<Player>()
+        val player = mockk<Player>()
 
         val trackSelections = buildSelectedTracks(
             trackSelector,
             TRACK_TYPE_TEXT to "por"
         )
 
-        whenever(player.currentTrackSelections).doReturn(trackSelections)
+        every { player.currentTrackSelections } returns trackSelections
 
         assertEquals("por", player.getSelectedSubtitle(trackSelector))
     }
