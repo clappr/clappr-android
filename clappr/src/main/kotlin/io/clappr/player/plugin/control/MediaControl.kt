@@ -406,6 +406,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         hideModalPanel()
         hideAnimationEnded = true
 
+        handler.removeCallbacksAndMessages(null)
         core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
