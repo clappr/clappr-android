@@ -1,12 +1,12 @@
 package io.clappr.player
 
-import android.app.Fragment
 import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
