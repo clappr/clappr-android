@@ -22,9 +22,9 @@ class BundleExtensionsTest {
 
         val inputKey = bundle.extractInputKey()
 
-        assertNotNull(inputKey)
-        assertEquals(Key.BACK, inputKey.key)
-        assertEquals(Action.UP, inputKey.action)
+        val expectedInputKey = InputKey(Key.BACK, Action.UP, false)
+
+        assertEquals(expectedInputKey, inputKey)
     }
 
     @Test
@@ -39,8 +39,9 @@ class BundleExtensionsTest {
 
         val inputKey = bundle.extractInputKey()
 
-        assertNotNull(inputKey)
-        assertTrue(inputKey.isLongPress, "Is long press should be true")
+        val expectedInputKey = InputKey(Key.BACK, Action.UP, true)
+
+        assertEquals(expectedInputKey, inputKey)
     }
 
     @Test
