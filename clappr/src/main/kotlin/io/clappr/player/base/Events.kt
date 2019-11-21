@@ -245,6 +245,15 @@ enum class EventData(val value: String) {
     INPUT_KEY_ACTION("inputKeyAction"),
 
     /**
+     * [Event.DID_RECEIVE_INPUT_KEY] data
+     *
+     * Type: Boolean
+     *
+     * Input key is long press. Can be true or false
+     */
+    INPUT_KEY_IS_LONG_PRESS("inputKeyIsLongPress"),
+
+    /**
      * [Event.DID_CHANGE_SCREEN_ORIENTATION] data
      *
      * Type: io.clappr.player.components.Orientation
