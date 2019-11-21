@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`InputKey(key: `[`Key`](../../io.clappr.player.base.keys/-key/index.md)`, action: `[`Action`](../../io.clappr.player.base.keys/-action/index.md)`)`
+`InputKey(key: `[`Key`](../../io.clappr.player.base.keys/-key/index.md)`, action: `[`Action`](../../io.clappr.player.base.keys/-action/index.md)`, isLongPress: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html)`)`
