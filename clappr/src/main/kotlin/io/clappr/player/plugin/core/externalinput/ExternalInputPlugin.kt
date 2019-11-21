@@ -33,6 +33,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, getKeyCode(event.keyCode))
             putString(EventData.INPUT_KEY_ACTION.value, getActionCode(event.action))
+            putBoolean(EventData.INPUT_KEY_IS_LONG_PRESS.value, event.isLongPress)
         })
     }
 
