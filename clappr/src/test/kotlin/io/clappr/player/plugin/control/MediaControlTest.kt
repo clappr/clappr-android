@@ -125,9 +125,9 @@ class MediaControlTest {
 
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
 
-        assertEquals(3, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
-        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(2).id, "Media Control Plugin should be added to Media Control")
-        assertEquals(plugin.view, getTopCenterPanel().getChildAt(2))
+        assertEquals(1, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
+        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(0).id, "Media Control Plugin should be added to Media Control")
+        assertEquals(plugin.view, getTopCenterPanel().getChildAt(0))
     }
 
     @Test
@@ -565,7 +565,7 @@ class MediaControlTest {
     private fun getTopPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_panel)
     private fun getTopLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_left_panel)
     private fun getTopRightPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_right_panel)
-    private fun getTopCenterPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.top_center)
+    private fun getTopCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_center)
     private fun getModalPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.modal_panel)
     private fun getControlsPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.controls_panel)
     private fun getForegroundControlsPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.foreground_controls_panel)

@@ -74,7 +74,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
-    private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as RelativeLayout }
+    private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as LinearLayout }
     private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
     private val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
     private val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
