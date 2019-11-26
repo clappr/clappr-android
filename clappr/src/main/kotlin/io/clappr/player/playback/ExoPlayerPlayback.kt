@@ -287,6 +287,12 @@ open class ExoPlayerPlayback(
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
 
+        when(currentState) {
+            State.PLAYING -> trigger(PLAYING)
+            State.PAUSED -> trigger(DID_PAUSE)
+            State.STALLING -> trigger(STALLING)
+        }
+
         return true
     }
 
