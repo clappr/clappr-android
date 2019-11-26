@@ -37,6 +37,7 @@ import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.fail
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23], shadows = [ShadowLog::class, SubtitleViewShadow::class])
@@ -59,6 +60,87 @@ class ExoPlayerPlaybackTest {
             options = Options(),
             bitrateHistory = bitrateHistory
         )
+    }
+
+    @Test
+    fun `should trigger PLAYING after seeking while on PLAYING state`() {
+        playbackOnPlayingState()
+
+        var playingWasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, PLAYING.value) {
+            playingWasCalled = true
+        }
+        listenObject.listenTo(exoPlayerPlayBack, DID_PAUSE.value) {
+            fail("DID_PAUSE should not have been called")
+        }
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            fail("STALLING should not have been called")
+        }
+
+        exoPlayerPlayBack.seek(10)
+
+        assertEquals(playingWasCalled, true)
+    }
+
+    @Test
+    fun `should trigger DID_PAUSE after seeking while on PAUSED state`() {
+        playbackOnPausedState()
+
+        var wasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, DID_PAUSE.value) {
+            wasCalled = true
+        }
+        listenObject.listenTo(exoPlayerPlayBack, PLAYING.value) {
+            fail("PLAYING should not have been called")
+        }
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            fail("STALLING should not have been called")
+        }
+
+        exoPlayerPlayBack.seek(10)
+
+        assertEquals(wasCalled, true)
+    }
+
+    @Test
+    fun `should trigger STALLING after seeking while on STALLING state`() {
+        playbackOnStallingState()
+
+        var wasCalled = false
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            wasCalled = true
+        }
+
+        listenObject.listenTo(exoPlayerPlayBack, PLAYING.value) {
+            fail("PLAYING should not have been called")
+        }
+        listenObject.listenTo(exoPlayerPlayBack, DID_PAUSE.value) {
+            fail("DID_PAUSE should not have been called")
+        }
+
+        exoPlayerPlayBack.seek(10)
+
+        assertEquals(wasCalled, true)
+    }
+
+    private fun playbackOnPlayingState() {
+        exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
+        assertEquals(State.PLAYING, exoPlayerPlayBack.state)
+    }
+
+    private fun playbackOnPausedState() {
+        exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_READY)
+        assertEquals(State.PAUSED, exoPlayerPlayBack.state)
+    }
+
+    private fun playbackOnStallingState() {
+        exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_BUFFERING)
+        assertEquals(State.STALLING, exoPlayerPlayBack.state)
     }
 
     @Test
