@@ -122,12 +122,7 @@ class MediaControlTest {
     @Test
     fun `should add media control plugin in top center panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.CENTER)
-
-        val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
-
-        assertEquals(1, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
-        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(0).id, "Media Control Plugin should be added to Media Control")
-        assertEquals(plugin.view, getTopCenterPanel().getChildAt(0))
+        assertMediaControlPanel(getTopCenterPanel(), Panel.TOP, Position.CENTER)
     }
 
     @Test
@@ -610,7 +605,7 @@ class MediaControlTest {
         mediaControl.render()
     }
 
-    private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
+    private fun assertMediaControlPanel(layoutPanel: ViewGroup, panel: Panel, position: Position) {
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
 
         assertEquals(1, layoutPanel.childCount, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
