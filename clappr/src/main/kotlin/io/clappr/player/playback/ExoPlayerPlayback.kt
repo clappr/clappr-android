@@ -312,11 +312,10 @@ open class ExoPlayerPlayback(
     }
 
     override fun startAt(seconds: Int): Boolean {
-        if (!canSeek) return false
-
         val positionInMillis = seconds.toLong() * ONE_SECOND_IN_MILLIS
+
+        if (!canSeek || positionInMillis < 0) return false
         player?.seekTo(positionInMillis)
-        
         triggerPositionUpdateEvent()
         return true
     }
