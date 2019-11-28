@@ -292,6 +292,18 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should hide media control when double tap is performed`() {
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
     fun `should initialize modal panel invisible when media control plugin is created`() {
         assertEquals(View.INVISIBLE, getModalPanel().visibility)
     }
