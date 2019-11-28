@@ -60,6 +60,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private val handler = Handler()
 
     private var lastInteractionTime = 0L
+    private var canShowMediaControlWhenPauseAfterTapInteraction = true
 
     var hideAnimationEnded = false
 
@@ -108,6 +109,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
     protected val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
+    private val isPlaybackPlaying get() = core.activePlayback?.state == Playback.State.PLAYING
     private val isPlaybackIdle: Boolean
         get() {
             return core.activePlayback?.state == Playback.State.IDLE ||
@@ -144,7 +146,9 @@ open class MediaControl(core: Core, pluginName: String = name) :
     }
 
     open fun handleDidPauseEvent() {
-        if (!modalPanelIsOpen()) show()
+        if (!modalPanelIsOpen() && canShowMediaControlWhenPauseAfterTapInteraction) show()
+
+        canShowMediaControlWhenPauseAfterTapInteraction = true
     }
 
     open fun show(duration: Long) {
@@ -440,6 +444,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     inner class MediaControlDoubleTapListener : GestureDetector.OnDoubleTapListener {
         override fun onDoubleTap(event: MotionEvent?): Boolean {
+            canShowMediaControlWhenPauseAfterTapInteraction = isPlaybackPlaying
             triggerDoubleTapEvent(event)
             hide()
             return true
@@ -447,6 +452,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
         override fun onDoubleTapEvent(e: MotionEvent?) = false
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            canShowMediaControlWhenPauseAfterTapInteraction = true
             toggleVisibility()
             return true
         }
