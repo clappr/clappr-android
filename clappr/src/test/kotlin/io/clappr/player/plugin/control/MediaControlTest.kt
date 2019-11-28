@@ -1,6 +1,8 @@
 package io.clappr.player.plugin.control
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -272,6 +274,21 @@ class MediaControlTest {
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
 
         assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+
+    @Test
+    fun `should not show media control when playback is paused and double tap is performed`() {
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+        fakePlayback.fakeState = Playback.State.PAUSED
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+
+        core.activePlayback?.trigger(Event.DID_PAUSE.value)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
 
     @Test
@@ -666,6 +683,13 @@ class MediaControlTest {
 
         mediaControl.show()
         assertTrue(eventTriggered)
+    }
+
+    private fun performDoubleTap(x: Float, y: Float) {
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(223889, 223889, KeyEvent.ACTION_DOWN, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(223889, 224019, KeyEvent.ACTION_UP, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(224069, 224069, KeyEvent.ACTION_DOWN, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(224069, 224191, KeyEvent.ACTION_UP, x, y, 0))
     }
 
     class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {
