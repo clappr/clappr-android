@@ -2,7 +2,7 @@
 
 # Player
 
-`open class Player : `[`Fragment`](https://developer.android.com/reference/android/app/Fragment.html)`, `[`EventInterface`](../../io.clappr.player.base/-event-interface/index.md)
+`open class Player : Fragment, `[`EventInterface`](../../io.clappr.player.base/-event-interface/index.md)
 
 Main Player class.
 
