@@ -28,5 +28,5 @@
 | [BaseObject](../-base-object/index.md) | `open class BaseObject : `[`EventInterface`](./index.md) |
 | [ContainerPlugin](../../io.clappr.player.plugin.container/-container-plugin/index.md) | `open class ContainerPlugin : `[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)`, `[`EventInterface`](./index.md) |
 | [CorePlugin](../../io.clappr.player.plugin.core/-core-plugin/index.md) | `open class CorePlugin : `[`Plugin`](../../io.clappr.player.plugin/-plugin/index.md)`, `[`EventInterface`](./index.md) |
-| [Player](../../io.clappr.player/-player/index.md) | `open class Player : `[`Fragment`](https://developer.android.com/reference/android/app/Fragment.html)`, `[`EventInterface`](./index.md)<br>Main Player class. |
+| [Player](../../io.clappr.player/-player/index.md) | `open class Player : Fragment, `[`EventInterface`](./index.md)<br>Main Player class. |
 | [Plugin](../../io.clappr.player.plugin/-plugin/index.md) | `interface Plugin : `[`EventInterface`](./index.md)`, `[`NamedType`](../-named-type/index.md) |
