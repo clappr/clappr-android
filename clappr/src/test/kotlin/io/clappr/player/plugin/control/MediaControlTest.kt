@@ -304,6 +304,21 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should trigger DID_DOUBLE_TOUCH_MEDIA_CONTROL when a double tap is performed`() {
+        var didDoubleTouchMediaControlWasTriggered = false
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlWasTriggered = true
+        }
+
+        performDoubleTap(0f, 0f)
+
+        assertTrue { didDoubleTouchMediaControlWasTriggered }
+    }
+
+    @Test
     fun `should initialize modal panel invisible when media control plugin is created`() {
         assertEquals(View.INVISIBLE, getModalPanel().visibility)
     }
