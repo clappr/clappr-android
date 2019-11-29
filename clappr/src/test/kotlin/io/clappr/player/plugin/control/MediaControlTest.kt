@@ -272,6 +272,50 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should show media control when it is hidden and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not show media control when it is not enable but is hidden and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+        mediaControl.state = Plugin.State.DISABLED
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should hide media control when it is visible and single touch is performed`() {
+        mediaControl.render()
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not hide media control when it is not enable but is visible and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.state = Plugin.State.DISABLED
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
     fun `should show media control when playback is paused`() {
         core.activePlayback?.trigger(Event.PLAYING.value)
 
