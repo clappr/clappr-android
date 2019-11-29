@@ -396,6 +396,51 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should send view height and width in DID_DOUBLE_TOUCH_MEDIA_CONTROL event when a double tap is performed`() {
+        val expectedViewHeight = 100
+        val expectedViewWidth = 100
+        var didDoubleTouchMediaControlBundle : Bundle? = null
+
+        Shadow.extract<ClapprShadowView>(mediaControl.view).viewHeight = expectedViewHeight
+        Shadow.extract<ClapprShadowView>(mediaControl.view).viewWidth = expectedViewWidth
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlBundle = it
+        }
+
+        performDoubleTap(0f, 0f)
+
+        val height = didDoubleTouchMediaControlBundle?.getInt(InternalEventData.HEIGHT.value)
+        val width = didDoubleTouchMediaControlBundle?.getInt(InternalEventData.WIDTH.value)
+
+        assertEquals(expectedViewHeight, height)
+        assertEquals(expectedViewWidth, width)
+    }
+
+    @Test
+    fun `should send touch x and y axis in DID_DOUBLE_TOUCH_MEDIA_CONTROL event when a double tap is performed`() {
+        val expectedTouchX = 50f
+        val expectedTouchY = 100f
+        var didDoubleTouchMediaControlBundle : Bundle? = null
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlBundle = it
+        }
+
+        performDoubleTap(expectedTouchX, expectedTouchY)
+
+        val x = didDoubleTouchMediaControlBundle?.getFloat(InternalEventData.TOUCH_X_AXIS.value)
+        val y = didDoubleTouchMediaControlBundle?.getFloat(InternalEventData.TOUCH_Y_AXIS.value)
+
+        assertEquals(expectedTouchX, x)
+        assertEquals(expectedTouchY, y)
+    }
+
+    @Test
     fun `should initialize modal panel invisible when media control plugin is created`() {
         assertEquals(View.INVISIBLE, getModalPanel().visibility)
     }
