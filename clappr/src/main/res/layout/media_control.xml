@@ -35,7 +35,6 @@
                 android:orientation="horizontal">
 
                 <RelativeLayout
-                    android:id="@+id/top_center"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -53,6 +52,14 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        android:orientation="horizontal" />
+
+                    <LinearLayout
+                        android:id="@+id/top_center"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_alignParentTop="true"
                         android:orientation="horizontal" />
                 </RelativeLayout>
 

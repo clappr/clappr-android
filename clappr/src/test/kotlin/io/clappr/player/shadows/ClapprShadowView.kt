@@ -6,9 +6,13 @@ import org.robolectric.annotation.Implements
 import org.robolectric.shadows.ShadowView
 
 @Implements(View::class)
-class ClapprShadowView : ShadowView() {
+open class ClapprShadowView : ShadowView() {
     var viewWidth: Int = 0
+    var viewHeight: Int = 0
 
     @Implementation
     fun getWidth() = viewWidth
+
+    @Implementation
+    fun getHeight() = viewHeight
 }
