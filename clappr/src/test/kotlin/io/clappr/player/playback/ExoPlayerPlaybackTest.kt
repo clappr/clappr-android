@@ -12,6 +12,7 @@ import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
+import io.clappr.player.base.Event
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.EventData
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
@@ -143,6 +144,44 @@ class ExoPlayerPlaybackTest {
         assertEquals(wasCalled, true)
     }
 
+    @Test
+    fun `should trigger STALLING after will_play when play is issued while on STALLING state`() {
+        playbackOnStallingState()
+
+        val callOrder = mutableListOf<Event>()
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            callOrder.add(STALLING)
+        }
+
+        listenObject.listenTo(exoPlayerPlayBack, WILL_PLAY.value) {
+            callOrder.add(WILL_PLAY)
+
+        }
+
+        exoPlayerPlayBack.play()
+
+        assertEquals(listOf(STALLING, WILL_PLAY, STALLING), callOrder)
+    }
+
+    @Test
+    fun `should trigger STALLING after will_pause when pause is issued while on STALLING state`() {
+        playbackOnStallingStateReadyToPlay()
+
+        val callOrder = mutableListOf<Event>()
+        listenObject.listenTo(exoPlayerPlayBack, STALLING.value) {
+            callOrder.add(STALLING)
+        }
+
+        listenObject.listenTo(exoPlayerPlayBack, WILL_PAUSE.value) {
+            callOrder.add(WILL_PAUSE)
+
+        }
+
+        exoPlayerPlayBack.pause()
+
+        assertEquals(listOf(WILL_PAUSE, STALLING), callOrder)
+    }
+
     private fun playbackOnPlayingState() {
         exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
@@ -160,6 +199,13 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
         exoPlayerPlayBack.eventsListener.onPlayerStateChanged(false, STATE_BUFFERING)
+        assertEquals(State.STALLING, exoPlayerPlayBack.state)
+    }
+
+    private fun playbackOnStallingStateReadyToPlay() {
+        exoPlayerPlayBack = ExoPlayerPlayback("supported-source.mp4")
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_READY)
+        exoPlayerPlayBack.eventsListener.onPlayerStateChanged(true, STATE_BUFFERING)
         assertEquals(State.STALLING, exoPlayerPlayBack.state)
     }
 

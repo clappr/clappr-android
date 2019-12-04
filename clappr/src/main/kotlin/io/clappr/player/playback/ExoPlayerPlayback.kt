@@ -241,6 +241,7 @@ open class ExoPlayerPlayback(
         if (!canPause) return false
 
         trigger(WILL_PAUSE)
+        if (currentState == State.STALLING) trigger(STALLING)
         player?.playWhenReady = false
         return true
     }
