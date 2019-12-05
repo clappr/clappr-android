@@ -3,15 +3,20 @@ package io.clappr.player.playback
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
 import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.source.TrackGroup
+import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.FixedTrackSelection
 import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
+import com.google.android.exoplayer2.util.Util
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
-
+@RunWith(RobolectricTestRunner::class)
 class ExoPlayerExtensionsTest {
 
     @Test
@@ -32,12 +37,11 @@ class ExoPlayerExtensionsTest {
     fun `should load subtitle tracks`() {
         val trackSelector = buildAvailableTracks(
             TRACK_TYPE_AUDIO to listOf("por"),
-            TRACK_TYPE_TEXT to listOf("por", "eng")
+            TRACK_TYPE_TEXT to listOf("por")
         )
 
         val expectedTracks = listOf(
-            TrackInfo(TRACK_TYPE_TEXT, 1, 0, 0, "por"),
-            TrackInfo(TRACK_TYPE_TEXT, 1, 1, 0, "eng")
+            TrackInfo(TRACK_TYPE_TEXT, 1, 0, 0, "por")
         )
 
         assertEquals(expectedTracks, trackSelector.subtitleTracks())
@@ -141,7 +145,6 @@ class ExoPlayerExtensionsTest {
         assertEquals("off", player.getSelectedSubtitle(trackSelector))
     }
 
-
     @Test
     fun `should return the selected audio language based on selected audio track`() {
         val trackSelector = buildAvailableTracks(
@@ -181,22 +184,22 @@ class ExoPlayerExtensionsTest {
     private fun buildSelectedTracks(
         trackSelector: MappingTrackSelector,
         vararg selections: Pair<Int, String>
-    ): TrackSelectionArray {
-        val selectionMap = selections.toMap()
-        val mappedTrackInfo = trackSelector.currentMappedTrackInfo!!
+    ) = selections.mapNotNull { (rendererType, selectedLanguage) ->
+        trackSelector.currentMappedTrackInfo
+            ?.trackGroupArrayFor(rendererType)
+            ?.asIterable()
+            ?.trackGroupFor(selectedLanguage)
+            ?.let { FixedTrackSelection(it, 0) }
+    }.toTypedArray()
+        .let { TrackSelectionArray(*it) }
 
-        val trackSelections = selectionMap.map { (rendererType, selectedLanguage) ->
-            val rendererIndex = (0 until mappedTrackInfo.rendererCount).first {
-                mappedTrackInfo.getRendererType(it) == rendererType
-            }
-            val trackGroupArray = mappedTrackInfo.getTrackGroups(rendererIndex)
-            val trackGroup = (0 until trackGroupArray.length)
-                .map { trackGroupArray.get(it) }
-                .first { it.getFormat(0).language == selectedLanguage }
+    private fun MappingTrackSelector.MappedTrackInfo.trackGroupArrayFor(rendererType: Int) =
+        (0 until rendererCount)
+            .firstOrNull { getRendererType(it) == rendererType }
+            ?.let { rendererIndex -> getTrackGroups(rendererIndex) }
 
-            FixedTrackSelection(trackGroup, 0)
-        }
+    private fun TrackGroupArray.asIterable(): Iterable<TrackGroup> = (0 until this.length).map { this.get(it) }
 
-        return TrackSelectionArray(*trackSelections.toTypedArray())
-    }
+    private fun Iterable<TrackGroup>.trackGroupFor(selectedLanguage: String): TrackGroup? =
+        firstOrNull { trackGroup -> trackGroup.getFormat(0).language == Util.normalizeLanguageCode(selectedLanguage) }
 }

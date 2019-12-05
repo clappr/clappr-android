@@ -69,7 +69,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.3.50"
     implementation "androidx.appcompat:appcompat:1.1.0"
     implementation "androidx.legacy:legacy-support-v4:1.0.0"
-    implementation 'com.google.android.exoplayer:exoplayer:2.9.2'
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.4'
 
     implementation "io.clappr.player:clappr:0.12.0"
     ...
