@@ -10,6 +10,7 @@ import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.C.*
 import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_MIN_BUFFER_MS
+import com.google.android.exoplayer2.DefaultRenderersFactory.*
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -67,7 +68,7 @@ open class ExoPlayerPlayback(
     }
 
     protected var player: SimpleExoPlayer? = null
-    protected val bandwidthMeter = DefaultBandwidthMeter()
+    protected val bandwidthMeter: DefaultBandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
@@ -357,7 +358,7 @@ open class ExoPlayerPlayback(
             TYPE_HLS -> HlsMediaSource.Factory(
                 dataSourceFactory
             ).createMediaSource(uri)
-            TYPE_OTHER -> ExtractorMediaSource.Factory(
+            TYPE_OTHER -> ProgressiveMediaSource.Factory(
                 dataSourceFactory
             ).createMediaSource(uri)
             else -> throw IllegalStateException("Unsupported type: $mediaType")
@@ -405,10 +406,9 @@ open class ExoPlayerPlayback(
         player?.addAnalyticsListener(bitrateEventsListener)
     }
 
-    private fun buildRendererFactory() = DefaultRenderersFactory(
-        applicationContext,
-        DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
-    )
+    private fun buildRendererFactory() = DefaultRenderersFactory(applicationContext).apply {
+        setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+    }
 
     @SuppressLint("NewApi")
     private fun buildDrmSessionManager(): DrmSessionManager<FrameworkMediaCrypto>? {
