@@ -151,6 +151,11 @@ enum class Event(val value: String) {
     DID_UPDATE_BITRATE("didUpdateBitrate"),
 
     /**
+     * Video resolution was updated
+     */
+    DID_UPDATE_VIDEO_RESOLUTION("didUpdateVideoResolution"),
+
+    /**
      * There was a video loop
      */
     DID_LOOP("didLoop"),
@@ -225,6 +230,23 @@ enum class EventData(val value: String) {
      * Bits per second
      */
     BITRATE("bitrate"),
+
+    /**
+     * [Event.DID_UPDATE_VIDEO_RESOLUTION] data
+     *
+     * Type: Int
+     *
+     * Video resolution width
+     */
+    WIDTH("width"),
+    /**
+     * [Event.DID_UPDATE_VIDEO_RESOLUTION] data
+     *
+     * Type: Int
+     *
+     * Video resolution height
+     */
+    HEIGHT("height"),
 
     /**
      * [Event.DID_RECEIVE_INPUT_KEY] data
