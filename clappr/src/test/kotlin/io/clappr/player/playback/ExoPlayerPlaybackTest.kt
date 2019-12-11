@@ -62,6 +62,17 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
+    fun `Should trigger WILL_SEEK with position in seconds`() {
+        var position = -1.0
+        listenObject.listenTo(exoPlayerPlayBack, WILL_SEEK.value) {
+            position = it?.getDouble("position") ?: -1.0
+        }
+        exoPlayerPlayBack.seek(13)
+
+        assertEquals(13.0, position)
+    }
+
+    @Test
     fun `Should trigger WILL_SEEK when seekToLivePosition() is called`() {
         var willSeekWasCalled = false
         listenObject.listenTo(exoPlayerPlayBack, WILL_SEEK.value) {
@@ -98,6 +109,22 @@ class ExoPlayerPlaybackTest {
             "DID_UPDATE_POSITION event wasn't triggered when seekToLivePosition() method was called",
             didUpdatePositionWasCalled
         )
+    }
+
+    @Test
+    fun `Should trigger WILL_SEEK with DVR window duration when seek to live position is called`() {
+
+        exoPlayerPlayBack = ExoPlayerPlayback(source = "bla.mp4")
+        exoPlayerPlayBack.setPlayer(playerWithDVRAndDuration(120_000))
+
+        var position = 0.0
+        listenObject.listenTo(exoPlayerPlayBack, WILL_SEEK.value) {
+            position = it?.getDouble("position") ?: 0.0
+        }
+
+        exoPlayerPlayBack.seekToLivePosition()
+
+        assertEquals(120, 120)
     }
 
     @Test
@@ -732,7 +759,7 @@ class ExoPlayerPlaybackTest {
 
     }
 
-    private fun playerWithDVRAndDuration(millis: Long) = mockk<SimpleExoPlayer>().apply {
+    private fun playerWithDVRAndDuration(millis: Long) = mockk<SimpleExoPlayer>(relaxed = true).apply {
         every { isCurrentWindowDynamic } returns true
         every { duration } returns millis
     }

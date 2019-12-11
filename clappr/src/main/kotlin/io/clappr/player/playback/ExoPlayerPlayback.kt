@@ -304,7 +304,7 @@ open class ExoPlayerPlayback(
     override fun seek(seconds: Int): Boolean {
         if (!canSeek) return false
 
-        trigger(WILL_SEEK)
+        trigger(WILL_SEEK.value, Bundle().apply { putDouble(EventData.POSITION.value, seconds.toDouble()) })
         player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
@@ -323,7 +323,7 @@ open class ExoPlayerPlayback(
     override fun seekToLivePosition(): Boolean {
         if (!canSeek) return false
 
-        trigger(WILL_SEEK)
+        trigger(WILL_SEEK.value, Bundle().apply { putDouble(EventData.POSITION.value, duration) })
         player?.seekToDefaultPosition()
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
