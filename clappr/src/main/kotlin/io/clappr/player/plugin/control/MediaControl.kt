@@ -92,7 +92,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
 
-    private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
+    protected val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
     private val controlPlugins = mutableListOf<Plugin>()
 
@@ -177,7 +177,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
-    private fun animateFadeIn(view: View, onAnimationEnd: () -> Unit = {}) {
+    open fun animateFadeIn(view: View, onAnimationEnd: () -> Unit = {}) {
         view.animate(R.anim.anim_media_control_fade_in) {
             onAnimationEnd()
         }
@@ -261,7 +261,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         foregroundControlsPanel.visibility = View.VISIBLE
     }
 
-    private fun hideDefaultMediaControlPanels() {
+    open fun hideDefaultMediaControlPanels() {
         controlsPanel.visibility = View.INVISIBLE
         foregroundControlsPanel.visibility = View.INVISIBLE
     }
@@ -308,7 +308,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun openModal() {
+    open fun openModal() {
         core.activePlayback?.pause()
 
         hideDefaultMediaControlPanels()
@@ -334,7 +334,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         modalPanel.visibility = View.INVISIBLE
     }
 
-    private fun showModalPanel() {
+    protected fun showModalPanel() {
         modalPanel.visibility = View.VISIBLE
     }
 
@@ -475,5 +475,4 @@ open class MediaControl(core: Core, pluginName: String = name) :
             core.trigger(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value, it)
         }
     }
-
 }
