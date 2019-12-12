@@ -254,6 +254,15 @@ enum class EventData(val value: String) {
     INPUT_KEY_IS_LONG_PRESS("inputKeyIsLongPress"),
 
     /**
+     * [Event.WILL_SEEK] data
+     *
+     * Type: Double
+     *
+     * The seek destination in seconds. It is expected to be the DVR window duration when seeking to live position
+     */
+    POSITION("position"),
+
+    /**
      * [Event.DID_CHANGE_SCREEN_ORIENTATION] data
      *
      * Type: io.clappr.player.components.Orientation
