@@ -73,6 +73,7 @@ open class ExoPlayerPlayback(
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
     private val bitrateEventsListener = ExoPlayerBitrateLogger()
+    private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
     private var currentState = State.NONE
@@ -299,12 +300,13 @@ open class ExoPlayerPlayback(
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
         player?.removeAnalyticsListener(bitrateEventsListener)
+        player?.removeAnalyticsListener(videoResolutionListener)
     }
 
     override fun seek(seconds: Int): Boolean {
         if (!canSeek) return false
 
-        trigger(WILL_SEEK)
+        trigger(WILL_SEEK.value, Bundle().apply { putDouble(EventData.POSITION.value, seconds.toDouble()) })
         player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
@@ -323,7 +325,7 @@ open class ExoPlayerPlayback(
     override fun seekToLivePosition(): Boolean {
         if (!canSeek) return false
 
-        trigger(WILL_SEEK)
+        trigger(WILL_SEEK.value, Bundle().apply { putDouble(EventData.POSITION.value, duration) })
         player?.seekToDefaultPosition()
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
@@ -404,6 +406,7 @@ open class ExoPlayerPlayback(
     protected open fun addListeners() {
         player?.addListener(eventsListener)
         player?.addAnalyticsListener(bitrateEventsListener)
+        player?.addAnalyticsListener(videoResolutionListener)
     }
 
     private fun buildRendererFactory() = DefaultRenderersFactory(applicationContext).apply {
