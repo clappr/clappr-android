@@ -56,7 +56,6 @@ open class ExoPlayerPlayback(
     source: String,
     mimeType: String? = null,
     options: Options = Options(),
-    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
     protected val createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
     }
@@ -199,7 +198,7 @@ open class ExoPlayerPlayback(
         get() = bitrateEventsListener.lastBitrate ?: 0L
 
     override val avgBitrate: Long
-        get() = bitrateHistory.averageBitrate()
+        get() = bitrateEventsListener.averageBitrate()
 
     override val currentDate: Long?
         get() = dvrStartTimeInSeconds
@@ -269,7 +268,7 @@ open class ExoPlayerPlayback(
         availableSubtitles.clear()
         internalSelectedAudio = null
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
-        bitrateHistory.clear()
+        bitrateEventsListener.clearHistory()
 
         removeListeners()
 
@@ -719,9 +718,8 @@ open class ExoPlayerPlayback(
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
     }
 
-    inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null) :
+    inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null, private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
         EventLogger(trackSelector) {
-
 
         var lastBitrate: Long? = null
             set(value) {
@@ -756,6 +754,9 @@ open class ExoPlayerPlayback(
                 }
             }
         }
+
+        fun averageBitrate() = bitrateHistory.averageBitrate()
+        fun clearHistory() = bitrateHistory.clear()
     }
 
     inner class ExoPlayerDrmEventsListeners : DefaultDrmSessionEventListener {

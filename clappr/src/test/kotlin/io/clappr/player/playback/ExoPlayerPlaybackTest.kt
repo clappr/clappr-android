@@ -46,19 +46,23 @@ class ExoPlayerPlaybackTest {
     private lateinit var bitrateHistory: BitrateHistory
     private lateinit var listenObject: BaseObject
     private var timeInNano: Long = 0L
+    private lateinit var bitrateEventsListener: ExoPlayerPlayback.ExoPlayerBitrateLogger
 
     @Before
     fun setUp() {
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
-        timeInNano = System.nanoTime()
-        bitrateHistory = BitrateHistory { timeInNano }
         listenObject = BaseObject()
         exoPlayerPlayBack = ExoPlayerPlayback(
             source = "aSource",
-            options = Options(),
-            bitrateHistory = bitrateHistory
+            options = Options()
         )
+
+        timeInNano = System.nanoTime()
+        bitrateHistory = BitrateHistory { timeInNano }
+        bitrateEventsListener = exoPlayerPlayBack.ExoPlayerBitrateLogger(bitrateHistory = bitrateHistory)
+
+        exoPlayerPlayBack.setBitRateListener(bitrateEventsListener)
     }
 
     @Test
@@ -158,17 +162,11 @@ class ExoPlayerPlaybackTest {
         val expectedBitrate = 40L
         var actualBitrate = 0L
 
-        val exoPlayerPlayback = ExoPlayerPlayback(
-            source = "aSource",
-            options = Options(),
-            bitrateHistory = bitrateHistory
-        )
-
-        listenObject.listenTo(exoPlayerPlayback, DID_UPDATE_BITRATE.value) {
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             actualBitrate = it?.getLong(BITRATE.value) ?: 0L
 
         }
-        exoPlayerPlayback.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
         assertEquals(expectedBitrate, actualBitrate)
@@ -778,6 +776,13 @@ class ExoPlayerPlaybackTest {
         ExoPlayerPlayback::class.java.declaredFields.first { it.name == "player" }.apply {
             isAccessible  = true
             set(this@setPlayer, player)
+        }
+    }
+
+    private fun ExoPlayerPlayback.setBitRateListener(listener: ExoPlayerPlayback.ExoPlayerBitrateLogger) {
+        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateEventsListener" }.apply {
+            isAccessible  = true
+            set(this@setBitRateListener, listener)
         }
     }
 
