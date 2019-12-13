@@ -141,14 +141,16 @@ class ExoPlayerPlaybackTest {
     fun `Should return last reported bitrate`() {
         val expectedBitrate = 40L
 
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        val bitrateLogger = exoPlayerPlayBack.ExoPlayerBitrateLogger()
+
+        bitrateLogger
             .onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateLogger
             .onLoadCompleted(null, null, addBitrateMediaLoadData(20))
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateLogger
             .onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
-        assertEquals(expectedBitrate, exoPlayerPlayBack.bitrate)
+        assertEquals(expectedBitrate, bitrateLogger.lastBitrate)
     }
 
     @Test
@@ -190,10 +192,12 @@ class ExoPlayerPlaybackTest {
         val bitrate = 10L
         var numberOfTriggers = 0
 
+        val exoPlayerBitrateLogger = exoPlayerPlayBack.ExoPlayerBitrateLogger()
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+
+        exoPlayerBitrateLogger
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        exoPlayerBitrateLogger
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
 
         assertEquals(1, numberOfTriggers)

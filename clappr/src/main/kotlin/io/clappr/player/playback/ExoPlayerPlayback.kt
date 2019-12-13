@@ -10,7 +10,7 @@ import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.C.*
 import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_MIN_BUFFER_MS
-import com.google.android.exoplayer2.DefaultRenderersFactory.*
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -40,7 +40,8 @@ import io.clappr.player.base.ErrorInfoData.EXCEPTION
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
-import io.clappr.player.base.InternalEventData.*
+import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
+import io.clappr.player.base.InternalEventData.FOUND_SUBTITLES
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.Playback
 import io.clappr.player.components.Playback.MediaType.*
@@ -152,7 +153,6 @@ open class ExoPlayerPlayback(
     private fun canPause(state: State) =
         state == State.PLAYING || state == State.STALLING || state == State.IDLE
 
-
     override val canSeek: Boolean
         get() = currentState != State.ERROR &&
                 !isVideoCompleted &&
@@ -195,28 +195,8 @@ open class ExoPlayerPlayback(
 
     private var lastDrvAvailableCheck: Boolean? = null
 
-    private var lastBitrate: Long? = null
-        set(value) {
-
-            val oldValue = field
-
-            field = value
-
-            try {
-                bitrateHistory.addBitrate(field)
-            } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-                Logger.error(name, e.message ?: "Can not add bitrate on history")
-            }
-
-            if (oldValue != field) {
-                trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
-                    putLong(EventData.BITRATE.value, field ?: 0)
-                })
-            }
-        }
-
     override val bitrate: Long
-        get() = lastBitrate ?: 0L
+        get() = bitrateEventsListener.lastBitrate ?: 0L
 
     override val avgBitrate: Long
         get() = bitrateHistory.averageBitrate()
@@ -741,6 +721,27 @@ open class ExoPlayerPlayback(
 
     inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null) :
         EventLogger(trackSelector) {
+
+
+        var lastBitrate: Long? = null
+            set(value) {
+
+                val oldValue = field
+
+                field = value
+
+                try {
+                    bitrateHistory.addBitrate(field)
+                } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
+                    Logger.error(name, e.message ?: "Can not add bitrate on history")
+                }
+
+                if (oldValue != field) {
+                    trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
+                        putLong(EventData.BITRATE.value, field ?: 0)
+                    })
+                }
+            }
 
         override fun onLoadCompleted(
             eventTime: AnalyticsListener.EventTime?,
