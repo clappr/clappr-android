@@ -9,6 +9,7 @@
 | [io.clappr.player.base.BaseObject](../io.clappr.player.base/-base-object/index.md) |  |
 | [io.clappr.player.bitrate.BitrateHistory](../io.clappr.player.bitrate/-bitrate-history/index.md) |  |
 | [android.os.Bundle](../io.clappr.player.extensions/android.os.-bundle/index.md) (extensions in package io.clappr.player.extensions) |  |
+| [android.os.Bundle](../io.clappr.player.utils/android.os.-bundle/index.md) (extensions in package io.clappr.player.utils) |  |
 | [io.clappr.player.plugin.control.ButtonPlugin](../io.clappr.player.plugin.control/-button-plugin/index.md) |  |
 | [io.clappr.player.interop.Callback](../io.clappr.player.interop/-callback.md) |  |
 | [io.clappr.player.base.ClapprOption](../io.clappr.player.base/-clappr-option/index.md) |  |
@@ -73,4 +74,5 @@
 | [io.clappr.player.base.UIObject](../io.clappr.player.base/-u-i-object/index.md) |  |
 | [io.clappr.player.plugin.UIPlugin](../io.clappr.player.plugin/-u-i-plugin/index.md) |  |
 | [io.clappr.player.base.Utils](../io.clappr.player.base/-utils/index.md) |  |
+| [io.clappr.player.playback.VideoResolutionChangeListener](../io.clappr.player.playback/-video-resolution-change-listener/index.md) |  |
 | [android.view.View](../io.clappr.player.extensions/android.view.-view/index.md) (extensions in package io.clappr.player.extensions) |  |

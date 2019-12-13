@@ -7,3 +7,9 @@
 | Name | Summary |
 |---|---|
 | [Environment](-environment/index.md) | `class Environment` |
+
+### Extensions for External Classes
+
+| Name | Summary |
+|---|---|
+| [android.os.Bundle](android.os.-bundle/index.md) |  |

@@ -10,6 +10,7 @@ $dokka.location:io.clappr.player.playback$getSelectedSubtitle(com.google.android
 $dokka.location:io.clappr.player.playback$selectSubtitleFromTracks(com.google.android.exoplayer2.trackselection.DefaultTrackSelector, kotlin.String)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-default-track-selector/select-subtitle-from-tracks.md
 $dokka.location:io.clappr.player.playback$setAudioFromTracks(com.google.android.exoplayer2.trackselection.DefaultTrackSelector, kotlin.String)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-default-track-selector/set-audio-from-tracks.md
 $dokka.location:io.clappr.player.playback$subtitleTracks(com.google.android.exoplayer2.trackselection.MappingTrackSelector)io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-mapping-track-selector/subtitle-tracks.md
+$dokka.location:io.clappr.player.utils$withPayload(android.os.Bundle, kotlin.Array((kotlin.Pair((kotlin.String, java.io.Serializable)))))io.clappr.player.utils/android.os.-bundle/with-payload.md
 io.clappr.player
 io.clappr.player.base
 io.clappr.player.base.keys
