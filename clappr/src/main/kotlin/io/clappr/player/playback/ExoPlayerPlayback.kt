@@ -58,7 +58,8 @@ open class ExoPlayerPlayback(
     options: Options = Options(),
     protected val createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
-    }
+    },
+    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }
 ) : Playback(source, mimeType, options, name = entry.name, supportsSource = supportsSource) {
 
     private var isVideoCompleted = false
@@ -72,7 +73,7 @@ open class ExoPlayerPlayback(
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
-    private val bitrateEventsListener = ExoPlayerBitrateLogger()
+    private val bitrateEventsListener by lazy { ExoPlayerBitrateLogger(this, bitrateHistory = bitrateHistory) }
     private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
@@ -718,7 +719,9 @@ open class ExoPlayerPlayback(
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
     }
 
-    inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null, private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
+    inner class ExoPlayerBitrateLogger(private val playback: ExoPlayerPlayback,
+                                       trackSelector: MappingTrackSelector? = null,
+                                       private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
         EventLogger(trackSelector) {
 
         var lastBitrate: Long? = null
@@ -731,11 +734,11 @@ open class ExoPlayerPlayback(
                 try {
                     bitrateHistory.addBitrate(field)
                 } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-                    Logger.error(name, e.message ?: "Can not add bitrate on history")
+                    Logger.error(ExoPlayerBitrateLogger::class.java.simpleName, e.message ?: "Can not add bitrate on history")
                 }
 
                 if (oldValue != field) {
-                    trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
+                    playback.trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
                         putLong(EventData.BITRATE.value, field ?: 0)
                     })
                 }

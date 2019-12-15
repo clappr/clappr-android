@@ -36,6 +36,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 import java.io.IOException
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -52,17 +54,18 @@ class ExoPlayerPlaybackTest {
     fun setUp() {
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
-        listenObject = BaseObject()
-        exoPlayerPlayBack = ExoPlayerPlayback(
-            source = "aSource",
-            options = Options()
-        )
-
         timeInNano = System.nanoTime()
         bitrateHistory = BitrateHistory { timeInNano }
-        bitrateEventsListener = exoPlayerPlayBack.ExoPlayerBitrateLogger(bitrateHistory = bitrateHistory)
+        listenObject = BaseObject()
 
-        exoPlayerPlayBack.setBitRateListener(bitrateEventsListener)
+        exoPlayerPlayBack = ExoPlayerPlayback(
+            source = "aSource",
+            options = Options(),
+            bitrateHistory = bitrateHistory
+        )
+
+        bitrateEventsListener = exoPlayerPlayBack.getBitrateEventsListener()
+
     }
 
     @Test
@@ -145,16 +148,14 @@ class ExoPlayerPlaybackTest {
     fun `Should return last reported bitrate`() {
         val expectedBitrate = 40L
 
-        val bitrateLogger = exoPlayerPlayBack.ExoPlayerBitrateLogger()
-
-        bitrateLogger
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        bitrateLogger
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(20))
-        bitrateLogger
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
 
-        assertEquals(expectedBitrate, bitrateLogger.lastBitrate)
+        assertEquals(expectedBitrate, bitrateEventsListener.lastBitrate)
     }
 
     @Test
@@ -177,9 +178,9 @@ class ExoPlayerPlaybackTest {
         var numberOfTriggers = 0
 
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(40))
 
         assertEquals(2, numberOfTriggers)
@@ -190,12 +191,11 @@ class ExoPlayerPlaybackTest {
         val bitrate = 10L
         var numberOfTriggers = 0
 
-        val exoPlayerBitrateLogger = exoPlayerPlayBack.ExoPlayerBitrateLogger()
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
 
-        exoPlayerBitrateLogger
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
-        exoPlayerBitrateLogger
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
 
         assertEquals(1, numberOfTriggers)
@@ -209,8 +209,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, TRACK_TYPE_AUDIO))
+        bitrateEventsListener.onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, TRACK_TYPE_AUDIO))
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -223,7 +222,8 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        bitrateEventsListener
+            .onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -232,7 +232,7 @@ class ExoPlayerPlaybackTest {
     fun `Should handle wrong time interval exception on add bitrate on history`() {
         timeInNano = -1
 
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
     }
 
@@ -248,7 +248,8 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger().onLoadCompleted(null, null, mediaLoadData)
+        bitrateEventsListener
+            .onLoadCompleted(null, null, mediaLoadData)
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -261,7 +262,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
 
         assertTrue(didUpdateBitrateCalled)
@@ -275,7 +276,7 @@ class ExoPlayerPlaybackTest {
         listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        exoPlayerPlayBack.ExoPlayerBitrateLogger()
+        bitrateEventsListener
             .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertTrue(didUpdateBitrateCalled)
@@ -779,11 +780,12 @@ class ExoPlayerPlaybackTest {
         }
     }
 
-    private fun ExoPlayerPlayback.setBitRateListener(listener: ExoPlayerPlayback.ExoPlayerBitrateLogger) {
-        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateEventsListener" }.apply {
-            isAccessible  = true
-            set(this@setBitRateListener, listener)
-        }
+    private fun ExoPlayerPlayback.getBitrateEventsListener(): ExoPlayerPlayback.ExoPlayerBitrateLogger {
+        return ExoPlayerPlayback::class.memberProperties.first { it.name == "bitrateEventsListener" }
+            .run {
+                isAccessible = true
+                get(this@getBitrateEventsListener) as ExoPlayerPlayback.ExoPlayerBitrateLogger
+            }
     }
 
     private fun addBitrateMediaLoadData(
