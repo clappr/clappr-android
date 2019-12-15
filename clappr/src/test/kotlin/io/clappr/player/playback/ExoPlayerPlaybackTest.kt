@@ -112,7 +112,7 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun `Should trigger WILL_SEEK with DVR window duration when seek to live position is called`() {
+    fun `Should trigger WILL_SEEK with DVR window duration, discounted buffer sync time, when seek to live position is called`() {
 
         exoPlayerPlayBack = ExoPlayerPlayback(source = "bla.mp4")
         exoPlayerPlayBack.setPlayer(playerWithDVRAndDuration(120_000))
@@ -124,7 +124,7 @@ class ExoPlayerPlaybackTest {
 
         exoPlayerPlayBack.seekToLivePosition()
 
-        assertEquals(120, 120)
+        assertEquals(100.0, position)
     }
 
     @Test
@@ -761,6 +761,7 @@ class ExoPlayerPlaybackTest {
 
     private fun playerWithDVRAndDuration(millis: Long) = mockk<SimpleExoPlayer>(relaxed = true).apply {
         every { isCurrentWindowDynamic } returns true
+        every { isCurrentWindowSeekable } returns true
         every { duration } returns millis
     }
 
