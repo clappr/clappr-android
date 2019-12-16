@@ -1,19 +1,15 @@
 package io.clappr.player.playback
 
 import androidx.test.core.app.ApplicationProvider
-import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
 import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
 import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
-import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
@@ -36,8 +32,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 import java.io.IOException
-import kotlin.reflect.full.memberProperties
-import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -48,7 +42,6 @@ class ExoPlayerPlaybackTest {
     private lateinit var bitrateHistory: BitrateHistory
     private lateinit var listenObject: BaseObject
     private var timeInNano: Long = 0L
-    private lateinit var bitrateEventsListener: ExoPlayerPlayback.ExoPlayerBitrateLogger
 
     @Before
     fun setUp() {
@@ -63,9 +56,6 @@ class ExoPlayerPlaybackTest {
             options = Options(),
             bitrateHistory = bitrateHistory
         )
-
-        bitrateEventsListener = exoPlayerPlayBack.getBitrateEventsListener()
-
     }
 
     @Test
@@ -142,144 +132,6 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should return zero average bitrate when history is empty`() {
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
-    }
-
-    @Test
-    fun `Should return last reported bitrate`() {
-        val expectedBitrate = 40L
-
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(20))
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
-
-        assertEquals(expectedBitrate, bitrateEventsListener.lastBitrate)
-    }
-
-    @Test
-    fun `Should trigger DID_UPDATE_BITRATE`() {
-        val expectedBitrate = 40L
-        var actualBitrate = 0L
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            actualBitrate = it?.getLong(BITRATE.value) ?: 0L
-
-        }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(expectedBitrate))
-
-        assertEquals(expectedBitrate, actualBitrate)
-    }
-
-    @Test
-    fun `Should listening DID_UPDATE_BITRATE on different bitrates`() {
-        var numberOfTriggers = 0
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(10))
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(40))
-
-        assertEquals(2, numberOfTriggers)
-    }
-
-    @Test
-    fun `Should trigger DID_UPDATE_BITRATE only for different bitrate`() {
-        val bitrate = 10L
-        var numberOfTriggers = 0
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) { numberOfTriggers++ }
-
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate))
-
-        assertEquals(1, numberOfTriggers)
-    }
-
-    @Test
-    fun `Should not trigger DID_UPDATE_BITRATE when track type is different from TRACK_TYPE_DEFAULT or TRACK_TYPE_VIDEO`() {
-        var didUpdateBitrateCalled = false
-        val bitrate = 40L
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener.onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, TRACK_TYPE_AUDIO))
-
-        assertFalse(didUpdateBitrateCalled)
-    }
-
-    @Test
-    fun `Should not trigger DID_UPDATE_BITRATE when media load data is null`() {
-        val mediaLoadData = null
-        var didUpdateBitrateCalled = false
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, mediaLoadData)
-
-        assertFalse(didUpdateBitrateCalled)
-    }
-
-    @Test
-    fun `Should handle wrong time interval exception on add bitrate on history`() {
-        timeInNano = -1
-
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(20L))
-    }
-
-    @Test
-    fun `Should not trigger DID_UPDATE_BITRATE when video format is null`() {
-        val videoFormatMock = null
-        val mediaLoadData = MediaSourceEventListener.MediaLoadData(
-            0, C.TRACK_TYPE_DEFAULT, videoFormatMock, 0,
-            null, 0L, 0L
-        )
-        var didUpdateBitrateCalled = false
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, mediaLoadData)
-
-        assertFalse(didUpdateBitrateCalled)
-    }
-
-    @Test
-    fun `should trigger DID_UPDATE_BITRATE when TRACK_TYPE_DEFAULT`() {
-        var didUpdateBitrateCalled = false
-        val bitrate = 40L
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
-
-        assertTrue(didUpdateBitrateCalled)
-    }
-
-    @Test
-    fun `Should trigger DID_UPDATE_BITRATE when TRACK_TYPE_VIDEO`() {
-        var didUpdateBitrateCalled = false
-        val bitrate = 40L
-
-        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener
-            .onLoadCompleted(null, null, addBitrateMediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
-
-        assertTrue(didUpdateBitrateCalled)
     }
 
     @Test
@@ -778,28 +630,5 @@ class ExoPlayerPlaybackTest {
             isAccessible  = true
             set(this@setPlayer, player)
         }
-    }
-
-    private fun ExoPlayerPlayback.getBitrateEventsListener(): ExoPlayerPlayback.ExoPlayerBitrateLogger {
-        return ExoPlayerPlayback::class.memberProperties.first { it.name == "bitrateEventsListener" }
-            .run {
-                isAccessible = true
-                get(this@getBitrateEventsListener) as ExoPlayerPlayback.ExoPlayerBitrateLogger
-            }
-    }
-
-    private fun addBitrateMediaLoadData(
-        bitrate: Long,
-        trackType: Int = C.TRACK_TYPE_DEFAULT
-    ): MediaSourceEventListener.MediaLoadData {
-        val videoFormatMock = Format.createVideoSampleFormat(
-            null, null, null, bitrate.toInt(),
-            0, 0, 0, 0f, listOf<ByteArray>(), null
-        )
-
-        return MediaSourceEventListener.MediaLoadData(
-            0, trackType, videoFormatMock,
-            0, null, 0L, 0L
-        )
     }
 }

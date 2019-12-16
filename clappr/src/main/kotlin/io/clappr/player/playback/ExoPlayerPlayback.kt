@@ -12,7 +12,6 @@ import com.google.android.exoplayer2.C.*
 import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_MIN_BUFFER_MS
 import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.Player.*
-import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
@@ -25,13 +24,11 @@ import com.google.android.exoplayer2.text.CaptionStyleCompat
 import com.google.android.exoplayer2.text.CaptionStyleCompat.EDGE_TYPE_NONE
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util.*
 import io.clappr.player.base.*
@@ -717,49 +714,6 @@ open class ExoPlayerPlayback(
         override fun onRepeatModeChanged(repeatMode: Int) {}
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
-    }
-
-    inner class ExoPlayerBitrateLogger(private val playback: ExoPlayerPlayback,
-                                       trackSelector: MappingTrackSelector? = null,
-                                       private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
-        EventLogger(trackSelector) {
-
-        var lastBitrate: Long? = null
-            set(value) {
-
-                val oldValue = field
-
-                field = value
-
-                try {
-                    bitrateHistory.addBitrate(field)
-                } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-                    Logger.error(ExoPlayerBitrateLogger::class.java.simpleName, e.message ?: "Can not add bitrate on history")
-                }
-
-                if (oldValue != field) {
-                    playback.trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
-                        putLong(EventData.BITRATE.value, field ?: 0)
-                    })
-                }
-            }
-
-        override fun onLoadCompleted(
-            eventTime: AnalyticsListener.EventTime?,
-            loadEventInfo: MediaSourceEventListener.LoadEventInfo?,
-            mediaLoadData: MediaSourceEventListener.MediaLoadData?
-        ) {
-            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
-
-            mediaLoadData?.let { data ->
-                if (data.trackType in listOf(TRACK_TYPE_DEFAULT, TRACK_TYPE_VIDEO)) {
-                    data.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
-                }
-            }
-        }
-
-        fun averageBitrate() = bitrateHistory.averageBitrate()
-        fun clearHistory() = bitrateHistory.clear()
     }
 
     inner class ExoPlayerDrmEventsListeners : DefaultDrmSessionEventListener {
