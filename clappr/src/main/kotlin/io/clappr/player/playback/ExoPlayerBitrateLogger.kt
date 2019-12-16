@@ -3,16 +3,20 @@ package io.clappr.player.playback
 import android.os.Bundle
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.analytics.AnalyticsListener
-import com.google.android.exoplayer2.source.MediaSourceEventListener
-import io.clappr.player.base.Event
-import io.clappr.player.base.EventData
+import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
+import com.google.android.exoplayer2.source.MediaSourceEventListener.LoadEventInfo
+import com.google.android.exoplayer2.source.MediaSourceEventListener.MediaLoadData
+import io.clappr.player.base.Event.DID_UPDATE_BITRATE
+import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.Playback
 import io.clappr.player.log.Logger
+import io.clappr.player.utils.withPayload
 
-class ExoPlayerBitrateLogger(private val playback: Playback,
-                             private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
-    AnalyticsListener {
+class ExoPlayerBitrateLogger(
+    private val playback: Playback,
+    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }
+) : AnalyticsListener {
 
     private var audio = 0L
     private var video = 0L
@@ -32,32 +36,25 @@ class ExoPlayerBitrateLogger(private val playback: Playback,
             }
 
             if (oldValue != field) {
-                playback.trigger(Event.DID_UPDATE_BITRATE.value, Bundle().apply {
-                    putLong(EventData.BITRATE.value, field ?: 0)
-                })
+                val userData = Bundle().withPayload(BITRATE.value to (field ?: 0L))
+                playback.trigger(DID_UPDATE_BITRATE.value, userData)
             }
         }
 
-    override fun onLoadCompleted(
-        eventTime: AnalyticsListener.EventTime?,
-        loadEventInfo: MediaSourceEventListener.LoadEventInfo?,
-        mediaLoadData: MediaSourceEventListener.MediaLoadData?
-    ) {
-        mediaLoadData?.let { data ->
-            when (data.trackType) {
-                C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO -> {
-                    data.trackFormat?.bitrate?.let {
-                        video = it.toLong()
-                    }
-                }
-                C.TRACK_TYPE_AUDIO -> {
-                    data.trackFormat?.bitrate
-                        ?.takeIf { it > 0 }
-                        ?.let { audio = it.toLong() }
+    override fun onLoadCompleted(eventTime: EventTime?, loadEventInfo: LoadEventInfo?, mediaLoadData: MediaLoadData) {
+        when (mediaLoadData.trackType) {
+            C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO -> {
+                mediaLoadData.trackFormat?.bitrate?.let {
+                    video = it.toLong()
                 }
             }
-            lastBitrate = if ((video + audio) > 0) video + audio else null
+            C.TRACK_TYPE_AUDIO -> {
+                mediaLoadData.trackFormat?.bitrate
+                    ?.takeIf { it > 0 }
+                    ?.let { audio = it.toLong() }
+            }
         }
+        lastBitrate = if ((video + audio) > 0) video + audio else null
     }
 
     fun averageBitrate() = bitrateHistory.averageBitrate()

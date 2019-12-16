@@ -180,19 +180,6 @@ class ExoPlayerBitrateLoggerTest {
     }
 
     @Test
-    fun `Should not trigger DID_UPDATE_BITRATE when media load data is null`() {
-        val mediaLoadData = null
-        var didUpdateBitrateCalled = false
-
-        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData)
-
-        assertFalse(didUpdateBitrateCalled)
-    }
-
-    @Test
     fun `Should handle wrong time interval exception on add bitrate on history`() {
         timeInNano = -1
 
