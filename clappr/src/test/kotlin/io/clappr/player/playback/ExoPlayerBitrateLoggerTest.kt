@@ -53,7 +53,7 @@ class ExoPlayerBitrateLoggerTest {
     }
 
     @Test
-    fun `Should trigger DID_UPDATE_BITRATE`() {
+    fun `Should trigger DID_UPDATE_BITRATE for default track`() {
         val expectedBitrate = 40L
         var actualBitrate = 0L
 
@@ -61,9 +61,85 @@ class ExoPlayerBitrateLoggerTest {
             actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
 
         }
-        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate,  C.TRACK_TYPE_DEFAULT))
 
         assertEquals(expectedBitrate, actualBitrate)
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_BITRATE when TRACK_TYPE_VIDEO`() {
+        var didUpdateBitrateCalled = false
+        val bitrate = 40L
+
+        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
+            didUpdateBitrateCalled = true
+        }
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
+
+        assertTrue(didUpdateBitrateCalled)
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_BITRATE when TRACK_TYPE_AUDIO`() {
+        val expectedBitrate = 128_000L
+        var actualBitrate = 0L
+
+        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
+            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
+        }
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate, C.TRACK_TYPE_AUDIO))
+
+        assertEquals(expectedBitrate, actualBitrate)
+    }
+
+    @Test
+    fun `Should add video and audio bitrates when both are known`() {
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+
+        assertEquals(3_128_000, bitrateEventsListener.lastBitrate)
+    }
+
+    @Test
+    fun `Should not accept audio bitrate less than 0 `() {
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(-1, C.TRACK_TYPE_AUDIO))
+
+        assertEquals(3_000_000, bitrateEventsListener.lastBitrate)
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_BITRATE with new sum of audio and video bitrate whenever video bitrate changes`() {
+        var actualBitrate = 0L
+
+        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
+            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
+        }
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(2_000_000, C.TRACK_TYPE_VIDEO))
+
+        assertEquals(2_128_000, actualBitrate)
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_BITRATE with new sum of audio and video bitrate whenever audio bitrate changes`() {
+        var actualBitrate = 0L
+
+        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
+            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
+        }
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(320_000, C.TRACK_TYPE_AUDIO))
+
+        assertEquals(3_320_000, actualBitrate)
     }
 
     @Test
@@ -98,7 +174,7 @@ class ExoPlayerBitrateLoggerTest {
         listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
             didUpdateBitrateCalled = true
         }
-        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_AUDIO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_UNKNOWN))
 
         assertFalse(didUpdateBitrateCalled)
     }
@@ -141,29 +217,13 @@ class ExoPlayerBitrateLoggerTest {
     }
 
     @Test
-    fun `should trigger DID_UPDATE_BITRATE when TRACK_TYPE_DEFAULT`() {
-        var didUpdateBitrateCalled = false
-        val bitrate = 40L
+    fun `Should clear averageBitrate`() {
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
-        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_DEFAULT))
+        bitrateEventsListener.clearHistory()
 
-        assertTrue(didUpdateBitrateCalled)
-    }
-
-    @Test
-    fun `Should trigger DID_UPDATE_BITRATE when TRACK_TYPE_VIDEO`() {
-        var didUpdateBitrateCalled = false
-        val bitrate = 40L
-
-        listenObject.listenTo(playback, Event.DID_UPDATE_BITRATE.value) {
-            didUpdateBitrateCalled = true
-        }
-        bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
-
-        assertTrue(didUpdateBitrateCalled)
+        assertEquals(0, bitrateEventsListener.averageBitrate())
     }
 
     private fun mediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT)

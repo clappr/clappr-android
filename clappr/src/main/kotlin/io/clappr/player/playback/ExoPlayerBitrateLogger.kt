@@ -14,6 +14,9 @@ class ExoPlayerBitrateLogger(private val playback: Playback,
                              private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
     AnalyticsListener {
 
+    private var audio = 0L
+    private var video = 0L
+
     var lastBitrate: Long? = null
         set(value) {
 
@@ -41,9 +44,19 @@ class ExoPlayerBitrateLogger(private val playback: Playback,
         mediaLoadData: MediaSourceEventListener.MediaLoadData?
     ) {
         mediaLoadData?.let { data ->
-            if (data.trackType in listOf(C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO)) {
-                data.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
+            when (data.trackType) {
+                C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO -> {
+                    data.trackFormat?.bitrate?.let {
+                        video = it.toLong()
+                    }
+                }
+                C.TRACK_TYPE_AUDIO -> {
+                    data.trackFormat?.bitrate
+                        ?.takeIf { it > 0 }
+                        ?.let { audio = it.toLong() }
+                }
             }
+            lastBitrate = if ((video + audio) > 0) video + audio else null
         }
     }
 
