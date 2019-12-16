@@ -4,8 +4,6 @@ import android.os.Bundle
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.source.MediaSourceEventListener
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector
-import com.google.android.exoplayer2.util.EventLogger
 import io.clappr.player.base.Event
 import io.clappr.player.base.EventData
 import io.clappr.player.bitrate.BitrateHistory
@@ -13,9 +11,8 @@ import io.clappr.player.components.Playback
 import io.clappr.player.log.Logger
 
 class ExoPlayerBitrateLogger(private val playback: Playback,
-                             trackSelector: MappingTrackSelector? = null,
                              private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }) :
-    EventLogger(trackSelector) {
+    AnalyticsListener {
 
     var lastBitrate: Long? = null
         set(value) {
@@ -43,8 +40,6 @@ class ExoPlayerBitrateLogger(private val playback: Playback,
         loadEventInfo: MediaSourceEventListener.LoadEventInfo?,
         mediaLoadData: MediaSourceEventListener.MediaLoadData?
     ) {
-        super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
-
         mediaLoadData?.let { data ->
             if (data.trackType in listOf(C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO)) {
                 data.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
