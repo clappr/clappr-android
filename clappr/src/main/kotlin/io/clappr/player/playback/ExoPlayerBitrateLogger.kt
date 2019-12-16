@@ -21,7 +21,7 @@ class ExoPlayerBitrateLogger(
     private var audio = 0L
     private var video = 0L
 
-    var lastBitrate: Long? = null
+    var lastBitrate: Long = 0
         set(value) {
 
             val oldValue = field
@@ -36,7 +36,7 @@ class ExoPlayerBitrateLogger(
             }
 
             if (oldValue != field) {
-                val userData = Bundle().withPayload(BITRATE.value to (field ?: 0L))
+                val userData = Bundle().withPayload(BITRATE.value to field)
                 playback.trigger(DID_UPDATE_BITRATE.value, userData)
             }
         }
@@ -54,7 +54,7 @@ class ExoPlayerBitrateLogger(
                     ?.let { audio = it.toLong() }
             }
         }
-        lastBitrate = if ((video + audio) > 0) video + audio else null
+        lastBitrate = if ((video + audio) > 0) video + audio else 0
     }
 
     fun averageBitrate() = bitrateHistory.averageBitrate()
