@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import io.clappr.player.log.Logger
 import io.clappr.player.utils.IdGenerator
+import java.util.*
 
 open class BaseObject(private val logger: Logger = Logger) : EventInterface {
 
@@ -71,6 +72,6 @@ open class BaseObject(private val logger: Logger = Logger) : EventInterface {
         @JvmStatic
         lateinit var applicationContext: Context
 
-        private val subscriptions = mutableSetOf<Subscription>()
+        private val subscriptions = Collections.synchronizedSet(mutableSetOf<Subscription>())
     }
 }
