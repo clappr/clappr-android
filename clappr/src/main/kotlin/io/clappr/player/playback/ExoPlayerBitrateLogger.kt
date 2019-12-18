@@ -7,6 +7,7 @@ import com.google.android.exoplayer2.source.MediaSourceEventListener.LoadEventIn
 import com.google.android.exoplayer2.source.MediaSourceEventListener.MediaLoadData
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.log.Logger
+import kotlin.math.max
 
 class ExoPlayerBitrateLogger(
     private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
@@ -48,7 +49,7 @@ class ExoPlayerBitrateLogger(
                     ?.let { audio = it.toLong() }
             }
         }
-        lastBitrate = if ((video + audio) > 0) video + audio else 0
+        lastBitrate = max(video + audio, 0L)
     }
 
     fun averageBitrate() = bitrateHistory.averageBitrate()
