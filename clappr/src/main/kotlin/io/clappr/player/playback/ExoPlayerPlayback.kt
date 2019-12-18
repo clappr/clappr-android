@@ -192,7 +192,7 @@ open class ExoPlayerPlayback(
     private var lastDrvAvailableCheck: Boolean? = null
 
     override val bitrate: Long
-        get() = bitrateHandler.lastBitrate
+        get() = bitrateHandler.currentBitrate
 
     override val avgBitrate: Long
         get() = bitrateHandler.averageBitrate

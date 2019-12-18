@@ -33,7 +33,7 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(20))
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate))
 
-        assertEquals(expectedBitrate, bitrateHandler.lastBitrate)
+        assertEquals(expectedBitrate, bitrateHandler.currentBitrate)
     }
 
     @Test
@@ -77,7 +77,7 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
-        assertEquals(3_128_000, bitrateHandler.lastBitrate)
+        assertEquals(3_128_000, bitrateHandler.currentBitrate)
     }
 
     @Test
@@ -88,7 +88,7 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
         bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(-1, C.TRACK_TYPE_AUDIO))
 
-        assertEquals(3_000_000, bitrateHandler.lastBitrate)
+        assertEquals(3_000_000, bitrateHandler.currentBitrate)
     }
 
     @Test
@@ -206,7 +206,7 @@ class ExoPlayerBitrateHandlerTest {
     fun `Should return zero bitrate when history is empty`() {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        assertEquals(0, bitrateHandler.lastBitrate)
+        assertEquals(0, bitrateHandler.currentBitrate)
     }
 
     @Test

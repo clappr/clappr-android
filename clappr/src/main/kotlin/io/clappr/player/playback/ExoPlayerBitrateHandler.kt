@@ -17,7 +17,7 @@ class ExoPlayerBitrateHandler(
     private var audio = 0L
     private var video = 0L
 
-    var lastBitrate = 0L
+    var currentBitrate = 0L
         private set(value) {
 
             val oldValue = field
@@ -54,7 +54,7 @@ class ExoPlayerBitrateHandler(
                         ?.let { audio = it.toLong() }
                 }
             }
-            lastBitrate = max(video + audio, 0L)
+            currentBitrate = max(video + audio, 0L)
         }
     }
 }
