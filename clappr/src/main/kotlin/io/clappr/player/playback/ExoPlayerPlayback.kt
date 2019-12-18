@@ -54,7 +54,6 @@ open class ExoPlayerPlayback(
     source: String,
     mimeType: String? = null,
     options: Options = Options(),
-    bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
     protected val createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
     }
@@ -71,7 +70,7 @@ open class ExoPlayerPlayback(
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
-    private val bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory, ::didUpdateBitrate)
+    private val bitrateEventsListener = ExoPlayerBitrateLogger(didUpdateBitrate = ::didUpdateBitrate)
     private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0

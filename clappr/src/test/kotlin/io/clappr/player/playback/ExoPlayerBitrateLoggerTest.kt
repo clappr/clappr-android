@@ -198,6 +198,32 @@ class ExoPlayerBitrateLoggerTest {
         assertEquals(0, bitrateEventsListener.averageBitrate())
     }
 
+    @Test
+    fun `Should return average bitrate`() {
+        val expectedAverageBitrate = 109L
+        bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory) { actualBitrate = it }
+
+        bitrateHistory.addBitrate(90, 2)
+        bitrateHistory.addBitrate(100, 17)
+        bitrateHistory.addBitrate(110, 31)
+
+        assertEquals(expectedAverageBitrate, bitrateEventsListener.averageBitrate())
+    }
+
+    @Test
+    fun `Should return zero bitrate when history is empty`() {
+        bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory) { actualBitrate = it }
+
+        assertEquals(0, bitrateEventsListener.lastBitrate)
+    }
+
+    @Test
+    fun `Should return zero average bitrate when history is empty`() {
+        bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory) { actualBitrate = it }
+
+        assertEquals(0, bitrateEventsListener.averageBitrate())
+    }
+
     private fun mediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT)
             : MediaSourceEventListener.MediaLoadData {
         val format = Format.createVideoSampleFormat(

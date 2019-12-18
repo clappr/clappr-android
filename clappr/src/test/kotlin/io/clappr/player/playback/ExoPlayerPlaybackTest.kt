@@ -22,8 +22,11 @@ import io.clappr.player.components.Playback.State
 import io.clappr.player.components.SubtitleLanguage
 import io.clappr.player.shadows.SimpleExoplayerShadow
 import io.clappr.player.shadows.SubtitleViewShadow
+import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -46,8 +49,12 @@ class ExoPlayerPlaybackTest {
     private lateinit var listenObject: BaseObject
     private var timeInNano: Long = 0L
 
+    @MockK(relaxed = true)
+    private lateinit var mockBitrateLogger: ExoPlayerBitrateLogger
+
     @Before
     fun setUp() {
+        MockKAnnotations.init(this)
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
 
         timeInNano = System.nanoTime()
@@ -56,8 +63,7 @@ class ExoPlayerPlaybackTest {
 
         exoPlayerPlayBack = ExoPlayerPlayback(
             source = "aSource",
-            options = Options(),
-            bitrateHistory = bitrateHistory
+            options = Options()
         )
     }
 
@@ -128,16 +134,6 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun `Should return zero bitrate when history is empty`() {
-        assertEquals(0, exoPlayerPlayBack.bitrate)
-    }
-
-    @Test
-    fun `Should return zero average bitrate when history is empty`() {
-        assertEquals(0, exoPlayerPlayBack.avgBitrate)
-    }
-
-    @Test
     fun `Should trigger DID_UPDATE_BITRATE when bitrate updates`() {
         val expectedBitrate = 40L
         var actualBitrate = 0L
@@ -153,36 +149,24 @@ class ExoPlayerPlaybackTest {
     }
 
     @Test
-    fun `Should return average bitrate`() {
-        val expectedAverageBitrate = 109L
+    fun `Should get average bitrate from bitrateLogger`() {
+        exoPlayerPlayBack.setBitrateLogger(mockBitrateLogger)
 
-        bitrateHistory.addBitrate(90, 2)
-        bitrateHistory.addBitrate(100, 17)
-        bitrateHistory.addBitrate(110, 31)
 
-        assertEquals(expectedAverageBitrate, exoPlayerPlayBack.avgBitrate)
+        every { mockBitrateLogger.averageBitrate() } returns 33L
+
+        assertEquals(33L, exoPlayerPlayBack.avgBitrate)
     }
 
     @Test
     fun `Should reset bitrate history after stopping`() {
-        bitrateHistory.addBitrate(90, 2)
-        bitrateHistory.addBitrate(100, 17)
-        bitrateHistory.addBitrate(110, 31)
+        exoPlayerPlayBack.setBitrateLogger(mockBitrateLogger)
 
         exoPlayerPlayBack.stop()
 
-        assertEquals(0, exoPlayerPlayBack.bitrate)
-    }
-
-    @Test
-    fun `Should reset average bitrate history after stopping`() {
-        bitrateHistory.addBitrate(90, 2)
-        bitrateHistory.addBitrate(100, 17)
-        bitrateHistory.addBitrate(110, 31)
-
-        exoPlayerPlayBack.stop()
-
-        assertEquals(0, exoPlayerPlayBack.avgBitrate)
+        verify {
+            mockBitrateLogger.clearHistory()
+        }
     }
 
     @Test
@@ -647,6 +631,13 @@ class ExoPlayerPlaybackTest {
         ExoPlayerPlayback::class.java.declaredFields.first { it.name == "player" }.apply {
             isAccessible  = true
             set(this@setPlayer, player)
+        }
+    }
+
+    private fun ExoPlayerPlayback.setBitrateLogger(bitrateLogger: ExoPlayerBitrateLogger) {
+        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateEventsListener" }.apply {
+            isAccessible  = true
+            set(this@setBitrateLogger, bitrateLogger)
         }
     }
 
