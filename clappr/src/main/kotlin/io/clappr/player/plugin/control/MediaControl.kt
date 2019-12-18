@@ -321,7 +321,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_OPEN_MODAL_PANEL.value, bundle)
     }
 
-    private fun closeModal() {
+    open fun closeModal() {
         if (modalPanelIsOpen()) {
             showDefaultMediaControlPanels()
             animateFadeOut(modalPanel) { hideModalPanel() }
