@@ -10,7 +10,7 @@ import io.clappr.player.log.Logger
 
 class ExoPlayerBitrateLogger(
     private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
-    private val didUpdateBitrate: ((Long) -> Unit)
+    private val didUpdateBitrate: (bitrate: Long) -> Unit
 ) : AnalyticsListener {
 
     private var audio = 0L
