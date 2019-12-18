@@ -1,21 +1,16 @@
 package io.clappr.player.playback
 
-import android.os.Bundle
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.source.MediaSourceEventListener.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaSourceEventListener.MediaLoadData
-import io.clappr.player.base.Event.DID_UPDATE_BITRATE
-import io.clappr.player.base.EventData.BITRATE
 import io.clappr.player.bitrate.BitrateHistory
-import io.clappr.player.components.Playback
 import io.clappr.player.log.Logger
-import io.clappr.player.utils.withPayload
 
 class ExoPlayerBitrateLogger(
-    private val playback: Playback,
-    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() }
+    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
+    private val didUpdateBitrate: ((Long) -> Unit)
 ) : AnalyticsListener {
 
     private var audio = 0L
@@ -36,8 +31,7 @@ class ExoPlayerBitrateLogger(
             }
 
             if (oldValue != field) {
-                val userData = Bundle().withPayload(BITRATE.value to field)
-                playback.trigger(DID_UPDATE_BITRATE.value, userData)
+                didUpdateBitrate(field)
             }
         }
 

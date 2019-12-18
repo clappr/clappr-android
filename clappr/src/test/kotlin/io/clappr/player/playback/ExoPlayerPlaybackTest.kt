@@ -10,6 +10,7 @@ import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event.*
+import io.clappr.player.base.EventData
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
@@ -32,6 +33,8 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
 import java.io.IOException
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
 import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
@@ -132,6 +135,21 @@ class ExoPlayerPlaybackTest {
     @Test
     fun `Should return zero average bitrate when history is empty`() {
         assertEquals(0, exoPlayerPlayBack.avgBitrate)
+    }
+
+    @Test
+    fun `Should trigger DID_UPDATE_BITRATE when bitrate updates`() {
+        val expectedBitrate = 40L
+        var actualBitrate = 0L
+
+        listenObject.listenTo(exoPlayerPlayBack, DID_UPDATE_BITRATE.value) {
+            actualBitrate = it?.getLong(EventData.BITRATE.value) ?: 0L
+
+        }
+
+        exoPlayerPlayBack.getBitrateLogger().lastBitrate = 40
+
+        assertEquals(expectedBitrate, actualBitrate)
     }
 
     @Test
@@ -631,4 +649,10 @@ class ExoPlayerPlaybackTest {
             set(this@setPlayer, player)
         }
     }
+
+    private fun ExoPlayerPlayback.getBitrateLogger(): ExoPlayerBitrateLogger =
+        ExoPlayerPlayback::class.memberProperties.first { it.name == "bitrateEventsListener" }.run {
+            isAccessible = true
+            get(this@getBitrateLogger) as ExoPlayerBitrateLogger
+        }
 }

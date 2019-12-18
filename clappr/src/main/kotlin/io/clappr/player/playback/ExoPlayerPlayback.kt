@@ -47,13 +47,14 @@ import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.components.SubtitleLanguage
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
+import io.clappr.player.utils.withPayload
 import kotlin.math.min
 
 open class ExoPlayerPlayback(
     source: String,
     mimeType: String? = null,
     options: Options = Options(),
-    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
+    bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
     protected val createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
     }
@@ -70,7 +71,7 @@ open class ExoPlayerPlayback(
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
-    private val bitrateEventsListener by lazy { ExoPlayerBitrateLogger(this, bitrateHistory) }
+    private val bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory, ::didUpdateBitrate)
     private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
@@ -667,6 +668,11 @@ open class ExoPlayerPlayback(
             textFormat,
             TIME_UNSET
         )
+    }
+
+    private fun didUpdateBitrate(bitrate: Long) {
+        val userData = Bundle().withPayload(EventData.BITRATE.value to bitrate)
+        trigger(DID_UPDATE_BITRATE.value, userData)
     }
 
     inner class ExoPlayerEventsListener : EventListener {
