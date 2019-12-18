@@ -69,7 +69,7 @@ open class ExoPlayerPlayback(
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
-    private val bitrateEventsListener = ExoPlayerBitrateLogger(didUpdateBitrate = ::didUpdateBitrate)
+    private val bitrateHandler = ExoPlayerBitrateHandler(didUpdateBitrate = ::didUpdateBitrate)
     private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
@@ -192,10 +192,10 @@ open class ExoPlayerPlayback(
     private var lastDrvAvailableCheck: Boolean? = null
 
     override val bitrate: Long
-        get() = bitrateEventsListener.lastBitrate
+        get() = bitrateHandler.lastBitrate
 
     override val avgBitrate: Long
-        get() = bitrateEventsListener.averageBitrate
+        get() = bitrateHandler.averageBitrate
 
     override val currentDate: Long?
         get() = dvrStartTimeInSeconds
@@ -265,7 +265,7 @@ open class ExoPlayerPlayback(
         availableSubtitles.clear()
         internalSelectedAudio = null
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
-        bitrateEventsListener.reset()
+        bitrateHandler.reset()
 
         removeListeners()
 
@@ -275,7 +275,7 @@ open class ExoPlayerPlayback(
 
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
-        player?.removeAnalyticsListener(bitrateEventsListener)
+        player?.removeAnalyticsListener(bitrateHandler)
         player?.removeAnalyticsListener(videoResolutionListener)
     }
 
@@ -381,7 +381,7 @@ open class ExoPlayerPlayback(
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
-        player?.addAnalyticsListener(bitrateEventsListener)
+        player?.addAnalyticsListener(bitrateHandler)
         player?.addAnalyticsListener(videoResolutionListener)
     }
 

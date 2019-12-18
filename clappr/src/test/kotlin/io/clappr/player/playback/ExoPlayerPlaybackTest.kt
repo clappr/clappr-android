@@ -53,7 +53,7 @@ class ExoPlayerPlaybackTest {
     private var timeInNano: Long = 0L
 
     @MockK(relaxed = true)
-    private lateinit var mockBitrateLogger: ExoPlayerBitrateLogger
+    private lateinit var mockBitrateHandler: ExoPlayerBitrateHandler
 
     @Before
     fun setUp() {
@@ -153,22 +153,22 @@ class ExoPlayerPlaybackTest {
 
     @Test
     fun `Should get average bitrate from bitrateLogger`() {
-        exoPlayerPlayBack.setBitrateLogger(mockBitrateLogger)
+        exoPlayerPlayBack.setBitrateLogger(mockBitrateHandler)
 
 
-        every { mockBitrateLogger.averageBitrate } returns 33L
+        every { mockBitrateHandler.averageBitrate } returns 33L
 
         assertEquals(33L, exoPlayerPlayBack.avgBitrate)
     }
 
     @Test
     fun `Should reset bitrate history after stopping`() {
-        exoPlayerPlayBack.setBitrateLogger(mockBitrateLogger)
+        exoPlayerPlayBack.setBitrateLogger(mockBitrateHandler)
 
         exoPlayerPlayBack.stop()
 
         verify {
-            mockBitrateLogger.reset()
+            mockBitrateHandler.reset()
         }
     }
 
@@ -635,17 +635,17 @@ class ExoPlayerPlaybackTest {
         }
     }
 
-    private fun ExoPlayerPlayback.setBitrateLogger(bitrateLogger: ExoPlayerBitrateLogger) {
-        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateEventsListener" }.apply {
+    private fun ExoPlayerPlayback.setBitrateLogger(bitrateHandler: ExoPlayerBitrateHandler) {
+        ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateHandler" }.apply {
             isAccessible = true
-            set(this@setBitrateLogger, bitrateLogger)
+            set(this@setBitrateLogger, bitrateHandler)
         }
     }
 
-    private fun ExoPlayerPlayback.getBitrateLogger(): ExoPlayerBitrateLogger =
-        ExoPlayerPlayback::class.memberProperties.first { it.name == "bitrateEventsListener" }.run {
+    private fun ExoPlayerPlayback.getBitrateLogger(): ExoPlayerBitrateHandler =
+        ExoPlayerPlayback::class.memberProperties.first { it.name == "bitrateHandler" }.run {
             isAccessible = true
-            get(this@getBitrateLogger) as ExoPlayerBitrateLogger
+            get(this@getBitrateLogger) as ExoPlayerBitrateHandler
         }
 
     private fun mediaLoadData(bitrate: Long)

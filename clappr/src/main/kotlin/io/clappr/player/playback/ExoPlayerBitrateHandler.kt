@@ -9,7 +9,7 @@ import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.log.Logger
 import kotlin.math.max
 
-class ExoPlayerBitrateLogger(
+class ExoPlayerBitrateHandler(
     private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
     private val didUpdateBitrate: (bitrate: Long) -> Unit
 ) : AnalyticsListener {
@@ -27,7 +27,7 @@ class ExoPlayerBitrateLogger(
             try {
                 bitrateHistory.addBitrate(field)
             } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-                Logger.error(ExoPlayerBitrateLogger::class.java.simpleName, e.message
+                Logger.error(ExoPlayerBitrateHandler::class.java.simpleName, e.message
                     ?: "Can not add bitrate on history")
             }
 
