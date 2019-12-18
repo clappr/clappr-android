@@ -195,7 +195,7 @@ open class ExoPlayerPlayback(
         get() = bitrateEventsListener.lastBitrate
 
     override val avgBitrate: Long
-        get() = bitrateEventsListener.averageBitrate()
+        get() = bitrateEventsListener.averageBitrate
 
     override val currentDate: Long?
         get() = dvrStartTimeInSeconds
@@ -265,7 +265,7 @@ open class ExoPlayerPlayback(
         availableSubtitles.clear()
         internalSelectedAudio = null
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
-        bitrateEventsListener.clearHistory()
+        bitrateEventsListener.reset()
 
         removeListeners()
 

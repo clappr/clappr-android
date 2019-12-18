@@ -156,7 +156,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.setBitrateLogger(mockBitrateLogger)
 
 
-        every { mockBitrateLogger.averageBitrate() } returns 33L
+        every { mockBitrateLogger.averageBitrate } returns 33L
 
         assertEquals(33L, exoPlayerPlayBack.avgBitrate)
     }
@@ -168,7 +168,7 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.stop()
 
         verify {
-            mockBitrateLogger.clearHistory()
+            mockBitrateLogger.reset()
         }
     }
 

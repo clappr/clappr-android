@@ -17,7 +17,7 @@ class ExoPlayerBitrateLogger(
     private var audio = 0L
     private var video = 0L
 
-    var lastBitrate: Long = 0
+    var lastBitrate = 0L
         private set(value) {
 
             val oldValue = field
@@ -36,6 +36,8 @@ class ExoPlayerBitrateLogger(
             }
         }
 
+    val averageBitrate get() = bitrateHistory.averageBitrate()
+
     override fun onLoadCompleted(eventTime: EventTime?, loadEventInfo: LoadEventInfo?, mediaLoadData: MediaLoadData) {
         when (mediaLoadData.trackType) {
             C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO -> {
@@ -52,6 +54,5 @@ class ExoPlayerBitrateLogger(
         lastBitrate = max(video + audio, 0L)
     }
 
-    fun averageBitrate() = bitrateHistory.averageBitrate()
-    fun clearHistory() = bitrateHistory.clear()
+    fun reset() = bitrateHistory.clear()
 }

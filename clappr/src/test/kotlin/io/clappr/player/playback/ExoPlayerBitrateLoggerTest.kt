@@ -193,9 +193,9 @@ class ExoPlayerBitrateLoggerTest {
         bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
         bitrateEventsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
-        bitrateEventsListener.clearHistory()
+        bitrateEventsListener.reset()
 
-        assertEquals(0, bitrateEventsListener.averageBitrate())
+        assertEquals(0, bitrateEventsListener.averageBitrate)
     }
 
     @Test
@@ -207,7 +207,7 @@ class ExoPlayerBitrateLoggerTest {
         bitrateHistory.addBitrate(100, 17)
         bitrateHistory.addBitrate(110, 31)
 
-        assertEquals(expectedAverageBitrate, bitrateEventsListener.averageBitrate())
+        assertEquals(expectedAverageBitrate, bitrateEventsListener.averageBitrate)
     }
 
     @Test
@@ -221,7 +221,7 @@ class ExoPlayerBitrateLoggerTest {
     fun `Should return zero average bitrate when history is empty`() {
         bitrateEventsListener = ExoPlayerBitrateLogger(bitrateHistory) { actualBitrate = it }
 
-        assertEquals(0, bitrateEventsListener.averageBitrate())
+        assertEquals(0, bitrateEventsListener.averageBitrate)
     }
 
     private fun mediaLoadData(bitrate: Long, trackType: Int = C.TRACK_TYPE_DEFAULT)
