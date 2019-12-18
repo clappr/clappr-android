@@ -1,22 +1,16 @@
 package io.clappr.player.playback
 
-import androidx.test.core.app.ApplicationProvider
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.source.MediaSourceEventListener
-import io.clappr.player.base.BaseObject
 import io.clappr.player.bitrate.BitrateHistory
 import org.junit.Before
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
-@RunWith(RobolectricTestRunner::class)
 class ExoPlayerBitrateLoggerTest {
 
     private lateinit var bitrateHistory: BitrateHistory
-    private lateinit var listenObject: BaseObject
     private var timeInNano: Long = 0L
     private lateinit var bitrateEventsListener: ExoPlayerBitrateLogger
 
@@ -24,11 +18,9 @@ class ExoPlayerBitrateLoggerTest {
 
     @Before
     fun setUp() {
-        BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
         actualBitrate = 0
         timeInNano = System.nanoTime()
         bitrateHistory = BitrateHistory { timeInNano }
-        listenObject = BaseObject()
     }
 
     @Test
