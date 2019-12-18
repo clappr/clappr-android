@@ -146,7 +146,7 @@ class ExoPlayerPlaybackTest {
 
         }
 
-        exoPlayerPlayBack.getBitrateLogger().onLoadCompleted(null, null, mediaLoadData(40L))
+        exoPlayerPlayBack.getBitrateLogger().analyticsListener.onLoadCompleted(null, null, mediaLoadData(40L))
 
         assertEquals(expectedBitrate, actualBitrate)
     }

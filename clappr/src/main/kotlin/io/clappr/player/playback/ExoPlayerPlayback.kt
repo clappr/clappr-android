@@ -275,7 +275,7 @@ open class ExoPlayerPlayback(
 
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
-        player?.removeAnalyticsListener(bitrateHandler)
+        player?.removeAnalyticsListener(bitrateHandler.analyticsListener)
         player?.removeAnalyticsListener(videoResolutionListener)
     }
 
@@ -381,7 +381,7 @@ open class ExoPlayerPlayback(
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
-        player?.addAnalyticsListener(bitrateHandler)
+        player?.addAnalyticsListener(bitrateHandler.analyticsListener)
         player?.addAnalyticsListener(videoResolutionListener)
     }
 

@@ -29,9 +29,9 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(10))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(20))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(expectedBitrate))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(10))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(20))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate))
 
         assertEquals(expectedBitrate, bitrateHandler.lastBitrate)
     }
@@ -41,7 +41,7 @@ class ExoPlayerBitrateHandlerTest {
         val expectedBitrate = 40L
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(expectedBitrate, C.TRACK_TYPE_DEFAULT))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate, C.TRACK_TYPE_DEFAULT))
 
         assertEquals(expectedBitrate, actualBitrate)
     }
@@ -53,7 +53,7 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_VIDEO))
 
         assertEquals(bitrate, actualBitrate)
     }
@@ -64,7 +64,7 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(expectedBitrate, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(expectedBitrate, C.TRACK_TYPE_AUDIO))
 
         assertEquals(expectedBitrate, actualBitrate)
     }
@@ -74,8 +74,8 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
         assertEquals(3_128_000, bitrateHandler.lastBitrate)
     }
@@ -85,8 +85,8 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(-1, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(-1, C.TRACK_TYPE_AUDIO))
 
         assertEquals(3_000_000, bitrateHandler.lastBitrate)
     }
@@ -96,10 +96,10 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(2_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(2_000_000, C.TRACK_TYPE_VIDEO))
 
         assertEquals(2_128_000, actualBitrate)
     }
@@ -110,10 +110,10 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(320_000, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(320_000, C.TRACK_TYPE_AUDIO))
 
         assertEquals(3_320_000, actualBitrate)
     }
@@ -125,8 +125,8 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { numberOfTriggers++ }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(10))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(40))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(10))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(40))
 
         assertEquals(2, numberOfTriggers)
     }
@@ -137,8 +137,8 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { numberOfTriggers++ }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(10L))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(10L))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(10L))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(10L))
 
         assertEquals(1, numberOfTriggers)
     }
@@ -149,7 +149,7 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_UNKNOWN))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(bitrate, C.TRACK_TYPE_UNKNOWN))
 
         assertEquals(0, actualBitrate)
     }
@@ -160,7 +160,7 @@ class ExoPlayerBitrateHandlerTest {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(20L))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(20L))
     }
 
     @Test
@@ -173,7 +173,7 @@ class ExoPlayerBitrateHandlerTest {
 
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData)
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData)
 
         assertEquals(0, actualBitrate)
     }
@@ -182,8 +182,8 @@ class ExoPlayerBitrateHandlerTest {
     fun `Should clear averageBitrate`() {
         bitrateHandler = ExoPlayerBitrateHandler(bitrateHistory) { actualBitrate = it }
 
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
-        bitrateHandler.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(3_000_000, C.TRACK_TYPE_VIDEO))
+        bitrateHandler.analyticsListener.onLoadCompleted(null, null, mediaLoadData(128_000, C.TRACK_TYPE_AUDIO))
 
         bitrateHandler.reset()
 
