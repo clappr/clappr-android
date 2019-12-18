@@ -39,7 +39,6 @@ import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
 import io.clappr.player.base.InternalEventData.FOUND_SUBTITLES
-import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.Playback
 import io.clappr.player.components.Playback.MediaType.*
 import io.clappr.player.components.PlaybackEntry

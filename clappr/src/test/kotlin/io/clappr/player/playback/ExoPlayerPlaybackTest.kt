@@ -1,11 +1,14 @@
 package io.clappr.player.playback
 
 import androidx.test.core.app.ApplicationProvider
+import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
 import com.google.android.exoplayer2.C.TRACK_TYPE_TEXT
 import com.google.android.exoplayer2.ExoPlaybackException
+import com.google.android.exoplayer2.Format
 import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import io.clappr.player.base.BaseObject
 import io.clappr.player.base.ClapprOption
@@ -143,7 +146,7 @@ class ExoPlayerPlaybackTest {
 
         }
 
-        exoPlayerPlayBack.getBitrateLogger().lastBitrate = 40
+        exoPlayerPlayBack.getBitrateLogger().onLoadCompleted(null, null, mediaLoadData(40L))
 
         assertEquals(expectedBitrate, actualBitrate)
     }
@@ -602,7 +605,6 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.setPlayer(playerWithVODDuration(120_000))
 
         assertEquals(120.0, exoPlayerPlayBack.duration)
-
     }
 
     @Test
@@ -613,7 +615,6 @@ class ExoPlayerPlaybackTest {
         exoPlayerPlayBack.setPlayer(playerWithDVRAndDuration(120_000))
 
         assertEquals(100.0, exoPlayerPlayBack.duration)
-
     }
 
     private fun playerWithDVRAndDuration(millis: Long) = mockk<SimpleExoPlayer>(relaxed = true).apply {
@@ -629,14 +630,14 @@ class ExoPlayerPlaybackTest {
 
     private fun ExoPlayerPlayback.setPlayer(player: SimpleExoPlayer) {
         ExoPlayerPlayback::class.java.declaredFields.first { it.name == "player" }.apply {
-            isAccessible  = true
+            isAccessible = true
             set(this@setPlayer, player)
         }
     }
 
     private fun ExoPlayerPlayback.setBitrateLogger(bitrateLogger: ExoPlayerBitrateLogger) {
         ExoPlayerPlayback::class.java.declaredFields.first { it.name == "bitrateEventsListener" }.apply {
-            isAccessible  = true
+            isAccessible = true
             set(this@setBitrateLogger, bitrateLogger)
         }
     }
@@ -646,4 +647,16 @@ class ExoPlayerPlaybackTest {
             isAccessible = true
             get(this@getBitrateLogger) as ExoPlayerBitrateLogger
         }
+
+    private fun mediaLoadData(bitrate: Long)
+            : MediaSourceEventListener.MediaLoadData {
+        val format = Format.createVideoSampleFormat(
+            null, null, null, bitrate.toInt(),
+            0, 0, 0, 0f, listOf<ByteArray>(), null
+        )
+        return MediaSourceEventListener.MediaLoadData(
+            0, C.TRACK_TYPE_DEFAULT, format,
+            0, null, 0L, 0L
+        )
+    }
 }

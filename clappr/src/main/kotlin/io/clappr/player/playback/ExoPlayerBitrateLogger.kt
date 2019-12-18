@@ -17,7 +17,7 @@ class ExoPlayerBitrateLogger(
     private var video = 0L
 
     var lastBitrate: Long = 0
-        set(value) {
+        private set(value) {
 
             val oldValue = field
 
