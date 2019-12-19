@@ -661,13 +661,19 @@ class MediaControlTest {
     }
 
     @Test
-    fun `should show media control when key received supported keys on up action`() {
+    fun `should show media control when key received is allowed to toggle visibility on up action`() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
-            putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
+            putString(EventData.INPUT_KEY_CODE.value, Key.UP.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
         })
 
         assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should have navigation keys allowed to toggle Media Control visibily`(){
+        val expectedKeysToToggleMediaControlVisibilty = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
+        assertEquals(expectedKeysToToggleMediaControlVisibilty, mediaControl.alowedKeysToToggleMediaControlVisibility)
     }
 
     @Test
