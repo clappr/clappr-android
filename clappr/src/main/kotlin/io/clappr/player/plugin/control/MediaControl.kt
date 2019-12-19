@@ -72,8 +72,9 @@ open class MediaControl(core: Core, pluginName: String = name) :
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val invalidActivationKeys = listOf(Key.UNDEFINED)
+    open val keysNotAllowedToIteractWithMediaControl = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
+    open val alowedKeysToToggleMediaControlVisibility = navigationKeys
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -214,7 +215,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun modalPanelIsOpen() = modalPanel.visibility == View.VISIBLE
+    protected fun modalPanelIsOpen() = modalPanel.visibility == View.VISIBLE
 
     private fun setupPlugins() {
         controlPlugins.clear()
@@ -344,16 +345,16 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private fun handleInputKey(bundle: Bundle) {
         bundle.extractInputKey()?.apply {
-            if (isValidActivationKey(key) && action == Action.UP) {
+            if (isKeysAllowedToIteractWithMediaControl(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()
-                    else -> if (isValidActivationKey(key)) toggleVisibility()
+                    else -> if (alowedKeysToToggleMediaControlVisibility.contains(key)) toggleVisibility()
                 }
             }
         }
     }
 
-    private fun isValidActivationKey(key: Key) = invalidActivationKeys.contains(key).not()
+    private fun isKeysAllowedToIteractWithMediaControl(key: Key) = keysNotAllowedToIteractWithMediaControl.contains(key).not()
 
     private fun stopContainerListeners() {
         containerListenerIds.forEach(::stopListening)
