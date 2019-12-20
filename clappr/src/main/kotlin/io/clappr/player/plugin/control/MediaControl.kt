@@ -25,6 +25,8 @@ import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
+typealias Millisecond = Long
+
 open class MediaControl(core: Core, pluginName: String = name) :
     UICorePlugin(core, name = pluginName) {
 
@@ -58,8 +60,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         )
     }
 
-    private val defaultShowDuration = 300L
-    private val longShowDuration = 3000L
+    private val defaultShowDuration: Millisecond = 300L
 
     private val handler = Handler()
 
@@ -67,6 +68,8 @@ open class MediaControl(core: Core, pluginName: String = name) :
     private var canShowMediaControlWhenPauseAfterTapInteraction = true
 
     var hideAnimationEnded = false
+
+    val longShowDuration: Millisecond = 3000L
 
     override val view by lazy {
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
@@ -156,7 +159,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         canShowMediaControlWhenPauseAfterTapInteraction = true
     }
 
-    open fun show(duration: Long) {
+    open fun show(duration: Millisecond) {
         val shouldAnimate = isVisible.not()
 
         core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
@@ -168,7 +171,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         else setupShowDuration(duration)
     }
 
-    private fun setupShowDuration(duration: Long) {
+    private fun setupShowDuration(duration: Millisecond) {
         updateInteractionTime()
 
         if (duration > 0) {
@@ -277,12 +280,12 @@ open class MediaControl(core: Core, pluginName: String = name) :
         backgroundView.visibility = View.VISIBLE
     }
 
-    private fun hideDelayedWithCleanHandler(duration: Long) {
-        handler.removeCallbacksAndMessages(null)
+    protected fun hideDelayedWithCleanHandler(duration: Millisecond) {
+        cancelPendingHideDelayed()
         hideDelayed(duration)
     }
 
-    private fun hideDelayed(duration: Long) {
+    private fun hideDelayed(duration: Millisecond) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
             val elapsedTime = currentTime - lastInteractionTime
@@ -394,7 +397,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         stopContainerListeners()
         stopPlaybackListeners()
         view.setOnTouchListener(null)
-        handler.removeCallbacksAndMessages(null)
+        cancelPendingHideDelayed()
         super.destroy()
     }
 
@@ -415,8 +418,12 @@ open class MediaControl(core: Core, pluginName: String = name) :
         hideModalPanel()
         hideAnimationEnded = true
 
-        handler.removeCallbacksAndMessages(null)
+        cancelPendingHideDelayed()
         core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+    }
+
+    protected fun cancelPendingHideDelayed() {
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun show() {
