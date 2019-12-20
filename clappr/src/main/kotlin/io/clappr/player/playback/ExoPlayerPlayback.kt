@@ -10,9 +10,8 @@ import android.view.View
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.C.*
 import com.google.android.exoplayer2.DefaultLoadControl.DEFAULT_MIN_BUFFER_MS
-import com.google.android.exoplayer2.DefaultRenderersFactory.*
+import com.google.android.exoplayer2.DefaultRenderersFactory.EXTENSION_RENDERER_MODE_PREFER
 import com.google.android.exoplayer2.Player.*
-import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.*
 import com.google.android.exoplayer2.source.*
@@ -25,13 +24,11 @@ import com.google.android.exoplayer2.text.CaptionStyleCompat
 import com.google.android.exoplayer2.text.CaptionStyleCompat.EDGE_TYPE_NONE
 import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.MappingTrackSelector
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
-import com.google.android.exoplayer2.util.EventLogger
 import com.google.android.exoplayer2.util.MimeTypes
 import com.google.android.exoplayer2.util.Util.*
 import io.clappr.player.base.*
@@ -40,8 +37,8 @@ import io.clappr.player.base.ErrorInfoData.EXCEPTION
 import io.clappr.player.base.Event.*
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
-import io.clappr.player.base.InternalEventData.*
-import io.clappr.player.bitrate.BitrateHistory
+import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
+import io.clappr.player.base.InternalEventData.FOUND_SUBTITLES
 import io.clappr.player.components.Playback
 import io.clappr.player.components.Playback.MediaType.*
 import io.clappr.player.components.PlaybackEntry
@@ -49,13 +46,13 @@ import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.components.SubtitleLanguage
 import io.clappr.player.log.Logger
 import io.clappr.player.periodicTimer.PeriodicTimeElapsedHandler
+import io.clappr.player.utils.withPayload
 import kotlin.math.min
 
 open class ExoPlayerPlayback(
     source: String,
     mimeType: String? = null,
     options: Options = Options(),
-    private val bitrateHistory: BitrateHistory = BitrateHistory { System.nanoTime() },
     protected val createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
     }
@@ -72,7 +69,7 @@ open class ExoPlayerPlayback(
 
     private val mainHandler = Handler()
     val eventsListener = ExoPlayerEventsListener()
-    private val bitrateEventsListener = ExoPlayerBitrateLogger()
+    private val bitrateHandler = ExoPlayerBitrateHandler(didUpdateBitrate = ::didUpdateBitrate)
     private val videoResolutionListener by lazy { VideoResolutionChangeListener(this) }
     private val timeElapsedHandler = PeriodicTimeElapsedHandler(200L) { checkPeriodicUpdates() }
     private var lastBufferPercentageSent = 0.0
@@ -152,7 +149,6 @@ open class ExoPlayerPlayback(
     private fun canPause(state: State) =
         state == State.PLAYING || state == State.STALLING || state == State.IDLE
 
-
     override val canSeek: Boolean
         get() = currentState != State.ERROR &&
                 !isVideoCompleted &&
@@ -195,31 +191,11 @@ open class ExoPlayerPlayback(
 
     private var lastDrvAvailableCheck: Boolean? = null
 
-    private var lastBitrate: Long? = null
-        set(value) {
-
-            val oldValue = field
-
-            field = value
-
-            try {
-                bitrateHistory.addBitrate(field)
-            } catch (e: BitrateHistory.BitrateLog.WrongTimeIntervalException) {
-                Logger.error(name, e.message ?: "Can not add bitrate on history")
-            }
-
-            if (oldValue != field) {
-                trigger(DID_UPDATE_BITRATE.value, Bundle().apply {
-                    putLong(EventData.BITRATE.value, field ?: 0)
-                })
-            }
-        }
-
     override val bitrate: Long
-        get() = lastBitrate ?: 0L
+        get() = bitrateHandler.currentBitrate
 
     override val avgBitrate: Long
-        get() = bitrateHistory.averageBitrate()
+        get() = bitrateHandler.averageBitrate
 
     override val currentDate: Long?
         get() = dvrStartTimeInSeconds
@@ -289,7 +265,7 @@ open class ExoPlayerPlayback(
         availableSubtitles.clear()
         internalSelectedAudio = null
         internalSelectedSubtitle = SubtitleLanguage.OFF.value
-        bitrateHistory.clear()
+        bitrateHandler.reset()
 
         removeListeners()
 
@@ -299,7 +275,7 @@ open class ExoPlayerPlayback(
 
     protected open fun removeListeners() {
         player?.removeListener(eventsListener)
-        player?.removeAnalyticsListener(bitrateEventsListener)
+        player?.removeAnalyticsListener(bitrateHandler.analyticsListener)
         player?.removeAnalyticsListener(videoResolutionListener)
     }
 
@@ -405,7 +381,7 @@ open class ExoPlayerPlayback(
 
     protected open fun addListeners() {
         player?.addListener(eventsListener)
-        player?.addAnalyticsListener(bitrateEventsListener)
+        player?.addAnalyticsListener(bitrateHandler.analyticsListener)
         player?.addAnalyticsListener(videoResolutionListener)
     }
 
@@ -692,6 +668,11 @@ open class ExoPlayerPlayback(
         )
     }
 
+    private fun didUpdateBitrate(bitrate: Long) {
+        val userData = Bundle().withPayload(EventData.BITRATE.value to bitrate)
+        trigger(DID_UPDATE_BITRATE.value, userData)
+    }
+
     inner class ExoPlayerEventsListener : EventListener {
         override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
             updateState(playWhenReady, playbackState)
@@ -737,24 +718,6 @@ open class ExoPlayerPlayback(
         override fun onRepeatModeChanged(repeatMode: Int) {}
 
         override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
-    }
-
-    inner class ExoPlayerBitrateLogger(trackSelector: MappingTrackSelector? = null) :
-        EventLogger(trackSelector) {
-
-        override fun onLoadCompleted(
-            eventTime: AnalyticsListener.EventTime?,
-            loadEventInfo: MediaSourceEventListener.LoadEventInfo?,
-            mediaLoadData: MediaSourceEventListener.MediaLoadData?
-        ) {
-            super.onLoadCompleted(eventTime, loadEventInfo, mediaLoadData)
-
-            mediaLoadData?.let { data ->
-                if (data.trackType in listOf(TRACK_TYPE_DEFAULT, TRACK_TYPE_VIDEO)) {
-                    data.trackFormat?.bitrate?.let { lastBitrate = it.toLong() }
-                }
-            }
-        }
     }
 
     inner class ExoPlayerDrmEventsListeners : DefaultDrmSessionEventListener {

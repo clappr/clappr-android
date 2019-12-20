@@ -8,7 +8,7 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `BaseObject()` |
+| [&lt;init&gt;](-init-.md) | `BaseObject(logger: `[`Logger`](../../io.clappr.player.log/-logger/index.md)` = Logger)` |
 
 ### Properties
 
@@ -40,8 +40,6 @@
 
 | Name | Summary |
 |---|---|
-| [CONTEXT_KEY](-c-o-n-t-e-x-t_-k-e-y.md) | `const val CONTEXT_KEY: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
-| [USERDATA_KEY](-u-s-e-r-d-a-t-a_-k-e-y.md) | `const val USERDATA_KEY: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html) |
 | [applicationContext](application-context.md) | `lateinit var applicationContext: `[`Context`](https://developer.android.com/reference/android/content/Context.html) |
 
 ### Inheritors

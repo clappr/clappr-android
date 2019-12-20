@@ -30,10 +30,12 @@
 | [io.clappr.player.base.EventData](../io.clappr.player.base/-event-data/index.md) | Event bundle data keys for selected Events |
 | [io.clappr.player.base.EventHandler](../io.clappr.player.base/-event-handler.md) |  |
 | [io.clappr.player.base.EventInterface](../io.clappr.player.base/-event-interface/index.md) |  |
+| [io.clappr.player.playback.ExoPlayerBitrateHandler](../io.clappr.player.playback/-exo-player-bitrate-handler/index.md) |  |
 | [io.clappr.player.playback.ExoPlayerPlayback](../io.clappr.player.playback/-exo-player-playback/index.md) |  |
 | [io.clappr.player.plugin.core.externalinput.ExternalInputDevice](../io.clappr.player.plugin.core.externalinput/-external-input-device/index.md) |  |
 | [io.clappr.player.plugin.core.externalinput.ExternalInputPlugin](../io.clappr.player.plugin.core.externalinput/-external-input-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
+| [io.clappr.player.utils.IdGenerator](../io.clappr.player.utils/-id-generator/index.md) |  |
 | [io.clappr.player.extensions.InputKey](../io.clappr.player.extensions/-input-key/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |
 | [io.clappr.player.base.InternalEventData](../io.clappr.player.base/-internal-event-data/index.md) | Event bundle data keys for selected Events |
@@ -73,6 +75,5 @@
 | [io.clappr.player.plugin.core.UICorePlugin](../io.clappr.player.plugin.core/-u-i-core-plugin/index.md) |  |
 | [io.clappr.player.base.UIObject](../io.clappr.player.base/-u-i-object/index.md) |  |
 | [io.clappr.player.plugin.UIPlugin](../io.clappr.player.plugin/-u-i-plugin/index.md) |  |
-| [io.clappr.player.base.Utils](../io.clappr.player.base/-utils/index.md) |  |
 | [io.clappr.player.playback.VideoResolutionChangeListener](../io.clappr.player.playback/-video-resolution-change-listener/index.md) |  |
 | [android.view.View](../io.clappr.player.extensions/android.view.-view/index.md) (extensions in package io.clappr.player.extensions) |  |

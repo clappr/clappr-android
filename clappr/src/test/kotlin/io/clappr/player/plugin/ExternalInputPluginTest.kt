@@ -94,6 +94,16 @@ class ExternalInputPluginTest {
     }
 
     @Test
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for FAST_FORWARD button`() {
+        assertPressedKeyCodeEvent(Key.FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD)
+    }
+
+    @Test
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for REWIND button`() {
+        assertPressedKeyCodeEvent(Key.REWIND, KeyEvent.KEYCODE_MEDIA_REWIND)
+    }
+
+    @Test
     fun `should trigger DID_RECEIVE_INPUT_KEY event with key event is long press flag`() {
         val keyEventMock = mockk<KeyEvent>()
         var isLongPress = false
