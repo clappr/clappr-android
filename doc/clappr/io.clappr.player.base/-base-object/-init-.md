@@ -2,4 +2,4 @@
 
 # &lt;init&gt;
 
-`BaseObject()`
+`BaseObject(logger: `[`Logger`](../../io.clappr.player.log/-logger/index.md)` = Logger)`
