@@ -18,6 +18,8 @@
 | [RIGHT](-r-i-g-h-t.md) |  |
 | [LEFT](-l-e-f-t.md) |  |
 | [BACK](-b-a-c-k.md) |  |
+| [FAST_FORWARD](-f-a-s-t_-f-o-r-w-a-r-d.md) |  |
+| [REWIND](-r-e-w-i-n-d.md) |  |
 
 ### Properties
 

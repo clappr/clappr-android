@@ -8,7 +8,6 @@
 
 | Name | Summary |
 |---|---|
-| [ExoPlayerBitrateLogger](-exo-player-bitrate-logger/index.md) | `inner class ExoPlayerBitrateLogger : EventLogger` |
 | [ExoPlayerDrmEventsListeners](-exo-player-drm-events-listeners/index.md) | `inner class ExoPlayerDrmEventsListeners : DefaultDrmSessionEventListener` |
 | [ExoPlayerEventsListener](-exo-player-events-listener/index.md) | `inner class ExoPlayerEventsListener : EventListener` |
 
@@ -16,7 +15,7 @@
 
 | Name | Summary |
 |---|---|
-| [&lt;init&gt;](-init-.md) | `ExoPlayerPlayback(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null, options: `[`Options`](../../io.clappr.player.base/-options/index.md)` = Options(), bitrateHistory: `[`BitrateHistory`](../../io.clappr.player.bitrate/-bitrate-history/index.md)` = BitrateHistory { System.nanoTime() }, createDefaultTrackSelector: () -> DefaultTrackSelector = {
+| [&lt;init&gt;](-init-.md) | `ExoPlayerPlayback(source: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, mimeType: `[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`? = null, options: `[`Options`](../../io.clappr.player.base/-options/index.md)` = Options(), createDefaultTrackSelector: () -> DefaultTrackSelector = {
         DefaultTrackSelector(AdaptiveTrackSelection.Factory())
     })` |
 

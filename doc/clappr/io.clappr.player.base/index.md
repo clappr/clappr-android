@@ -19,7 +19,6 @@
 | [NamedType](-named-type/index.md) | `interface NamedType` |
 | [Options](-options/index.md) | `class Options : `[`MutableMap`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-map/index.html)`<`[`String`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html)`, `[`Any`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html)`>` |
 | [UIObject](-u-i-object/index.md) | `open class UIObject : `[`BaseObject`](-base-object/index.md) |
-| [Utils](-utils/index.md) | `object Utils` |
 
 ### Type Aliases
 

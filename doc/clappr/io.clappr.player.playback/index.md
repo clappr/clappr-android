@@ -6,6 +6,7 @@
 
 | Name | Summary |
 |---|---|
+| [ExoPlayerBitrateHandler](-exo-player-bitrate-handler/index.md) | `class ExoPlayerBitrateHandler` |
 | [ExoPlayerPlayback](-exo-player-playback/index.md) | `open class ExoPlayerPlayback : `[`Playback`](../io.clappr.player.components/-playback/index.md) |
 | [MediaPlayerPlayback](-media-player-playback/index.md) | `class MediaPlayerPlayback : `[`Playback`](../io.clappr.player.components/-playback/index.md) |
 | [NoOpPlayback](-no-op-playback/index.md) | `class NoOpPlayback : `[`Playback`](../io.clappr.player.components/-playback/index.md) |
