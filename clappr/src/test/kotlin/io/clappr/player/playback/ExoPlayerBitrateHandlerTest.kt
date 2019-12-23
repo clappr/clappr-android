@@ -6,8 +6,11 @@ import com.google.android.exoplayer2.source.MediaSourceEventListener
 import io.clappr.player.bitrate.BitrateHistory
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 
+@RunWith(RobolectricTestRunner::class)
 class ExoPlayerBitrateHandlerTest {
 
     private lateinit var bitrateHistory: BitrateHistory
