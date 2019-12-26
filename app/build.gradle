@@ -58,11 +58,12 @@ dependencies {
     implementation project(':clappr')
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
 
     testImplementation "junit:junit:4.12"
     testImplementation "org.robolectric:robolectric:4.3"
     testImplementation 'org.khronos:opengl-api:gl1.1-android-2.1_r1'
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
-    testImplementation "com.android.support:support-v4:$android_support_version"
+    testImplementation "androidx.legacy:legacy-support-v4:1.0.0"
     testImplementation 'androidx.test:core:1.2.0'
 }

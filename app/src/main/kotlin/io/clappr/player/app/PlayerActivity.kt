@@ -1,6 +1,5 @@
 package io.clappr.player.app
 
-import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Bundle
@@ -8,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
+import androidx.fragment.app.FragmentActivity
 import io.clappr.player.Player
 import io.clappr.player.app.plugin.NextVideoPlugin
 import io.clappr.player.app.plugin.PlaybackStatusPlugin
@@ -19,7 +19,7 @@ import io.clappr.player.base.Options
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 
-class PlayerActivity : Activity() {
+class PlayerActivity : FragmentActivity() {
 
     private lateinit var player: Player
     private val playerContainer by lazy { findViewById<ViewGroup>(R.id.player_container) }
@@ -58,7 +58,7 @@ class PlayerActivity : Activity() {
             }
         }
 
-        val fragmentTransaction = fragmentManager.beginTransaction()
+        val fragmentTransaction = supportFragmentManager.beginTransaction()
         fragmentTransaction.add(R.id.player_container, player)
         fragmentTransaction.commit()
 

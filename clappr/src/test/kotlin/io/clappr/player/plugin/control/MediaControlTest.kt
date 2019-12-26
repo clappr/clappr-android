@@ -1,6 +1,8 @@
 package io.clappr.player.plugin.control
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -18,31 +20,40 @@ import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.*
 import io.clappr.player.plugin.control.MediaControl.Plugin.Panel
 import io.clappr.player.plugin.control.MediaControl.Plugin.Position
+import io.clappr.player.shadows.ClapprShadowView
+import io.clappr.player.shadows.ClapprShadowViewGroup
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import org.robolectric.shadow.api.Shadow
 import org.robolectric.shadows.ShadowSystemClock
-import org.robolectric.shadows.ShadowView
+import org.robolectric.util.Scheduler
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
-@Config(sdk = [23], shadows = [ShadowSystemClock::class, ShadowView::class])
+@Config(sdk = [23], shadows = [
+    ShadowSystemClock::class, ClapprShadowView::class, ClapprShadowViewGroup::class
+])
 class MediaControlTest {
 
     private lateinit var mediaControl: MediaControl
     private lateinit var core: Core
     private lateinit var container: Container
     private lateinit var fakePlayback: FakePlayback
+    private lateinit var scheduler: Scheduler
 
     @Before
     fun setUp() {
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
+        scheduler = Robolectric.getForegroundThreadScheduler()
+
         container = Container(Options())
 
         core = Core(Options())
@@ -117,12 +128,7 @@ class MediaControlTest {
     @Test
     fun `should add media control plugin in top center panel`() {
         setupFakeMediaControlPlugin(Panel.TOP, Position.CENTER)
-
-        val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
-
-        assertEquals(3, getTopCenterPanel().childCount, "Media Control Plugin should be added to Panel.TOP panel and Position.CENTER position in Media Control")
-        assertEquals(FakePlugin.viewId, getTopCenterPanel().getChildAt(2).id, "Media Control Plugin should be added to Media Control")
-        assertEquals(plugin.view, getTopCenterPanel().getChildAt(2))
+        assertMediaControlPanel(getTopCenterPanel(), Panel.TOP, Position.CENTER)
     }
 
     @Test
@@ -261,12 +267,172 @@ class MediaControlTest {
     }
 
     @Test
+    fun `should show media control when it is hidden and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not show media control when it is not enable but is hidden and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+        mediaControl.state = Plugin.State.DISABLED
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should hide media control when it is visible and single touch is performed`() {
+        mediaControl.render()
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not hide media control when it is not enable but is visible and single touch is performed`() {
+        mediaControl.render()
+        mediaControl.state = Plugin.State.DISABLED
+        fakePlayback.fakeState = Playback.State.PLAYING
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+
+        performSingleTap()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
     fun `should show media control when playback is paused`() {
         core.activePlayback?.trigger(Event.PLAYING.value)
 
         core.activePlayback?.trigger(Event.DID_PAUSE.value)
 
         assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not show media control when playback is paused during double tap and DID_PAUSE is triggered`() {
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+        fakePlayback.fakeState = Playback.State.PAUSED
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+
+        core.activePlayback?.trigger(Event.DID_PAUSE.value)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control when playback is playing during double tap and DID_PAUSE is triggered`() {
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+
+        core.activePlayback?.trigger(Event.DID_PAUSE.value)
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control when single tap is performed and DID_PAUSE is triggered`() {
+        fakePlayback.fakeState = Playback.State.PAUSED
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+        performSingleTap()
+
+        mediaControl.visibility = UIPlugin.Visibility.HIDDEN
+
+        core.activePlayback?.trigger(Event.DID_PAUSE.value)
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should hide media control when double tap is performed`() {
+        mediaControl.visibility = UIPlugin.Visibility.VISIBLE
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.render()
+
+        performDoubleTap(0f, 0f)
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should trigger DID_DOUBLE_TOUCH_MEDIA_CONTROL when a double tap is performed`() {
+        var didDoubleTouchMediaControlWasTriggered = false
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlWasTriggered = true
+        }
+
+        performDoubleTap(0f, 0f)
+
+        assertTrue { didDoubleTouchMediaControlWasTriggered }
+    }
+
+    @Test
+    fun `should send view height and width in DID_DOUBLE_TOUCH_MEDIA_CONTROL event when a double tap is performed`() {
+        val expectedViewHeight = 100
+        val expectedViewWidth = 100
+        var didDoubleTouchMediaControlBundle : Bundle? = null
+
+        Shadow.extract<ClapprShadowView>(mediaControl.view).viewHeight = expectedViewHeight
+        Shadow.extract<ClapprShadowView>(mediaControl.view).viewWidth = expectedViewWidth
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlBundle = it
+        }
+
+        performDoubleTap(0f, 0f)
+
+        val height = didDoubleTouchMediaControlBundle?.getInt(InternalEventData.HEIGHT.value)
+        val width = didDoubleTouchMediaControlBundle?.getInt(InternalEventData.WIDTH.value)
+
+        assertEquals(expectedViewHeight, height)
+        assertEquals(expectedViewWidth, width)
+    }
+
+    @Test
+    fun `should send touch x and y axis in DID_DOUBLE_TOUCH_MEDIA_CONTROL event when a double tap is performed`() {
+        val expectedTouchX = 50f
+        val expectedTouchY = 100f
+        var didDoubleTouchMediaControlBundle : Bundle? = null
+
+        mediaControl.render()
+
+        core.on(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value) {
+            didDoubleTouchMediaControlBundle = it
+        }
+
+        performDoubleTap(expectedTouchX, expectedTouchY)
+
+        val x = didDoubleTouchMediaControlBundle?.getFloat(InternalEventData.TOUCH_X_AXIS.value)
+        val y = didDoubleTouchMediaControlBundle?.getFloat(InternalEventData.TOUCH_Y_AXIS.value)
+
+        assertEquals(expectedTouchX, x)
+        assertEquals(expectedTouchY, y)
     }
 
     @Test
@@ -515,6 +681,43 @@ class MediaControlTest {
 
         assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
     }
+    
+    @Test
+    fun `should hide media control when show is called with a duration greater than zero`(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.show(1)
+
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should not hide media control when show is called with a duration less or equal to zero`(){
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        mediaControl.show(0)
+
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should remove scheduled hide when show is called and hide is executed`(){
+        val expectedHideEventsTriggered = 1
+        fakePlayback.fakeState = Playback.State.PLAYING
+
+        var eventTriggeredCount = 0
+        core.on(InternalEvent.DID_HIDE_MEDIA_CONTROL.value) { eventTriggeredCount += 1 }
+
+        mediaControl.show(1)
+        mediaControl.hide()
+        scheduler.advanceToNextPostedRunnable()
+
+        assertEquals(expectedHideEventsTriggered, eventTriggeredCount)
+    }
 
     private fun getCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.center_panel)
     private fun getBottomPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.bottom_panel)
@@ -523,7 +726,7 @@ class MediaControlTest {
     private fun getTopPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_panel)
     private fun getTopLeftPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_left_panel)
     private fun getTopRightPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_right_panel)
-    private fun getTopCenterPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.top_center)
+    private fun getTopCenterPanel() = mediaControl.view.findViewById<LinearLayout>(R.id.top_center)
     private fun getModalPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.modal_panel)
     private fun getControlsPanel() = mediaControl.view.findViewById<RelativeLayout>(R.id.controls_panel)
     private fun getForegroundControlsPanel() = mediaControl.view.findViewById<FrameLayout>(R.id.foreground_controls_panel)
@@ -568,7 +771,7 @@ class MediaControlTest {
         mediaControl.render()
     }
 
-    private fun assertMediaControlPanel(layoutPanel: LinearLayout, panel: Panel, position: Position) {
+    private fun assertMediaControlPanel(layoutPanel: ViewGroup, panel: Panel, position: Position) {
         val plugin = core.plugins.asSequence().filterIsInstance(FakePlugin::class.java).first()
 
         assertEquals(1, layoutPanel.childCount, "Media Control Plugin should be added to $panel panel and $position position in Media Control")
@@ -624,6 +827,19 @@ class MediaControlTest {
 
         mediaControl.show()
         assertTrue(eventTriggered)
+    }
+
+    private fun performDoubleTap(x: Float, y: Float) {
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(223889, 223889, KeyEvent.ACTION_DOWN, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(223889, 224019, KeyEvent.ACTION_UP, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(224069, 224069, KeyEvent.ACTION_DOWN, x, y, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(224069, 224191, KeyEvent.ACTION_UP, x, y, 0))
+    }
+
+    private fun performSingleTap() {
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(100143360, 100143360, KeyEvent.ACTION_DOWN, 0f, 0f, 0))
+        mediaControl.view.dispatchTouchEvent(MotionEvent.obtain(100143360, 100143483, KeyEvent.ACTION_UP, 0f, 0f, 0))
+        scheduler.advanceToNextPostedRunnable()
     }
 
     class FakePlayback(source: String = "aSource", mimeType: String? = null, options: Options = Options()) : Playback(source, mimeType, options, name, supportsSource) {

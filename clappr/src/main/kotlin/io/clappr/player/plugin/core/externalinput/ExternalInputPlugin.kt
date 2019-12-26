@@ -19,20 +19,24 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
     }
 
     private val supportedKeys = hashMapOf(
-            KeyEvent.KEYCODE_MEDIA_PLAY to Key.PLAY.value,
-            KeyEvent.KEYCODE_MEDIA_PAUSE to Key.PAUSE.value,
-            KeyEvent.KEYCODE_MEDIA_STOP to Key.STOP.value,
-            KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to Key.PLAY_PAUSE.value,
-            KeyEvent.KEYCODE_DPAD_UP to Key.UP.value,
-            KeyEvent.KEYCODE_DPAD_DOWN to Key.DOWN.value,
-            KeyEvent.KEYCODE_DPAD_RIGHT to Key.RIGHT.value,
-            KeyEvent.KEYCODE_DPAD_LEFT to Key.LEFT.value,
-            KeyEvent.KEYCODE_BACK to Key.BACK.value)
-    
+        KeyEvent.KEYCODE_MEDIA_PLAY to Key.PLAY.value,
+        KeyEvent.KEYCODE_MEDIA_PAUSE to Key.PAUSE.value,
+        KeyEvent.KEYCODE_MEDIA_STOP to Key.STOP.value,
+        KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE to Key.PLAY_PAUSE.value,
+        KeyEvent.KEYCODE_DPAD_UP to Key.UP.value,
+        KeyEvent.KEYCODE_DPAD_DOWN to Key.DOWN.value,
+        KeyEvent.KEYCODE_DPAD_RIGHT to Key.RIGHT.value,
+        KeyEvent.KEYCODE_DPAD_LEFT to Key.LEFT.value,
+        KeyEvent.KEYCODE_BACK to Key.BACK.value,
+        KeyEvent.KEYCODE_MEDIA_FAST_FORWARD to Key.FAST_FORWARD.value,
+        KeyEvent.KEYCODE_MEDIA_REWIND to Key.REWIND.value
+    )
+
     override fun holdKeyEvent(event: KeyEvent) {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
             putString(EventData.INPUT_KEY_CODE.value, getKeyCode(event.keyCode))
             putString(EventData.INPUT_KEY_ACTION.value, getActionCode(event.action))
+            putBoolean(EventData.INPUT_KEY_IS_LONG_PRESS.value, event.isLongPress)
         })
     }
 

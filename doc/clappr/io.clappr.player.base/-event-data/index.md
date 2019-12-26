@@ -16,8 +16,12 @@ Event bundle data keys for selected Events
 | [UPDATED_AUDIO](-u-p-d-a-t-e-d_-a-u-d-i-o.md) | [Event.DID_UPDATE_AUDIO](../-event/-d-i-d_-u-p-d-a-t-e_-a-u-d-i-o.md) data |
 | [UPDATED_SUBTITLE](-u-p-d-a-t-e-d_-s-u-b-t-i-t-l-e.md) | [Event.DID_UPDATE_SUBTITLE](../-event/-d-i-d_-u-p-d-a-t-e_-s-u-b-t-i-t-l-e.md) data |
 | [BITRATE](-b-i-t-r-a-t-e.md) | [Event.DID_UPDATE_BITRATE](../-event/-d-i-d_-u-p-d-a-t-e_-b-i-t-r-a-t-e.md) data |
+| [WIDTH](-w-i-d-t-h.md) | [Event.DID_UPDATE_VIDEO_RESOLUTION](../-event/-d-i-d_-u-p-d-a-t-e_-v-i-d-e-o_-r-e-s-o-l-u-t-i-o-n.md) data |
+| [HEIGHT](-h-e-i-g-h-t.md) | [Event.DID_UPDATE_VIDEO_RESOLUTION](../-event/-d-i-d_-u-p-d-a-t-e_-v-i-d-e-o_-r-e-s-o-l-u-t-i-o-n.md) data |
 | [INPUT_KEY_CODE](-i-n-p-u-t_-k-e-y_-c-o-d-e.md) | [Event.DID_RECEIVE_INPUT_KEY](../-event/-d-i-d_-r-e-c-e-i-v-e_-i-n-p-u-t_-k-e-y.md) data |
 | [INPUT_KEY_ACTION](-i-n-p-u-t_-k-e-y_-a-c-t-i-o-n.md) | [Event.DID_RECEIVE_INPUT_KEY](../-event/-d-i-d_-r-e-c-e-i-v-e_-i-n-p-u-t_-k-e-y.md) data |
+| [INPUT_KEY_IS_LONG_PRESS](-i-n-p-u-t_-k-e-y_-i-s_-l-o-n-g_-p-r-e-s-s.md) | [Event.DID_RECEIVE_INPUT_KEY](../-event/-d-i-d_-r-e-c-e-i-v-e_-i-n-p-u-t_-k-e-y.md) data |
+| [POSITION](-p-o-s-i-t-i-o-n.md) | [Event.WILL_SEEK](../-event/-w-i-l-l_-s-e-e-k.md) data |
 | [ORIENTATION](-o-r-i-e-n-t-a-t-i-o-n.md) | [Event.DID_CHANGE_SCREEN_ORIENTATION](../-event/-d-i-d_-c-h-a-n-g-e_-s-c-r-e-e-n_-o-r-i-e-n-t-a-t-i-o-n.md) data |
 
 ### Properties

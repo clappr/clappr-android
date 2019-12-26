@@ -10,20 +10,24 @@ import io.clappr.player.base.keys.Action
 import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ExternalInputPluginTest {
 
-    lateinit var core: Core
+    private lateinit var core: Core
 
-    lateinit var externalInputPlugin: ExternalInputPlugin
+    private lateinit var externalInputPlugin: ExternalInputPlugin
 
     private val anyKeyCode = -1
+    private val anyKeyAction = -1
 
     @Before
     fun setUp() {
@@ -35,58 +39,86 @@ class ExternalInputPluginTest {
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for PLAY button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for PLAY button`() {
         assertPressedKeyCodeEvent(Key.PLAY, KeyEvent.KEYCODE_MEDIA_PLAY)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event with DOWN action`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event with DOWN action`() {
         assertPressedAction(Action.DOWN, KeyEvent.ACTION_DOWN)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event with UP action`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event with UP action`() {
         assertPressedAction(Action.UP, KeyEvent.ACTION_UP)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for PAUSE button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for PAUSE button`() {
         assertPressedKeyCodeEvent(Key.PAUSE, KeyEvent.KEYCODE_MEDIA_PAUSE)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for STOP button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for STOP button`() {
         assertPressedKeyCodeEvent(Key.STOP, KeyEvent.KEYCODE_MEDIA_STOP)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for PLAY_PAUSE button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for PLAY_PAUSE button`() {
         assertPressedKeyCodeEvent(Key.PLAY_PAUSE, KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for UP button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for UP button`() {
         assertPressedKeyCodeEvent(Key.UP, KeyEvent.KEYCODE_DPAD_UP)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for DOWN button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for DOWN button`() {
         assertPressedKeyCodeEvent(Key.DOWN, KeyEvent.KEYCODE_DPAD_DOWN)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for LEFT button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for LEFT button`() {
         assertPressedKeyCodeEvent(Key.LEFT, KeyEvent.KEYCODE_DPAD_LEFT)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for RIGHT button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for RIGHT button`() {
         assertPressedKeyCodeEvent(Key.RIGHT, KeyEvent.KEYCODE_DPAD_RIGHT)
     }
 
     @Test
-    fun `should trigger KEY_PRESSED event for BACK button`() {
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for BACK button`() {
         assertPressedKeyCodeEvent(Key.BACK, KeyEvent.KEYCODE_BACK)
+    }
+
+    @Test
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for FAST_FORWARD button`() {
+        assertPressedKeyCodeEvent(Key.FAST_FORWARD, KeyEvent.KEYCODE_MEDIA_FAST_FORWARD)
+    }
+
+    @Test
+    fun `should trigger DID_RECEIVE_INPUT_KEY event for REWIND button`() {
+        assertPressedKeyCodeEvent(Key.REWIND, KeyEvent.KEYCODE_MEDIA_REWIND)
+    }
+
+    @Test
+    fun `should trigger DID_RECEIVE_INPUT_KEY event with key event is long press flag`() {
+        val keyEventMock = mockk<KeyEvent>()
+        var isLongPress = false
+
+        core.on(Event.DID_RECEIVE_INPUT_KEY.value) { bundle ->
+            bundle?.let { isLongPress = it.getBoolean(EventData.INPUT_KEY_IS_LONG_PRESS.value) }
+        }
+
+        every { keyEventMock.keyCode } returns anyKeyCode
+        every { keyEventMock.action } returns anyKeyAction
+        every { keyEventMock.isLongPress } returns true
+
+        externalInputPlugin.holdKeyEvent(keyEventMock)
+
+        assertTrue(isLongPress, "Is long press flag should be true")
     }
 
     private fun assertPressedKeyCodeEvent(expectedKeyCode: Key, keyToHold: Int){
@@ -108,7 +140,7 @@ class ExternalInputPluginTest {
             bundle?.let { actionCode = it.getString(EventData.INPUT_KEY_ACTION.value) }
         }
 
-        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, anyKeyCode))
+        externalInputPlugin.holdKeyEvent(KeyEvent(actionKey, anyKeyAction))
 
         assertEquals(expectedActionCode.value, actionCode)
     }

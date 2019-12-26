@@ -1,14 +1,16 @@
 package io.clappr.player.plugin.control
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Bundle
 import android.os.Handler
 import android.os.SystemClock
-import android.support.v4.view.GestureDetectorCompat
 import android.view.*
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
+import androidx.core.content.ContextCompat
+import androidx.core.view.GestureDetectorCompat
 import io.clappr.player.R
 import io.clappr.player.base.*
 import io.clappr.player.base.keys.Action
@@ -16,12 +18,14 @@ import io.clappr.player.base.keys.Key
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.animate
+import io.clappr.player.extensions.extractInputKey
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
-open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(core, name = pluginName) {
+open class MediaControl(core: Core, pluginName: String = name) :
+    UICorePlugin(core, name = pluginName) {
 
     abstract class Plugin(core: Core, name: String) : UICorePlugin(core, name = name) {
         enum class Panel { TOP, BOTTOM, CENTER, NONE }
@@ -50,12 +54,13 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         val entry = PluginEntry.Core(name = name, factory = { core -> MediaControl(core) })
     }
 
-    protected val defaultShowDuration = 300L
-    protected val longShowDuration = 3000L
+    private val defaultShowDuration = 300L
+    private val longShowDuration = 3000L
 
     private val handler = Handler()
 
     private var lastInteractionTime = 0L
+    private var canShowMediaControlWhenPauseAfterTapInteraction = true
 
     var hideAnimationEnded = false
 
@@ -70,7 +75,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
     private val controlsPanel by lazy { view.findViewById(R.id.controls_panel) as RelativeLayout }
 
-    private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as RelativeLayout }
+    private val topCenterPanel by lazy { view.findViewById(R.id.top_center) as ViewGroup }
     private val topPanel by lazy { view.findViewById(R.id.top_panel) as LinearLayout }
     private val topLeftPanel by lazy { view.findViewById(R.id.top_left_panel) as LinearLayout }
     private val topRightPanel by lazy { view.findViewById(R.id.top_right_panel) as LinearLayout }
@@ -104,6 +109,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     protected val isVisible: Boolean
         get() = visibility == Visibility.VISIBLE
 
+    private val isPlaybackPlaying get() = core.activePlayback?.state == Playback.State.PLAYING
     private val isPlaybackIdle: Boolean
         get() {
             return core.activePlayback?.state == Playback.State.IDLE ||
@@ -115,15 +121,19 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
 
     private val doubleTapListener = MediaControlDoubleTapListener()
-    private val gestureDetector = GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
-        .apply {
-            setOnDoubleTapListener(doubleTapListener)
-        }
+    private val gestureDetector =
+        GestureDetectorCompat(applicationContext, MediaControlGestureDetector())
+            .apply {
+                setOnDoubleTapListener(doubleTapListener)
+            }
 
     init {
         hideModalPanel()
 
-        listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value) { setupMediaControlEvents() }
+        listenTo(
+            core,
+            InternalEvent.DID_CHANGE_ACTIVE_CONTAINER.value
+        ) { setupMediaControlEvents() }
         listenTo(core, InternalEvent.DID_CHANGE_ACTIVE_PLAYBACK.value) { setupPlaybackEvents() }
 
         listenTo(core, InternalEvent.DID_UPDATE_INTERACTING.value) { updateInteractionTime() }
@@ -136,7 +146,9 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     open fun handleDidPauseEvent() {
-        if (!modalPanelIsOpen()) show()
+        if (!modalPanelIsOpen() && canShowMediaControlWhenPauseAfterTapInteraction) show()
+
+        canShowMediaControlWhenPauseAfterTapInteraction = true
     }
 
     open fun show(duration: Long) {
@@ -154,8 +166,8 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     private fun setupShowDuration(duration: Long) {
         updateInteractionTime()
 
-        if (!isPlaybackIdle && duration > 0) {
-            hideDelayed(duration)
+        if (duration > 0) {
+            hideDelayedWithCleanHandler(duration)
         }
 
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
@@ -171,8 +183,16 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         stopContainerListeners()
 
         core.activeContainer?.let {
-            containerListenerIds.add(listenTo(it, InternalEvent.ENABLE_MEDIA_CONTROL.value) { state = State.ENABLED })
-            containerListenerIds.add(listenTo(it, InternalEvent.DISABLE_MEDIA_CONTROL.value) { state = State.DISABLED })
+            containerListenerIds.add(
+                listenTo(
+                    it,
+                    InternalEvent.ENABLE_MEDIA_CONTROL.value
+                ) { state = State.ENABLED })
+            containerListenerIds.add(
+                listenTo(
+                    it,
+                    InternalEvent.DISABLE_MEDIA_CONTROL.value
+                ) { state = State.DISABLED })
             containerListenerIds.add(listenTo(it, InternalEvent.WILL_LOAD_SOURCE.value) {
                 state = State.ENABLED
                 hide()
@@ -195,7 +215,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     private fun setupPlugins() {
         controlPlugins.clear()
 
-        with(core.plugins.filterIsInstance(MediaControl.Plugin::class.java)) {
+        with(core.plugins.filterIsInstance(Plugin::class.java)) {
             core.options[ClapprOption.MEDIA_CONTROL_PLUGINS.value]?.let {
                 controlPlugins.addAll(orderedPlugins(this, it.toString()))
             } ?: controlPlugins.addAll(this)
@@ -252,6 +272,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         backgroundView.visibility = View.VISIBLE
     }
 
+    private fun hideDelayedWithCleanHandler(duration: Long) {
+        handler.removeCallbacksAndMessages(null)
+        hideDelayed(duration)
+    }
+
     private fun hideDelayed(duration: Long) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
@@ -265,7 +290,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }, duration)
     }
 
-    protected fun updateInteractionTime() {
+    private fun updateInteractionTime() {
         lastInteractionTime = SystemClock.elapsedRealtime()
     }
 
@@ -293,9 +318,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun closeModal() {
-        if (modalPanelIsOpen()) showDefaultMediaControlPanels()
+        if (modalPanelIsOpen()) {
+            showDefaultMediaControlPanels()
+            animateFadeOut(modalPanel) { hideModalPanel() }
+        } else hideModalPanel()
 
-        animateFadeOut(modalPanel) { hideModalPanel() }
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
@@ -308,12 +335,11 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     private fun onInputReceived(bundle: Bundle?) {
-        bundle?.let {
-            val keyCode = it.getString(EventData.INPUT_KEY_CODE.value) ?: ""
-            val keyAction = it.getString(EventData.INPUT_KEY_ACTION.value) ?: ""
-            val key = Key.getByValue(keyCode) ?: Key.UNDEFINED
-            val action = Action.getByValue(keyAction)
+        bundle?.let { handleInputKey(it) }
+    }
 
+    private fun handleInputKey(bundle: Bundle) {
+        bundle.extractInputKey()?.apply {
             if (isValidActivationKey(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()
@@ -341,6 +367,10 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
         }
     }
 
+    protected fun setBackground(context: Context, resource: Int) {
+        backgroundView.background = ContextCompat.getDrawable(context, resource)
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun render() {
         super.render()
@@ -364,20 +394,24 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
     }
 
     override fun hide() {
-        hideAnimationEnded = false
-
         if (isEnabled && isPlaybackIdle) return
+
+        hideAnimationEnded = false
 
         core.trigger(InternalEvent.WILL_HIDE_MEDIA_CONTROL.value)
 
-        animateFadeOut(view) {
-            hideMediaControlElements()
-            hideDefaultMediaControlPanels()
-            hideModalPanel()
-            hideAnimationEnded = true
+        if (isVisible) animateFadeOut(view) { hideMediaControl() }
+        else hideMediaControl()
+    }
 
-            core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
-        }
+    private fun hideMediaControl() {
+        hideMediaControlElements()
+        hideDefaultMediaControlPanels()
+        hideModalPanel()
+        hideAnimationEnded = true
+
+        handler.removeCallbacksAndMessages(null)
+        core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
     }
 
     override fun show() {
@@ -391,15 +425,26 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         override fun onSingleTapUp(e: MotionEvent?) = false
 
-        override fun onFling(e1: MotionEvent?, e2: MotionEvent?, velocityX: Float, velocityY: Float) = false
+        override fun onFling(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            velocityX: Float,
+            velocityY: Float
+        ) = false
 
-        override fun onScroll(e1: MotionEvent?, e2: MotionEvent?, distanceX: Float, distanceY: Float) = false
+        override fun onScroll(
+            e1: MotionEvent?,
+            e2: MotionEvent?,
+            distanceX: Float,
+            distanceY: Float
+        ) = false
 
         override fun onLongPress(e: MotionEvent?) {}
     }
 
     inner class MediaControlDoubleTapListener : GestureDetector.OnDoubleTapListener {
         override fun onDoubleTap(event: MotionEvent?): Boolean {
+            canShowMediaControlWhenPauseAfterTapInteraction = isPlaybackPlaying
             triggerDoubleTapEvent(event)
             hide()
             return true
@@ -407,6 +452,7 @@ open class MediaControl(core: Core, pluginName: String = name) : UICorePlugin(co
 
         override fun onDoubleTapEvent(e: MotionEvent?) = false
         override fun onSingleTapConfirmed(e: MotionEvent?): Boolean {
+            canShowMediaControlWhenPauseAfterTapInteraction = true
             toggleVisibility()
             return true
         }
