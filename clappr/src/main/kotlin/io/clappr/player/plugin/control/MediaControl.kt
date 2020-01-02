@@ -77,7 +77,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     open val keysNotAllowedToIteractWithMediaControl = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
-    open val alowedKeysToToggleMediaControlVisibility = navigationKeys
+    open val allowedKeysToToggleMediaControlVisibility = navigationKeys
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -351,7 +351,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
             if (isKeysAllowedToIteractWithMediaControl(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()
-                    else -> if (alowedKeysToToggleMediaControlVisibility.contains(key)) toggleVisibility()
+                    else -> if (allowedKeysToToggleMediaControlVisibility.contains(key)) toggleVisibility()
                 }
             }
         }

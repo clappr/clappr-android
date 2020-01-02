@@ -673,7 +673,7 @@ class MediaControlTest {
     @Test
     fun `should have navigation keys allowed to toggle Media Control visibily`(){
         val expectedKeysToToggleMediaControlVisibilty = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
-        assertEquals(expectedKeysToToggleMediaControlVisibilty, mediaControl.alowedKeysToToggleMediaControlVisibility)
+        assertEquals(expectedKeysToToggleMediaControlVisibilty, mediaControl.allowedKeysToToggleMediaControlVisibility)
     }
 
     @Test
