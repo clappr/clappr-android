@@ -241,6 +241,7 @@ open class ExoPlayerPlayback(
         if (!canPause) return false
 
         trigger(WILL_PAUSE)
+        if (currentState == State.STALLING) trigger(STALLING)
         player?.playWhenReady = false
         return true
     }
@@ -286,6 +287,12 @@ open class ExoPlayerPlayback(
         player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
         trigger(DID_SEEK)
         triggerPositionUpdateEvent()
+
+        when(currentState) {
+            State.PLAYING -> trigger(PLAYING)
+            State.PAUSED -> trigger(DID_PAUSE)
+            State.STALLING -> trigger(STALLING)
+        }
 
         return true
     }
