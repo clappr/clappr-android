@@ -2,4 +2,4 @@
 
 # analyticsListener
 
-`val analyticsListener: AnalyticsListener`
+`val analyticsListener: EventLogger`
