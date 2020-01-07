@@ -2,7 +2,7 @@
 
 # VideoResolutionChangeListener
 
-`class VideoResolutionChangeListener : AnalyticsListener`
+`class VideoResolutionChangeListener : EventLogger`
 
 ### Constructors
 

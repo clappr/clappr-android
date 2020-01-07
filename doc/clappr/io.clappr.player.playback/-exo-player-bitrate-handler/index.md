@@ -14,7 +14,7 @@
 
 | Name | Summary |
 |---|---|
-| [analyticsListener](analytics-listener.md) | `val analyticsListener: AnalyticsListener` |
+| [analyticsListener](analytics-listener.md) | `val analyticsListener: EventLogger` |
 | [averageBitrate](average-bitrate.md) | `val averageBitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 | [currentBitrate](current-bitrate.md) | `var currentBitrate: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |
 

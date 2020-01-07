@@ -1,10 +1,10 @@
 package io.clappr.player.playback
 
 import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.analytics.AnalyticsListener
 import com.google.android.exoplayer2.analytics.AnalyticsListener.EventTime
 import com.google.android.exoplayer2.source.MediaSourceEventListener.LoadEventInfo
 import com.google.android.exoplayer2.source.MediaSourceEventListener.MediaLoadData
+import com.google.android.exoplayer2.util.EventLogger
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.log.Logger
 import kotlin.math.max
@@ -40,7 +40,7 @@ class ExoPlayerBitrateHandler(
 
     fun reset() = bitrateHistory.clear()
 
-    val analyticsListener = object: AnalyticsListener {
+    val analyticsListener = object: EventLogger(null) {
         override fun onLoadCompleted(eventTime: EventTime?, loadEventInfo: LoadEventInfo?, mediaLoadData: MediaLoadData) {
             when (mediaLoadData.trackType) {
                 C.TRACK_TYPE_DEFAULT, C.TRACK_TYPE_VIDEO -> {

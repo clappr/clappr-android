@@ -11,7 +11,7 @@
 | [MediaPlayerPlayback](-media-player-playback/index.md) | `class MediaPlayerPlayback : `[`Playback`](../io.clappr.player.components/-playback/index.md) |
 | [NoOpPlayback](-no-op-playback/index.md) | `class NoOpPlayback : `[`Playback`](../io.clappr.player.components/-playback/index.md) |
 | [TrackInfo](-track-info/index.md) | `data class TrackInfo` |
-| [VideoResolutionChangeListener](-video-resolution-change-listener/index.md) | `class VideoResolutionChangeListener : AnalyticsListener` |
+| [VideoResolutionChangeListener](-video-resolution-change-listener/index.md) | `class VideoResolutionChangeListener : EventLogger` |
 
 ### Extensions for External Classes
 
