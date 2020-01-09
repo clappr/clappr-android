@@ -2,6 +2,7 @@ package io.clappr.player.utils
 
 import org.junit.Before
 import org.junit.Test
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.assertEquals
 
 class IdGeneratorTest {
@@ -10,7 +11,7 @@ class IdGeneratorTest {
     fun setUp() {
         val countField = IdGenerator::class.java.getDeclaredField("count")
         countField.isAccessible = true
-        countField.setInt(IdGenerator, 0)
+        countField.set(IdGenerator, AtomicInteger())
     }
 
     @Test
