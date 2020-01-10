@@ -1,6 +1,7 @@
 package io.clappr.player.utils
 
+import java.util.*
+
 object IdGenerator {
-    private var count = 0
-    fun uniqueId(prefix: String? = null) = "${prefix.orEmpty()}${++count}"
+    fun uniqueId() = "${UUID.randomUUID()}"
 }

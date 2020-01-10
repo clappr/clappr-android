@@ -8,7 +8,7 @@ import java.util.*
 
 open class BaseObject(private val logger: Logger = Logger) : EventInterface {
 
-    override val id = IdGenerator.uniqueId("o")
+    override val id = IdGenerator.uniqueId()
 
     override fun on(eventName: String, handler: EventHandler, obj: EventInterface): String {
         val subscription = Subscription(obj, this, eventName, handler)

@@ -1,28 +1,20 @@
 package io.clappr.player.utils
 
-import org.junit.Before
 import org.junit.Test
-import kotlin.test.assertEquals
+import java.util.*
+import kotlin.test.fail
 
 class IdGeneratorTest {
 
-    @Before
-    fun setUp() {
-        val countField = IdGenerator::class.java.getDeclaredField("count")
-        countField.isAccessible = true
-        countField.setInt(IdGenerator, 0)
-    }
-
     @Test
-    fun `should generate a sequential unique id starting from 1`() {
-        assertEquals("1", IdGenerator.uniqueId())
-        assertEquals("2", IdGenerator.uniqueId())
-        assertEquals("3", IdGenerator.uniqueId())
-    }
+    fun `should generate UUID as id`() {
 
-    @Test
-    fun `should generate a sequential unique with provided prefix`() {
-        assertEquals("o1", IdGenerator.uniqueId("o"))
-        assertEquals("prefix2", IdGenerator.uniqueId("prefix"))
+        val uniqueId = IdGenerator.uniqueId()
+
+        try {
+            UUID.fromString(uniqueId)
+        } catch (e: Exception) {
+            fail("invalid UUID String")
+        }
     }
 }
