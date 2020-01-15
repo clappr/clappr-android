@@ -6,6 +6,7 @@ import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
+import io.clappr.player.extensions.isChromeless
 import io.clappr.player.log.Logger
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
