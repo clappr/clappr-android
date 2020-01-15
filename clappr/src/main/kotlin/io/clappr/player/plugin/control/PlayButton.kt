@@ -7,14 +7,13 @@ import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
-import io.clappr.player.plugin.PluginEntry
 
 open class PlayButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
         override val name = "playButton"
 
-        val entry = PluginEntry.Core(name = name, factory = { core -> PlayButton(core) })
+        val entry = pluginEntry(name = name, factory = { core -> PlayButton(core) })
     }
 
     override var panel: Panel = Panel.CENTER
