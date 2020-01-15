@@ -3,12 +3,10 @@ package io.clappr.player.components
 import android.view.View
 import android.widget.FrameLayout
 import androidx.test.core.app.ApplicationProvider
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
+import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.core.CorePlugin
 import io.clappr.player.plugin.core.UICorePlugin
 import io.mockk.mockk
@@ -66,6 +64,7 @@ open class CoreTest {
 
     @Before
     fun setup() {
+        Loader.clearPlugins()
         frameLayoutMock = mockk(relaxUnitFun = true)
 
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
@@ -207,7 +206,7 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin()
 
         var pluginDestroyCalled = false
-        testPlugin.destroyMethod = { pluginDestroyCalled = true }
+        testPlugin!!.destroyMethod = { pluginDestroyCalled = true }
 
         core.destroy()
 
@@ -218,7 +217,7 @@ open class CoreTest {
     fun shouldHandlePluginDestroyExceptionOnDestroy() {
         val (core, testPlugin) = setupTestCorePlugin()
 
-        val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
+        val expectedLogMessage = "[Core] Plugin ${testPlugin!!.javaClass.simpleName} " +
                                  "crashed during destroy"
 
         testPlugin.destroyMethod = { throw NullPointerException() }
@@ -282,7 +281,7 @@ open class CoreTest {
         val (core, testPlugin) = setupTestCorePlugin()
 
         var pluginRenderCalled = false
-        testPlugin.renderMethod = { pluginRenderCalled = true }
+        testPlugin!!.renderMethod = { pluginRenderCalled = true }
 
         core.render()
 
@@ -293,7 +292,7 @@ open class CoreTest {
     fun shouldHandlePluginRenderExceptionOnDestroy() {
         val (core, testPlugin) = setupTestCorePlugin()
 
-        val expectedLogMessage = "[Core] Plugin ${testPlugin.javaClass.simpleName} " +
+        val expectedLogMessage = "[Core] Plugin ${testPlugin!!.javaClass.simpleName} " +
                                  "crashed during render"
 
         testPlugin.renderMethod = { throw NullPointerException() }
@@ -370,7 +369,7 @@ open class CoreTest {
         val oldRight = 1080
         capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, 0, right, 0, 0, 0, oldRight, 0)
 
-        assertTrue(testPlugin.didResizeWasCalled)
+        assertTrue(testPlugin!!.didResizeWasCalled)
     }
 
     @Test
@@ -386,7 +385,7 @@ open class CoreTest {
         val oldLeft = 1080
         capturingSlot.captured.onLayoutChange(frameLayoutMock, left, 0, 0, 0, oldLeft, 0, 0, 0)
 
-        assertTrue(testPlugin.didResizeWasCalled)
+        assertTrue(testPlugin!!.didResizeWasCalled)
     }
 
     @Test
@@ -402,7 +401,7 @@ open class CoreTest {
         val oldTop = 1080
         capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, top, 0, 0, 0, oldTop, 0, 0)
 
-        assertTrue(testPlugin.didResizeWasCalled)
+        assertTrue(testPlugin!!.didResizeWasCalled)
     }
 
     @Test
@@ -417,7 +416,7 @@ open class CoreTest {
         val oldBottom = 1080
         capturingSlot.captured.onLayoutChange(frameLayoutMock, 0, 0, 0, bottom, 0, 0, 0, oldBottom)
 
-        assertTrue(testPlugin.didResizeWasCalled)
+        assertTrue(testPlugin!!.didResizeWasCalled)
     }
 
     @Test
@@ -430,15 +429,79 @@ open class CoreTest {
 
         capturingSlot.captured.onLayoutChange(frameLayoutMock, 100, 100, 100, 100, 100, 100, 100, 100)
 
-        assertFalse(testPlugin.didResizeWasCalled)
+        assertFalse(testPlugin!!.didResizeWasCalled)
     }
 
-    private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
+
+    @Test
+    fun `should not have uiPlugins loaded with chromeless options set`() {
+        Loader.register(UICorePluginWithEventsBound.entry)
+
+        val options = Options(
+            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
+        )
+        val (core, _) = setupTestCorePlugin(options)
+
+        kotlin.test.assertNull(core.plugins.filterIsInstance(UICorePluginWithEventsBound::class.java).firstOrNull())
+
+    }
+
+    @Test
+    fun `should have uiPlugins loaded with chromeless options set when PluginEntry activates it`() {
+
+        val options = Options(
+            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
+        )
+        val (core, _) = setupTestCorePlugin(options)
+
+        assertNotNull(core.plugins.filterIsInstance(TestCorePlugin::class.java).firstOrNull())
+
+    }
+
+    @Test
+    fun `should not bind events to uiPlugins with chromeless options set`() {
+
+        Loader.register(UICorePluginWithEventsBound.entry)
+
+        val options = Options(
+            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
+        )
+        val (core, _) = setupTestCorePlugin(options)
+
+        core.trigger(Event.WILL_LOAD_SOURCE.value)
+    }
+
+    @Test
+    fun `should have uiPlugins loaded with chromeless options set to false`() {
+        val options = Options(
+            options = hashMapOf(ClapprOption.CHROMELESS.value to false)
+        )
+        val (core, _) = setupTestCorePlugin(options)
+
+        kotlin.test.assertTrue(core.plugins.filterIsInstance(UIPlugin::class.java).isNotEmpty())
+    }
+
+    private fun setupTestCorePlugin(options: Options = Options()): Pair<Core, TestCorePlugin?> {
         Loader.register(TestCorePlugin.entry)
 
-        val core = Core(Options())
-        val testPlugin = core.plugins[0] as TestCorePlugin
+        val core = Core(options)
+        val testPlugin = core.plugins.firstOrNull() as? TestCorePlugin
 
         return Pair(core, testPlugin)
+    }
+
+    class UICorePluginWithEventsBound(core: Core) : UICorePlugin(core) {
+        companion object : NamedType {
+            override val name = "UIContainerPluginWithEventsBound"
+
+            val entry = pluginEntry(name = name, factory = { UICorePluginWithEventsBound(it) })
+        }
+
+        init {
+            listenTo(core, Event.WILL_LOAD_SOURCE.value) {
+                fail("should not bind events on chromeless mode")
+            }
+        }
+
     }
 }

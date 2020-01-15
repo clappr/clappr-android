@@ -16,10 +16,10 @@ typealias CorePluginFactory = PluginFactory<Core, CorePlugin>
 
 typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin>
 
-sealed class PluginEntry(val name: String) {
-    class Core(name: String, val factory: CorePluginFactory) : PluginEntry(name)
+sealed class PluginEntry(val name: String, val activeInChromelessMode: Boolean) {
+    open class Core(name: String, activeInChromelessMode: Boolean = true, val factory: CorePluginFactory) : PluginEntry(name, activeInChromelessMode)
 
-    class Container(name: String, val factory: ContainerPluginFactory) : PluginEntry(name)
+    class Container(name: String, activeInChromelessMode: Boolean = true, val factory: ContainerPluginFactory) : PluginEntry(name, activeInChromelessMode)
 }
 
 object Loader {
@@ -65,8 +65,10 @@ object Loader {
             }
 
     fun <Context : BaseObject> loadPlugins(
-            context: Context, externalPlugins: List<PluginEntry> = emptyList()): List<Plugin> =
-            mergeExternalPlugins(externalPlugins).values.mapNotNull { loadPlugin(context, it) }
+            context: Context, externalPlugins: List<PluginEntry> = emptyList(), isChromelessMode: Boolean = false): List<Plugin> =
+            mergeExternalPlugins(externalPlugins).values
+                .filter { !isChromelessMode || it.activeInChromelessMode }
+                .mapNotNull { loadPlugin(context, it) }
 
     private fun mergeExternalPlugins(plugins: List<PluginEntry>): Map<String, PluginEntry> =
             plugins.filter { it.name.isNotEmpty() }.fold(HashMap(registeredPlugins)) { resultingMap, entry ->

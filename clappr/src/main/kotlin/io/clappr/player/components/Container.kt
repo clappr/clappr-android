@@ -49,7 +49,8 @@ class Container(options: Options) : UIObject() {
     val sharedData = SharedData()
 
     init {
-        internalPlugins = Loader.loadPlugins(this).toMutableList()
+        internalPlugins = Loader.loadPlugins(this, isChromelessMode = options.isChromeless)
+            .toMutableList()
     }
 
     fun destroy() {
