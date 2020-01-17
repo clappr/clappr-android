@@ -218,6 +218,12 @@ open class ExoPlayerPlayback(
         playerView.subtitleView?.setStyle(getSubtitleStyle())
     }
 
+    override fun render(): UIObject {
+        playerView.subtitleView?.visibility =
+            updateSubtitleVisibilityFrom(selectedSubtitle)
+        return super.render()
+    }
+
     open fun getSubtitleStyle() =
         CaptionStyleCompat(WHITE, TRANSPARENT, TRANSPARENT, EDGE_TYPE_NONE, WHITE, null)
 
@@ -631,12 +637,15 @@ open class ExoPlayerPlayback(
         get() = super.selectedSubtitle
         set(value) {
             playerView.subtitleView.visibility =
-                if (value == SubtitleLanguage.OFF.value) View.GONE else View.VISIBLE
+                updateSubtitleVisibilityFrom(value)
 
             setSubtitleOnPlayback(value)
             super.selectedSubtitle = value
             Logger.info(tag, "selectedSubtitle")
         }
+
+    private fun updateSubtitleVisibilityFrom(subtitle: String) =
+        if (subtitle == SubtitleLanguage.OFF.value) View.GONE else View.VISIBLE
 
     private fun setAudioOnPlayback(language: String) = trackSelector?.setAudioFromTracks(language)
 
