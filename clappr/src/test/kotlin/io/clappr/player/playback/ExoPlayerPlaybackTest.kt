@@ -1,5 +1,6 @@
 package io.clappr.player.playback
 
+import android.view.View
 import androidx.test.core.app.ApplicationProvider
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.C.TRACK_TYPE_AUDIO
@@ -10,16 +11,13 @@ import com.google.android.exoplayer2.Player.*
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.source.MediaSourceEventListener
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.ClapprOption
-import io.clappr.player.base.Event
+import com.google.android.exoplayer2.ui.PlayerView
+import io.clappr.player.base.*
 import io.clappr.player.base.Event.*
-import io.clappr.player.base.EventData
 import io.clappr.player.base.InternalEvent.DID_FIND_AUDIO
 import io.clappr.player.base.InternalEvent.DID_FIND_SUBTITLE
 import io.clappr.player.base.InternalEventData.FOUND_AUDIOS
 import io.clappr.player.base.InternalEventData.FOUND_SUBTITLES
-import io.clappr.player.base.Options
 import io.clappr.player.bitrate.BitrateHistory
 import io.clappr.player.components.AudioLanguage
 import io.clappr.player.components.Playback.State
@@ -70,6 +68,27 @@ class ExoPlayerPlaybackTest {
             source = "aSource",
             options = Options()
         )
+    }
+
+    @Test
+    fun `should hide subtitleView when selectedSubtitle is OFF`() {
+        exoPlayerPlayBack.render()
+
+        val playerView = exoPlayerPlayBack.view as PlayerView
+
+        assertEquals(View.GONE, playerView.subtitleView.visibility)
+    }
+
+    @Test
+    fun `should show subtitleView when selectedSubtitle is not OFF`() {
+        exoPlayerPlayBack.availableSubtitles += setOf(AudioLanguage.PORTUGUESE.value)
+        exoPlayerPlayBack.selectedSubtitle = SubtitleLanguage.PORTUGUESE.value
+
+        exoPlayerPlayBack.render()
+
+        val playerView = exoPlayerPlayBack.view as PlayerView
+
+        assertEquals(View.VISIBLE, playerView.subtitleView.visibility)
     }
 
     @Test
