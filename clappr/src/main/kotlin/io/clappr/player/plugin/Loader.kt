@@ -12,14 +12,14 @@ import io.clappr.player.plugin.core.CorePlugin
 
 typealias PluginFactory<Context, Plugin> = (Context) -> Plugin
 
-typealias CorePluginFactory = PluginFactory<Core, CorePlugin>
+typealias CorePluginFactory = PluginFactory<Core, CorePlugin?>
 
-typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin>
+typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin?>
 
-sealed class PluginEntry(val name: String, val activeInChromelessMode: Boolean) {
-    open class Core(name: String, activeInChromelessMode: Boolean = true, val factory: CorePluginFactory) : PluginEntry(name, activeInChromelessMode)
+sealed class PluginEntry(val name: String) {
+    class Core(name: String, val factory: CorePluginFactory) : PluginEntry(name)
 
-    class Container(name: String, activeInChromelessMode: Boolean = true, val factory: ContainerPluginFactory) : PluginEntry(name, activeInChromelessMode)
+    class Container(name: String, val factory: ContainerPluginFactory) : PluginEntry(name)
 }
 
 object Loader {
@@ -64,11 +64,8 @@ object Loader {
                 if (entry != null) remove(entry) else false
             }
 
-    fun <Context : BaseObject> loadPlugins(
-            context: Context, externalPlugins: List<PluginEntry> = emptyList(), isChromelessMode: Boolean = false): List<Plugin> =
-            mergeExternalPlugins(externalPlugins).values
-                .filter { !isChromelessMode || it.activeInChromelessMode }
-                .mapNotNull { loadPlugin(context, it) }
+    fun <Context : BaseObject> loadPlugins(context: Context, externalPlugins: List<PluginEntry> = emptyList()): List<Plugin> =
+            mergeExternalPlugins(externalPlugins).values.mapNotNull { loadPlugin(context, it) }
 
     private fun mergeExternalPlugins(plugins: List<PluginEntry>): Map<String, PluginEntry> =
             plugins.filter { it.name.isNotEmpty() }.fold(HashMap(registeredPlugins)) { resultingMap, entry ->

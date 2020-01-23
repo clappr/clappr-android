@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso
 import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Playback
+import io.clappr.player.extensions.unlessChromeless
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.container.UIContainerPlugin
@@ -28,7 +29,7 @@ class PosterPlugin(container: Container): UIContainerPlugin(container, name = na
     companion object : NamedType {
         override val name = "poster"
 
-        val entry = pluginEntry(name = name, factory = { container -> PosterPlugin(container) })
+        val entry = PluginEntry.Container(name = name, factory = ::PosterPlugin.unlessChromeless())
 
         private val httpClient: OkHttpClient by lazy { OkHttpClient.Builder().build() }
         private val picasso: Picasso by lazy {

@@ -15,7 +15,7 @@ class ExternalInputPlugin(core: Core) : CorePlugin(core, name = name), ExternalI
     companion object : NamedType {
         override val name = "externalInputPlugin"
 
-        val entry = PluginEntry.Core(name = name, activeInChromelessMode = false, factory = ::ExternalInputPlugin)
+        val entry = PluginEntry.Core(name = name, factory = ::ExternalInputPlugin)
     }
 
     private val supportedKeys = hashMapOf(

@@ -6,13 +6,18 @@ import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Core
+import io.clappr.player.extensions.unlessChromeless
+import io.clappr.player.plugin.PluginEntry
 
 open class FullscreenButton(core: Core) : ButtonPlugin(core, name) {
 
     companion object : NamedType {
         override val name = "fullscreenButton"
 
-        val entry = pluginEntry(name = name, factory = { core -> FullscreenButton(core) })
+        val entry = PluginEntry.Core(
+            name = name,
+            factory = ::FullscreenButton.unlessChromeless()
+        )
     }
 
     override var panel: Panel = Panel.BOTTOM

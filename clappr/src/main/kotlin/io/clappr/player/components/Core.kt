@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.Options
 import io.clappr.player.base.UIObject
-import io.clappr.player.extensions.isChromeless
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
@@ -100,8 +99,7 @@ class Core(options: Options) : UIObject() {
     private val orientationChangeListener = OrientationChangeListener(this)
 
     init {
-        internalPlugins = Loader.loadPlugins(this, isChromelessMode = options.isChromeless)
-            .toMutableList()
+        internalPlugins = Loader.loadPlugins(this).toMutableList()
 
         val container = Container(options)
         containers.add(container)

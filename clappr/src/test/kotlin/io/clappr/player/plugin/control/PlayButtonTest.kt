@@ -2,10 +2,7 @@ package io.clappr.player.plugin.control
 
 import android.view.View
 import androidx.test.core.app.ApplicationProvider
-import io.clappr.player.base.BaseObject
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.components.Container
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
@@ -21,6 +18,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -43,6 +41,13 @@ class PlayButtonTest {
 
         core.activeContainer = container
         container.playback = FakePlayback()
+    }
+
+    @Test
+    fun shouldNotLoadItselfInChromelessMode() {
+        core = Core(Options(options = hashMapOf(ClapprOption.CHROMELESS.value to true)))
+
+        assertNull(PlayButton.entry.factory(core))
     }
 
     @Test

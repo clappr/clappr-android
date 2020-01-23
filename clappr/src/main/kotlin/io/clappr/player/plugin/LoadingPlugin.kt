@@ -10,10 +10,10 @@ import io.clappr.player.base.EventHandler
 import io.clappr.player.base.InternalEvent
 import io.clappr.player.base.NamedType
 import io.clappr.player.components.Container
+import io.clappr.player.extensions.unlessChromeless
 import io.clappr.player.plugin.Plugin.State
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.container.UIContainerPlugin
-
 
 class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = name) {
 
@@ -22,7 +22,10 @@ class LoadingPlugin(container: Container) : UIContainerPlugin(container, name = 
     companion object : NamedType {
         override val name = "spinner"
 
-        val entry = pluginEntry(name = name, factory = { container -> LoadingPlugin(container) })
+        val entry = PluginEntry.Container(
+            name = name,
+            factory = ::LoadingPlugin.unlessChromeless()
+        )
     }
 
     override var state: State = State.ENABLED

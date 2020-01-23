@@ -29,7 +29,9 @@ class LoaderTest {
         companion object : NamedType {
             override val name = "testplugin"
 
-            val entry = PluginEntry.Core(name = name, factory = { core -> SameNameTestPlugin(core) })
+            val entry = PluginEntry.Core(
+                name = name,
+                factory = { core -> SameNameTestPlugin(core) })
         }
     }
 
@@ -148,7 +150,10 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "testplugin"
 
-        val loadedPlugins = Loader.loadPlugins(Core(Options()), listOf<PluginEntry>(TestPlugin.entry))
+        val loadedPlugins = Loader.loadPlugins(
+            Core(Options()),
+            listOf<PluginEntry>(TestPlugin.entry)
+        )
 
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
@@ -169,7 +174,9 @@ class LoaderTest {
         val expectedLoadedPluginsListSize = 1
         val expectedLoadedPluginName = "coreplugin"
 
-        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        Loader.register(PluginEntry.Core(
+            name = CorePlugin.name,
+            factory = { context -> CorePlugin(context) }))
 
         
         val loadedPlugins = Loader.loadPlugins(Core(Options()))
@@ -177,7 +184,10 @@ class LoaderTest {
         assertEquals(expectedLoadedPluginsListSize, loadedPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedPlugins[0].name)
 
-        val loadedExternalPlugins = Loader.loadPlugins(Core(Options()), listOf<PluginEntry>(TestCorePlugin.entry))
+        val loadedExternalPlugins = Loader.loadPlugins(
+            Core(Options()),
+            listOf<PluginEntry>(TestCorePlugin.entry)
+        )
 
         assertEquals(expectedLoadedPluginsListSize, loadedExternalPlugins.size)
         assertEquals(expectedLoadedPluginName, loadedExternalPlugins[0].name)

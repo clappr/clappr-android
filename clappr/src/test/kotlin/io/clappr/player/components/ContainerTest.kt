@@ -6,7 +6,6 @@ import io.clappr.player.base.*
 import io.clappr.player.playback.NoOpPlayback
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
-import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.container.ContainerPlugin
 import io.clappr.player.plugin.container.UIContainerPlugin
 import org.junit.Assert.*
@@ -17,8 +16,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23], shadows = [ShadowLog::class])
@@ -41,7 +38,7 @@ open class ContainerTest {
         companion object : NamedType {
             override val name = "testContainerPlugin"
 
-            val entry = pluginEntry(name = name, activeInChromelessMode = true, factory = { container -> TestContainerPlugin(container) })
+            val entry = PluginEntry.Container(name = name, factory = ::TestContainerPlugin)
         }
 
         override val name: String
@@ -69,7 +66,9 @@ open class ContainerTest {
     @Test
     fun shouldLoadPlugins() {
         Loader.register(
-                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+                PluginEntry.Container(
+                    name = ContainerPlugin.name,
+                    factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertTrue("no plugins", container.plugins.isNotEmpty())
@@ -251,7 +250,9 @@ open class ContainerTest {
     @Test
     fun shouldClearPluginsOnDestroy() {
         Loader.register(
-                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+                PluginEntry.Container(
+                    name = ContainerPlugin.name,
+                    factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertFalse("No plugins", container.plugins.isEmpty())
@@ -331,54 +332,6 @@ open class ContainerTest {
         assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
-    @Test
-    fun `should not have uiPlugins loaded with chromeless options set`() {
-        Loader.register(UIContainerPluginWithEventsBound.entry)
-
-        val options = Options(
-            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
-        )
-        val (container, _) = setupTestContainerPlugin(options)
-
-        assertNull(container.plugins.filterIsInstance(UIContainerPluginWithEventsBound::class.java).firstOrNull())
-
-    }
-
-    @Test
-    fun `should have uiPlugins loaded with chromeless options set when PluginEntry activates it`() {
-
-        val options = Options(
-            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
-        )
-        val (container, _) = setupTestContainerPlugin(options)
-
-        assertNotNull(container.plugins.filterIsInstance(TestContainerPlugin::class.java).firstOrNull())
-
-    }
-
-    @Test
-    fun `should not bind events to uiPlugins with chromeless options set`() {
-
-        Loader.register(UIContainerPluginWithEventsBound.entry)
-
-        val options = Options(
-            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
-        )
-        val (container, _) = setupTestContainerPlugin(options)
-
-        container.trigger(Event.WILL_LOAD_SOURCE.value)
-    }
-
-    @Test
-    fun `should have uiPlugins loaded with chromeless options set to false`() {
-        val options = Options(
-            options = hashMapOf(ClapprOption.CHROMELESS.value to false)
-        )
-        val (container, _) = setupTestContainerPlugin(options)
-
-        assertTrue(container.plugins.filterIsInstance(UIPlugin::class.java).isNotEmpty())
-    }
-
     private fun setupTestContainerPlugin(options: Options = Options()): Pair<Container, TestContainerPlugin?> {
         Loader.register(TestContainerPlugin.entry)
 
@@ -386,20 +339,5 @@ open class ContainerTest {
         val testPlugin = container.plugins.firstOrNull() as? TestContainerPlugin
 
         return Pair(container, testPlugin)
-    }
-
-    class UIContainerPluginWithEventsBound(container: Container) : UIContainerPlugin(container) {
-        companion object : NamedType {
-            override val name = "UIContainerPluginWithEventsBound"
-
-            val entry = pluginEntry(name = name, factory = { container -> UIContainerPluginWithEventsBound(container) })
-        }
-
-        init {
-            listenTo(container, Event.WILL_LOAD_SOURCE.value) {
-                fail("should not bind events on chromeless mode")
-            }
-        }
-
     }
 }

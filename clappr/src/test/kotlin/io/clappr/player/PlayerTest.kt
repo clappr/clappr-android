@@ -625,7 +625,9 @@ open class PlayerTest {
         companion object : NamedType {
             override val name = ExternalInputPlugin.name
 
-            val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPluginTest(core) })
+            val entry = PluginEntry.Core(
+                name = name,
+                factory = { core -> ExternalInputPluginTest(core) })
 
             var keyEvent: KeyEvent? = null
         }

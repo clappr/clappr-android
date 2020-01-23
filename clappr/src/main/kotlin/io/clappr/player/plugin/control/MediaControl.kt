@@ -19,7 +19,9 @@ import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.extensions.animate
 import io.clappr.player.extensions.extractInputKey
+import io.clappr.player.extensions.unlessChromeless
 import io.clappr.player.plugin.Plugin.State
+import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
@@ -50,7 +52,10 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
         const val modalPanelViewKey = "modalPanelView"
 
-        val entry = pluginEntry(name = name, factory = { core -> MediaControl(core) })
+        val entry = PluginEntry.Core(
+            name = name,
+            factory = { core: Core -> MediaControl(core) }.unlessChromeless()
+        )
     }
 
     private val defaultShowDuration = 300L
