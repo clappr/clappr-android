@@ -256,7 +256,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun showDefaultMediaControlPanels() {
+    protected fun showDefaultMediaControlPanels() {
         controlsPanel.visibility = View.VISIBLE
         foregroundControlsPanel.visibility = View.VISIBLE
     }
@@ -330,7 +330,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
-    private fun hideModalPanel() {
+    protected fun hideModalPanel() {
         modalPanel.visibility = View.INVISIBLE
     }
 
