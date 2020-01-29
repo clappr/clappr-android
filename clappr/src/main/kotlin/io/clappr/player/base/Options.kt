@@ -60,7 +60,7 @@ enum class ClapprOption(val value: String) {
      */
     DEFAULT_SUBTITLE("defaultSubtitle"),
     /**
-     * String that represents chromeless state for player
+     * Boolean that represents chromeless state for player
      */
     CHROMELESS("chromeless")
 
