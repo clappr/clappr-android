@@ -19,6 +19,6 @@
 
 | Name | Summary |
 |---|---|
-| [ContainerPluginFactory](-container-plugin-factory.md) | `typealias ContainerPluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Container`](../io.clappr.player.components/-container/index.md)`, `[`ContainerPlugin`](../io.clappr.player.plugin.container/-container-plugin/index.md)`>` |
-| [CorePluginFactory](-core-plugin-factory.md) | `typealias CorePluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Core`](../io.clappr.player.components/-core/index.md)`, `[`CorePlugin`](../io.clappr.player.plugin.core/-core-plugin/index.md)`>` |
+| [ContainerPluginFactory](-container-plugin-factory.md) | `typealias ContainerPluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Container`](../io.clappr.player.components/-container/index.md)`, `[`ContainerPlugin`](../io.clappr.player.plugin.container/-container-plugin/index.md)`?>` |
+| [CorePluginFactory](-core-plugin-factory.md) | `typealias CorePluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Core`](../io.clappr.player.components/-core/index.md)`, `[`CorePlugin`](../io.clappr.player.plugin.core/-core-plugin/index.md)`?>` |
 | [PluginFactory](-plugin-factory.md) | `typealias PluginFactory<Context, Plugin> = (`[`Context`](-plugin-factory.md#Context)`) -> `[`Plugin`](-plugin-factory.md#Plugin) |
