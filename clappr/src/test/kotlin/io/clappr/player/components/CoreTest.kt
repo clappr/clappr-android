@@ -22,6 +22,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.shadows.ShadowLog
+import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23], shadows = [ShadowLog::class])
@@ -66,6 +67,7 @@ open class CoreTest {
 
     @Before
     fun setup() {
+        Loader.clearPlugins()
         frameLayoutMock = mockk(relaxUnitFun = true)
 
         BaseObject.applicationContext = ApplicationProvider.getApplicationContext()
@@ -73,7 +75,9 @@ open class CoreTest {
 
     @Test
     fun shouldLoadPlugins() {
-        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        Loader.register(PluginEntry.Core(
+            name = CorePlugin.name,
+            factory = { context -> CorePlugin(context) }))
         val core = Core(Options()).apply { load() }
 
         assertTrue("no plugins", core.plugins.isNotEmpty())
@@ -230,7 +234,9 @@ open class CoreTest {
 
     @Test
     fun shouldClearPluginsOnDestroy() {
-        Loader.register(PluginEntry.Core(name = CorePlugin.name, factory = { context -> CorePlugin(context) }))
+        Loader.register(PluginEntry.Core(
+            name = CorePlugin.name,
+            factory = { context -> CorePlugin(context) }))
         val core = Core(Options())
 
         assertFalse("No plugins", core.plugins.isEmpty())
@@ -433,11 +439,11 @@ open class CoreTest {
         assertFalse(testPlugin.didResizeWasCalled)
     }
 
-    private fun setupTestCorePlugin(): Pair<Core, TestCorePlugin> {
+    private fun setupTestCorePlugin(options: Options = Options()): Pair<Core, TestCorePlugin> {
         Loader.register(TestCorePlugin.entry)
 
-        val core = Core(Options())
-        val testPlugin = core.plugins[0] as TestCorePlugin
+        val core = Core(options)
+        val testPlugin = core.plugins.first() as TestCorePlugin
 
         return Pair(core, testPlugin)
     }

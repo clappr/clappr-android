@@ -12,9 +12,9 @@ import io.clappr.player.plugin.core.CorePlugin
 
 typealias PluginFactory<Context, Plugin> = (Context) -> Plugin
 
-typealias CorePluginFactory = PluginFactory<Core, CorePlugin>
+typealias CorePluginFactory = PluginFactory<Core, CorePlugin?>
 
-typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin>
+typealias ContainerPluginFactory = PluginFactory<Container, ContainerPlugin?>
 
 sealed class PluginEntry(val name: String) {
     class Core(name: String, val factory: CorePluginFactory) : PluginEntry(name)
@@ -64,8 +64,7 @@ object Loader {
                 if (entry != null) remove(entry) else false
             }
 
-    fun <Context : BaseObject> loadPlugins(
-            context: Context, externalPlugins: List<PluginEntry> = emptyList()): List<Plugin> =
+    fun <Context : BaseObject> loadPlugins(context: Context, externalPlugins: List<PluginEntry> = emptyList()): List<Plugin> =
             mergeExternalPlugins(externalPlugins).values.mapNotNull { loadPlugin(context, it) }
 
     private fun mergeExternalPlugins(plugins: List<PluginEntry>): Map<String, PluginEntry> =

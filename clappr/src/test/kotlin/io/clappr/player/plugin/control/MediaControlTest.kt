@@ -35,6 +35,7 @@ import org.robolectric.util.Scheduler
 import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
@@ -69,6 +70,13 @@ class MediaControlTest {
     fun tearDown() {
         Loader.clearPlugins()
         Loader.clearPlaybacks()
+    }
+
+    @Test
+    fun `should not load itself in chromeless mode`() {
+        core = Core(Options(options = hashMapOf(ClapprOption.CHROMELESS.value to true)))
+
+        assertNull(MediaControl.entry.factory(core))
     }
 
     @Test

@@ -18,6 +18,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23], shadows = [ShadowUri::class])
@@ -45,6 +46,13 @@ class PosterPluginTest {
     fun tearDown() {
         Loader.clearPlugins()
         ShadowUri.urlToParse = ""
+    }
+
+    @Test
+    fun shouldNotLoadItselfInChromelessMode() {
+        container = Container(Options(options = hashMapOf(ClapprOption.CHROMELESS.value to true)))
+
+        assertNull(PosterPlugin.entry.factory(container))
     }
 
     @Test
