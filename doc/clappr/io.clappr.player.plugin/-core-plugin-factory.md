@@ -2,4 +2,4 @@
 
 # CorePluginFactory
 
-`typealias CorePluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Core`](../io.clappr.player.components/-core/index.md)`, `[`CorePlugin`](../io.clappr.player.plugin.core/-core-plugin/index.md)`>`
+`typealias CorePluginFactory = `[`PluginFactory`](-plugin-factory.md)`<`[`Core`](../io.clappr.player.components/-core/index.md)`, `[`CorePlugin`](../io.clappr.player.plugin.core/-core-plugin/index.md)`?>`

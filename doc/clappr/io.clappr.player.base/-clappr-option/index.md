@@ -20,6 +20,7 @@
 | [SELECTED_MEDIA_OPTIONS](-s-e-l-e-c-t-e-d_-m-e-d-i-a_-o-p-t-i-o-n-s.md) | String List to selected MediaOptions. |
 | [DEFAULT_AUDIO](-d-e-f-a-u-l-t_-a-u-d-i-o.md) | String that represents default audio |
 | [DEFAULT_SUBTITLE](-d-e-f-a-u-l-t_-s-u-b-t-i-t-l-e.md) | String that represents default subtitle |
+| [CHROMELESS](-c-h-r-o-m-e-l-e-s-s.md) | Boolean that represents chromeless state for player |
 
 ### Properties
 
