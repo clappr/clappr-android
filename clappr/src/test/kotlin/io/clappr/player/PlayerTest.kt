@@ -4,16 +4,14 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.KeyEvent
 import androidx.test.core.app.ApplicationProvider
-import io.clappr.player.base.Event
-import io.clappr.player.base.InternalEvent
-import io.clappr.player.base.NamedType
-import io.clappr.player.base.Options
+import io.clappr.player.base.*
 import io.clappr.player.components.Core
 import io.clappr.player.components.Playback
 import io.clappr.player.components.PlaybackEntry
 import io.clappr.player.components.PlaybackSupportCheck
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.PluginEntry
+import io.clappr.player.plugin.UIPlugin
 import io.clappr.player.plugin.core.CorePlugin
 import io.clappr.player.plugin.core.externalinput.ExternalInputDevice
 import io.clappr.player.plugin.core.externalinput.ExternalInputPlugin
@@ -24,6 +22,9 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlin.reflect.full.memberProperties
+import kotlin.reflect.jvm.isAccessible
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23])
@@ -554,6 +555,29 @@ open class PlayerTest {
         }
     }
 
+    @Test
+    fun `should not have UIPlugins loaded with chromeless options set`() {
+        val options = Options(
+            options = hashMapOf(ClapprOption.CHROMELESS.value to true)
+        )
+        player = Player()
+        player.configure(options)
+
+        assertNull(player.getCore().plugins.filterIsInstance(UIPlugin::class.java).firstOrNull())
+        assertNull(
+            player.getCore().containers.firstOrNull()?.plugins?.filterIsInstance(
+                UIPlugin::class.java
+            )?.firstOrNull()
+        )
+    }
+
+    private fun Player.getCore(): Core =
+        Player::class.memberProperties.first { it.name == "core" }.run {
+            isAccessible = true
+            get(this@getCore) as Core
+        }
+
+
     class CoreTestPlugin(core: Core) : CorePlugin(core) {
         companion object : NamedType {
             override val name = "coreTestPlugin"
@@ -601,7 +625,9 @@ open class PlayerTest {
         companion object : NamedType {
             override val name = ExternalInputPlugin.name
 
-            val entry = PluginEntry.Core(name = name, factory = { core -> ExternalInputPluginTest(core) })
+            val entry = PluginEntry.Core(
+                name = name,
+                factory = { core -> ExternalInputPluginTest(core) })
 
             var keyEvent: KeyEvent? = null
         }

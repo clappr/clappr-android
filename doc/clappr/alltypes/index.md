@@ -35,6 +35,7 @@
 | [io.clappr.player.plugin.core.externalinput.ExternalInputDevice](../io.clappr.player.plugin.core.externalinput/-external-input-device/index.md) |  |
 | [io.clappr.player.plugin.core.externalinput.ExternalInputPlugin](../io.clappr.player.plugin.core.externalinput/-external-input-plugin/index.md) |  |
 | [io.clappr.player.plugin.control.FullscreenButton](../io.clappr.player.plugin.control/-fullscreen-button/index.md) |  |
+| [kotlin.Function1](../io.clappr.player.extensions/kotlin.-function1/index.md) (extensions in package io.clappr.player.extensions) |  |
 | [io.clappr.player.utils.IdGenerator](../io.clappr.player.utils/-id-generator/index.md) |  |
 | [io.clappr.player.extensions.InputKey](../io.clappr.player.extensions/-input-key/index.md) |  |
 | [io.clappr.player.base.InternalEvent](../io.clappr.player.base/-internal-event/index.md) |  |

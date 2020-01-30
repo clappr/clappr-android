@@ -38,7 +38,7 @@ open class ContainerTest {
         companion object : NamedType {
             override val name = "testContainerPlugin"
 
-            val entry = PluginEntry.Container(name = name, factory = { container -> TestContainerPlugin(container) })
+            val entry = PluginEntry.Container(name = name, factory = ::TestContainerPlugin)
         }
 
         override val name: String
@@ -66,7 +66,9 @@ open class ContainerTest {
     @Test
     fun shouldLoadPlugins() {
         Loader.register(
-                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+                PluginEntry.Container(
+                    name = ContainerPlugin.name,
+                    factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertTrue("no plugins", container.plugins.isNotEmpty())
@@ -224,7 +226,7 @@ open class ContainerTest {
         val (container, testPlugin) = setupTestContainerPlugin()
 
         var pluginDestroyCalled = false
-        testPlugin.destroyMethod = { pluginDestroyCalled = true }
+        testPlugin!!.destroyMethod = { pluginDestroyCalled = true }
 
         container.destroy()
 
@@ -235,7 +237,7 @@ open class ContainerTest {
     fun shouldHandlePluginDestroyExceptionOnDestroy() {
         val (container, testPlugin) = setupTestContainerPlugin()
 
-        val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
+        val expectedLogMessage = "[Container] Plugin ${testPlugin!!.javaClass.simpleName} " +
                                  "crashed during destroy"
 
         testPlugin.destroyMethod = { throw NullPointerException() }
@@ -248,7 +250,9 @@ open class ContainerTest {
     @Test
     fun shouldClearPluginsOnDestroy() {
         Loader.register(
-                PluginEntry.Container(name = ContainerPlugin.name, factory = { context -> ContainerPlugin(context) }))
+                PluginEntry.Container(
+                    name = ContainerPlugin.name,
+                    factory = { context -> ContainerPlugin(context) }))
         val container = Container(Options())
 
         assertFalse("No plugins", container.plugins.isEmpty())
@@ -307,7 +311,7 @@ open class ContainerTest {
         val (container, testPlugin) = setupTestContainerPlugin()
 
         var pluginRenderCalled = false
-        testPlugin.renderMethod = { pluginRenderCalled = true }
+        testPlugin!!.renderMethod = { pluginRenderCalled = true }
 
         container.render()
 
@@ -318,7 +322,7 @@ open class ContainerTest {
     fun shouldHandlePluginRenderExceptionOnDestroy() {
         val (container, testPlugin) = setupTestContainerPlugin()
 
-        val expectedLogMessage = "[Container] Plugin ${testPlugin.javaClass.simpleName} " +
+        val expectedLogMessage = "[Container] Plugin ${testPlugin!!.javaClass.simpleName} " +
                                  "crashed during render"
 
         testPlugin.renderMethod = { throw NullPointerException() }
@@ -328,11 +332,11 @@ open class ContainerTest {
         assertEquals(expectedLogMessage, ShadowLog.getLogsForTag("Clappr")[0].msg)
     }
 
-    private fun setupTestContainerPlugin(): Pair<Container, TestContainerPlugin> {
+    private fun setupTestContainerPlugin(options: Options = Options()): Pair<Container, TestContainerPlugin?> {
         Loader.register(TestContainerPlugin.entry)
 
-        val container = Container(Options())
-        val testPlugin = container.plugins[0] as TestContainerPlugin
+        val container = Container(options)
+        val testPlugin = container.plugins.firstOrNull() as? TestContainerPlugin
 
         return Pair(container, testPlugin)
     }

@@ -4,6 +4,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.test.core.app.ApplicationProvider
 import io.clappr.player.base.BaseObject
+import io.clappr.player.base.ClapprOption
 import io.clappr.player.base.Event
 import io.clappr.player.base.Options
 import io.clappr.player.components.Container
@@ -16,6 +17,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [23])
@@ -40,6 +42,13 @@ class LoadingPluginTest {
     @Test
     fun shouldInitWithStateEnabled() {
         assertEquals(Plugin.State.ENABLED, loadingPlugin.state)
+    }
+
+    @Test
+    fun shouldNotLoadItselfInChromelessMode() {
+        container = Container(Options(options = hashMapOf(ClapprOption.CHROMELESS.value to true)))
+
+        assertNull(LoadingPlugin.entry.factory(container))
     }
 
     @Test
