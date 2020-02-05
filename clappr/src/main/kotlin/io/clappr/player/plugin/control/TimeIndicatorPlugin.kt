@@ -31,7 +31,9 @@ open class TimeIndicatorPlugin(core: Core) : MediaControl.Plugin(core, name) {
     override var panel: Panel = Panel.BOTTOM
     override var position: Position = Position.LEFT
 
-    protected val textView by lazy { LayoutInflater.from(applicationContext).inflate(R.layout.time_indicator, null) as TextView }
+    protected val textView by lazy {
+        LayoutInflater.from(applicationContext).inflate(R.layout.time_indicator, null) as TextView
+    }
 
     override val view: View?
         get() = textView
