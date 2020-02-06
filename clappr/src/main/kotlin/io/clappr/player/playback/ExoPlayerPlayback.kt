@@ -305,7 +305,8 @@ open class ExoPlayerPlayback(
 
     override fun startAt(seconds: Int): Boolean {
         if (!canSeek) return false
-        player?.seekTo((seconds * ONE_SECOND_IN_MILLIS).toLong())
+        val seekDestination = min(seconds.toLong(), duration.toLong()) * ONE_SECOND_IN_MILLIS
+        player?.seekTo(seekDestination)
         triggerPositionUpdateEvent()
 
         return true
