@@ -75,9 +75,9 @@ open class MediaControl(core: Core, pluginName: String = name) :
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val keysNotAllowedToIteractWithMediaControl = listOf(Key.UNDEFINED)
+    protected open val keysNotAllowedToIteractWithMediaControl = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
-    open val allowedKeysToToggleMediaControlVisibility = navigationKeys
+    protected open val allowedKeysToToggleMediaControlVisibility = navigationKeys
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
