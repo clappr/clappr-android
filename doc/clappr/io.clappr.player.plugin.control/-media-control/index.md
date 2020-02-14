@@ -23,10 +23,13 @@
 
 | Name | Summary |
 |---|---|
+| [allowedKeysToToggleMediaControlVisibility](allowed-keys-to-toggle-media-control-visibility.md) | `open val allowedKeysToToggleMediaControlVisibility: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Key`](../../io.clappr.player.base.keys/-key/index.md)`>` |
 | [hideAnimationEnded](hide-animation-ended.md) | `var hideAnimationEnded: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
-| [invalidActivationKeys](invalid-activation-keys.md) | `open val invalidActivationKeys: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Key`](../../io.clappr.player.base.keys/-key/index.md)`>` |
 | [isEnabled](is-enabled.md) | `val isEnabled: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
 | [isVisible](is-visible.md) | `val isVisible: `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [keysNotAllowedToIteractWithMediaControl](keys-not-allowed-to-iteract-with-media-control.md) | `open val keysNotAllowedToIteractWithMediaControl: `[`List`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html)`<`[`Key`](../../io.clappr.player.base.keys/-key/index.md)`>` |
+| [longShowDuration](long-show-duration.md) | `val longShowDuration: `[`Millisecond`](../-millisecond.md) |
+| [modalPanel](modal-panel.md) | `val modalPanel: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 | [state](state.md) | `open var state: `[`State`](../../io.clappr.player.plugin/-plugin/-state/index.md) |
 | [view](view.md) | `open val view: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html) |
 
@@ -42,12 +45,22 @@
 
 | Name | Summary |
 |---|---|
+| [animateFadeIn](animate-fade-in.md) | `open fun animateFadeIn(view: `[`View`](https://developer.android.com/reference/android/view/View.html)`, onAnimationEnd: () -> `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)` = {}): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [cancelPendingHideDelayed](cancel-pending-hide-delayed.md) | `fun cancelPendingHideDelayed(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [closeModal](close-modal.md) | `open fun closeModal(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [destroy](destroy.md) | `open fun destroy(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [handleDidPauseEvent](handle-did-pause-event.md) | `open fun handleDidPauseEvent(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [hide](hide.md) | `open fun hide(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [hideDefaultMediaControlPanels](hide-default-media-control-panels.md) | `open fun hideDefaultMediaControlPanels(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [hideDelayedWithCleanHandler](hide-delayed-with-clean-handler.md) | `fun hideDelayedWithCleanHandler(duration: `[`Millisecond`](../-millisecond.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [hideModalPanel](hide-modal-panel.md) | `fun hideModalPanel(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [modalPanelIsOpen](modal-panel-is-open.md) | `fun modalPanelIsOpen(): `[`Boolean`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html) |
+| [openModal](open-modal.md) | `open fun openModal(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [render](render.md) | `open fun render(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [setBackground](set-background.md) | `fun setBackground(context: `[`Context`](https://developer.android.com/reference/android/content/Context.html)`, resource: `[`Int`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
-| [show](show.md) | `open fun show(duration: `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>`open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [show](show.md) | `open fun show(duration: `[`Millisecond`](../-millisecond.md)`): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html)<br>`open fun show(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [showDefaultMediaControlPanels](show-default-media-control-panels.md) | `fun showDefaultMediaControlPanels(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
+| [showModalPanel](show-modal-panel.md) | `fun showModalPanel(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 | [toggleVisibility](toggle-visibility.md) | `fun toggleVisibility(): `[`Unit`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html) |
 
 ### Companion Object Properties
