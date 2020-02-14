@@ -12,3 +12,9 @@
 | [PlayButton](-play-button/index.md) | `open class PlayButton : `[`ButtonPlugin`](-button-plugin/index.md) |
 | [SeekbarPlugin](-seekbar-plugin/index.md) | `open class SeekbarPlugin : `[`Plugin`](-media-control/-plugin/index.md) |
 | [TimeIndicatorPlugin](-time-indicator-plugin/index.md) | `open class TimeIndicatorPlugin : `[`Plugin`](-media-control/-plugin/index.md) |
+
+### Type Aliases
+
+| Name | Summary |
+|---|---|
+| [Millisecond](-millisecond.md) | `typealias Millisecond = `[`Long`](https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html) |

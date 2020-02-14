@@ -2,4 +2,4 @@
 
 # modalPanel
 
-`open val modalPanel: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html)
+`protected val modalPanel: `[`FrameLayout`](https://developer.android.com/reference/android/widget/FrameLayout.html)
