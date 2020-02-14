@@ -661,9 +661,57 @@ class MediaControlTest {
     }
 
     @Test
-    fun `should show media control when key received supported keys on up action`() {
+    fun `should show media control when key received is allowed to toggle visibility on up action`() {
         core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
-            putString(EventData.INPUT_KEY_CODE.value, Key.PLAY_PAUSE.value)
+            putString(EventData.INPUT_KEY_CODE.value, Key.UP.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control UP key is pressed`() {
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.UP.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control DOWN key is pressed`() {
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.DOWN.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control LEFT key is pressed`() {
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.LEFT.value)
+            putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
+        })
+
+        assertEquals(UIPlugin.Visibility.VISIBLE, mediaControl.visibility)
+    }
+
+    @Test
+    fun `should show media control RIGHT key is pressed`() {
+        assertEquals(UIPlugin.Visibility.HIDDEN, mediaControl.visibility)
+
+        core.trigger(Event.DID_RECEIVE_INPUT_KEY.value, Bundle().apply {
+            putString(EventData.INPUT_KEY_CODE.value, Key.RIGHT.value)
             putString(EventData.INPUT_KEY_ACTION.value, Action.UP.value)
         })
 

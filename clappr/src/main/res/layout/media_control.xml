@@ -145,7 +145,6 @@
         android:id="@+id/modal_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/media_control_background"
         android:clickable="true"
         android:focusable="true" />
 </FrameLayout>

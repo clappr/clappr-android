@@ -48,6 +48,7 @@
 | [com.google.android.exoplayer2.trackselection.MappingTrackSelector](../io.clappr.player.playback/com.google.android.exoplayer2.trackselection.-mapping-track-selector/index.md) (extensions in package io.clappr.player.playback) |  |
 | [io.clappr.player.plugin.control.MediaControl](../io.clappr.player.plugin.control/-media-control/index.md) |  |
 | [io.clappr.player.playback.MediaPlayerPlayback](../io.clappr.player.playback/-media-player-playback/index.md) |  |
+| [io.clappr.player.plugin.control.Millisecond](../io.clappr.player.plugin.control/-millisecond.md) |  |
 | [io.clappr.player.base.NamedType](../io.clappr.player.base/-named-type/index.md) |  |
 | [io.clappr.player.playback.NoOpPlayback](../io.clappr.player.playback/-no-op-playback/index.md) |  |
 | [io.clappr.player.base.Options](../io.clappr.player.base/-options/index.md) |  |

@@ -25,6 +25,8 @@ import io.clappr.player.plugin.PluginEntry
 import io.clappr.player.plugin.UIPlugin.Visibility
 import io.clappr.player.plugin.core.UICorePlugin
 
+typealias Millisecond = Long
+
 open class MediaControl(core: Core, pluginName: String = name) :
     UICorePlugin(core, name = pluginName) {
 
@@ -58,8 +60,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         )
     }
 
-    private val defaultShowDuration = 300L
-    private val longShowDuration = 3000L
+    private val defaultShowDuration: Millisecond = 300L
 
     private val handler = Handler()
 
@@ -68,12 +69,15 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     var hideAnimationEnded = false
 
+    val longShowDuration: Millisecond = 3000L
+
     override val view by lazy {
         LayoutInflater.from(applicationContext).inflate(R.layout.media_control, null) as FrameLayout
     }
 
-    open val invalidActivationKeys = listOf(Key.UNDEFINED)
+    protected open val keysNotAllowedToIteractWithMediaControl = listOf(Key.UNDEFINED)
     private val navigationKeys = listOf(Key.UP, Key.DOWN, Key.LEFT, Key.RIGHT)
+    protected open val allowedKeysToToggleMediaControlVisibility = navigationKeys
 
     private val backgroundView: View by lazy { view.findViewById(R.id.background_view) as View }
 
@@ -92,7 +96,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private val centerPanel by lazy { view.findViewById(R.id.center_panel) as LinearLayout }
 
-    private val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
+    protected val modalPanel by lazy { view.findViewById(R.id.modal_panel) as FrameLayout }
 
     private val controlPlugins = mutableListOf<Plugin>()
 
@@ -155,7 +159,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         canShowMediaControlWhenPauseAfterTapInteraction = true
     }
 
-    open fun show(duration: Long) {
+    open fun show(duration: Millisecond) {
         val shouldAnimate = isVisible.not()
 
         core.trigger(InternalEvent.WILL_SHOW_MEDIA_CONTROL.value)
@@ -167,7 +171,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         else setupShowDuration(duration)
     }
 
-    private fun setupShowDuration(duration: Long) {
+    private fun setupShowDuration(duration: Millisecond) {
         updateInteractionTime()
 
         if (duration > 0) {
@@ -177,7 +181,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_SHOW_MEDIA_CONTROL.value)
     }
 
-    private fun animateFadeIn(view: View, onAnimationEnd: () -> Unit = {}) {
+    open fun animateFadeIn(view: View, onAnimationEnd: () -> Unit = {}) {
         view.animate(R.anim.anim_media_control_fade_in) {
             onAnimationEnd()
         }
@@ -214,7 +218,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun modalPanelIsOpen() = modalPanel.visibility == View.VISIBLE
+    protected fun modalPanelIsOpen() = modalPanel.visibility == View.VISIBLE
 
     private fun setupPlugins() {
         controlPlugins.clear()
@@ -256,12 +260,12 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun showDefaultMediaControlPanels() {
+    protected fun showDefaultMediaControlPanels() {
         controlsPanel.visibility = View.VISIBLE
         foregroundControlsPanel.visibility = View.VISIBLE
     }
 
-    private fun hideDefaultMediaControlPanels() {
+    open fun hideDefaultMediaControlPanels() {
         controlsPanel.visibility = View.INVISIBLE
         foregroundControlsPanel.visibility = View.INVISIBLE
     }
@@ -276,12 +280,12 @@ open class MediaControl(core: Core, pluginName: String = name) :
         backgroundView.visibility = View.VISIBLE
     }
 
-    private fun hideDelayedWithCleanHandler(duration: Long) {
-        handler.removeCallbacksAndMessages(null)
+    protected fun hideDelayedWithCleanHandler(duration: Millisecond) {
+        cancelPendingHideDelayed()
         hideDelayed(duration)
     }
 
-    private fun hideDelayed(duration: Long) {
+    private fun hideDelayed(duration: Millisecond) {
         handler.postDelayed({
             val currentTime = SystemClock.elapsedRealtime()
             val elapsedTime = currentTime - lastInteractionTime
@@ -308,7 +312,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         }
     }
 
-    private fun openModal() {
+    open fun openModal() {
         core.activePlayback?.pause()
 
         hideDefaultMediaControlPanels()
@@ -321,7 +325,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_OPEN_MODAL_PANEL.value, bundle)
     }
 
-    private fun closeModal() {
+    open fun closeModal() {
         if (modalPanelIsOpen()) {
             showDefaultMediaControlPanels()
             animateFadeOut(modalPanel) { hideModalPanel() }
@@ -330,11 +334,11 @@ open class MediaControl(core: Core, pluginName: String = name) :
         core.trigger(InternalEvent.DID_CLOSE_MODAL_PANEL.value)
     }
 
-    private fun hideModalPanel() {
+    protected fun hideModalPanel() {
         modalPanel.visibility = View.INVISIBLE
     }
 
-    private fun showModalPanel() {
+    protected fun showModalPanel() {
         modalPanel.visibility = View.VISIBLE
     }
 
@@ -344,16 +348,16 @@ open class MediaControl(core: Core, pluginName: String = name) :
 
     private fun handleInputKey(bundle: Bundle) {
         bundle.extractInputKey()?.apply {
-            if (isValidActivationKey(key) && action == Action.UP) {
+            if (isKeysAllowedToIteractWithMediaControl(key) && action == Action.UP) {
                 when (isVisible) {
                     true -> if (navigationKeys.contains(key)) updateInteractionTime()
-                    else -> if (isValidActivationKey(key)) toggleVisibility()
+                    else -> if (allowedKeysToToggleMediaControlVisibility.contains(key)) toggleVisibility()
                 }
             }
         }
     }
 
-    private fun isValidActivationKey(key: Key) = invalidActivationKeys.contains(key).not()
+    private fun isKeysAllowedToIteractWithMediaControl(key: Key) = keysNotAllowedToIteractWithMediaControl.contains(key).not()
 
     private fun stopContainerListeners() {
         containerListenerIds.forEach(::stopListening)
@@ -393,7 +397,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
         stopContainerListeners()
         stopPlaybackListeners()
         view.setOnTouchListener(null)
-        handler.removeCallbacksAndMessages(null)
+        cancelPendingHideDelayed()
         super.destroy()
     }
 
@@ -414,8 +418,12 @@ open class MediaControl(core: Core, pluginName: String = name) :
         hideModalPanel()
         hideAnimationEnded = true
 
-        handler.removeCallbacksAndMessages(null)
+        cancelPendingHideDelayed()
         core.trigger(InternalEvent.DID_HIDE_MEDIA_CONTROL.value)
+    }
+
+    protected fun cancelPendingHideDelayed() {
+        handler.removeCallbacksAndMessages(null)
     }
 
     override fun show() {
@@ -475,5 +483,4 @@ open class MediaControl(core: Core, pluginName: String = name) :
             core.trigger(InternalEvent.DID_DOUBLE_TOUCH_MEDIA_CONTROL.value, it)
         }
     }
-
 }
