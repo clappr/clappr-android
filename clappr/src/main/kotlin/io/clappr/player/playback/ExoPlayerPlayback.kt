@@ -370,7 +370,7 @@ open class ExoPlayerPlayback(
             buildRendererFactory(),
             trackSelector,
             DefaultLoadControl(),
-            buildDrmSessionManager(),
+            drmSessionManagerFromOption() ?: buildDrmSessionManager(),
             bandwidthMeter
         ).apply {
             setAudioAttributes(audioAttributes, handleAudioFocus)
@@ -387,7 +387,6 @@ open class ExoPlayerPlayback(
         mediaSource = mediaSource(Uri.parse(source))
         player?.prepare(mediaSource)
     }
-
     protected open fun configureTrackSelector() {
         trackSelector = createDefaultTrackSelector()
     }
@@ -400,6 +399,20 @@ open class ExoPlayerPlayback(
 
     private fun buildRendererFactory() = DefaultRenderersFactory(applicationContext).apply {
         setExtensionRendererMode(EXTENSION_RENDERER_MODE_PREFER)
+    }
+
+    private fun drmSessionManagerFromOption(): DrmSessionManager<FrameworkMediaCrypto>? {
+        return newInstance(options["drmSessionManager"] as? String)
+    }
+
+    private fun newInstance(className: String?): DrmSessionManager<FrameworkMediaCrypto>? {
+        return try {
+            Class.forName(className).constructors[0].newInstance(
+                applicationContext, options["remoteIdentifier"], drmScheme, mainHandler) as? DrmSessionManager<FrameworkMediaCrypto>
+        } catch (error: Exception) {
+            Logger.error("@@@", "Unable to create download notification.", error)
+            null
+        }
     }
 
     @SuppressLint("NewApi")
