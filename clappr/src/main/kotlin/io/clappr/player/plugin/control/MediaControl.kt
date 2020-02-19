@@ -257,6 +257,7 @@ open class MediaControl(core: Core, pluginName: String = name) :
                 else -> null
             }
             parent?.addView(it.view)
+            it.render()
         }
     }
 

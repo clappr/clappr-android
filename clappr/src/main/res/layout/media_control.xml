@@ -2,7 +2,9 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/media_control"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <View
         android:id="@+id/background_view"
@@ -14,6 +16,8 @@
         android:id="@+id/controls_panel"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:orientation="vertical">
 
         <LinearLayout
@@ -32,11 +36,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="horizontal">
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
 
                     <LinearLayout
                         android:id="@+id/top_left_panel"
@@ -44,6 +52,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_alignParentLeft="true"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:orientation="horizontal" />
 
                     <LinearLayout
@@ -52,14 +62,18 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_alignParentRight="true"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:orientation="horizontal" />
 
                     <LinearLayout
                         android:id="@+id/top_center"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:clipChildren="false"
+                        android:clipToPadding="false"
                         android:orientation="horizontal" />
                 </RelativeLayout>
 
@@ -100,6 +114,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:baselineAligned="false"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -107,12 +123,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:orientation="horizontal" />
 
                 <LinearLayout
                     android:id="@+id/bottom_right_panel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
                     android:orientation="horizontal" />
 
             </LinearLayout>

@@ -9,6 +9,7 @@ import io.clappr.player.base.UIObject
 import io.clappr.player.log.Logger
 import io.clappr.player.plugin.Loader
 import io.clappr.player.plugin.Plugin
+import io.clappr.player.plugin.control.MediaControl
 import io.clappr.player.plugin.core.UICorePlugin
 import io.clappr.player.shared.SharedData
 import io.clappr.player.utils.Environment
@@ -136,12 +137,16 @@ class Core(options: Options) : UIObject() {
             frameLayout.addView(it.view)
             it.render()
         }
-        internalPlugins.filterIsInstance(UICorePlugin::class.java).forEach {
-            frameLayout.addView(it.view)
-            handlePluginAction(
+        internalPlugins
+            .filterIsInstance(UICorePlugin::class.java)
+            .filterNot { it is MediaControl.Plugin }
+            .forEach {
+                frameLayout.addView(it.view)
+                handlePluginAction(
                     { it.render() },
-                    "Plugin ${it.javaClass.simpleName} crashed during render")
-        }
+                    "Plugin ${it.javaClass.simpleName} crashed during render"
+                )
+            }
 
         frameLayout.removeOnLayoutChangeListener(layoutChangeListener)
         frameLayout.addOnLayoutChangeListener(layoutChangeListener)
